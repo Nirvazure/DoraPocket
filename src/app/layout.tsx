@@ -4,6 +4,10 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'DoraPocket Next',
   description: 'DoraPocket Next.js migration',
+  icons: {
+    icon: '/icon/dora-pocket.svg',
+    shortcut: '/icon/dora-pocket.svg',
+  },
 }
 
 export default function RootLayout({

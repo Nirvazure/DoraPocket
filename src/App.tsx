@@ -374,10 +374,7 @@ export default function App() {
   const toolBasedGadget = getModeByToolId(selectedToolPayload?.toolId)
   const quickDialGadgets = toolBasedGadget ? [toolBasedGadget, ...ASSISTANT_MODES].slice(0, 4) : ASSISTANT_MODES.slice(0, 4)
   const dialGadgets = toolDialMode === 'quick' ? quickDialGadgets : ASSISTANT_MODES
-  const [randomPromptPlaceholder] = useState(() => {
-    const suggestion = PROMPT_SUGGESTIONS[Math.floor(Math.random() * PROMPT_SUGGESTIONS.length)]
-    return `试试：${suggestion}`
-  })
+  const randomPromptPlaceholder = `试试：${PROMPT_SUGGESTIONS[0]}`
   const pocketStats = useMemo(() => {
     const archived = pocketInventory.filter((item) => item.archived).length
     const pinned = pocketInventory.filter((item) => item.pinned).length
