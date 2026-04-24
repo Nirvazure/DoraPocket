@@ -1,6 +1,21 @@
 {
-  "name": "dpnextseed",
-  "version": "0.1.0",
+  "name": "dorapocket",
+  "version": "0.0.2",
+  "author": "DoraPocket",
+  "license": "MIT",
+  "homepage": "https://dorapocket.nirvazure.cn/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dorapocket/dorapocket.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dorapocket/dorapocket/issues"
+  },
+  "keywords": [
+    "Doraemon",
+    "AI",
+    "Assistant"
+  ],
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -16,13 +31,9 @@
     "@langchain/core": "^1.1.40",
     "@langchain/langgraph": "^1.2.9",
     "@langchain/openai": "^1.4.4",
-    "@pixiv/three-vrm": "^3.5.2",
-    "@radix-ui/react-dialog": "^1.1.15",
-    "@radix-ui/react-scroll-area": "^1.2.10",
     "@radix-ui/react-slot": "^1.2.4",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.0",
-    "axios": "^1.15.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.8.0",

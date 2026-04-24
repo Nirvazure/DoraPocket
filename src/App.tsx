@@ -1,14 +1,16 @@
 ﻿import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { ContactShadows, OrbitControls } from '@react-three/drei'
-import { Keyboard, Mic, Sparkles, UserRound } from 'lucide-react'
+import { Keyboard, Mic, Sparkles } from 'lucide-react'
 import Image from 'next/image'
 import { Avatar } from './components/Avatar'
 import { ListeningHud } from './components/listening-hud'
 import { SceneLights } from './components/scene-lights'
 import { TranscriptBarrage } from './components/transcript-barrage'
-import { UserCenterPage } from './components/user-center-page'
 import { Button } from '@/components/ui/button'
+import { ProfileEntryPill } from '@/components/common/profile-entry-pill'
+import { PageShell } from '@/components/common/page-shell'
+import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
 import { FONT_PRESET_STORAGE_KEY } from '@/font-presets'
 import { RightStatusShowcase } from '@/components/right-status-showcase'
@@ -19,9 +21,11 @@ import {
   playAudioStream,
   playDoraPocketSfx,
   startSpeechSession,
+  stopAudioPlayback,
 } from './services/audio'
 import { askQwen, type ChatToolPayload } from './services/llm'
 import { fetchTTSAudio } from './services/tts'
+import { saveChatHistoryEntry } from '@/services/chat-history'
 import { buildMarketContext, recordToolSubscribed, setToolSubscription } from '@/services/market-storage'
 import { getToolById } from '@/services/tool-registry'
 import {
@@ -35,8 +39,6 @@ import {
 } from '@/shared/mode-registry'
 import { PocketGadgetModal } from './components/pocket-gadget-modal'
 import { cn } from '@/lib/utils'
-import { MarketPage } from '@/components/market-page'
-import { PocketPage } from '@/components/pocket-page'
 import { DiscoveryWorkspace } from '@/components/discovery-workspace'
 import type { AgentUiPayload } from '@/shared/market-types'
 
@@ -89,24 +91,18 @@ export default function App() {
   const handleSpeechEndRef = useRef<() => Promise<void>>(async () => {})
   const speechBusyRef = useRef(false)
   const pocketReachTimerRef = useRef(0)
-  const preferenceRefreshTimerRef = useRef(0)
   const latestUserPromptRef = useRef('')
   const holdToTalkActiveRef = useRef(false)
   const listeningStartRef = useRef<number | null>(null)
 
   const [inputMode, setInputMode] = useState<InputMode>('text')
   const [textFallback, setTextFallback] = useState('')
-  const [userCenterOpen, setUserCenterOpen] = useState(false)
-  const [marketPageOpen, setMarketPageOpen] = useState(false)
   const [busyHint, setBusyHint] = useState('')
   const [pocketModalOpen, setPocketModalOpen] = useState(false)
   const [pocketGadget, setPocketGadget] = useState<AssistantModeCard | null>(null)
   const [selectedToolPayload, setSelectedToolPayload] = useState<ChatToolPayload>(null)
   const [agentUiPayload, setAgentUiPayload] = useState<AgentUiPayload | null>(null)
-  const [pocketPageOpen, setPocketPageOpen] = useState(false)
   const [pocketReachOpen, setPocketReachOpen] = useState(false)
-  const [pocketPageInitialTab, setPocketPageInitialTab] = useState<'builtin' | 'pocket' | 'archived' | 'submit'>('builtin')
-  const [focusedMarketToolId, setFocusedMarketToolId] = useState<string | null>(null)
   const [currentPrompt, setCurrentPrompt] = useState<string | null>(null)
   const [autoSaveNotice, setAutoSaveNotice] = useState<{ toolId: string; label: string } | null>(null)
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(() => {
@@ -188,7 +184,9 @@ export default function App() {
       const safeText = text.trim()
       if (!safeText) return
 
+      stopAudioPlayback()
       setLastSpeechError('')
+      setBotResponse('')
       setAppState('thinking')
       latestUserPromptRef.current = safeText
       setCurrentPrompt(safeText)
@@ -196,10 +194,22 @@ export default function App() {
       const reply = await askQwen(safeText, {
         answerBookFromPocket: options?.answerBookFromPocket === true,
         marketContext,
+        onMeta: ({ selectedTool, uiPayload }) => {
+          setSelectedToolPayload(selectedTool)
+          setAgentUiPayload(uiPayload)
+        },
+        onDelta: (chunk) => {
+          setBotResponse(`${useStore.getState().botResponse}${chunk}`)
+        },
       })
       const answer = reply.text
       setSelectedToolPayload(reply.selectedTool)
       setAgentUiPayload(reply.uiPayload)
+      saveChatHistoryEntry({
+        userText: safeText,
+        assistantText: answer,
+        selectedToolId: reply.selectedTool?.toolId,
+      })
       const pocketKey = useStore.getState().selectedGadgetKey
       const nextPocketGadget = pickModeCardAfterTurn(pocketKey, reply.selectedTool?.toolId)
       setPocketGadget(nextPocketGadget)
@@ -234,7 +244,6 @@ export default function App() {
   useEffect(() => {
     return () => {
       window.clearTimeout(pocketReachTimerRef.current)
-      window.clearTimeout(preferenceRefreshTimerRef.current)
     }
   }, [])
 
@@ -281,6 +290,7 @@ export default function App() {
 
   useEffect(() => {
     return () => {
+      stopAudioPlayback()
       disposeSpeechSession()
     }
   }, [])
@@ -300,6 +310,8 @@ export default function App() {
 
   const startVoiceInput = useCallback(() => {
     initAudioContext()
+    stopAudioPlayback()
+    disposeSpeechSession()
     setTranscript('')
     setBotResponse('')
     setSelectedToolPayload(null)
@@ -349,6 +361,7 @@ export default function App() {
     const text = textFallback.trim()
     if (!text) return
     initAudioContext()
+    stopAudioPlayback()
     setLastSpeechError('')
     setSelectedToolPayload(null)
     setAgentUiPayload(null)
@@ -363,12 +376,7 @@ export default function App() {
     })
   }
 
-  const rootCursor =
-    userCenterOpen || pocketPageOpen || marketPageOpen
-      ? 'cursor-default'
-      : appState === 'thinking' || appState === 'speaking'
-        ? 'cursor-wait'
-        : 'cursor-default'
+  const rootCursor = appState === 'thinking' || appState === 'speaking' ? 'cursor-wait' : 'cursor-default'
 
   const canSendText = textFallback.trim().length > 0
   const toolBasedGadget = getModeByToolId(selectedToolPayload?.toolId)
@@ -410,51 +418,29 @@ export default function App() {
   }
 
   return (
-    <div className={cn('relative h-screen w-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(187,224,255,0.45),transparent_35%),linear-gradient(180deg,#f8fbff_0%,#edf4ff_46%,#eef2f7_100%)] touch-manipulation', rootCursor)}>
-      <UserCenterPage open={userCenterOpen} onClose={() => setUserCenterOpen(false)} />
-      <PocketPage
-        open={pocketPageOpen}
-        onClose={() => setPocketPageOpen(false)}
-        selectedKey={selectedGadgetKey}
-        onSelectKey={setSelectedGadgetKey}
-        initialTab={pocketPageInitialTab}
-        currentPrompt={currentPrompt}
-        onPreferenceChanged={() => {
-          window.clearTimeout(preferenceRefreshTimerRef.current)
-          preferenceRefreshTimerRef.current = window.setTimeout(() => {
-            const prompt = latestUserPromptRef.current.trim()
-            if (!prompt) return
-            void runAgentTurn(prompt, { skipPostAnswerPocket: true })
-          }, 350)
-        }}
-        onRunTool={(toolId, presetArgs, sourceQuestion) => {
-          const prompt =
-            toolId === 'weather'
-              ? `帮我查询${typeof presetArgs?.location === 'string' ? presetArgs.location : '当前城市'}的天气`
-              : toolId === 'air_quality'
-                ? `帮我查询${typeof presetArgs?.location === 'string' ? presetArgs.location : '当前城市'}的空气质量`
-                : toolId === 'exchange_rate'
-                  ? `帮我查询${typeof presetArgs?.amount === 'number' ? presetArgs.amount : 1}${typeof presetArgs?.from === 'string' ? presetArgs.from : 'USD'}兑换${typeof presetArgs?.to === 'string' ? presetArgs.to : 'CNY'}的汇率`
-                  : toolId === 'web_summary'
-                    ? `帮我摘要这个网页：${typeof presetArgs?.url === 'string' ? presetArgs.url : ''}`
-                    : toolId === 'time'
-                      ? '帮我查看现在时间'
-                      : sourceQuestion?.trim() || '继续用这个工具处理刚才的问题'
-
-          setPocketPageOpen(false)
-          setTranscript(prompt)
-          setSelectedToolPayload(null)
-          setAgentUiPayload(null)
-          void runAgentTurn(prompt, { skipPostAnswerPocket: true })
-        }}
-      />
-      <MarketPage
-        open={marketPageOpen}
-        onClose={() => setMarketPageOpen(false)}
-        currentPrompt={currentPrompt}
-        focusedToolId={focusedMarketToolId}
-        agentPayload={agentUiPayload}
-      />
+    <PageShell
+      className={cn('touch-manipulation', rootCursor)}
+      contentClassName="grid min-h-0 grid-cols-1 gap-4 pb-6 lg:h-[calc(100dvh-6.9rem)] lg:grid-cols-[minmax(0,1.45fr)_minmax(21rem,0.72fr)] lg:items-stretch lg:overflow-hidden lg:pb-3"
+      header={
+        <UnifiedTopBar
+          title="DoraPocket · 分析页"
+          subtitle="不只是聊天，而是替你找全网最好用的工具，并把高价值能力沉淀进口袋。"
+          statusSlot={
+            systemNotice ? (
+              <span className="rounded-full border border-border/60 bg-white px-3 py-1 text-[11px] font-semibold text-foreground/75">
+                {systemNotice.message}
+              </span>
+            ) : null
+          }
+          rightSlot={
+            <div className="flex items-center gap-2">
+              <TopNavSwitch current="analysis" />
+              <ProfileEntryPill />
+            </div>
+          }
+        />
+      }
+    >
       <PocketGadgetModal
         open={pocketModalOpen}
         gadget={pocketGadget}
@@ -469,37 +455,10 @@ export default function App() {
           saveToolToPocket(gadget.toolId, latestUserPromptRef.current || undefined, presetArgs)
         }}
       />
-      {transcript.trim() && !userCenterOpen && !pocketPageOpen && !marketPageOpen ? <TranscriptBarrage text={transcript} /> : null}
-      {appState === 'listening' && !userCenterOpen && !pocketPageOpen && !marketPageOpen ? <ListeningHud /> : null}
-
-      {!userCenterOpen && !pocketPageOpen && !marketPageOpen ? (
-        <main className="absolute inset-0 z-20 grid min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-4 overflow-hidden p-3 lg:grid-cols-[minmax(0,1.45fr)_minmax(22rem,0.7fr)] lg:p-5">
-          <UnifiedTopBar
-            title="DoraPocket · 决策优先工作台"
-            subtitle="不只是聊天，而是替你找全网最好用的工具，并把高价值能力沉淀进口袋。"
-            className="col-span-full"
-            statusSlot={
-              systemNotice ? (
-                <span className="rounded-full border border-border/60 bg-white px-3 py-1 text-[11px] font-semibold text-foreground/75">
-                  {systemNotice.message}
-                </span>
-              ) : null
-            }
-            rightSlot={
-              <button
-                type="button"
-                aria-label="打开个人中心"
-                className="inline-flex h-10 items-center gap-2 rounded-full border border-white/75 bg-white/92 px-2.5 pr-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white"
-                onClick={() => setUserCenterOpen(true)}
-              >
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <UserRound className="h-4 w-4" />
-                </span>
-                <span className="hidden text-xs font-black tracking-tight text-foreground sm:inline">DoraPocket</span>
-              </button>
-            }
-          />
-          <DiscoveryWorkspace
+      {transcript.trim() ? <TranscriptBarrage text={transcript} /> : null}
+      {appState === 'listening' ? <ListeningHud /> : null}
+      <div className="min-h-0 h-full">
+        <DiscoveryWorkspace
             title="DoraPocket"
             description="不只是聊天，而是替你找全网最好用的工具，并把高价值能力沉淀进口袋。"
             heroMetricCards={heroMetricCards}
@@ -524,13 +483,8 @@ export default function App() {
               }
             }}
             onOpenPocket={() => {
-              setPocketPageInitialTab('pocket')
-              setPocketPageOpen(true)
               setAutoSaveNotice(null)
-            }}
-            onOpenCandidate={(toolId) => {
-              setFocusedMarketToolId(toolId)
-              setMarketPageOpen(true)
+              window.location.href = '/pocket'
             }}
             onSaveCandidate={(toolId) => {
               saveToolToPocket(toolId, latestUserPromptRef.current || undefined)
@@ -569,9 +523,10 @@ export default function App() {
               }
             }}
             onDraftTask={handleDraftTask}
-          />
+        />
+      </div>
 
-          <section ref={toolDialRef} className="pointer-events-auto relative flex min-h-0 flex-col overflow-hidden rounded-[2rem] border border-white/80 bg-white/62 shadow-2xl shadow-slate-900/10 backdrop-blur-xl">
+      <section ref={toolDialRef} className="pointer-events-auto relative flex min-h-[34rem] h-full flex-col overflow-hidden rounded-[2rem] border border-white/80 bg-white/62 shadow-xl shadow-slate-900/8 backdrop-blur-xl xl:min-h-0">
             <div className="absolute inset-x-0 top-0 z-[1] h-20 rounded-t-[2rem] bg-white/92" aria-hidden />
             <div className="relative z-10 shrink-0 border-b border-border/45 bg-white/90 px-5 py-4 backdrop-blur-md">
               <div className="flex items-center justify-between gap-3">
@@ -729,10 +684,6 @@ export default function App() {
                         onPointerUp={holdToTalkEnd}
                         onPointerLeave={holdToTalkEnd}
                         onPointerCancel={holdToTalkEnd}
-                        onTouchStart={holdToTalkStart}
-                        onTouchEnd={holdToTalkEnd}
-                        onMouseDown={holdToTalkStart}
-                        onMouseUp={holdToTalkEnd}
                       >
                         {appState === 'listening' ? '松开结束' : '按住说话'}
                       </button>
@@ -741,9 +692,7 @@ export default function App() {
                 </div>
               </div>
             </div>
-          </section>
-        </main>
-      ) : null}
-    </div>
+      </section>
+    </PageShell>
   )
 }

@@ -2,11 +2,11 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'DoraPocket Next',
-  description: 'DoraPocket Next.js migration',
+  title: 'DoraPocket · 陪伴式能力口袋',
+  description: '在你需要帮助时理解处境、做出工具裁决，并把高价值帮助沉淀成可复用资产。',
   icons: {
-    icon: '/icon/dora-pocket.svg',
-    shortcut: '/icon/dora-pocket.svg',
+    icon: '/icon/pocket.png',
+    shortcut: '/icon/pocket.png',
   },
 }
 

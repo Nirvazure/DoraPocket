@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { CheckCircle2, ExternalLink, FolderOpenDot, RotateCw, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { saveMarketFeedback } from '@/services/market-storage'
 import { getToolById } from '@/services/tool-registry'
 import type { ChatToolPayload } from '@/services/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
@@ -10,7 +11,6 @@ type CompactDecisionPanelProps = {
   selectedToolPayload: ChatToolPayload
   autoSaveNotice: { toolId: string; label: string } | null
   autoSaveEnabled: boolean
-  onOpenCandidate: (toolId: string) => void
   onSaveCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
   onOpenPocket: () => void
@@ -25,7 +25,6 @@ export function CompactDecisionPanel({
   selectedToolPayload,
   autoSaveNotice,
   autoSaveEnabled,
-  onOpenCandidate,
   onSaveCandidate,
   onLaunchCandidate,
   onOpenPocket,
@@ -40,6 +39,11 @@ export function CompactDecisionPanel({
   const title = leaderTool?.name ?? leader?.title ?? '等待主推荐'
   const reason = payload?.selectionReason ?? leader?.reason ?? 'DoraPocket 会在分析任务后给出这次最值得先用的帮助。'
   const signals = payload?.selectionSignals.slice(0, 3) ?? []
+  const recordFeedback = (option: string) => {
+    setSelectedFeedback(option)
+    if (!leaderToolId) return
+    saveMarketFeedback(leaderToolId, option === '解决了' ? 'up' : 'down')
+  }
 
   if (!payload && !selectedToolPayload?.toolId) {
     return (
@@ -79,9 +83,6 @@ export function CompactDecisionPanel({
               <Button type="button" variant="outline" className="h-10 rounded-full border-white/20 bg-white/10 px-4 text-xs font-bold text-white hover:bg-white/16" onClick={() => onSaveCandidate(leaderToolId)}>
                 <FolderOpenDot className="mr-1.5 h-3.5 w-3.5" />
                 收入口袋
-              </Button>
-              <Button type="button" variant="ghost" className="h-10 rounded-full px-4 text-xs font-semibold text-white/72 hover:bg-white/10 hover:text-white" onClick={() => onOpenCandidate(leaderToolId)}>
-                查看依据
               </Button>
             </div>
           ) : null}
@@ -130,7 +131,7 @@ export function CompactDecisionPanel({
                       ? 'border-primary bg-primary text-primary-foreground'
                       : 'border-border/70 bg-slate-50 text-foreground/75 hover:border-primary/25'
                   }`}
-                  onClick={() => setSelectedFeedback(option)}
+                  onClick={() => recordFeedback(option)}
                 >
                   {option}
                 </button>
@@ -156,9 +157,6 @@ export function CompactDecisionPanel({
                 <article key={candidate.toolId} className="rounded-2xl border border-border/60 bg-slate-50 p-3">
                   <p className="text-xs font-black text-foreground">备选 {index + 1} · {tool?.name ?? candidate.title ?? candidate.toolId}</p>
                   <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-muted-foreground">{candidate.reason}</p>
-                  <Button type="button" size="sm" variant="ghost" className="mt-2 h-7 rounded-full px-2 text-[11px]" onClick={() => onOpenCandidate(candidate.toolId)}>
-                    比较依据
-                  </Button>
                 </article>
               )
             })}

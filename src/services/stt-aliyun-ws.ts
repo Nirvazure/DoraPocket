@@ -23,6 +23,7 @@ type ActiveSttSession = {
   workletNode: AudioWorkletNode
   vadInterval: number
   isClosing: boolean
+  endNotified: boolean
   lastVoiceAt: number
 }
 
@@ -57,9 +58,15 @@ function cleanupSession(session: ActiveSttSession | null) {
   void session.audioContext.close()
 }
 
-function stopFromVAD(callbacks: AliyunSttCallbacks) {
-  stopAliyunSttSession()
+function notifyEndOnce(session: ActiveSttSession, callbacks: AliyunSttCallbacks) {
+  if (session.endNotified) return
+  session.endNotified = true
   callbacks.onEnd()
+}
+
+function stopFromVAD(session: ActiveSttSession, callbacks: AliyunSttCallbacks) {
+  stopAliyunSttSession()
+  notifyEndOnce(session, callbacks)
 }
 
 async function createAudioWorklet(stream: MediaStream): Promise<{
@@ -97,6 +104,7 @@ export async function startAliyunSttSession(callbacks: AliyunSttCallbacks): Prom
       workletNode,
       vadInterval: 0,
       isClosing: false,
+      endNotified: false,
       lastVoiceAt: Date.now(),
     }
     activeSession = session
@@ -135,7 +143,7 @@ export async function startAliyunSttSession(callbacks: AliyunSttCallbacks): Prom
     session.vadInterval = window.setInterval(() => {
       if (session.isClosing) return
       if (Date.now() - session.lastVoiceAt > 1800) {
-        stopFromVAD(callbacks)
+        stopFromVAD(session, callbacks)
       }
     }, 250)
 
@@ -155,12 +163,15 @@ export async function startAliyunSttSession(callbacks: AliyunSttCallbacks): Prom
 
     ws.onerror = () => callbacks.onError('network')
     ws.onclose = () => {
+      const wasClosing = session.isClosing
       const current = activeSession
       if (current === session) {
         cleanupSession(session)
         activeSession = null
       }
-      callbacks.onEnd()
+      if (!wasClosing) {
+        notifyEndOnce(session, callbacks)
+      }
     }
     return true
   } catch (error) {
@@ -180,4 +191,3 @@ export function stopAliyunSttSession() {
 export function disposeAliyunSttSession() {
   stopAliyunSttSession()
 }
-
