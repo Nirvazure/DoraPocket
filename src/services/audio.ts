@@ -44,14 +44,7 @@ export function initAudioContext() {
 
 export function playAudioStream(audioUrl: string, onEnded: () => void) {
   initAudioContext()
-  if (currentAudio) {
-    currentAudio.pause()
-    currentAudio.src = ''
-  }
-  if (currentSource) {
-    currentSource.disconnect()
-    currentSource = null
-  }
+  stopAudioPlayback()
 
   currentAudio = new Audio(audioUrl)
   currentAudio.crossOrigin = 'anonymous'
@@ -62,12 +55,27 @@ export function playAudioStream(audioUrl: string, onEnded: () => void) {
   }
   currentAudio.onended = () => {
     onEnded()
-    currentAudio = null
+    stopAudioPlayback()
   }
   void currentAudio.play().catch((error) => {
     console.error('Audio playback failed', error)
+    stopAudioPlayback()
     onEnded()
   })
+}
+
+export function stopAudioPlayback() {
+  if (currentAudio) {
+    currentAudio.onended = null
+    currentAudio.pause()
+    currentAudio.src = ''
+    currentAudio.load()
+    currentAudio = null
+  }
+  if (currentSource) {
+    currentSource.disconnect()
+    currentSource = null
+  }
 }
 
 export function playDoraPocketSfx(): Promise<void> {
@@ -92,4 +100,3 @@ export function getAudioFrequency(): number {
   }
   return sum / dataArray.length
 }
-

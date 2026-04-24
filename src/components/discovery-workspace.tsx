@@ -3,6 +3,7 @@ import { CompactDecisionPanel } from '@/components/discovery/compact-decision-pa
 import { ContextInputCard } from '@/components/discovery/context-input-card'
 import { DecisionProgressSteps } from '@/components/discovery/decision-progress-steps'
 import { DecisionSummaryCard } from '@/components/discovery/decision-summary-card'
+import { DecisionThinkingRail } from '@/components/discovery/decision-thinking-rail'
 import { NextActionBar } from '@/components/discovery/next-action-bar'
 import { TaskContextCard } from '@/components/discovery/task-context-card'
 import { HelpStarterStrip } from '@/components/help-starter-panel'
@@ -32,7 +33,6 @@ type DiscoveryWorkspaceProps = {
   autoSaveNotice: { toolId: string; label: string } | null
   onToolEvent: (event: { type: string; message?: string }) => void
   onOpenPocket: () => void
-  onOpenCandidate: (toolId: string) => void
   onSaveCandidate: (toolId: string) => void
   onSubscribeCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
@@ -57,7 +57,6 @@ export function DiscoveryWorkspace({
   autoSaveNotice,
   onToolEvent,
   onOpenPocket,
-  onOpenCandidate,
   onSaveCandidate,
   onSubscribeCandidate,
   onLaunchCandidate,
@@ -80,14 +79,11 @@ export function DiscoveryWorkspace({
   const hasPrompt = Boolean(currentPrompt?.trim())
   const hasPayload = Boolean(agentPayload)
   const suggestedStep = hasPayload ? 3 : hasPrompt ? 2 : 1
-  if (stepViewState.suggestedStep !== suggestedStep) {
-    setStepViewState({ suggestedStep, activeStep: suggestedStep })
-  }
   const activeStep = stepViewState.suggestedStep === suggestedStep ? stepViewState.activeStep : suggestedStep
   const setActiveStep = (step: number) => setStepViewState({ suggestedStep, activeStep: step })
 
   return (
-    <section className="pointer-events-auto flex min-h-0 flex-col overflow-hidden rounded-[2rem] border border-white/80 bg-white/90 shadow-2xl shadow-slate-900/10 backdrop-blur-xl">
+    <section className="pointer-events-auto flex min-h-0 h-full flex-col overflow-hidden rounded-[2rem] border border-white/80 bg-white/90 shadow-xl shadow-slate-900/8 backdrop-blur-xl">
       <div className="shrink-0 border-b border-border/45 px-4 py-3 sm:px-5 sm:py-4">
         <DecisionProgressSteps currentStep={activeStep} onStepClick={setActiveStep} />
       </div>
@@ -104,24 +100,27 @@ export function DiscoveryWorkspace({
 
           {activeStep === 2 ? (
             <div className="space-y-4">
+              <DecisionThinkingRail payload={agentPayload} appState={appState} currentPrompt={currentPrompt} busyHint={busyHint} />
               <DecisionSummaryCard payload={agentPayload} currentPrompt={currentPrompt} appState={appState} busyHint={busyHint} />
               <ContextInputCard payload={agentPayload} />
             </div>
           ) : null}
 
           {activeStep === 3 ? (
-            <CompactDecisionPanel
-              payload={agentPayload}
-              selectedToolPayload={selectedToolPayload}
-              autoSaveNotice={autoSaveNotice}
-              autoSaveEnabled={autoSaveEnabled}
-              onOpenCandidate={onOpenCandidate}
-              onSaveCandidate={onSaveCandidate}
-              onLaunchCandidate={onLaunchCandidate}
-              onOpenPocket={onOpenPocket}
-              onUndoAutoSave={onUndoAutoSave}
-              onEnableAutoSave={onEnableAutoSave}
-            />
+            <div className="space-y-4">
+              <DecisionThinkingRail payload={agentPayload} appState={appState} currentPrompt={currentPrompt} busyHint={busyHint} />
+              <CompactDecisionPanel
+                payload={agentPayload}
+                selectedToolPayload={selectedToolPayload}
+                autoSaveNotice={autoSaveNotice}
+                autoSaveEnabled={autoSaveEnabled}
+                onSaveCandidate={onSaveCandidate}
+                onLaunchCandidate={onLaunchCandidate}
+                onOpenPocket={onOpenPocket}
+                onUndoAutoSave={onUndoAutoSave}
+                onEnableAutoSave={onEnableAutoSave}
+              />
+            </div>
           ) : null}
         </div>
       </div>

@@ -6,6 +6,7 @@ export type PocketInventoryItem = {
   lastUsedAt: number
   useCount: number
   pinned: boolean
+  purchased: boolean
   archived: boolean
   sourceQuestion?: string
   presetArgs?: Record<string, unknown>
@@ -26,6 +27,7 @@ export function loadPocketInventory(): PocketInventoryItem[] {
       const lastUsedAt = Number(item.lastUsedAt) || savedAt
       const useCount = Number(item.useCount) || 0
       const pinned = Boolean(item.pinned)
+      const purchased = Boolean(item.purchased)
       const archived = Boolean(item.archived)
       const sourceQuestion =
         typeof item.sourceQuestion === 'string' ? item.sourceQuestion : undefined
@@ -39,6 +41,7 @@ export function loadPocketInventory(): PocketInventoryItem[] {
         lastUsedAt,
         useCount,
         pinned,
+        purchased,
         archived,
         sourceQuestion,
         presetArgs,
@@ -84,6 +87,7 @@ export function upsertPocketItem(
       lastUsedAt: patch?.lastUsedAt ?? current.lastUsedAt,
       useCount: patch?.useCount ?? current.useCount,
       archived: patch?.archived ?? current.archived,
+      purchased: patch?.purchased ?? current.purchased,
     }
   } else {
     next.push({
@@ -92,6 +96,7 @@ export function upsertPocketItem(
       lastUsedAt: patch?.lastUsedAt ?? now,
       useCount: patch?.useCount ?? 0,
       pinned: patch?.pinned ?? false,
+      purchased: patch?.purchased ?? false,
       archived: patch?.archived ?? false,
       sourceQuestion: patch?.sourceQuestion,
       presetArgs: patch?.presetArgs,

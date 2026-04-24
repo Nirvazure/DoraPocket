@@ -37,6 +37,7 @@ interface DoraStore {
   saveToolToPocket: (toolId: string, sourceQuestion?: string, presetArgs?: Record<string, unknown>) => void
   removeToolFromPocket: (toolId: string) => void
   togglePinTool: (toolId: string) => void
+  togglePurchasedTool: (toolId: string) => void
   toggleArchiveTool: (toolId: string) => void
   markToolUsed: (toolId: string) => void
   /** 仅在浏览器挂载后调用，从 localStorage 恢复口袋，避免 SSR 与客户端首帧不一致 */
@@ -90,6 +91,14 @@ export const useStore = create<DoraStore>((set) => ({
       const current = state.pocketInventory.find((item) => item.toolId === toolId)
       if (!current) return {}
       const next = upsertPocketItem(state.pocketInventory, toolId, { pinned: !current.pinned })
+      savePocketInventory(next)
+      return { pocketInventory: next }
+    }),
+  togglePurchasedTool: (toolId) =>
+    set((state) => {
+      const current = state.pocketInventory.find((item) => item.toolId === toolId)
+      if (!current) return {}
+      const next = upsertPocketItem(state.pocketInventory, toolId, { purchased: !current.purchased })
       savePocketInventory(next)
       return { pocketInventory: next }
     }),

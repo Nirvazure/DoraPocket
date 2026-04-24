@@ -3,6 +3,8 @@ import type { AgentUiPayload, MarketContext } from '@/shared/market-types'
 export type AskQwenOptions = {
   answerBookFromPocket?: boolean
   marketContext?: MarketContext
+  onMeta?: (payload: { selectedTool: ChatToolPayload; uiPayload: AgentUiPayload | null }) => void
+  onDelta?: (text: string) => void
 }
 
 export type ChatToolPayload = {
@@ -89,10 +91,13 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
       if (event.type === 'meta') {
         selectedTool = event.selected_tool ?? null
         uiPayload = event.ui_payload ?? null
+        opts?.onMeta?.({ selectedTool, uiPayload })
         continue
       }
       if (event.type === 'delta') {
-        fullText += event.text ?? ''
+        const text = event.text ?? ''
+        fullText += text
+        if (text) opts?.onDelta?.(text)
         continue
       }
       if (event.type === 'done') {
