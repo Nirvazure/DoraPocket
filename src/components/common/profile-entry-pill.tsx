@@ -2,9 +2,11 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
-import { loadUserProfile, subscribeUserProfile, type UserProfile } from '@/services/user-profile'
+import {
+  useUserProfileQuery,
+  useUserProfileSubscription,
+} from '@/lib/query/user-profile'
 
 type ProfileEntryPillProps = {
   active?: boolean
@@ -12,11 +14,8 @@ type ProfileEntryPillProps = {
 }
 
 export function ProfileEntryPill({ active = false, className }: ProfileEntryPillProps) {
-  const [profile, setProfile] = useState<UserProfile>(() => loadUserProfile())
-
-  useEffect(() => {
-    return subscribeUserProfile(setProfile)
-  }, [])
+  useUserProfileSubscription()
+  const { data: profile } = useUserProfileQuery()
 
   return (
     <Link
@@ -29,9 +28,9 @@ export function ProfileEntryPill({ active = false, className }: ProfileEntryPill
       )}
     >
       <span className={cn('inline-flex h-7 w-7 shrink-0 overflow-hidden rounded-full border bg-slate-100', active ? 'border-primary-foreground/30' : 'border-white/80')}>
-        <Image src={profile.avatarSrc ?? '/branding/assistant-avatar.svg'} alt="个人头像" width={28} height={28} unoptimized className="h-full w-full object-cover" />
+        <Image src={profile?.avatarSrc ?? '/branding/assistant-avatar.svg'} alt="个人头像" width={28} height={28} unoptimized className="h-full w-full object-cover" />
       </span>
-      <span className={cn('max-w-24 truncate text-xs font-bold', active ? 'text-primary-foreground' : 'text-foreground/82')}>{profile.nickname}</span>
+      <span className={cn('max-w-24 truncate text-xs font-bold', active ? 'text-primary-foreground' : 'text-foreground/82')}>{profile?.nickname ?? '用户'}</span>
     </Link>
   )
 }

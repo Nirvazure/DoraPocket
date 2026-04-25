@@ -1,28 +1,33 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
+import { useRef, type ChangeEvent } from 'react'
 import { BadgeCheck, BrainCircuit, History, ShieldCheck, SlidersHorizontal, Undo2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { PageShell } from '@/components/common/page-shell'
 import { ProfileEntryPill } from '@/components/common/profile-entry-pill'
 import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
-import {
-  buildMarketContext,
-  getPreferenceCalibrationOptions,
-  loadMarketFeedback,
-  loadMarketSubscriptions,
-  loadPreferenceProfileOverride,
-  recentMarketActivity,
-  resetPreferenceProfileOverride,
-  savePreferenceProfileOverride,
-} from '@/services/market-storage'
-import { loadChatHistory, type ChatHistoryEntry } from '@/services/chat-history'
-import { loadPocketInventory } from '@/services/pocket-inventory'
+import { getPreferenceCalibrationOptions, recentMarketActivity } from '@/services/market-storage'
 import { getToolById } from '@/services/tool-registry'
 import type { PreferenceProfileOverride } from '@/shared/market-types'
-import { loadUserProfile, readAvatarFile, saveUserProfile, subscribeUserProfile, type UserProfile } from '@/services/user-profile'
+import type { ToolCategory, ToolExecutionMode, ToolPricingModel } from '@/shared/tool-registry'
+import { readAvatarFile } from '@/services/user-profile'
+import { useChatHistoryQuery } from '@/lib/query/chat-history'
+import {
+  useMarketContextQuery,
+  useMarketFeedbackQuery,
+  useMarketSubscriptionsQuery,
+  usePreferenceProfileOverrideQuery,
+  useResetPreferenceProfileOverrideMutation,
+  useSavePreferenceProfileOverrideMutation,
+} from '@/lib/query/market'
+import { usePocketInventoryQuery } from '@/lib/query/pocket'
+import {
+  useSaveUserProfileMutation,
+  useUserProfileQuery,
+  useUserProfileSubscription,
+} from '@/lib/query/user-profile'
 
 function preferenceLabel(value: string) {
   const preferenceLabelMap: Record<string, string> = {
@@ -30,18 +35,18 @@ function preferenceLabel(value: string) {
     search: '资料搜索',
     developer: '开发者工具',
     design: '设计素材',
-    productivity: '办公效率',
+    productivity: '效率办公',
     media: '媒体处理',
     learning: '学习研究',
-    writing: '写作整理',
+    writing: '写作翻译',
     free: '免费优先',
     freemium: '可先试用',
-    paid: '付费也可',
+    paid: '接受付费',
     subscription: '长期订阅',
-    native_card: '站内小闭环',
+    native_card: '站内卡片',
     external_link: '外部工具',
     workflow: '流程方案',
-    reference_only: '资料参考',
+    reference_only: '仅参考资料',
   }
   return preferenceLabelMap[value] ?? value
 }
@@ -56,63 +61,86 @@ function formatTime(value: number) {
 }
 
 export function ProfilePage() {
-  const [history, setHistory] = useState<ChatHistoryEntry[]>([])
-  const [refreshToken, setRefreshToken] = useState(0)
-  const [preferenceOverride, setPreferenceOverride] = useState<PreferenceProfileOverride>(() => loadPreferenceProfileOverride())
-  const [profile, setProfile] = useState<UserProfile>(() => loadUserProfile())
+  const { data: history = [] } = useChatHistoryQuery()
+  const { data: pocketInventory = [] } = usePocketInventoryQuery()
+  const { data: feedback = [] } = useMarketFeedbackQuery()
+  const { data: subscriptionRecords = [] } = useMarketSubscriptionsQuery()
+  const { data: preferenceOverride = {} as PreferenceProfileOverride } = usePreferenceProfileOverrideQuery()
+  const { data: marketContext } = useMarketContextQuery()
+  const savePreferenceProfileOverrideMutation = useSavePreferenceProfileOverrideMutation()
+  const resetPreferenceProfileOverrideMutation = useResetPreferenceProfileOverrideMutation()
+  useUserProfileSubscription()
+  const { data: profile } = useUserProfileQuery()
+  const saveUserProfileMutation = useSaveUserProfileMutation()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
-  useEffect(() => {
-    const frame = window.requestAnimationFrame(() => setHistory(loadChatHistory()))
-    const unsubscribe = subscribeUserProfile(setProfile)
-    return () => {
-      window.cancelAnimationFrame(frame)
-      unsubscribe()
-    }
-  }, [])
-
-  const pocketInventory = useMemo(() => {
-    void refreshToken
-    return loadPocketInventory()
-  }, [refreshToken])
+  const subscriptions = subscriptionRecords.filter((item) => item.active)
   const archivedItems = pocketInventory.filter((item) => item.archived)
-  const feedback = loadMarketFeedback()
-  const subscriptions = loadMarketSubscriptions().filter((item) => item.active)
-  const marketContext = buildMarketContext(pocketInventory)
+  const resolvedMarketContext =
+    marketContext ?? {
+      savedItems: [],
+      feedback: [],
+      subscriptions: [],
+      submissions: [],
+      preferenceProfile: {
+        preferredCategories: [],
+        preferredTags: [],
+        preferredPlatforms: [],
+        preferredPricing: [],
+        preferredExecutionModes: [],
+        avoidAuthWall: true,
+        prefersSubscriptionTools: false,
+        summary: [],
+      },
+    }
   const activities = recentMarketActivity(6)
   const calibrationOptions = getPreferenceCalibrationOptions()
   const visibleActivities = activities.slice(0, 4)
   const visibleHistory = history.slice(0, 5)
-  const profileSummary = marketContext.preferenceProfile.summary.length
-    ? marketContext.preferenceProfile.summary
-    : ['偏好画像还在建立中，先通过收藏、复用、反馈积累真实信号。']
+  const profileSummary =
+    resolvedMarketContext.preferenceProfile.summary.length > 0
+      ? resolvedMarketContext.preferenceProfile.summary
+      : ['偏好画像还在建立中，先通过收藏、复用和反馈积累真实信号。']
   const profileFacts = [
-    { label: '偏好分类', value: marketContext.preferenceProfile.preferredCategories.slice(0, 3).map(preferenceLabel).join(' / ') || '待学习' },
-    { label: '偏好平台', value: marketContext.preferenceProfile.preferredPlatforms.slice(0, 2).join(' / ') || '待学习' },
-    { label: '价格倾向', value: marketContext.preferenceProfile.preferredPricing.slice(0, 3).map(preferenceLabel).join(' / ') || '待学习' },
+    {
+      label: '偏好分类',
+      value: resolvedMarketContext.preferenceProfile.preferredCategories.slice(0, 3).map(preferenceLabel).join(' / ') || '待学习',
+    },
+    {
+      label: '偏好平台',
+      value: resolvedMarketContext.preferenceProfile.preferredPlatforms.slice(0, 2).join(' / ') || '待学习',
+    },
+    {
+      label: '价格倾向',
+      value: resolvedMarketContext.preferenceProfile.preferredPricing.slice(0, 3).map(preferenceLabel).join(' / ') || '待学习',
+    },
     { label: '订阅资产', value: `${subscriptions.length} 个` },
   ]
 
   const commitPreferenceOverride = (next: PreferenceProfileOverride) => {
-    setPreferenceOverride(next)
-    savePreferenceProfileOverride(next)
-    setRefreshToken((value) => value + 1)
+    savePreferenceProfileOverrideMutation.mutate(next)
   }
 
-  const toggleListValue = (key: 'preferredCategories' | 'preferredPricing' | 'preferredExecutionModes', value: string) => {
-    const list = preferenceOverride[key] ?? []
+  const toggleListValue = (
+    key: 'preferredCategories' | 'preferredPricing' | 'preferredExecutionModes',
+    value: ToolCategory | ToolPricingModel | ToolExecutionMode,
+  ) => {
+    const list = (preferenceOverride[key] ?? []) as Array<
+      ToolCategory | ToolPricingModel | ToolExecutionMode
+    >
     const nextList = list.includes(value) ? list.filter((item) => item !== value) : [...list, value]
     commitPreferenceOverride({ ...preferenceOverride, [key]: nextList })
   }
 
-  const setBooleanPreference = (key: 'avoidAuthWall' | 'prefersSubscriptionTools', value: boolean) => {
+  const setBooleanPreference = (
+    key: 'avoidAuthWall' | 'prefersSubscriptionTools',
+    value: boolean,
+  ) => {
     commitPreferenceOverride({ ...preferenceOverride, [key]: value })
   }
 
   const resetCalibration = () => {
-    resetPreferenceProfileOverride()
-    setPreferenceOverride({})
-    setRefreshToken((value) => value + 1)
+    resetPreferenceProfileOverrideMutation.mutate()
   }
 
   const calibrationCount =
@@ -127,9 +155,10 @@ export function ProfilePage() {
     if (!file) return
     try {
       const avatarSrc = await readAvatarFile(file)
-      const nextProfile = { ...profile, avatarSrc }
-      setProfile(nextProfile)
-      saveUserProfile(nextProfile)
+      await saveUserProfileMutation.mutateAsync({
+        nickname: profile?.nickname ?? 'Nirvazure',
+        avatarSrc,
+      })
     } catch {
       /* ignore */
     } finally {
@@ -164,7 +193,7 @@ export function ProfilePage() {
                   个人时间流
                 </p>
                 <h2 className="mt-2 text-xl font-black text-foreground sm:text-[1.6rem]">最近哪些轨迹正在影响下一次裁决</h2>
-                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">左侧只保留你的主阅读带：先看回流，再看最近的对话回看。</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">左侧保留主阅读带：先看回流，再看最近的对话回看。</p>
               </div>
               <div className="grid grid-cols-3 gap-2 sm:min-w-[17rem]">
                 {[
@@ -188,14 +217,15 @@ export function ProfilePage() {
                   <BadgeCheck className="h-3.5 w-3.5" />
                   行为回流
                 </div>
-                <span className="rounded-full bg-primary/[0.08] px-2.5 py-1 text-[11px] font-semibold text-primary">
-                  {visibleActivities.length} 条最近动作
-                </span>
+                <span className="rounded-full bg-primary/[0.08] px-2.5 py-1 text-[11px] font-semibold text-primary">{visibleActivities.length} 条最近动作</span>
               </div>
               <div className="mt-3 space-y-2.5">
                 {visibleActivities.length > 0 ? (
                   visibleActivities.map((item) => (
-                    <article key={item.id} className="rounded-2xl border border-border/60 bg-white/88 px-3 py-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/12 hover:bg-white hover:shadow-[0_12px_28px_rgba(15,23,42,0.07)]">
+                    <article
+                      key={item.id}
+                      className="rounded-2xl border border-border/60 bg-white/88 px-3 py-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/12 hover:bg-white hover:shadow-[0_12px_28px_rgba(15,23,42,0.07)]"
+                    >
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-sm font-black text-foreground">{item.title}</p>
@@ -219,9 +249,7 @@ export function ProfilePage() {
                   <History className="h-3.5 w-3.5" />
                   对话回看
                 </div>
-                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-muted-foreground">
-                  {visibleHistory.length} 条最近记录
-                </span>
+                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-muted-foreground">{visibleHistory.length} 条最近记录</span>
               </div>
               <div className="mt-3 space-y-2.5">
                 {visibleHistory.length === 0 ? (
@@ -232,7 +260,10 @@ export function ProfilePage() {
                   visibleHistory.map((entry) => {
                     const tool = getToolById(entry.selectedToolId)
                     return (
-                      <article key={entry.id} className="rounded-2xl border border-border/60 bg-white/88 px-3 py-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/12 hover:bg-white hover:shadow-[0_12px_28px_rgba(15,23,42,0.07)]">
+                      <article
+                        key={entry.id}
+                        className="rounded-2xl border border-border/60 bg-white/88 px-3 py-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/12 hover:bg-white hover:shadow-[0_12px_28px_rgba(15,23,42,0.07)]"
+                      >
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <p className="rounded-full bg-primary/[0.08] px-2 py-0.5 text-[11px] font-bold text-primary">{formatTime(entry.createdAt)}</p>
                           {tool ? <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-muted-foreground">{tool.name}</span> : null}
@@ -261,7 +292,12 @@ export function ProfilePage() {
               </div>
               <div className="flex items-center gap-2">
                 <ShieldCheck className="mt-0.5 h-4.5 w-4.5 text-primary" />
-                <Button type="button" variant="outline" className="h-8 rounded-full bg-white px-2.5 text-[11px] font-bold text-muted-foreground shadow-sm" onClick={resetCalibration}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-8 rounded-full bg-white px-2.5 text-[11px] font-bold text-muted-foreground shadow-sm"
+                  onClick={resetCalibration}
+                >
                   <Undo2 className="mr-1 h-3.5 w-3.5" />
                   {calibrationCount > 0 ? `重置 ${calibrationCount}` : '重置'}
                 </Button>
@@ -277,11 +313,18 @@ export function ProfilePage() {
                 className="inline-flex h-14 w-14 shrink-0 overflow-hidden rounded-full border border-white/80 bg-slate-100 shadow-sm transition-transform hover:scale-[1.02]"
                 aria-label="点击上传头像"
               >
-                <Image src={profile.avatarSrc ?? '/branding/assistant-avatar.svg'} alt="个人头像" width={56} height={56} unoptimized className="h-full w-full object-cover" />
+                <Image
+                  src={profile?.avatarSrc ?? '/branding/assistant-avatar.svg'}
+                  alt="个人头像"
+                  width={56}
+                  height={56}
+                  unoptimized
+                  className="h-full w-full object-cover"
+                />
               </button>
               <div className="min-w-0">
-                <p className="text-sm font-black text-foreground">{profile.nickname}</p>
-                <p className="mt-1 text-xs text-muted-foreground">点头像可更新个人头像，下面的标签会直接影响下一次裁决。</p>
+                <p className="text-sm font-black text-foreground">{profile?.nickname ?? 'Nirvazure'}</p>
+                <p className="mt-1 text-xs text-muted-foreground">点击头像可更新个人头像，下面的标签会直接影响下一次裁决。</p>
               </div>
             </div>
 
@@ -317,7 +360,7 @@ export function ProfilePage() {
                       key={category}
                       type="button"
                       className={active ? 'rounded-full border border-primary/15 bg-primary px-3 py-1.5 text-[11px] font-bold text-primary-foreground shadow-[0_10px_24px_rgba(37,99,235,0.18)]' : 'rounded-full border border-border/70 bg-white px-3 py-1.5 text-[11px] font-bold text-foreground/75 shadow-sm transition-colors hover:bg-slate-50'}
-                      onClick={() => toggleListValue('preferredCategories', category)}
+                      onClick={() => toggleListValue('preferredCategories', category as ToolCategory)}
                     >
                       {preferenceLabel(category)}
                     </button>
@@ -329,7 +372,7 @@ export function ProfilePage() {
             <div className="rounded-[1.65rem] border border-border/60 bg-[linear-gradient(180deg,rgba(248,250,252,0.98),rgba(255,255,255,0.98))] p-3 shadow-sm">
               <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
                 <SlidersHorizontal className="h-3.5 w-3.5" />
-                价格、摩擦和帮助形态
+                价格、门槛与帮助形态
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
                 {calibrationOptions.pricing.map((pricing) => {
@@ -339,7 +382,7 @@ export function ProfilePage() {
                       key={pricing}
                       type="button"
                       className={active ? 'rounded-full border border-primary/15 bg-primary px-3 py-1.5 text-[11px] font-bold text-primary-foreground shadow-[0_10px_24px_rgba(37,99,235,0.18)]' : 'rounded-full border border-border/70 bg-white px-3 py-1.5 text-[11px] font-bold text-foreground/75 shadow-sm transition-colors hover:bg-slate-50'}
-                      onClick={() => toggleListValue('preferredPricing', pricing)}
+                      onClick={() => toggleListValue('preferredPricing', pricing as ToolPricingModel)}
                     >
                       {preferenceLabel(pricing)}
                     </button>
@@ -352,7 +395,7 @@ export function ProfilePage() {
                       key={mode}
                       type="button"
                       className={active ? 'rounded-full border border-primary/15 bg-primary px-3 py-1.5 text-[11px] font-bold text-primary-foreground shadow-[0_10px_24px_rgba(37,99,235,0.18)]' : 'rounded-full border border-border/70 bg-white px-3 py-1.5 text-[11px] font-bold text-foreground/75 shadow-sm transition-colors hover:bg-slate-50'}
-                      onClick={() => toggleListValue('preferredExecutionModes', mode)}
+                      onClick={() => toggleListValue('preferredExecutionModes', mode as ToolExecutionMode)}
                     >
                       {preferenceLabel(mode)}
                     </button>

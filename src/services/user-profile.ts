@@ -1,3 +1,5 @@
+import { readStorageJson, writeStorageJson } from '@/lib/storage'
+
 export const USER_PROFILE_STORAGE_KEY = 'dp-user-profile-v1'
 export const USER_PROFILE_UPDATED_EVENT = 'dp-user-profile-updated'
 export const DEFAULT_USER_NICKNAME = 'Nirvazure'
@@ -16,18 +18,20 @@ export function getDefaultUserProfile(): UserProfile {
 }
 
 export function loadUserProfile(): UserProfile {
-  if (typeof window === 'undefined') return getDefaultUserProfile()
-  try {
-    const raw = window.localStorage.getItem(USER_PROFILE_STORAGE_KEY)
-    if (!raw) return getDefaultUserProfile()
-    const parsed = JSON.parse(raw)
-    if (!parsed || typeof parsed !== 'object') return getDefaultUserProfile()
-    return {
-      nickname: typeof parsed.nickname === 'string' && parsed.nickname.trim() ? parsed.nickname : DEFAULT_USER_NICKNAME,
-      avatarSrc: typeof parsed.avatarSrc === 'string' && parsed.avatarSrc.trim() ? parsed.avatarSrc : DEFAULT_USER_AVATAR_SRC,
-    }
-  } catch {
+  const parsed = readStorageJson<unknown>(USER_PROFILE_STORAGE_KEY, null)
+  if (!parsed || typeof parsed !== 'object') {
     return getDefaultUserProfile()
+  }
+  const rawProfile = parsed as Partial<UserProfile>
+  return {
+    nickname:
+      typeof rawProfile.nickname === 'string' && rawProfile.nickname.trim()
+        ? rawProfile.nickname
+        : DEFAULT_USER_NICKNAME,
+    avatarSrc:
+      typeof rawProfile.avatarSrc === 'string' && rawProfile.avatarSrc.trim()
+        ? rawProfile.avatarSrc
+        : DEFAULT_USER_AVATAR_SRC,
   }
 }
 
@@ -37,11 +41,7 @@ export function saveUserProfile(profile: UserProfile): void {
     nickname: profile.nickname?.trim() ? profile.nickname : DEFAULT_USER_NICKNAME,
     avatarSrc: profile.avatarSrc?.trim() ? profile.avatarSrc : DEFAULT_USER_AVATAR_SRC,
   }
-  try {
-    window.localStorage.setItem(USER_PROFILE_STORAGE_KEY, JSON.stringify(nextProfile))
-  } catch {
-    /* ignore */
-  }
+  writeStorageJson(USER_PROFILE_STORAGE_KEY, nextProfile)
   window.dispatchEvent(new CustomEvent<UserProfile>(USER_PROFILE_UPDATED_EVENT, { detail: nextProfile }))
 }
 

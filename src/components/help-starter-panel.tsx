@@ -1,11 +1,4 @@
-import { useMemo, useState } from 'react'
 import { BookOpenCheck, FileText, Wand2 } from 'lucide-react'
-import { cn } from '@/lib/utils'
-
-type HelpStarterPanelProps = {
-  onDraftChange: (draft: string) => void
-  onClose?: () => void
-}
 
 type StarterScene = {
   id: string
@@ -82,101 +75,6 @@ export function HelpStarterStrip({ onDraftChange }: HelpStarterStripProps) {
               <span className="mt-1 line-clamp-2 block text-xs leading-relaxed text-muted-foreground">
                 {scene.description}
               </span>
-            </button>
-          )
-        })}
-      </div>
-    </section>
-  )
-}
-
-export function HelpStarterPanel({ onDraftChange, onClose }: HelpStarterPanelProps) {
-  const [activeSceneId, setActiveSceneId] = useState(STARTER_SCENES[0]?.id ?? '')
-  const [selectedChips, setSelectedChips] = useState<Record<string, string[]>>({})
-
-  const activeScene = useMemo(
-    () => STARTER_SCENES.find((scene) => scene.id === activeSceneId) ?? STARTER_SCENES[0],
-    [activeSceneId],
-  )
-  const activeChips = selectedChips[activeScene.id] ?? []
-  const draft = buildDraft(activeScene, activeChips)
-
-  const selectScene = (scene: StarterScene) => {
-    setActiveSceneId(scene.id)
-    onDraftChange(buildDraft(scene, selectedChips[scene.id] ?? []))
-  }
-
-  const toggleChip = (chip: string) => {
-    const nextChips = activeChips.includes(chip)
-      ? activeChips.filter((item) => item !== chip)
-      : [...activeChips, chip]
-    setSelectedChips((value) => ({ ...value, [activeScene.id]: nextChips }))
-    onDraftChange(buildDraft(activeScene, nextChips))
-  }
-
-  return (
-    <section className="rounded-3xl border border-white/80 bg-white/88 p-3 shadow-sm backdrop-blur-md">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">求助起手器</p>
-          <p className="mt-1 text-xs font-medium text-muted-foreground">先选场景和限制，我帮你组织成可裁决任务。</p>
-        </div>
-        <button
-          type="button"
-          className="shrink-0 rounded-full border border-primary/20 bg-primary/[0.06] px-3 py-1.5 text-[11px] font-bold text-primary transition-colors hover:bg-primary/10"
-          onClick={() => {
-            onDraftChange(draft)
-            onClose?.()
-          }}
-        >
-          填入输入框
-        </button>
-      </div>
-
-      <div className="mt-3 grid gap-2">
-        {STARTER_SCENES.map((scene) => {
-          const selected = scene.id === activeScene.id
-          const Icon = scene.Icon
-          return (
-            <button
-              key={scene.id}
-              type="button"
-              className={cn(
-                'flex items-start gap-2 rounded-2xl border px-3 py-2 text-left transition-colors',
-                selected ? 'border-primary/25 bg-primary/[0.06]' : 'border-border/60 bg-white/70 hover:border-primary/20',
-              )}
-              onClick={() => selectScene(scene)}
-            >
-              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl bg-white text-primary shadow-sm">
-                <Icon className="h-4 w-4" />
-              </span>
-              <span className="min-w-0">
-                <span className="block text-xs font-black text-foreground">{scene.title}</span>
-                <span className="mt-0.5 line-clamp-2 block text-[11px] leading-relaxed text-muted-foreground">
-                  {scene.description}
-                </span>
-              </span>
-            </button>
-          )
-        })}
-      </div>
-
-      <div className="mt-3 flex flex-wrap gap-1.5">
-        {activeScene.chips.map((chip) => {
-          const selected = activeChips.includes(chip)
-          return (
-            <button
-              key={chip}
-              type="button"
-              className={cn(
-                'rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-colors',
-                selected
-                  ? 'border-primary/25 bg-primary text-primary-foreground'
-                  : 'border-border/60 bg-white/80 text-foreground/76 hover:border-primary/25 hover:bg-primary/[0.06]',
-              )}
-              onClick={() => toggleChip(chip)}
-            >
-              {chip}
             </button>
           )
         })}

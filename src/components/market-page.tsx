@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useMemo, useState } from 'react'
 import { ExternalLink, FolderOpenDot, Plus, Search, X } from 'lucide-react'
@@ -9,9 +9,10 @@ import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
 import { MarketToolIcon } from '@/components/market/market-tool-icon'
 import { cn } from '@/lib/utils'
-import { getActiveTools, resolveToolUrlById, type ToolCategory, type ToolItem } from '@/services/tool-registry'
-import { submitMarketTool } from '@/services/market-storage'
-import { useStore } from '@/store'
+import { useToolCardActions } from '@/hooks/use-tool-card-actions'
+import { useMarkToolUsedMutation, useSaveToolToPocketMutation } from '@/lib/query/pocket'
+import { useSubmitMarketToolMutation } from '@/lib/query/market'
+import { getActiveTools, type ToolCategory, type ToolItem } from '@/services/tool-registry'
 
 const CATEGORY_LABELS: Record<ToolCategory, string> = {
   ai_assistant: 'AI 助手',
@@ -70,13 +71,18 @@ export function MarketPage() {
   const [query, setQuery] = useState('')
   const [submitOpen, setSubmitOpen] = useState(false)
   const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT)
-  const [refreshToken, setRefreshToken] = useState(0)
   const [selectedSection, setSelectedSection] = useState<'builtin' | ToolCategory>('builtin')
-  const { saveToolToPocket, markToolUsed } = useStore()
+  const saveToolToPocketMutation = useSaveToolToPocketMutation()
+  const markToolUsedMutation = useMarkToolUsedMutation()
+  const submitMarketToolMutation = useSubmitMarketToolMutation()
+  const toolCardActions = useToolCardActions({
+    markToolUsed: markToolUsedMutation.mutate,
+    saveToolToPocket: saveToolToPocketMutation.mutate,
+    getSourceQuestion: () => '从市场页收入口袋',
+  })
 
   const keyword = query.trim().toLowerCase()
   const tools = useMemo(() => {
-    void refreshToken
     const activeTools = getActiveTools()
     if (!keyword) return activeTools
     return activeTools.filter((tool) =>
@@ -84,7 +90,7 @@ export function MarketPage() {
         .toLowerCase()
         .includes(keyword),
     )
-  }, [keyword, refreshToken])
+  }, [keyword])
   const builtinTools = useMemo(() => tools.filter((tool) => tool.source === 'builtin'), [tools])
   const marketTools = useMemo(() => tools.filter((tool) => tool.source !== 'builtin'), [tools])
   const grouped = groupTools(marketTools)
@@ -115,16 +121,9 @@ export function MarketPage() {
   ] as const).filter(([key]) => categoryCounts[key] > 0)
   const currentCategoryTools = selectedSection === 'builtin' ? builtinTools : grouped[selectedSection]
 
-  const openTool = (toolId: string) => {
-    const url = resolveToolUrlById(toolId)
-    if (!url) return
-    markToolUsed(toolId)
-    window.open(url, '_blank', 'noopener,noreferrer')
-  }
-
   const submitDraft = () => {
     if (!draft.name.trim() || !draft.url.trim() || !draft.description.trim()) return
-    submitMarketTool({
+    submitMarketToolMutation.mutate({
       name: draft.name,
       url: draft.url,
       description: draft.description,
@@ -132,7 +131,6 @@ export function MarketPage() {
     })
     setDraft(EMPTY_DRAFT)
     setSubmitOpen(false)
-    setRefreshToken((value) => value + 1)
   }
 
   return (
@@ -295,12 +293,17 @@ export function MarketPage() {
                       推荐 {tool.ratingSummary.upvotes} · 打开 {tool.usageStats.opens} · {tool.executionMode === 'native_card' ? '站内小闭环' : '外部打开'}
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      <Button type="button" variant="outline" className="h-9 rounded-full bg-white px-3 text-xs" onClick={() => saveToolToPocket(tool.id, '从市场页收入口袋')}>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="h-9 rounded-full bg-white px-3 text-xs"
+                        onClick={() => toolCardActions.saveTool(tool.id)}
+                      >
                         <FolderOpenDot className="mr-1.5 h-3.5 w-3.5" />
                         收入口袋
                       </Button>
                       {tool.url ? (
-                        <Button type="button" className="h-9 rounded-full px-3 text-xs" onClick={() => openTool(tool.id)}>
+                        <Button type="button" className="h-9 rounded-full px-3 text-xs" onClick={() => toolCardActions.openTool(tool.id)}>
                           打开
                           <ExternalLink className="ml-1 h-3.5 w-3.5" />
                         </Button>

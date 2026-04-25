@@ -1,3 +1,10 @@
+import type {
+  ToolCategory,
+  ToolExecutionMode,
+  ToolPlatform,
+  ToolPricingModel,
+} from '@/shared/tool-registry'
+
 export type PocketSavedItem = {
   toolId: string
   presetArgs?: Record<string, unknown>
@@ -29,22 +36,22 @@ export type MarketSubscriptionRecord = {
 }
 
 export type UserPreferenceProfile = {
-  preferredCategories: string[]
+  preferredCategories: ToolCategory[]
   preferredTags: string[]
-  preferredPlatforms: string[]
-  preferredPricing: string[]
-  preferredExecutionModes: string[]
+  preferredPlatforms: ToolPlatform[]
+  preferredPricing: ToolPricingModel[]
+  preferredExecutionModes: ToolExecutionMode[]
   avoidAuthWall: boolean
   prefersSubscriptionTools: boolean
   summary: string[]
 }
 
 export type PreferenceProfileOverride = {
-  preferredCategories?: string[]
+  preferredCategories?: ToolCategory[]
   preferredTags?: string[]
-  preferredPlatforms?: string[]
-  preferredPricing?: string[]
-  preferredExecutionModes?: string[]
+  preferredPlatforms?: ToolPlatform[]
+  preferredPricing?: ToolPricingModel[]
+  preferredExecutionModes?: ToolExecutionMode[]
   avoidAuthWall?: boolean
   prefersSubscriptionTools?: boolean
 }
