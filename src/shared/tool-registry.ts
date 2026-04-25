@@ -1,9 +1,13 @@
 import { z } from 'zod'
+import type { MarketBookmarkSeed } from '@/shared/market-seed-types'
+import { MARKET_BOOKMARK_SEEDS } from '@/shared/market-bookmark-seeds'
+import { MARKET_FAVICON_MANIFEST } from '@/shared/market-favicon-manifest'
+import { MARKET_FAVICON_REMOTE_MANIFEST } from '@/shared/market-favicon-remote-manifest'
 
 export type ToolCategory =
   | 'ai_assistant'
   | 'search'
-  | 'dev'
+  | 'developer'
   | 'design'
   | 'productivity'
   | 'media'
@@ -39,6 +43,10 @@ export type ToolItem = {
   id: string
   name: string
   icon: string
+  iconType?: 'emoji' | 'favicon'
+  iconText?: string
+  iconImageUrl?: string | null
+  iconImageLocalPath?: string | null
   url: string | null
   description: string
   category: ToolCategory
@@ -58,6 +66,8 @@ export type ToolItem = {
   subscriptionSupport: boolean
   defaultArgs?: Record<string, unknown>
   isBuiltin?: boolean
+  siteHostname?: string
+  marketAssetOrigin?: 'registry' | 'bookmark_seed'
 }
 
 export type ToolMeta = {
@@ -106,7 +116,7 @@ const ICONS = {
   air: '🌫️',
   web: '📰',
   search: '🔎',
-  dev: '🧪',
+  developer: '🧪',
   design: '🎨',
   write: '✍️',
   agent: '🤖',
@@ -124,7 +134,7 @@ function usage(saves: number, opens: number, subscriptions: number): ToolUsageSt
   return { saves, opens, subscriptions }
 }
 
-export const TOOL_REGISTRY: ToolItem[] = [
+const STATIC_TOOL_REGISTRY: ToolItem[] = [
   {
     id: BUILTIN_ANYWHERE_DOOR_TOOL_ID,
     name: '任意门',
@@ -175,7 +185,7 @@ export const TOOL_REGISTRY: ToolItem[] = [
     icon: ICONS.mode,
     url: null,
     description: '内置模式：强化解释、评估和对比。',
-    category: 'dev',
+    category: 'developer',
     tags: ['builtin', 'mode', 'explain'],
     source: 'builtin',
     status: 'active',
@@ -438,7 +448,7 @@ export const TOOL_REGISTRY: ToolItem[] = [
   {
     id: TOOL_ID_PDF24,
     name: 'PDF24 Tools',
-    icon: ICONS.dev,
+    icon: ICONS.developer,
     url: 'https://tools.pdf24.org/zh/',
     description: 'PDF 合并、压缩、拆分的全家桶，适合办公室高频杂活。',
     category: 'productivity',
@@ -460,10 +470,10 @@ export const TOOL_REGISTRY: ToolItem[] = [
   {
     id: TOOL_ID_REGEX101,
     name: 'Regex101',
-    icon: ICONS.dev,
+    icon: ICONS.developer,
     url: 'https://regex101.com',
     description: '正则测试与解释工具，适合开发者调试表达式。',
-    category: 'dev',
+    category: 'developer',
     tags: ['regex', 'debug', 'developer'],
     source: 'market',
     status: 'active',
@@ -526,10 +536,10 @@ export const TOOL_REGISTRY: ToolItem[] = [
   {
     id: TOOL_ID_CARBON,
     name: 'Carbon',
-    icon: ICONS.dev,
+    icon: ICONS.developer,
     url: 'https://carbon.now.sh',
     description: '代码截图美化工具，适合分享代码片段。',
-    category: 'dev',
+    category: 'developer',
     tags: ['code', 'screenshot', 'share'],
     source: 'market',
     status: 'active',
@@ -570,7 +580,7 @@ export const TOOL_REGISTRY: ToolItem[] = [
   {
     id: TOOL_ID_LANGGRAPH_CN,
     name: 'LangGraph 中文资料',
-    icon: ICONS.dev,
+    icon: ICONS.developer,
     url: 'https://github.com/langchain-ai/langgraph',
     description: 'LangGraph 官方代码库，适合查概念与实现模式。',
     category: 'learning',
@@ -595,7 +605,7 @@ export const TOOL_REGISTRY: ToolItem[] = [
     icon: ICONS.write,
     url: 'https://rahuldkjain.github.io/gh-profile-readme-generator/',
     description: '快速生成 GitHub 个人主页 README。',
-    category: 'dev',
+    category: 'developer',
     tags: ['github', 'readme', 'profile'],
     source: 'market',
     status: 'active',
@@ -613,6 +623,69 @@ export const TOOL_REGISTRY: ToolItem[] = [
   },
 ]
 
+function fallbackBookmarkEmoji(seed: MarketBookmarkSeed): string {
+  if (seed.sourceType === 'resource') return '📘'
+  if (seed.sourceType === 'inspiration') return '✨'
+  if (seed.category === 'design') return '🎨'
+  if (seed.category === 'developer') return '🧰'
+  if (seed.category === 'search') return '🔎'
+  if (seed.category === 'media') return '🎬'
+  if (seed.category === 'learning') return '📚'
+  if (seed.category === 'writing') return '✍️'
+  return '🌐'
+}
+
+export function convertBookmarkSeedToToolItem(seed: MarketBookmarkSeed): ToolItem {
+  const remoteFavicon = MARKET_FAVICON_REMOTE_MANIFEST[seed.seedId]
+  const favicon = (
+    MARKET_FAVICON_MANIFEST as Record<
+      string,
+      {
+        faviconMode: 'site_icon' | 'root_favicon' | 'fallback'
+        faviconUrl: string | null
+        faviconLocalPath: string
+      }
+    >
+  )[seed.seedId]
+  return {
+    id: `bookmark_${seed.seedId}`,
+    name: seed.name,
+    icon: fallbackBookmarkEmoji(seed),
+    iconType: 'favicon',
+    iconText: fallbackBookmarkEmoji(seed),
+    iconImageUrl: remoteFavicon?.faviconUrl ?? favicon?.faviconUrl ?? seed.faviconUrl ?? null,
+    iconImageLocalPath: remoteFavicon ? null : (favicon?.faviconLocalPath ?? seed.faviconLocalPath ?? null),
+    url: seed.displayUrl,
+    description: seed.description,
+    category: seed.category,
+    tags: seed.tags,
+    source: seed.source,
+    status: seed.status,
+    executionMode: seed.executionMode,
+    pricingModel: seed.pricingModel,
+    requiresAuth: seed.requiresAuth,
+    platform: seed.platform,
+    capabilities: seed.capabilities,
+    recommendedFor: seed.recommendedFor,
+    sourceNote: seed.sourceNote,
+    trustSignals: seed.trustSignals,
+    ratingSummary: rating(0, 0),
+    usageStats: usage(0, 0, 0),
+    subscriptionSupport: seed.subscriptionSupport,
+    isBuiltin: false,
+    siteHostname: seed.siteHostname,
+    marketAssetOrigin: 'bookmark_seed',
+  }
+}
+
+export const BOOKMARK_SEED_TOOL_REGISTRY: ToolItem[] = MARKET_BOOKMARK_SEEDS.map(convertBookmarkSeedToToolItem)
+
+export const BUILTIN_TOOL_REGISTRY: ToolItem[] = STATIC_TOOL_REGISTRY.filter((item) => item.source === 'builtin')
+
+export const CURATED_MARKET_TOOL_REGISTRY: ToolItem[] = STATIC_TOOL_REGISTRY.filter((item) => item.source !== 'builtin')
+
+export const TOOL_REGISTRY: ToolItem[] = [...STATIC_TOOL_REGISTRY, ...BOOKMARK_SEED_TOOL_REGISTRY]
+
 export function getToolById(id: string | null | undefined): ToolItem | null {
   if (!id) return null
   for (const item of TOOL_REGISTRY) {
@@ -626,11 +699,15 @@ export function getActiveTools(): ToolItem[] {
 }
 
 export function getBuiltinTools(): ToolItem[] {
-  return TOOL_REGISTRY.filter((item) => item.source === 'builtin')
+  return BUILTIN_TOOL_REGISTRY
 }
 
 export function getMarketTools(): ToolItem[] {
   return TOOL_REGISTRY.filter((item) => item.source !== 'builtin' && item.status === 'active')
+}
+
+export function getBookmarkSeedTools(): ToolItem[] {
+  return BOOKMARK_SEED_TOOL_REGISTRY.filter((item) => item.status === 'active')
 }
 
 export function resolveToolUrlById(id: string | null | undefined): string | null {
@@ -646,7 +723,7 @@ function includesAny(text: string, keywords: string[]): boolean {
 function inferReason(query: string, tool: ToolItem): string {
   if (tool.executionMode === 'native_card') return `它是可直接在口袋里调用的原生能力，适合立刻执行“${query}”。`
   if (tool.category === 'search') return `它更适合先扩展信息面，再继续决策。`
-  if (tool.category === 'dev') return `它针对开发任务更专用，能减少你手工折腾。`
+  if (tool.category === 'developer') return `它针对开发任务更专用，能减少你手工折腾。`
   if (tool.category === 'design') return `它更像高频素材或设计工具，不适合硬做成内置能力。`
   return `它与“${query}”的标签和场景匹配度较高。`
 }

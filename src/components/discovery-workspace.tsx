@@ -8,73 +8,43 @@ import { NextActionBar } from '@/components/discovery/next-action-bar'
 import { TaskContextCard } from '@/components/discovery/task-context-card'
 import { HelpStarterStrip } from '@/components/help-starter-panel'
 import type { ChatToolPayload } from '@/services/llm'
-import type { PocketInventoryItem } from '@/services/pocket-inventory'
 import type { AgentUiPayload } from '@/shared/market-types'
 import type { AppState } from '@/store'
 
-type HeroMetricCard = {
-  label: string
-  value: number
-  hint: string
-}
-
 type DiscoveryWorkspaceProps = {
-  title: string
-  description: string
-  heroMetricCards: HeroMetricCard[]
   currentPrompt: string | null
   appState: AppState
-  pocketRevealOpen: boolean
   agentPayload: AgentUiPayload | null
   selectedToolPayload: ChatToolPayload
-  pocketInventory: PocketInventoryItem[]
   busyHint?: string
   autoSaveEnabled: boolean
   autoSaveNotice: { toolId: string; label: string } | null
-  onToolEvent: (event: { type: string; message?: string }) => void
   onOpenPocket: () => void
   onSaveCandidate: (toolId: string) => void
-  onSubscribeCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
   onUndoAutoSave: () => void
-  onDisableAutoSave: () => void
   onEnableAutoSave: () => void
+  onFeedback: (toolId: string, vote: 'up' | 'down') => void
   onDraftTask?: (draft: string) => void
 }
 
 export function DiscoveryWorkspace({
-  title,
-  description,
-  heroMetricCards,
   currentPrompt,
   appState,
-  pocketRevealOpen,
   agentPayload,
   selectedToolPayload,
-  pocketInventory,
   busyHint,
   autoSaveEnabled,
   autoSaveNotice,
-  onToolEvent,
   onOpenPocket,
   onSaveCandidate,
-  onSubscribeCandidate,
   onLaunchCandidate,
   onUndoAutoSave,
-  onDisableAutoSave,
   onEnableAutoSave,
+  onFeedback,
   onDraftTask,
 }: DiscoveryWorkspaceProps) {
   const [stepViewState, setStepViewState] = useState({ suggestedStep: 1, activeStep: 1 })
-  void pocketRevealOpen
-  void pocketInventory
-  void onToolEvent
-  void onSubscribeCandidate
-  void onDisableAutoSave
-
-  void heroMetricCards
-  void title
-  void description
   const showStarterStrip = !currentPrompt?.trim() && !agentPayload
   const hasPrompt = Boolean(currentPrompt?.trim())
   const hasPayload = Boolean(agentPayload)
@@ -119,6 +89,7 @@ export function DiscoveryWorkspace({
                 onOpenPocket={onOpenPocket}
                 onUndoAutoSave={onUndoAutoSave}
                 onEnableAutoSave={onEnableAutoSave}
+                onFeedback={onFeedback}
               />
             </div>
           ) : null}

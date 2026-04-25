@@ -1,3 +1,5 @@
+import { readStorageJson, writeStorageJson } from '@/lib/storage'
+
 export const POCKET_INVENTORY_STORAGE_KEY = 'dp-pocket-inventory-v1'
 
 export type PocketInventoryItem = {
@@ -13,10 +15,9 @@ export type PocketInventoryItem = {
 }
 
 export function loadPocketInventory(): PocketInventoryItem[] {
+  if (typeof window === 'undefined') return []
   try {
-    const raw = localStorage.getItem(POCKET_INVENTORY_STORAGE_KEY)
-    if (!raw) return []
-    const parsed = JSON.parse(raw)
+    const parsed = readStorageJson<unknown>(POCKET_INVENTORY_STORAGE_KEY, [])
     if (!Array.isArray(parsed)) return []
 
     const list: PocketInventoryItem[] = []
@@ -54,11 +55,7 @@ export function loadPocketInventory(): PocketInventoryItem[] {
 }
 
 export function savePocketInventory(list: PocketInventoryItem[]): void {
-  try {
-    localStorage.setItem(POCKET_INVENTORY_STORAGE_KEY, JSON.stringify(list))
-  } catch {
-    /* ignore */
-  }
+  writeStorageJson(POCKET_INVENTORY_STORAGE_KEY, list)
 }
 
 export function sortPocketInventory(list: PocketInventoryItem[]): PocketInventoryItem[] {

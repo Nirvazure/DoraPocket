@@ -1,4 +1,4 @@
-export async function fetchTTSAudio(text: string): Promise<string | null> {
+export async function buildTTSAudioUrl(text: string): Promise<string | null> {
   try {
     const voice = process.env.NEXT_PUBLIC_ALIYUN_TTS_VOICE?.trim()
     const params = new URLSearchParams({ text })
@@ -8,4 +8,3 @@ export async function fetchTTSAudio(text: string): Promise<string | null> {
     return null
   }
 }
-

@@ -8,6 +8,7 @@ import type {
   ToolVote,
   UserPreferenceProfile,
 } from '@/shared/market-types'
+import { readStorageJson, writeStorageJson } from '@/lib/storage'
 import type { PocketInventoryItem } from '@/services/pocket-inventory'
 import type { ToolCategory, ToolExecutionMode, ToolItem, ToolPlatform, ToolPricingModel, ToolUsageStats } from '@/shared/tool-registry'
 import { getToolById } from '@/services/tool-registry'
@@ -18,28 +19,8 @@ const SUBMISSION_STORAGE_KEY = 'dp-market-submissions-v1'
 const TOOL_ACTIVITY_STORAGE_KEY = 'dp-market-tool-activity-v1'
 const PREFERENCE_OVERRIDE_STORAGE_KEY = 'dp-market-preference-override-v1'
 
-function readJson<T>(key: string, fallback: T): T {
-  if (typeof window === 'undefined') return fallback
-  try {
-    const raw = window.localStorage.getItem(key)
-    if (!raw) return fallback
-    return JSON.parse(raw) as T
-  } catch {
-    return fallback
-  }
-}
-
-function writeJson<T>(key: string, value: T) {
-  if (typeof window === 'undefined') return
-  try {
-    window.localStorage.setItem(key, JSON.stringify(value))
-  } catch {
-    /* ignore */
-  }
-}
-
 export function loadMarketFeedback(): MarketFeedbackRecord[] {
-  const list = readJson<MarketFeedbackRecord[]>(FEEDBACK_STORAGE_KEY, [])
+  const list = readStorageJson<MarketFeedbackRecord[]>(FEEDBACK_STORAGE_KEY, [])
   return Array.isArray(list) ? list.filter((item) => item && typeof item.toolId === 'string') : []
 }
 
@@ -47,33 +28,33 @@ export function saveMarketFeedback(toolId: string, vote: ToolVote) {
   const list = loadMarketFeedback()
   const next = list.filter((item) => item.toolId !== toolId)
   next.push({ toolId, vote, updatedAt: Date.now() })
-  writeJson(FEEDBACK_STORAGE_KEY, next)
+  writeStorageJson(FEEDBACK_STORAGE_KEY, next)
 }
 
 export function loadMarketSubscriptions(): MarketSubscriptionRecord[] {
-  const list = readJson<MarketSubscriptionRecord[]>(SUBSCRIPTION_STORAGE_KEY, [])
+  const list = readStorageJson<MarketSubscriptionRecord[]>(SUBSCRIPTION_STORAGE_KEY, [])
   return Array.isArray(list) ? list.filter((item) => item && typeof item.toolId === 'string') : []
 }
 
 export function setToolSubscription(toolId: string, active: boolean) {
   const list = loadMarketSubscriptions().filter((item) => item.toolId !== toolId)
   list.push({ toolId, active, subscribedAt: Date.now() })
-  writeJson(SUBSCRIPTION_STORAGE_KEY, list)
+  writeStorageJson(SUBSCRIPTION_STORAGE_KEY, list)
 }
 
 export function loadMarketSubmissions(): MarketSubmission[] {
-  const list = readJson<MarketSubmission[]>(SUBMISSION_STORAGE_KEY, [])
+  const list = readStorageJson<MarketSubmission[]>(SUBMISSION_STORAGE_KEY, [])
   return Array.isArray(list) ? list.filter((item) => item && typeof item.name === 'string' && typeof item.url === 'string') : []
 }
 
 type ToolActivityMap = Record<string, ToolUsageStats>
 
 function loadToolActivityMap(): ToolActivityMap {
-  return readJson<ToolActivityMap>(TOOL_ACTIVITY_STORAGE_KEY, {})
+  return readStorageJson<ToolActivityMap>(TOOL_ACTIVITY_STORAGE_KEY, {})
 }
 
 function saveToolActivityMap(value: ToolActivityMap) {
-  writeJson(TOOL_ACTIVITY_STORAGE_KEY, value)
+  writeStorageJson(TOOL_ACTIVITY_STORAGE_KEY, value)
 }
 
 function updateToolActivity(toolId: string, patch: Partial<ToolUsageStats>) {
@@ -159,19 +140,19 @@ export function submitMarketTool(input: { name: string; url: string; description
     submittedAt: Date.now(),
     status: 'review',
   })
-  writeJson(SUBMISSION_STORAGE_KEY, list.slice(0, 40))
+  writeStorageJson(SUBMISSION_STORAGE_KEY, list.slice(0, 40))
 }
 
 export function loadPreferenceProfileOverride(): PreferenceProfileOverride {
-  return readJson<PreferenceProfileOverride>(PREFERENCE_OVERRIDE_STORAGE_KEY, {})
+  return readStorageJson<PreferenceProfileOverride>(PREFERENCE_OVERRIDE_STORAGE_KEY, {})
 }
 
 export function savePreferenceProfileOverride(value: PreferenceProfileOverride) {
-  writeJson(PREFERENCE_OVERRIDE_STORAGE_KEY, value)
+  writeStorageJson(PREFERENCE_OVERRIDE_STORAGE_KEY, value)
 }
 
 export function resetPreferenceProfileOverride() {
-  writeJson(PREFERENCE_OVERRIDE_STORAGE_KEY, {})
+  writeStorageJson(PREFERENCE_OVERRIDE_STORAGE_KEY, {})
 }
 
 function bumpCounter(counter: Map<string, number>, key: string, score: number) {
@@ -179,7 +160,7 @@ function bumpCounter(counter: Map<string, number>, key: string, score: number) {
   counter.set(key, (counter.get(key) ?? 0) + score)
 }
 
-function topKeys(counter: Map<string, number>, limit: number) {
+function topKeys<Key extends string>(counter: Map<Key, number>, limit: number): Key[] {
   return [...counter.entries()]
     .filter(([, score]) => score > 0)
     .sort((a, b) => b[1] - a[1])
@@ -198,11 +179,11 @@ function summarizePreferenceProfile(profile: Omit<UserPreferenceProfile, 'summar
 }
 
 function inferUserPreferenceProfile(pocketInventory: PocketInventoryItem[]): UserPreferenceProfile {
-  const categoryScores = new Map<string, number>()
+  const categoryScores = new Map<ToolCategory, number>()
   const tagScores = new Map<string, number>()
-  const platformScores = new Map<string, number>()
-  const pricingScores = new Map<string, number>()
-  const executionScores = new Map<string, number>()
+  const platformScores = new Map<ToolPlatform, number>()
+  const pricingScores = new Map<ToolPricingModel, number>()
+  const executionScores = new Map<ToolExecutionMode, number>()
   let loginFreeScore = 0
   let authRequiredScore = 0
   let subscriptionToolScore = 0
@@ -215,9 +196,9 @@ function inferUserPreferenceProfile(pocketInventory: PocketInventoryItem[]): Use
     if (!tool || weight === 0) return
     bumpCounter(categoryScores, tool.category, weight)
     for (const tag of tool.tags.slice(0, 6)) bumpCounter(tagScores, tag, weight)
-    bumpCounter(platformScores, tool.platform as ToolPlatform, weight)
-    bumpCounter(pricingScores, tool.pricingModel as ToolPricingModel, weight)
-    bumpCounter(executionScores, tool.executionMode as ToolExecutionMode, weight)
+    bumpCounter(platformScores, tool.platform, weight)
+    bumpCounter(pricingScores, tool.pricingModel, weight)
+    bumpCounter(executionScores, tool.executionMode, weight)
     if (tool.requiresAuth) authRequiredScore += weight
     else loginFreeScore += weight
     if (tool.subscriptionSupport) subscriptionToolScore += weight
@@ -287,7 +268,7 @@ function applyPreferenceOverride(
 
 export function getPreferenceCalibrationOptions() {
   return {
-    categories: ['ai_assistant', 'search', 'dev', 'design', 'productivity', 'media', 'learning', 'writing'] satisfies ToolCategory[],
+    categories: ['ai_assistant', 'search', 'developer', 'design', 'productivity', 'media', 'learning', 'writing'] satisfies ToolCategory[],
     platforms: ['web', 'desktop', 'mobile', 'api', 'mixed'] satisfies ToolPlatform[],
     pricing: ['free', 'freemium', 'paid', 'subscription'] satisfies ToolPricingModel[],
     executionModes: ['native_card', 'external_link', 'workflow', 'reference_only'] satisfies ToolExecutionMode[],

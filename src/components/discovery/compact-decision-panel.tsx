@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { CheckCircle2, ExternalLink, FolderOpenDot, RotateCw, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { saveMarketFeedback } from '@/services/market-storage'
 import { getToolById } from '@/services/tool-registry'
 import type { ChatToolPayload } from '@/services/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
@@ -16,6 +15,7 @@ type CompactDecisionPanelProps = {
   onOpenPocket: () => void
   onUndoAutoSave: () => void
   onEnableAutoSave: () => void
+  onFeedback: (toolId: string, vote: 'up' | 'down') => void
 }
 
 const FEEDBACK_OPTIONS = ['解决了', '不适合', '太复杂', '太贵', '想换一个']
@@ -30,6 +30,7 @@ export function CompactDecisionPanel({
   onOpenPocket,
   onUndoAutoSave,
   onEnableAutoSave,
+  onFeedback,
 }: CompactDecisionPanelProps) {
   const [selectedFeedback, setSelectedFeedback] = useState<string | null>(null)
   const leader = payload?.candidates[0] ?? null
@@ -42,7 +43,7 @@ export function CompactDecisionPanel({
   const recordFeedback = (option: string) => {
     setSelectedFeedback(option)
     if (!leaderToolId) return
-    saveMarketFeedback(leaderToolId, option === '解决了' ? 'up' : 'down')
+    onFeedback(leaderToolId, option === '解决了' ? 'up' : 'down')
   }
 
   if (!payload && !selectedToolPayload?.toolId) {
