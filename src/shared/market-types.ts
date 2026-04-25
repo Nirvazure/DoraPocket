@@ -68,6 +68,7 @@ export type AgentCandidate = {
   title: string
   url?: string | null
   candidateType: 'tool' | 'submission'
+  assetOrigin?: 'builtin' | 'curated_market' | 'bookmark_seed'
   score: number
   sourceLabel: 'builtin' | 'pocket' | 'market'
   reason: string

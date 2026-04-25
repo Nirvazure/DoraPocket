@@ -49,3 +49,7 @@ next-env.d.ts
 
 # tooling
 .eslintcache
+
+# generated assets / temp
+/tmp/
+/public/market-favicons/manifest.json

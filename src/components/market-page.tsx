@@ -7,6 +7,7 @@ import { ProfileEntryPill } from '@/components/common/profile-entry-pill'
 import { PageShell } from '@/components/common/page-shell'
 import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
+import { MarketToolIcon } from '@/components/market/market-tool-icon'
 import { cn } from '@/lib/utils'
 import { getActiveTools, resolveToolUrlById, type ToolCategory, type ToolItem } from '@/services/tool-registry'
 import { submitMarketTool } from '@/services/market-storage'
@@ -15,7 +16,7 @@ import { useStore } from '@/store'
 const CATEGORY_LABELS: Record<ToolCategory, string> = {
   ai_assistant: 'AI 助手',
   search: '搜索研究',
-  dev: '开发工具',
+  developer: '开发者工具',
   design: '设计素材',
   productivity: '效率办公',
   media: '媒体处理',
@@ -55,7 +56,7 @@ function groupTools(tools: ToolItem[]) {
     {
       ai_assistant: [],
       search: [],
-      dev: [],
+      developer: [],
       design: [],
       productivity: [],
       media: [],
@@ -92,7 +93,7 @@ export function MarketPage() {
       builtin: builtinTools.length,
       ai_assistant: grouped.ai_assistant.length,
       search: grouped.search.length,
-      dev: grouped.dev.length,
+      developer: grouped.developer.length,
       design: grouped.design.length,
       productivity: grouped.productivity.length,
       media: grouped.media.length,
@@ -105,7 +106,7 @@ export function MarketPage() {
     ['builtin', '内置工具'],
     ['ai_assistant', 'AI 助手'],
     ['search', '搜索研究'],
-    ['dev', '开发工具'],
+    ['developer', '开发者工具'],
     ['design', '设计素材'],
     ['productivity', '效率办公'],
     ['media', '媒体处理'],
@@ -266,9 +267,12 @@ export function MarketPage() {
               {currentCategoryTools.map((tool) => (
                 <article key={tool.id} className="group flex min-h-56 flex-col rounded-3xl border border-border/60 bg-[linear-gradient(180deg,rgba(248,250,252,0.98),rgba(255,255,255,0.98))] p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/15 hover:bg-white hover:shadow-[0_14px_34px_rgba(15,23,42,0.08)]">
                   <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="text-lg font-black text-foreground">{tool.icon} {tool.name}</p>
-                      <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-muted-foreground">{tool.description}</p>
+                    <div className="flex min-w-0 items-start gap-3">
+                      <MarketToolIcon tool={tool} />
+                      <div className="min-w-0">
+                        <p className="text-lg font-black text-foreground">{tool.name}</p>
+                        <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-muted-foreground">{tool.description}</p>
+                      </div>
                     </div>
                     <span
                       className={cn(

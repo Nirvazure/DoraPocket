@@ -287,7 +287,7 @@ function applyPreferenceOverride(
 
 export function getPreferenceCalibrationOptions() {
   return {
-    categories: ['ai_assistant', 'search', 'dev', 'design', 'productivity', 'media', 'learning', 'writing'] satisfies ToolCategory[],
+    categories: ['ai_assistant', 'search', 'developer', 'design', 'productivity', 'media', 'learning', 'writing'] satisfies ToolCategory[],
     platforms: ['web', 'desktop', 'mobile', 'api', 'mixed'] satisfies ToolPlatform[],
     pricing: ['free', 'freemium', 'paid', 'subscription'] satisfies ToolPricingModel[],
     executionModes: ['native_card', 'external_link', 'workflow', 'reference_only'] satisfies ToolExecutionMode[],

@@ -8,6 +8,24 @@
 
 ### 新增
 
+- 新增市场 favicon 向阿里云 OSS 迁移的环境变量模板：
+  - `ALIYUN_OSS_REGION`
+  - `ALIYUN_OSS_BUCKET`
+  - `ALIYUN_OSS_ACCESS_KEY_ID`
+  - `ALIYUN_OSS_ACCESS_KEY_SECRET`
+  - `ALIYUN_OSS_ENDPOINT`
+  - `ALIYUN_OSS_PUBLIC_BASE_URL`
+  - `ALIYUN_OSS_FAVICON_PREFIX`
+- 新增市场 favicon 上传脚本 `scripts/upload-market-favicons-to-oss.mjs`，用于将本地 favicon 批量上传到 OSS。
+- 新增 `src/shared/market-favicon-remote-manifest.ts`，用于承载 OSS 远端 favicon 地址。
+
+### 变更
+
+- 市场工具图标读取顺序调整为“OSS 远端优先，本地图标兜底”，为后续市场资产云端化做准备。
+- `README.md` 补充阿里云 OSS 配置模板、favicon 迁移步骤与命令说明。
+
+### 新增
+
 - 新增 App Router 页面入口：`/market`、`/pocket`、`/profile`，明确形成分析页、市场页、口袋页、个人中心页四页结构。
 - 新增跨页通用页面骨架与导航能力，包括 `PageShell`、`TopNavSwitch`、`ProfileEntryPill`。
 - 新增独立个人中心实现：`src/components/profile-page.tsx` 与 `src/app/profile/page.tsx`。

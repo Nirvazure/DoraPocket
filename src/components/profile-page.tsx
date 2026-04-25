@@ -28,7 +28,7 @@ function preferenceLabel(value: string) {
   const preferenceLabelMap: Record<string, string> = {
     ai_assistant: 'AI 助手',
     search: '资料搜索',
-    dev: '开发工具',
+    developer: '开发者工具',
     design: '设计素材',
     productivity: '办公效率',
     media: '媒体处理',

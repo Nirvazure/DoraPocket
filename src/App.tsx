@@ -12,7 +12,6 @@ import { ProfileEntryPill } from '@/components/common/profile-entry-pill'
 import { PageShell } from '@/components/common/page-shell'
 import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
-import { FONT_PRESET_STORAGE_KEY } from '@/font-presets'
 import { RightStatusShowcase } from '@/components/right-status-showcase'
 import { useStore } from './store'
 import {
@@ -50,6 +49,7 @@ type RunTurnOptions = {
 }
 
 const AUTO_SAVE_POCKET_STORAGE_KEY = 'dp-pocket-autosave-enabled-v1'
+const FONT_PRESET_STORAGE_KEY = 'dorapocket-font-preset'
 const PROMPT_SUGGESTIONS = [
   '帮我找一个最好用的 PDF 压缩工具',
   '推荐适合查资料并带引用的 AI 搜索工具',
