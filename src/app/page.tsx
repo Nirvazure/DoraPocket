@@ -1,7 +1,5 @@
-'use client'
-
-import App from '@/App'
+import { IntroPage } from '@/components/intro-page'
 
 export default function HomePage() {
-  return <App />
+  return <IntroPage />
 }

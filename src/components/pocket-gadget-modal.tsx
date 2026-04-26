@@ -28,11 +28,7 @@ export function PocketGadgetModal({ open, gadget, onClose, onSaveToPocket, onOpe
 
   const openAction = () => {
     if (!gadget.toolId) return
-    const toolUrl = resolveToolUrlById(gadget.toolId)
-    const url = toolUrl
-    if (!url) return
     onOpenTool?.(gadget.toolId)
-    window.open(url, '_blank', 'noopener,noreferrer')
   }
 
   const imageSrc = modeImageSrc(gadget)

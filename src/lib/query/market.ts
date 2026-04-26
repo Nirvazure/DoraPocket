@@ -1,4 +1,5 @@
-import { queryOptions, useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
+﻿import { queryOptions, useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
+import { getMarketActivityQueryOptions } from '@/lib/query/market-activity'
 import { queryKeys } from '@/lib/query/query-keys'
 import {
   buildMarketContext,
@@ -43,16 +44,33 @@ type SubmitMarketToolInput = {
 
 type PreferenceMode = 'applied' | 'inferred'
 
+// MarketContext 的底层数据仍来自 local storage，query 层负责把派生快照共享给页面。
 function loadMarketContextSnapshot(mode: PreferenceMode = 'applied') {
   return buildMarketContext(loadPocketInventory(), mode)
 }
 
+// 这部分只负责同步市场派生数据：context、画像和 override。
+function syncMarketDerivedSnapshots(queryClient: QueryClient) {
+  const applied = loadMarketContextSnapshot('applied')
+  const inferred = loadMarketContextSnapshot('inferred')
+  queryClient.setQueryData(queryKeys.marketContext.current('applied'), applied)
+  queryClient.setQueryData(queryKeys.marketContext.current('inferred'), inferred)
+  queryClient.setQueryData(queryKeys.preferenceProfile.current('applied'), applied.preferenceProfile)
+  queryClient.setQueryData(queryKeys.preferenceProfile.current('inferred'), inferred.preferenceProfile)
+  queryClient.setQueryData(
+    queryKeys.preferenceProfileOverride.current(),
+    loadPreferenceProfileOverride(),
+  )
+}
+
+// activity 是时间线视图，和派生画像不是同一层语义，因此单独同步。
+function syncMarketActivitySnapshot(queryClient: QueryClient, limit = 4) {
+  void queryClient.fetchQuery(getMarketActivityQueryOptions(limit))
+}
+
 function invalidateMarketDependents(queryClient: QueryClient) {
-  void queryClient.invalidateQueries({ queryKey: queryKeys.marketFeedback.all })
-  void queryClient.invalidateQueries({ queryKey: queryKeys.marketSubscriptions.all })
-  void queryClient.invalidateQueries({ queryKey: queryKeys.marketSubmissions.all })
-  void queryClient.invalidateQueries({ queryKey: queryKeys.preferenceProfile.all })
-  void queryClient.invalidateQueries({ queryKey: queryKeys.marketContext.all })
+  syncMarketDerivedSnapshots(queryClient)
+  syncMarketActivitySnapshot(queryClient)
 }
 
 export function useMarketFeedbackQuery() {

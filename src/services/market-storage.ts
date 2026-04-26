@@ -1,3 +1,15 @@
+import { readStorageJson, writeStorageJson } from '@/lib/storage'
+import type { PocketInventoryItem } from '@/services/pocket-inventory'
+import { getToolById } from '@/services/tool-registry'
+import { MARKET_ACTIVITY_COPY } from '@/shared/ui-copy'
+import type {
+  ToolCategory,
+  ToolExecutionMode,
+  ToolItem,
+  ToolPlatform,
+  ToolPricingModel,
+  ToolUsageStats,
+} from '@/shared/tool-registry'
 import type {
   MarketContext,
   MarketFeedbackRecord,
@@ -8,10 +20,6 @@ import type {
   ToolVote,
   UserPreferenceProfile,
 } from '@/shared/market-types'
-import { readStorageJson, writeStorageJson } from '@/lib/storage'
-import type { PocketInventoryItem } from '@/services/pocket-inventory'
-import type { ToolCategory, ToolExecutionMode, ToolItem, ToolPlatform, ToolPricingModel, ToolUsageStats } from '@/shared/tool-registry'
-import { getToolById } from '@/services/tool-registry'
 
 const FEEDBACK_STORAGE_KEY = 'dp-market-feedback-v1'
 const SUBSCRIPTION_STORAGE_KEY = 'dp-market-subscriptions-v1'
@@ -44,7 +52,9 @@ export function setToolSubscription(toolId: string, active: boolean) {
 
 export function loadMarketSubmissions(): MarketSubmission[] {
   const list = readStorageJson<MarketSubmission[]>(SUBMISSION_STORAGE_KEY, [])
-  return Array.isArray(list) ? list.filter((item) => item && typeof item.name === 'string' && typeof item.url === 'string') : []
+  return Array.isArray(list)
+    ? list.filter((item) => item && typeof item.name === 'string' && typeof item.url === 'string')
+    : []
 }
 
 type ToolActivityMap = Record<string, ToolUsageStats>
@@ -108,28 +118,35 @@ export function recentMarketActivity(limit = 8): Array<{
   const feedback = loadMarketFeedback().map((item) => ({
     id: `feedback_${item.toolId}_${item.updatedAt}`,
     type: 'feedback' as const,
-    title: item.vote === 'up' ? '投了好票' : '投了不好票',
+    title: item.vote === 'up' ? MARKET_ACTIVITY_COPY.feedbackUp : MARKET_ACTIVITY_COPY.feedbackDown,
     detail: resolveActivitySubject(item.toolId),
     createdAt: item.updatedAt,
   }))
   const subscriptions = loadMarketSubscriptions().map((item) => ({
     id: `subscription_${item.toolId}_${item.subscribedAt}`,
     type: 'subscription' as const,
-    title: item.active ? '订阅了工具' : '取消了订阅',
+    title: item.active ? MARKET_ACTIVITY_COPY.subscribed : MARKET_ACTIVITY_COPY.unsubscribed,
     detail: resolveActivitySubject(item.toolId),
     createdAt: item.subscribedAt,
   }))
   const submissions = loadMarketSubmissions().map((item) => ({
     id: item.id,
     type: 'submission' as const,
-    title: '提交了市场工具',
+    title: MARKET_ACTIVITY_COPY.submitted,
     detail: item.name,
     createdAt: item.submittedAt,
   }))
-  return [...feedback, ...subscriptions, ...submissions].sort((a, b) => b.createdAt - a.createdAt).slice(0, limit)
+  return [...feedback, ...subscriptions, ...submissions]
+    .sort((a, b) => b.createdAt - a.createdAt)
+    .slice(0, limit)
 }
 
-export function submitMarketTool(input: { name: string; url: string; description: string; tags: string[] }) {
+export function submitMarketTool(input: {
+  name: string
+  url: string
+  description: string
+  tags: string[]
+}) {
   const list = loadMarketSubmissions()
   list.unshift({
     id: `submission_${Date.now()}`,
@@ -170,11 +187,30 @@ function topKeys<Key extends string>(counter: Map<Key, number>, limit: number): 
 
 function summarizePreferenceProfile(profile: Omit<UserPreferenceProfile, 'summary'>): string[] {
   const summary: string[] = []
-  if (profile.preferredCategories.length > 0) summary.push(`偏好 ${profile.preferredCategories.slice(0, 2).join(' / ')} 类工具`)
-  if (profile.preferredTags.length > 0) summary.push(`常收藏 ${profile.preferredTags.slice(0, 3).join(' / ')} 相关能力`)
-  if (profile.avoidAuthWall) summary.push('更偏好免登录、轻摩擦工具')
-  if (profile.preferredPricing.includes('free') || profile.preferredPricing.includes('freemium')) summary.push('对低试错成本工具更敏感')
-  if (profile.prefersSubscriptionTools) summary.push('愿意把工具沉淀成长期订阅资产')
+  if (profile.preferredCategories.length > 0) {
+    summary.push(
+      `${MARKET_ACTIVITY_COPY.summaries.preferredCategoriesPrefix} ${profile.preferredCategories
+        .slice(0, 2)
+        .join(' / ')} ${MARKET_ACTIVITY_COPY.summaries.preferredCategoriesSuffix}`,
+    )
+  }
+  if (profile.preferredTags.length > 0) {
+    summary.push(
+      `${MARKET_ACTIVITY_COPY.summaries.savedTagsPrefix} ${profile.preferredTags
+        .slice(0, 3)
+        .join(' / ')} ${MARKET_ACTIVITY_COPY.summaries.savedTagsSuffix}`,
+    )
+  }
+  if (profile.avoidAuthWall) summary.push(MARKET_ACTIVITY_COPY.summaries.avoidAuthWall)
+  if (
+    profile.preferredPricing.includes('free') ||
+    profile.preferredPricing.includes('freemium')
+  ) {
+    summary.push(MARKET_ACTIVITY_COPY.summaries.lowTrialCost)
+  }
+  if (profile.prefersSubscriptionTools) {
+    summary.push(MARKET_ACTIVITY_COPY.summaries.prefersSubscriptionTools)
+  }
   return summary.slice(0, 4)
 }
 
@@ -190,7 +226,11 @@ function inferUserPreferenceProfile(pocketInventory: PocketInventoryItem[]): Use
   let nonSubscriptionToolScore = 0
 
   const feedbackMap = new Map(loadMarketFeedback().map((item) => [item.toolId, item.vote] as const))
-  const subscriptions = new Set(loadMarketSubscriptions().filter((item) => item.active).map((item) => item.toolId))
+  const subscriptions = new Set(
+    loadMarketSubscriptions()
+      .filter((item) => item.active)
+      .map((item) => item.toolId),
+  )
 
   const collect = (tool: ToolItem | null, weight: number) => {
     if (!tool || weight === 0) return
@@ -227,7 +267,8 @@ function inferUserPreferenceProfile(pocketInventory: PocketInventoryItem[]): Use
   for (const [toolId, stats] of Object.entries(activityMap)) {
     const tool = getToolById(toolId)
     if (!tool) continue
-    const activityWeight = Math.min(4, stats.opens) + Math.min(3, stats.saves) + Math.min(2, stats.subscriptions)
+    const activityWeight =
+      Math.min(4, stats.opens) + Math.min(3, stats.saves) + Math.min(2, stats.subscriptions)
     collect(tool, activityWeight)
   }
 
@@ -268,7 +309,16 @@ function applyPreferenceOverride(
 
 export function getPreferenceCalibrationOptions() {
   return {
-    categories: ['ai_assistant', 'search', 'developer', 'design', 'productivity', 'media', 'learning', 'writing'] satisfies ToolCategory[],
+    categories: [
+      'ai_assistant',
+      'search',
+      'developer',
+      'design',
+      'productivity',
+      'media',
+      'learning',
+      'writing',
+    ] satisfies ToolCategory[],
     platforms: ['web', 'desktop', 'mobile', 'api', 'mixed'] satisfies ToolPlatform[],
     pricing: ['free', 'freemium', 'paid', 'subscription'] satisfies ToolPricingModel[],
     executionModes: ['native_card', 'external_link', 'workflow', 'reference_only'] satisfies ToolExecutionMode[],
@@ -291,6 +341,9 @@ export function buildMarketContext(
     feedback: loadMarketFeedback(),
     subscriptions: loadMarketSubscriptions().filter((item) => item.active),
     submissions: loadMarketSubmissions(),
-    preferenceProfile: mode === 'applied' ? applyPreferenceOverride(inferredProfile, loadPreferenceProfileOverride()) : inferredProfile,
+    preferenceProfile:
+      mode === 'applied'
+        ? applyPreferenceOverride(inferredProfile, loadPreferenceProfileOverride())
+        : inferredProfile,
   }
 }

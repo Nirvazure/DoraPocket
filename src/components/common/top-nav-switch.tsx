@@ -1,8 +1,8 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-type TopNavPage = 'analysis' | 'market' | 'pocket' | 'profile'
+type TopNavPage = 'intro' | 'analysis' | 'market' | 'pocket' | 'profile'
 
 type TopNavSwitchProps = {
   current: TopNavPage
@@ -10,7 +10,7 @@ type TopNavSwitchProps = {
 }
 
 const NAV_ITEMS: Array<{ key: TopNavPage; label: string; href: string }> = [
-  { key: 'analysis', label: '分析', href: '/' },
+  { key: 'analysis', label: '分析', href: '/analyse' },
   { key: 'market', label: '市场', href: '/market' },
   { key: 'pocket', label: '口袋', href: '/pocket' },
 ]

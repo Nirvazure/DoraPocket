@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { CompactDecisionPanel } from '@/components/discovery/compact-decision-panel'
 import { ContextInputCard } from '@/components/discovery/context-input-card'
 import { DecisionProgressSteps } from '@/components/discovery/decision-progress-steps'
@@ -7,6 +7,8 @@ import { DecisionThinkingRail } from '@/components/discovery/decision-thinking-r
 import { NextActionBar } from '@/components/discovery/next-action-bar'
 import { TaskContextCard } from '@/components/discovery/task-context-card'
 import { HelpStarterStrip } from '@/components/help-starter-panel'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { DisplayPanel } from '@/components/ui/display-shell'
 import type { ChatToolPayload } from '@/services/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
 import type { AppState } from '@/store'
@@ -16,7 +18,6 @@ type DiscoveryWorkspaceProps = {
   appState: AppState
   agentPayload: AgentUiPayload | null
   selectedToolPayload: ChatToolPayload
-  busyHint?: string
   autoSaveEnabled: boolean
   autoSaveNotice: { toolId: string; label: string } | null
   onOpenPocket: () => void
@@ -28,12 +29,33 @@ type DiscoveryWorkspaceProps = {
   onDraftTask?: (draft: string) => void
 }
 
+function resolveWorkspaceStepState(
+  currentPrompt: string | null,
+  agentPayload: AgentUiPayload | null,
+  stepViewState: { suggestedStep: number; activeStep: number },
+) {
+  const hasPrompt = Boolean(currentPrompt?.trim())
+  const hasPayload = Boolean(agentPayload)
+  // suggestedStep 表示系统认为当前最应该看到的阶段。
+  const suggestedStep = hasPayload ? 3 : hasPrompt ? 2 : 1
+  // activeStep 保留用户手动切换的意图，但当阶段推进时会自动跟随最新 suggestedStep。
+  const activeStep =
+    stepViewState.suggestedStep === suggestedStep ? stepViewState.activeStep : suggestedStep
+
+  return {
+    hasPrompt,
+    hasPayload,
+    suggestedStep,
+    activeStep,
+    showStarterStrip: !hasPrompt && !hasPayload,
+  }
+}
+
 export function DiscoveryWorkspace({
   currentPrompt,
   appState,
   agentPayload,
   selectedToolPayload,
-  busyHint,
   autoSaveEnabled,
   autoSaveNotice,
   onOpenPocket,
@@ -45,20 +67,20 @@ export function DiscoveryWorkspace({
   onDraftTask,
 }: DiscoveryWorkspaceProps) {
   const [stepViewState, setStepViewState] = useState({ suggestedStep: 1, activeStep: 1 })
-  const showStarterStrip = !currentPrompt?.trim() && !agentPayload
-  const hasPrompt = Boolean(currentPrompt?.trim())
-  const hasPayload = Boolean(agentPayload)
-  const suggestedStep = hasPayload ? 3 : hasPrompt ? 2 : 1
-  const activeStep = stepViewState.suggestedStep === suggestedStep ? stepViewState.activeStep : suggestedStep
+  const { activeStep, suggestedStep, showStarterStrip } = resolveWorkspaceStepState(
+    currentPrompt,
+    agentPayload,
+    stepViewState,
+  )
   const setActiveStep = (step: number) => setStepViewState({ suggestedStep, activeStep: step })
 
   return (
-    <section className="pointer-events-auto flex min-h-0 h-full flex-col overflow-hidden rounded-[2rem] border border-white/80 bg-white/90 shadow-xl shadow-slate-900/8 backdrop-blur-xl">
+    <DisplayPanel className="pointer-events-auto flex min-h-0 h-full flex-col overflow-hidden rounded-[2rem] bg-white/90">
       <div className="shrink-0 border-b border-border/45 px-4 py-3 sm:px-5 sm:py-4">
         <DecisionProgressSteps currentStep={activeStep} onStepClick={setActiveStep} />
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-5 py-3 [scrollbar-width:thin]">
+      <ScrollArea className="min-h-0 flex-1 px-5 py-3">
         <div className="mx-auto flex max-w-6xl flex-col gap-4">
           {activeStep === 1 ? (
             showStarterStrip && onDraftTask ? (
@@ -70,15 +92,15 @@ export function DiscoveryWorkspace({
 
           {activeStep === 2 ? (
             <div className="space-y-4">
-              <DecisionThinkingRail payload={agentPayload} appState={appState} currentPrompt={currentPrompt} busyHint={busyHint} />
-              <DecisionSummaryCard payload={agentPayload} currentPrompt={currentPrompt} appState={appState} busyHint={busyHint} />
+              <DecisionThinkingRail payload={agentPayload} appState={appState} currentPrompt={currentPrompt} />
+              <DecisionSummaryCard payload={agentPayload} currentPrompt={currentPrompt} appState={appState} />
               <ContextInputCard payload={agentPayload} />
             </div>
           ) : null}
 
           {activeStep === 3 ? (
             <div className="space-y-4">
-              <DecisionThinkingRail payload={agentPayload} appState={appState} currentPrompt={currentPrompt} busyHint={busyHint} />
+              <DecisionThinkingRail payload={agentPayload} appState={appState} currentPrompt={currentPrompt} />
               <CompactDecisionPanel
                 payload={agentPayload}
                 selectedToolPayload={selectedToolPayload}
@@ -94,7 +116,7 @@ export function DiscoveryWorkspace({
             </div>
           ) : null}
         </div>
-      </div>
+      </ScrollArea>
 
       <div className="shrink-0 px-5 pb-5">
         <NextActionBar
@@ -105,6 +127,6 @@ export function DiscoveryWorkspace({
           onOpenPocket={onOpenPocket}
         />
       </div>
-    </section>
+    </DisplayPanel>
   )
 }

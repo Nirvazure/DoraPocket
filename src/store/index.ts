@@ -1,14 +1,15 @@
-import { create } from 'zustand' //
+import { create } from 'zustand'
+import { createClientId } from '@/lib/id'
 
 export type AppState = 'idle' | 'listening' | 'thinking' | 'speaking'
 export type SystemNoticeLevel = 'critical' | 'task' | 'ambient' | 'silent'
 
 export type SystemNotice = {
-  id: string
-  level: SystemNoticeLevel
-  message: string
-  createdAt: number
-  autoDismissMs?: number
+  id: string //通知id
+  level: SystemNoticeLevel //通知级别
+  message: string //通知消息
+  createdAt: number //通知创建时间
+  autoDismissMs?: number //自动消失时间
 }
 
 interface DoraStore {
@@ -42,7 +43,7 @@ export const useStore = create<DoraStore>((set) => ({
       systemNotice: notice
         ? {
             ...notice,
-            id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+            id: createClientId('notice'),
             createdAt: Date.now(),
           }
         : null,

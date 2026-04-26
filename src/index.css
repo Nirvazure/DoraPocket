@@ -56,7 +56,8 @@
     @apply text-foreground font-sans antialiased;
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     background-color: hsl(219 54% 66%);
     background-image: radial-gradient(
       ellipse 125% 100% at 50% 36%,
@@ -79,6 +80,7 @@
     width: 100vw;
     height: 100vh;
   }
+
 }
 
 @keyframes dp-listen-ring {

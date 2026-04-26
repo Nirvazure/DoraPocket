@@ -1,4 +1,5 @@
 import { streamPocketGraph } from '@/server/agent/graph'
+import { createEmptyMarketContext } from '@/shared/market-defaults'
 import type { MarketContext } from '@/shared/market-types'
 
 type ChatRequestBody = {
@@ -15,22 +16,7 @@ export async function POST(request: Request) {
   try {
     const body = (await request.json()) as ChatRequestBody
     const message = body.message?.trim()
-    const marketContext: MarketContext = body.marketContext ?? {
-      savedItems: [],
-      feedback: [],
-      subscriptions: [],
-      submissions: [],
-      preferenceProfile: {
-        preferredCategories: [],
-        preferredTags: [],
-        preferredPlatforms: [],
-        preferredPricing: [],
-        preferredExecutionModes: [],
-        avoidAuthWall: true,
-        prefersSubscriptionTools: false,
-        summary: [],
-      },
-    }
+    const marketContext: MarketContext = body.marketContext ?? createEmptyMarketContext()
     if (!message) {
       return new Response(JSON.stringify({ error: 'message is required' }), {
         status: 400,

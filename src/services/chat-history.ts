@@ -1,3 +1,5 @@
+import { createClientId } from '@/lib/id'
+
 export const CHAT_HISTORY_STORAGE_KEY = 'dp-chat-history-v1'
 
 export type ChatHistoryEntry = {
@@ -44,7 +46,7 @@ export function loadChatHistory(): ChatHistoryEntry[] {
 export function saveChatHistoryEntry(input: Omit<ChatHistoryEntry, 'id' | 'createdAt'>) {
   const entry: ChatHistoryEntry = {
     ...input,
-    id: `chat_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+    id: createClientId('chat'),
     createdAt: Date.now(),
   }
   writeHistory([entry, ...loadChatHistory()])
