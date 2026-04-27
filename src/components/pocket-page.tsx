@@ -16,6 +16,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToolCardActions } from '@/hooks/use-tool-card-actions'
+import { useAuthSessionQuery } from '@/lib/query/auth-session'
 import {
   useMarkToolUsedMutation,
   usePocketInventoryQuery,
@@ -40,6 +41,7 @@ function resolvePocketTools(items: PocketInventoryItem[]) {
 }
 
 export function PocketPage() {
+  const { data: authSession } = useAuthSessionQuery()
   const { data: pocketInventory = [] } = usePocketInventoryQuery()
   const removeToolFromPocketMutation = useRemoveToolFromPocketMutation()
   const togglePinToolMutation = useTogglePinToolMutation()
@@ -52,8 +54,14 @@ export function PocketPage() {
   })
 
   const keyword = query.trim().toLowerCase()
-  const activeItems = useMemo(() => pocketInventory.filter((item) => !item.archived), [pocketInventory])
-  const archivedItems = useMemo(() => pocketInventory.filter((item) => item.archived), [pocketInventory])
+  const activeItems = useMemo(
+    () => pocketInventory.filter((item) => !item.archived),
+    [pocketInventory],
+  )
+  const archivedItems = useMemo(
+    () => pocketInventory.filter((item) => item.archived),
+    [pocketInventory],
+  )
 
   const activeTools = useMemo(() => {
     const resolved = resolvePocketTools(activeItems)
@@ -91,7 +99,24 @@ export function PocketPage() {
         />
       </div>
 
-      {activeItems.length === 0 ? (
+      {!authSession?.authenticated ? (
+        <DisplayPanel className="rounded-[2rem] bg-white/90 p-8 text-center">
+          <DisplayPanelHeader className="p-0">
+            <DisplayPanelTitle className="text-lg">登录后开启云端口袋</DisplayPanelTitle>
+            <DisplayPanelDescription className="mt-2 text-sm">
+              你的口袋、复用记录和工具偏好会跟着账号走，换设备也不会丢。
+            </DisplayPanelDescription>
+          </DisplayPanelHeader>
+          <div className="mt-5 flex justify-center gap-3">
+            <Button asChild className="h-10 rounded-full px-4 text-xs font-bold">
+              <a href="/login">立即登录</a>
+            </Button>
+            <Button asChild variant="outline" className="h-10 rounded-full px-4 text-xs font-bold">
+              <a href="/market">{PAGE_COPY.pocket.goMarketAction}</a>
+            </Button>
+          </div>
+        </DisplayPanel>
+      ) : activeItems.length === 0 ? (
         <DisplayPanel className="rounded-[2rem] bg-white/90 p-8 text-center">
           <DisplayPanelHeader className="p-0">
             <DisplayPanelTitle className="text-lg">{PAGE_COPY.pocket.emptyTitle}</DisplayPanelTitle>
@@ -133,7 +158,9 @@ export function PocketPage() {
                     onTogglePurchased={() =>
                       togglePurchasedToolMutation.mutate({ toolId: entry.toolId })
                     }
-                    onToggleArchive={() => toggleArchiveToolMutation.mutate({ toolId: entry.toolId })}
+                    onToggleArchive={() =>
+                      toggleArchiveToolMutation.mutate({ toolId: entry.toolId })
+                    }
                     onRemove={() => removeToolFromPocketMutation.mutate({ toolId: entry.toolId })}
                     onOpenExternal={() => toolCardActions.openTool(entry.toolId)}
                   />
@@ -174,7 +201,9 @@ export function PocketPage() {
                     onTogglePurchased={() =>
                       togglePurchasedToolMutation.mutate({ toolId: entry.toolId })
                     }
-                    onToggleArchive={() => toggleArchiveToolMutation.mutate({ toolId: entry.toolId })}
+                    onToggleArchive={() =>
+                      toggleArchiveToolMutation.mutate({ toolId: entry.toolId })
+                    }
                     onRemove={() => removeToolFromPocketMutation.mutate({ toolId: entry.toolId })}
                     onOpenExternal={() => toolCardActions.openTool(entry.toolId)}
                   />

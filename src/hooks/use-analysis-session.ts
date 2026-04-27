@@ -1,14 +1,16 @@
-﻿import { useCallback, useEffect, useRef, useState } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { playAudioStream, playDoraPocketSfx, stopAudioPlayback } from '@/services/audio'
 import { askQwen, type ChatToolPayload } from '@/services/llm'
 import { buildTTSAudioUrl } from '@/services/tts'
 import { getToolById } from '@/services/tool-registry'
-import { getModeByToolId, pickModeCardAfterTurn, type AssistantModeCard } from '@/shared/mode-registry'
+import type { UserSettings } from '@/services/user-settings'
+import {
+  getModeByToolId,
+  pickModeCardAfterTurn,
+  type AssistantModeCard,
+} from '@/shared/mode-registry'
 import type { AgentUiPayload } from '@/shared/market-types'
 import { SYSTEM_NOTICE_COPY } from '@/shared/ui-copy'
-import { getMarketContextQueryOptions } from '@/lib/query/market'
-import { queryKeys } from '@/lib/query/query-keys'
 import type { AppState } from '@/store'
 
 type RunTurnOptions = {
@@ -21,6 +23,7 @@ type PocketInventoryItem = {
 
 type UseAnalysisSessionOptions = {
   autoSaveEnabled: boolean
+  userSettings?: UserSettings
   pocketInventory: PocketInventoryItem[]
   saveChatHistory: (input: {
     userText: string
@@ -53,6 +56,7 @@ type AgentTurnReply = {
 
 export function useAnalysisSession({
   autoSaveEnabled,
+  userSettings,
   pocketInventory,
   saveChatHistory,
   saveToolToPocket,
@@ -64,15 +68,21 @@ export function useAnalysisSession({
   getSelectedGadgetKey,
   onPocketGadgetChange,
 }: UseAnalysisSessionOptions) {
-  const queryClient = useQueryClient()
   const pocketReachTimerRef = useRef(0)
   const latestUserPromptRef = useRef('')
-  // 当前回合的流式文本缓冲，避免从全局旧值反向拼接。
   const responseBufferRef = useRef('')
   const [selectedToolPayload, setSelectedToolPayload] = useState<ChatToolPayload>(null)
   const [agentUiPayload, setAgentUiPayload] = useState<AgentUiPayload | null>(null)
   const [currentPrompt, setCurrentPrompt] = useState<string | null>(null)
-  const [autoSaveNotice, setAutoSaveNotice] = useState<{ toolId: string; label: string } | null>(null)
+  const [autoSaveNotice, setAutoSaveNotice] = useState<{ toolId: string; label: string } | null>(
+    null,
+  )
+  const voicePlaybackMode = userSettings?.voicePlaybackMode ?? 'key-result'
+  const voicePlaybackEnabled =
+    userSettings?.voicePlaybackEnabled !== false && voicePlaybackMode !== 'off'
+  const soundEffectsEnabled = userSettings?.soundEffectsEnabled !== false
+  const memoryEnabled = userSettings?.memoryEnabled !== false
+  const explanationMode = userSettings?.explanationMode ?? 'standard'
 
   const finishSpeakingTurn = useCallback(() => {
     setAppState('idle')
@@ -83,13 +93,15 @@ export function useAnalysisSession({
   const triggerPocketReveal = useCallback(
     (gadget: AssistantModeCard) => {
       onPocketGadgetChange(gadget)
-      void playDoraPocketSfx()
+      if (soundEffectsEnabled) {
+        void playDoraPocketSfx()
+      }
       window.clearTimeout(pocketReachTimerRef.current)
       pocketReachTimerRef.current = window.setTimeout(() => {
         pocketReachTimerRef.current = 0
       }, 1050)
     },
-    [onPocketGadgetChange],
+    [onPocketGadgetChange, soundEffectsEnabled],
   )
 
   const clearResponseState = useCallback(() => {
@@ -120,15 +132,12 @@ export function useAnalysisSession({
     [setBotResponse],
   )
 
-  // 自动沉淀只发生在推荐链路满足 shouldAutoSave 且口袋中尚不存在该工具时。
   const maybeAutoSaveTool = useCallback(
     async (safeText: string, reply: AgentTurnReply) => {
       const toolId = reply.selectedTool?.toolId
       if (!autoSaveEnabled || !reply.uiPayload?.shouldAutoSave || !toolId) return
 
-      const latestPocketInventory =
-        queryClient.getQueryData<PocketInventoryItem[]>(queryKeys.pocket.list()) ?? pocketInventory
-      const existingPocketItem = latestPocketInventory.find((item) => item.toolId === toolId)
+      const existingPocketItem = pocketInventory.find((item) => item.toolId === toolId)
       if (existingPocketItem) return
 
       await saveToolToPocket({
@@ -146,19 +155,20 @@ export function useAnalysisSession({
         autoDismissMs: 2200,
       })
     },
-    [autoSaveEnabled, pocketInventory, queryClient, saveToolToPocket, setSystemNotice],
+    [autoSaveEnabled, pocketInventory, saveToolToPocket, setSystemNotice],
   )
 
-  // 请求成功后的统一收尾：持久化、口袋联动、自动沉淀、TTS 播放。
   const handleReplySuccess = useCallback(
     async (safeText: string, reply: AgentTurnReply) => {
       setSelectedToolPayload(reply.selectedTool)
       setAgentUiPayload(reply.uiPayload)
-      saveChatHistory({
-        userText: safeText,
-        assistantText: reply.text,
-        selectedToolId: reply.selectedTool?.toolId,
-      })
+      if (memoryEnabled) {
+        saveChatHistory({
+          userText: safeText,
+          assistantText: reply.text,
+          selectedToolId: reply.selectedTool?.toolId,
+        })
+      }
 
       const pocketKey = getSelectedGadgetKey()
       const nextPocketGadget = pickModeCardAfterTurn(pocketKey, reply.selectedTool?.toolId)
@@ -169,8 +179,19 @@ export function useAnalysisSession({
 
       await maybeAutoSaveTool(safeText, reply)
 
-      const audioUrl = await buildTTSAudioUrl(reply.text)
       setBotResponse(reply.text)
+
+      if (!voicePlaybackEnabled) {
+        finishSpeakingTurn()
+        return
+      }
+
+      if (voicePlaybackMode === 'key-result' && reply.text.trim().length > 120) {
+        finishSpeakingTurn()
+        return
+      }
+
+      const audioUrl = await buildTTSAudioUrl(reply.text)
 
       if (audioUrl) {
         setAppState('speaking')
@@ -185,16 +206,18 @@ export function useAnalysisSession({
     [
       finishSpeakingTurn,
       getSelectedGadgetKey,
+      memoryEnabled,
       maybeAutoSaveTool,
       onPocketGadgetChange,
       saveChatHistory,
       setAppState,
       setBotResponse,
       triggerPocketReveal,
+      voicePlaybackEnabled,
+      voicePlaybackMode,
     ],
   )
 
-  // 请求失败后的统一兜底：清空临时态并透出系统提示。
   const handleReplyError = useCallback(
     (error: unknown) => {
       stopAudioPlayback()
@@ -215,7 +238,6 @@ export function useAnalysisSession({
       if (!safeText) return
 
       try {
-        // 启动新回合前先重置音频与流式缓冲，避免上一次结果残留。
         stopAudioPlayback()
         responseBufferRef.current = ''
         setLastSpeechError('')
@@ -224,11 +246,9 @@ export function useAnalysisSession({
         latestUserPromptRef.current = safeText
         setCurrentPrompt(safeText)
 
-        // 每轮都基于最新市场上下文发起请求，确保推荐与口袋状态一致。
-        const marketContext = await queryClient.fetchQuery(getMarketContextQueryOptions('applied'))
         const reply = await askQwen(safeText, {
           answerBookFromPocket: options?.answerBookFromPocket === true,
-          marketContext,
+          explanationMode,
           onMeta: handleReplyMeta,
           onDelta: handleReplyDelta,
         })
@@ -243,10 +263,10 @@ export function useAnalysisSession({
       handleReplyError,
       handleReplyMeta,
       handleReplySuccess,
-      queryClient,
       setAppState,
       setBotResponse,
       setLastSpeechError,
+      explanationMode,
     ],
   )
 

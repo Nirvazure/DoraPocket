@@ -1,39 +1,30 @@
-import { useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { apiFetch } from '@/lib/query/api-client'
 import { queryKeys } from '@/lib/query/query-keys'
-import {
-  loadUserProfile,
-  saveUserProfile,
-  subscribeUserProfile,
-  type UserProfile,
-} from '@/services/user-profile'
+import { getDefaultUserProfile, type UserProfile } from '@/services/user-profile'
 
 export function useUserProfileQuery() {
   return useQuery({
     queryKey: queryKeys.userProfile.current(),
-    queryFn: async () => loadUserProfile(),
+    queryFn: async () =>
+      apiFetch<UserProfile>('/api/me/profile').catch(() => getDefaultUserProfile()),
     staleTime: Infinity,
   })
 }
 
 export function useUserProfileSubscription() {
-  const queryClient = useQueryClient()
-
-  useEffect(() => {
-    return subscribeUserProfile((profile) => {
-      queryClient.setQueryData(queryKeys.userProfile.current(), profile)
-    })
-  }, [queryClient])
+  return
 }
 
 export function useSaveUserProfileMutation() {
   const queryClient = useQueryClient()
 
   return useMutation<UserProfile, Error, UserProfile>({
-    mutationFn: async (input) => {
-      saveUserProfile(input)
-      return loadUserProfile()
-    },
+    mutationFn: async (input) =>
+      apiFetch<UserProfile>('/api/me/profile', {
+        method: 'PATCH',
+        body: JSON.stringify(input),
+      }),
     onSuccess: (next) => {
       queryClient.setQueryData(queryKeys.userProfile.current(), next)
     },

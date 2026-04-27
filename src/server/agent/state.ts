@@ -1,4 +1,10 @@
-import type { AgentCandidate, AgentTaskFrame, AgentUiPayload, MarketContext } from '@/shared/market-types'
+import type {
+  AgentCandidate,
+  AgentTaskFrame,
+  AgentUiPayload,
+  MarketContext,
+} from '@/shared/market-types'
+import type { ExplanationMode } from '@/services/user-settings'
 
 export type PocketIntent =
   | 'chat'
@@ -27,12 +33,14 @@ export type PocketState = {
   final_text: string
   answerBookFromPocket: boolean
   market_context: MarketContext
+  explanation_mode: ExplanationMode
 }
 
 export function createInitialState(
   input: string,
   answerBookFromPocket: boolean,
   marketContext: MarketContext,
+  explanationMode: ExplanationMode,
 ): PocketState {
   return {
     messages: [{ role: 'user', content: input }],
@@ -64,5 +72,6 @@ export function createInitialState(
     final_text: '',
     answerBookFromPocket,
     market_context: marketContext,
+    explanation_mode: explanationMode,
   }
 }

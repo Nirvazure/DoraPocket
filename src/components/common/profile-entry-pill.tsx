@@ -1,12 +1,6 @@
 'use client'
 
-import Image from 'next/image'
-import Link from 'next/link'
-import { cn } from '@/lib/utils'
-import {
-  useUserProfileQuery,
-  useUserProfileSubscription,
-} from '@/lib/query/user-profile'
+import { LoginEntryButton } from '@/components/auth/login-entry-button'
 
 type ProfileEntryPillProps = {
   active?: boolean
@@ -14,23 +8,5 @@ type ProfileEntryPillProps = {
 }
 
 export function ProfileEntryPill({ active = false, className }: ProfileEntryPillProps) {
-  useUserProfileSubscription()
-  const { data: profile } = useUserProfileQuery()
-
-  return (
-    <Link
-      href="/profile"
-      aria-current={active ? 'page' : undefined}
-      className={cn(
-        'inline-flex h-10 items-center gap-2 rounded-full border px-2.5 pr-3 shadow-sm transition-colors',
-        active ? 'border-primary/25 bg-primary text-primary-foreground shadow-sm' : 'border-slate-200/80 bg-white/92 hover:bg-white',
-        className,
-      )}
-    >
-      <span className={cn('inline-flex h-7 w-7 shrink-0 overflow-hidden rounded-full border bg-slate-100', active ? 'border-primary-foreground/30' : 'border-white/80')}>
-        <Image src={profile?.avatarSrc ?? '/branding/assistant-avatar.svg'} alt="个人头像" width={28} height={28} unoptimized className="h-full w-full object-cover" />
-      </span>
-      <span className={cn('max-w-24 truncate text-xs font-bold', active ? 'text-primary-foreground' : 'text-foreground/82')}>{profile?.nickname ?? '用户'}</span>
-    </Link>
-  )
+  return <LoginEntryButton active={active} className={className} />
 }

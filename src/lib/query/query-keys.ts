@@ -1,4 +1,8 @@
 export const queryKeys = {
+  userSettings: {
+    all: ['userSettings'] as const,
+    current: () => ['userSettings', 'current'] as const,
+  },
   userProfile: {
     all: ['userProfile'] as const,
     current: () => ['userProfile', 'current'] as const,
@@ -10,6 +14,10 @@ export const queryKeys = {
   marketFeedback: {
     all: ['marketFeedback'] as const,
     list: () => ['marketFeedback', 'list'] as const,
+  },
+  marketReviewAggregates: {
+    all: ['marketReviewAggregates'] as const,
+    list: () => ['marketReviewAggregates', 'list'] as const,
   },
   marketSubscriptions: {
     all: ['marketSubscriptions'] as const,

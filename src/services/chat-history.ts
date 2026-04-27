@@ -1,3 +1,4 @@
+// Legacy local storage bridge. Cloud chat history is now served via /api/me/chat-history.
 import { createClientId } from '@/lib/id'
 
 export const CHAT_HISTORY_STORAGE_KEY = 'dp-chat-history-v1'

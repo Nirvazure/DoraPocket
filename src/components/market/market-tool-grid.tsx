@@ -4,17 +4,24 @@ import { ExternalLink, FolderOpenDot } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { MarketToolIcon } from '@/components/market/market-tool-icon'
 import { cn } from '@/lib/utils'
+import type { MarketToolCardItem } from '@/hooks/use-market-page-model'
+import { MARKET_ACTIVITY_COPY } from '@/shared/ui-copy'
 import { TOOL_SOURCE_LABELS } from '@/shared/tool-labels'
 import { PAGE_COPY } from '@/shared/ui-copy'
-import type { ToolItem } from '@/services/tool-registry'
 
 type MarketToolGridProps = {
-  tools: ToolItem[]
+  tools: MarketToolCardItem[]
   onSaveTool: (toolId: string) => void
   onOpenTool: (toolId: string) => void
+  onReviewTool: (toolId: string) => void
 }
 
-export function MarketToolGrid({ tools, onSaveTool, onOpenTool }: MarketToolGridProps) {
+export function MarketToolGrid({
+  tools,
+  onSaveTool,
+  onOpenTool,
+  onReviewTool,
+}: MarketToolGridProps) {
   return (
     <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
       {tools.map((tool) => (
@@ -35,7 +42,9 @@ export function MarketToolGrid({ tools, onSaveTool, onOpenTool }: MarketToolGrid
             <span
               className={cn(
                 'shrink-0 rounded-full px-2 py-1 text-[9px] font-bold',
-                tool.source === 'builtin' ? 'bg-primary/10 text-primary' : 'bg-white text-muted-foreground',
+                tool.source === 'builtin'
+                  ? 'bg-primary/10 text-primary'
+                  : 'bg-white text-muted-foreground',
               )}
             >
               {TOOL_SOURCE_LABELS[tool.source]}
@@ -54,14 +63,38 @@ export function MarketToolGrid({ tools, onSaveTool, onOpenTool }: MarketToolGrid
           <div className="mt-auto flex items-end justify-between gap-2 pt-2">
             <div className="flex-1">
               <p className="line-clamp-2 text-[10px] font-semibold leading-4 text-muted-foreground">
-                {PAGE_COPY.market.stats.recommendation} {tool.ratingSummary.upvotes} ·{' '}
+                {tool.reviewAggregate?.averageStar != null
+                  ? `${tool.reviewAggregate.averageStar.toFixed(1)} 分 · ${tool.reviewAggregate.reviewCount}${PAGE_COPY.market.reviewCountLabel}`
+                  : PAGE_COPY.market.reviewEmptyLabel}{' '}
                 {PAGE_COPY.market.stats.opens} {tool.usageStats.opens} ·{' '}
                 {tool.executionMode === 'native_card'
                   ? PAGE_COPY.market.stats.nativeCard
                   : PAGE_COPY.market.stats.externalLink}
               </p>
+              {tool.reviewAggregate?.topTags.length ? (
+                <div className="mt-1 flex flex-wrap gap-1">
+                  {tool.reviewAggregate.topTags.slice(0, 2).map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full bg-primary/[0.08] px-2 py-0.5 text-[9px] font-bold text-primary"
+                    >
+                      {MARKET_ACTIVITY_COPY.reviewTags[tag]}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
             </div>
             <div className="flex shrink-0 flex-wrap justify-end gap-1.5">
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-7 rounded-full px-2 text-[10px] text-muted-foreground hover:bg-slate-100 hover:text-foreground"
+                onClick={() => onReviewTool(tool.id)}
+              >
+                {tool.reviewAggregate?.currentUserReview
+                  ? PAGE_COPY.market.updateReviewAction
+                  : PAGE_COPY.market.reviewAction}
+              </Button>
               <Button
                 type="button"
                 variant="outline"

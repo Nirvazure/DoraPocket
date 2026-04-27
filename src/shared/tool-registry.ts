@@ -14,7 +14,13 @@ export type ToolCategory =
   | 'learning'
   | 'writing'
 
-export type ToolSource = 'builtin' | 'market' | 'submitted' | 'imported' | 'external_resource' | 'official'
+export type ToolSource =
+  | 'builtin'
+  | 'market'
+  | 'submitted'
+  | 'imported'
+  | 'external_resource'
+  | 'official'
 export type ToolStatus = 'active' | 'review' | 'blocked'
 export type ToolExecutionMode = 'native_card' | 'external_link' | 'workflow' | 'reference_only'
 export type ToolPlatform = 'web' | 'desktop' | 'mobile' | 'api' | 'mixed'
@@ -528,7 +534,12 @@ const STATIC_TOOL_REGISTRY: ToolItem[] = [
     capabilities: ['3d-generation'],
     recommendedFor: ['3D 概念生成', '素材探索'],
     sourceNote: '市场精选',
-    trustSignals: { curated: true, official: true, communityVerified: false, riskNote: '生成质量波动较大' },
+    trustSignals: {
+      curated: true,
+      official: true,
+      communityVerified: false,
+      riskNote: '生成质量波动较大',
+    },
     ratingSummary: rating(33, 6),
     usageStats: usage(21, 34, 2),
     subscriptionSupport: true,
@@ -654,7 +665,9 @@ export function convertBookmarkSeedToToolItem(seed: MarketBookmarkSeed): ToolIte
     iconType: 'favicon',
     iconText: fallbackBookmarkEmoji(seed),
     iconImageUrl: remoteFavicon?.faviconUrl ?? favicon?.faviconUrl ?? seed.faviconUrl ?? null,
-    iconImageLocalPath: remoteFavicon ? null : (favicon?.faviconLocalPath ?? seed.faviconLocalPath ?? null),
+    iconImageLocalPath: remoteFavicon
+      ? null
+      : (favicon?.faviconLocalPath ?? seed.faviconLocalPath ?? null),
     url: seed.displayUrl,
     description: seed.description,
     category: seed.category,
@@ -678,11 +691,17 @@ export function convertBookmarkSeedToToolItem(seed: MarketBookmarkSeed): ToolIte
   }
 }
 
-export const BOOKMARK_SEED_TOOL_REGISTRY: ToolItem[] = MARKET_BOOKMARK_SEEDS.map(convertBookmarkSeedToToolItem)
+export const BOOKMARK_SEED_TOOL_REGISTRY: ToolItem[] = MARKET_BOOKMARK_SEEDS.map(
+  convertBookmarkSeedToToolItem,
+)
 
-export const BUILTIN_TOOL_REGISTRY: ToolItem[] = STATIC_TOOL_REGISTRY.filter((item) => item.source === 'builtin')
+export const BUILTIN_TOOL_REGISTRY: ToolItem[] = STATIC_TOOL_REGISTRY.filter(
+  (item) => item.source === 'builtin',
+)
 
-export const CURATED_MARKET_TOOL_REGISTRY: ToolItem[] = STATIC_TOOL_REGISTRY.filter((item) => item.source !== 'builtin')
+export const CURATED_MARKET_TOOL_REGISTRY: ToolItem[] = STATIC_TOOL_REGISTRY.filter(
+  (item) => item.source !== 'builtin',
+)
 
 export const TOOL_REGISTRY: ToolItem[] = [...STATIC_TOOL_REGISTRY, ...BOOKMARK_SEED_TOOL_REGISTRY]
 
@@ -721,7 +740,8 @@ function includesAny(text: string, keywords: string[]): boolean {
 }
 
 function inferReason(query: string, tool: ToolItem): string {
-  if (tool.executionMode === 'native_card') return `它是可直接在口袋里调用的原生能力，适合立刻执行“${query}”。`
+  if (tool.executionMode === 'native_card')
+    return `它是可直接在口袋里调用的原生能力，适合立刻执行“${query}”。`
   if (tool.category === 'search') return `它更适合先扩展信息面，再继续决策。`
   if (tool.category === 'developer') return `它针对开发任务更专用，能减少你手工折腾。`
   if (tool.category === 'design') return `它更像高频素材或设计工具，不适合硬做成内置能力。`
@@ -746,9 +766,14 @@ export function scoreToolMatch(query: string, tool: ToolItem): number {
 
   if (includesAny(lower, ['天气', '气温', '下雨']) && tool.id === TOOL_ID_WEATHER) score += 120
   if (includesAny(lower, ['时间', '几点', '星期']) && tool.id === TOOL_ID_TIME) score += 120
-  if (includesAny(lower, ['汇率', '美元', '人民币', '日元', '欧元']) && tool.id === TOOL_ID_EXCHANGE) score += 120
+  if (
+    includesAny(lower, ['汇率', '美元', '人民币', '日元', '欧元']) &&
+    tool.id === TOOL_ID_EXCHANGE
+  )
+    score += 120
   if (includesAny(lower, ['空气', 'aqi', 'pm2.5']) && tool.id === TOOL_ID_AIR_QUALITY) score += 120
-  if (includesAny(lower, ['网页', '链接', '摘要', '文章总结']) && tool.id === TOOL_ID_WEB_SUMMARY) score += 120
+  if (includesAny(lower, ['网页', '链接', '摘要', '文章总结']) && tool.id === TOOL_ID_WEB_SUMMARY)
+    score += 120
   if (includesAny(lower, ['搜索', '调研', '资料']) && tool.id === TOOL_ID_PERPLEXITY) score += 58
   if (includesAny(lower, ['翻译', '中译英', '英译中']) && tool.id === TOOL_ID_FANYI) score += 58
   if (includesAny(lower, ['pdf', '合并', '压缩', '拆分']) && tool.id === TOOL_ID_PDF24) score += 58
@@ -780,6 +805,26 @@ export function rankTools(
     prefersSubscriptionTools?: boolean
   },
 ): ToolMatch[] {
+  return rankToolItems(getActiveTools(), query, opts)
+}
+
+export function rankToolItems(
+  tools: ToolItem[],
+  query: string,
+  opts?: {
+    savedToolIds?: string[]
+    subscribedToolIds?: string[]
+    upvotedToolIds?: string[]
+    downvotedToolIds?: string[]
+    preferredCategories?: string[]
+    preferredTags?: string[]
+    preferredPlatforms?: string[]
+    preferredPricing?: string[]
+    preferredExecutionModes?: string[]
+    avoidAuthWall?: boolean
+    prefersSubscriptionTools?: boolean
+  },
+): ToolMatch[] {
   const saved = new Set(opts?.savedToolIds ?? [])
   const subscribed = new Set(opts?.subscribedToolIds ?? [])
   const upvoted = new Set(opts?.upvotedToolIds ?? [])
@@ -789,8 +834,8 @@ export function rankTools(
   const preferredPlatforms = new Set(opts?.preferredPlatforms ?? [])
   const preferredPricing = new Set(opts?.preferredPricing ?? [])
   const preferredExecutionModes = new Set(opts?.preferredExecutionModes ?? [])
-
-  return getActiveTools()
+  return tools
+    .filter((tool) => tool.status === 'active')
     .map((tool) => {
       let score = scoreToolMatch(query, tool)
       let sourceLabel: ToolMatch['sourceLabel'] = tool.source === 'builtin' ? 'builtin' : 'market'

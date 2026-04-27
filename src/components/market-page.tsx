@@ -6,26 +6,38 @@ import { PageShell } from '@/components/common/page-shell'
 import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
 import { MarketCategoryNav } from '@/components/market/market-category-nav'
+import { MarketReviewDrawer } from '@/components/market/market-review-drawer'
 import { MarketSubmitModal } from '@/components/market/market-submit-modal'
 import { MarketToolGrid } from '@/components/market/market-tool-grid'
 import { MarketToolbar } from '@/components/market/market-toolbar'
 import { useMarketPageModel } from '@/hooks/use-market-page-model'
 import { useToolCardActions } from '@/hooks/use-tool-card-actions'
-import { useSubmitMarketToolMutation } from '@/lib/query/market'
+import {
+  useMarketReviewAggregatesQuery,
+  useSaveMarketFeedbackMutation,
+  useMarketToolsQuery,
+  useSubmitMarketToolMutation,
+} from '@/lib/query/market'
 import { useMarkToolUsedMutation, useSaveToolToPocketMutation } from '@/lib/query/pocket'
-import { getActiveTools } from '@/services/tool-registry'
 import { PAGE_COPY } from '@/shared/ui-copy'
 
 export function MarketPage() {
   const saveToolToPocketMutation = useSaveToolToPocketMutation()
   const markToolUsedMutation = useMarkToolUsedMutation()
   const submitMarketToolMutation = useSubmitMarketToolMutation()
+  const saveMarketFeedbackMutation = useSaveMarketFeedbackMutation()
+  const { data: marketTools = [] } = useMarketToolsQuery()
+  const { data: reviewAggregates = {} } = useMarketReviewAggregatesQuery()
   const toolCardActions = useToolCardActions({
     markToolUsed: markToolUsedMutation.mutate,
     saveToolToPocket: saveToolToPocketMutation.mutate,
     getSourceQuestion: () => '从市场页收入口袋',
   })
-  const marketModel = useMarketPageModel(getActiveTools(), submitMarketToolMutation.mutate)
+  const marketModel = useMarketPageModel(
+    marketTools,
+    reviewAggregates,
+    submitMarketToolMutation.mutate,
+  )
 
   return (
     <PageShell
@@ -64,6 +76,7 @@ export function MarketPage() {
               tools={marketModel.currentCategoryTools}
               onSaveTool={toolCardActions.saveTool}
               onOpenTool={toolCardActions.openTool}
+              onReviewTool={marketModel.openReviewTool}
             />
           </ScrollArea>
         </div>
@@ -75,6 +88,17 @@ export function MarketPage() {
         onClose={() => marketModel.setSubmitOpen(false)}
         onDraftChange={marketModel.setDraft}
         onSubmit={marketModel.submitDraft}
+      />
+
+      <MarketReviewDrawer
+        key={marketModel.reviewTool?.id ?? 'closed'}
+        open={marketModel.reviewOpen}
+        tool={marketModel.reviewTool}
+        onClose={marketModel.closeReviewTool}
+        onSubmit={(input) => {
+          saveMarketFeedbackMutation.mutate(input)
+          marketModel.closeReviewTool()
+        }}
       />
     </PageShell>
   )

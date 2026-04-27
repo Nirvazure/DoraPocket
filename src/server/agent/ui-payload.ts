@@ -1,4 +1,5 @@
-﻿import { rankTools, type ToolItem, type ToolMatch } from '@/shared/tool-registry'
+import { listActiveToolItems } from '@/server/market/tool-catalog'
+import { rankToolItems, type ToolItem, type ToolMatch } from '@/shared/tool-registry'
 import type {
   AgentCandidate,
   AgentTaskFrame,
@@ -69,7 +70,10 @@ export function rankSubmissionCandidates(
     .slice(0, 3)
 }
 
-export function defaultSelectionReason(taskFrame: AgentTaskFrame, topTool: ToolItem | null): string {
+export function defaultSelectionReason(
+  taskFrame: AgentTaskFrame,
+  topTool: ToolItem | null,
+): string {
   if (!topTool) return '当前没有高置信度工具命中，先走解释型回答。'
   if (topTool.executionMode === 'native_card') {
     return `${topTool.name} 是可直接执行的原生能力，适合当前问题。`
@@ -101,10 +105,14 @@ export function buildSelectionSignals(
 ): string[] {
   if (!topTool) return []
   const signals: string[] = []
-  if (marketContext.savedItems.some((item) => item.toolId === topTool.id)) signals.push('你已收藏过它')
-  if (marketContext.subscriptions.some((item) => item.active && item.toolId === topTool.id)) signals.push('你已订阅它')
-  if (marketContext.feedback.some((item) => item.toolId === topTool.id && item.vote === 'up')) signals.push('你给过正反馈')
-  if (marketContext.feedback.some((item) => item.toolId === topTool.id && item.vote === 'down')) signals.push('你给过负反馈')
+  if (marketContext.savedItems.some((item) => item.toolId === topTool.id))
+    signals.push('你已收藏过它')
+  if (marketContext.subscriptions.some((item) => item.active && item.toolId === topTool.id))
+    signals.push('你已订阅它')
+  if (marketContext.feedback.some((item) => item.toolId === topTool.id && item.vote === 'up'))
+    signals.push('你给过正反馈')
+  if (marketContext.feedback.some((item) => item.toolId === topTool.id && item.vote === 'down'))
+    signals.push('你给过负反馈')
   if (topTool.trustSignals.official) signals.push('官方来源')
   if (topTool.trustSignals.communityVerified) signals.push('社区验证')
   if (topTool.sourceNote) signals.push(topTool.sourceNote)
@@ -183,12 +191,13 @@ export function formatCandidateLines(candidates: AgentCandidate[]): string {
     .join('\n')
 }
 
-export function buildRankedCandidates(
-  userText: string,
-  marketContext: MarketContext,
-) {
-  const matches = rankTools(userText, marketSignalsFromContext(marketContext))
-  const candidates = [...toCandidates(matches), ...rankSubmissionCandidates(userText, marketContext)]
+export async function buildRankedCandidates(userText: string, marketContext: MarketContext) {
+  const toolItems = await listActiveToolItems()
+  const matches = rankToolItems(toolItems, userText, marketSignalsFromContext(marketContext))
+  const candidates = [
+    ...toCandidates(matches),
+    ...rankSubmissionCandidates(userText, marketContext),
+  ]
     .sort((a, b) => b.score - a.score)
     .slice(0, 5)
 

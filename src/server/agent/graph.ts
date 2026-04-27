@@ -1,10 +1,20 @@
 ﻿import { Annotation, END, START, StateGraph } from '@langchain/langgraph'
 import { tool } from '@langchain/core/tools'
 import type { AgentUiPayload, MarketContext } from '@/shared/market-types'
-import { createInitialState, type PocketIntent, type PocketSelectedTool, type PocketState } from '@/server/agent/state'
+import type { ExplanationMode } from '@/services/user-settings'
+import {
+  createInitialState,
+  type PocketIntent,
+  type PocketSelectedTool,
+  type PocketState,
+} from '@/server/agent/state'
 import { executeTool, TOOL_DEFINITIONS } from '@/server/agent/tools'
 import { ANSWER_BOOK_PROMPT, createModel, DORA_PROMPT, invokeModel } from '@/server/agent/model'
-import { buildAgentUiPayload, buildRankedCandidates, defaultSelectionReason } from '@/server/agent/ui-payload'
+import {
+  buildAgentUiPayload,
+  buildRankedCandidates,
+  defaultSelectionReason,
+} from '@/server/agent/ui-payload'
 import { chunkResponseText } from '@/server/agent/stream'
 import { buildBuiltinResponsePrompt, buildDiscoveryResponsePrompt } from '@/server/agent/prompts'
 import { buildTaskFrame, intentFromToolId, type Classified } from '@/server/agent/task-frame'
@@ -42,7 +52,9 @@ async function classifyMessage(
       { role: 'system', content: DORA_PROMPT },
       { role: 'user', content: userText },
     ])
-    const toolCalls = ((response as { tool_calls?: ModelToolCall[] }).tool_calls ?? []).filter(Boolean)
+    const toolCalls = ((response as { tool_calls?: ModelToolCall[] }).tool_calls ?? []).filter(
+      Boolean,
+    )
     const firstCall = toolCalls[0]
     if (!firstCall?.name) {
       return { intent: 'discover', selectedTool: null }
@@ -77,6 +89,7 @@ const PocketStateAnnotation = Annotation.Root({
   final_text: Annotation<PocketState['final_text']>(),
   answerBookFromPocket: Annotation<PocketState['answerBookFromPocket']>(),
   market_context: Annotation<PocketState['market_context']>(),
+  explanation_mode: Annotation<PocketState['explanation_mode']>(),
 })
 
 // classifierNode 负责把任务框架、候选召回和 UI 解释层一次性补齐。
@@ -84,9 +97,10 @@ const classifierNode = async (state: PocketState): Promise<Partial<PocketState>>
   const userText = state.messages[state.messages.length - 1]?.content ?? ''
   const taskFrame = buildTaskFrame(userText, state.answerBookFromPocket)
   const classified = await classifyMessage(userText, state.answerBookFromPocket)
-  const { candidates, topTool } = buildRankedCandidates(userText, state.market_context)
+  const { candidates, topTool } = await buildRankedCandidates(userText, state.market_context)
   const selectedTool =
-    classified.selectedTool ?? (topTool ? { toolId: topTool.id, args: topTool.defaultArgs ?? {} } : null)
+    classified.selectedTool ??
+    (topTool ? { toolId: topTool.id, args: topTool.defaultArgs ?? {} } : null)
   const selectionReason = defaultSelectionReason(taskFrame, topTool)
   const uiPayload: AgentUiPayload = buildAgentUiPayload(
     taskFrame,
@@ -166,8 +180,14 @@ export async function runPocketGraph(
   message: string,
   answerBookFromPocket: boolean,
   marketContext: MarketContext,
+  explanationMode: ExplanationMode = 'standard',
 ): Promise<PocketGraphResult> {
-  const initialState = createInitialState(message, answerBookFromPocket, marketContext)
+  const initialState = createInitialState(
+    message,
+    answerBookFromPocket,
+    marketContext,
+    explanationMode,
+  )
   const result = await pocketGraph.invoke(initialState)
   return {
     text: result.final_text,
@@ -186,8 +206,14 @@ export async function* streamPocketGraph(
   message: string,
   answerBookFromPocket: boolean,
   marketContext: MarketContext,
+  explanationMode: ExplanationMode = 'standard',
 ): AsyncGenerator<PocketStreamEvent> {
-  const initialState = createInitialState(message, answerBookFromPocket, marketContext)
+  const initialState = createInitialState(
+    message,
+    answerBookFromPocket,
+    marketContext,
+    explanationMode,
+  )
   const classifiedState = {
     ...initialState,
     ...(await classifierNode(initialState)),

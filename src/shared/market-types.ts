@@ -12,10 +12,37 @@ export type PocketSavedItem = {
 }
 
 export type ToolVote = 'up' | 'down'
+export type MarketReviewTag =
+  | 'fast_to_start'
+  | 'great_result'
+  | 'chinese_friendly'
+  | 'no_login'
+  | 'beginner_friendly'
+  | 'time_saving'
+  | 'worth_saving'
+  | 'too_complex'
+  | 'needs_login'
+  | 'too_expensive'
+  | 'average_result'
+  | 'unstable'
+  | 'not_for_this_task'
+  | 'high_learning_cost'
+
+export type MarketReviewAggregate = {
+  toolId: string
+  averageStar: number | null
+  reviewCount: number
+  upvoteCount: number
+  downvoteCount: number
+  topTags: MarketReviewTag[]
+  currentUserReview: MarketFeedbackRecord | null
+}
 
 export type MarketFeedbackRecord = {
   toolId: string
   vote: ToolVote
+  starRating: 1 | 2 | 3 | 4 | 5
+  selectedTags: MarketReviewTag[]
   updatedAt: number
 }
 

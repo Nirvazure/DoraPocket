@@ -1,3 +1,4 @@
+// Legacy local storage bridge. Cloud pocket inventory is now served via /api/me/pocket.
 import { readStorageJson, writeStorageJson } from '@/lib/storage'
 
 export const POCKET_INVENTORY_STORAGE_KEY = 'dp-pocket-inventory-v1'

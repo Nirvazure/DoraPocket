@@ -1,3 +1,4 @@
+// Legacy local storage bridge. Cloud user profile is now served via /api/me/profile.
 import { readStorageJson, writeStorageJson } from '@/lib/storage'
 
 export const USER_PROFILE_STORAGE_KEY = 'dp-user-profile-v1'
@@ -42,7 +43,9 @@ export function saveUserProfile(profile: UserProfile): void {
     avatarSrc: profile.avatarSrc?.trim() ? profile.avatarSrc : DEFAULT_USER_AVATAR_SRC,
   }
   writeStorageJson(USER_PROFILE_STORAGE_KEY, nextProfile)
-  window.dispatchEvent(new CustomEvent<UserProfile>(USER_PROFILE_UPDATED_EVENT, { detail: nextProfile }))
+  window.dispatchEvent(
+    new CustomEvent<UserProfile>(USER_PROFILE_UPDATED_EVENT, { detail: nextProfile }),
+  )
 }
 
 export function subscribeUserProfile(listener: (profile: UserProfile) => void): () => void {

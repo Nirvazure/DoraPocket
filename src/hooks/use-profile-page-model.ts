@@ -4,11 +4,7 @@ import { useRef, type ChangeEvent } from 'react'
 import type { ChatHistoryEntry } from '@/services/chat-history'
 import type { PocketInventoryItem } from '@/services/pocket-inventory'
 import type { UserProfile } from '@/services/user-profile'
-import {
-  DEFAULT_USER_AVATAR_SRC,
-  DEFAULT_USER_NICKNAME,
-  readAvatarFile,
-} from '@/services/user-profile'
+import { DEFAULT_USER_AVATAR_SRC, DEFAULT_USER_NICKNAME } from '@/services/user-profile'
 import { createEmptyMarketContext } from '@/shared/market-defaults'
 import type {
   MarketContext,
@@ -33,10 +29,7 @@ function preferenceLabel(value: string) {
   return TOOL_PREFERENCE_LABELS[value as keyof typeof TOOL_PREFERENCE_LABELS] ?? value
 }
 
-function buildProfileFacts(
-  marketContext: MarketContext,
-  subscriptionsCount: number,
-) {
+function buildProfileFacts(marketContext: MarketContext, subscriptionsCount: number) {
   return [
     {
       label: PROFILE_COPY.factLabels.preferredCategory,
@@ -151,8 +144,16 @@ export function useProfilePageModel({
     const file = event.target.files?.[0]
     if (!file) return
     try {
-      // 头像上传是画像页唯一直接 IO，保持在 model 层统一封装。
-      const avatarSrc = await readAvatarFile(file)
+      const formData = new FormData()
+      formData.append('file', file)
+      const response = await fetch('/api/me/avatar', {
+        method: 'POST',
+        body: formData,
+      })
+      if (!response.ok) {
+        throw new Error('Avatar upload failed')
+      }
+      const { url: avatarSrc } = (await response.json()) as { url: string }
       await saveUserProfile({
         nickname: profile?.nickname ?? DEFAULT_USER_NICKNAME,
         avatarSrc,

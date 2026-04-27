@@ -1,9 +1,8 @@
 ﻿'use client'
 
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useState, type SetStateAction } from 'react'
 import { useAnalysisSession } from '@/hooks/use-analysis-session'
 import { useAppShellState } from '@/hooks/use-app-shell-state'
-import { useAutoSavePreference } from '@/hooks/use-auto-save-preference'
 import { useDiscoveryWorkspaceActions } from '@/hooks/use-discovery-workspace-actions'
 import { usePocketGadgetModalActions } from '@/hooks/use-pocket-gadget-modal-actions'
 import { useToolDial } from '@/hooks/use-tool-dial'
@@ -16,20 +15,10 @@ import {
   useRemoveToolFromPocketMutation,
   useSaveToolToPocketMutation,
 } from '@/lib/query/pocket'
+import { useSaveUserSettingsMutation, useUserSettingsQuery } from '@/lib/query/user-settings'
 import { MODE_KEY_ANYWHERE_DOOR, type AssistantModeCard } from '@/shared/mode-registry'
 import { PAGE_COPY } from '@/shared/ui-copy'
 import { useStore } from '@/store'
-
-const AUTO_SAVE_POCKET_STORAGE_KEY = 'dp-pocket-autosave-enabled-v1'
-const FONT_PRESET_STORAGE_KEY = 'dorapocket-font-preset'
-
-function readFontPreset() {
-  try {
-    return localStorage.getItem(FONT_PRESET_STORAGE_KEY) ?? 'c'
-  } catch {
-    return 'c'
-  }
-}
 
 type InputMode = 'text' | 'voice'
 
@@ -54,13 +43,15 @@ export function useAnalysisPageController() {
   const markToolUsedMutation = useMarkToolUsedMutation()
   const saveMarketFeedbackMutation = useSaveMarketFeedbackMutation()
   const saveChatHistoryMutation = useSaveChatHistoryMutation()
+  const { data: userSettings } = useUserSettingsQuery()
+  const saveUserSettingsMutation = useSaveUserSettingsMutation()
 
-  const [inputMode, setInputMode] = useState<InputMode>('text')
+  const [inputModeOverride, setInputModeOverride] = useState<InputMode | null>(null)
   const [textFallback, setTextFallback] = useState('')
   const [pocketModalOpen, setPocketModalOpen] = useState(false)
   const [pocketGadget, setPocketGadget] = useState<AssistantModeCard | null>(null)
   const [starterDraftReady, setStarterDraftReady] = useState(false)
-  const { autoSaveEnabled, enableAutoSave } = useAutoSavePreference(AUTO_SAVE_POCKET_STORAGE_KEY)
+  const autoSaveEnabled = userSettings?.autoSaveToPocketEnabled ?? true
   const {
     toolDialOpen,
     toolDialMode,
@@ -69,6 +60,7 @@ export function useAnalysisPageController() {
     closeToolDial,
     toggleToolDial,
   } = useToolDial()
+  const inputMode = inputModeOverride ?? userSettings?.defaultInputMode ?? 'text'
 
   // 分析会话主链路：统一处理问答、推荐、自动沉淀与语音播报。
   const {
@@ -82,6 +74,7 @@ export function useAnalysisPageController() {
     runAgentTurn,
   } = useAnalysisSession({
     autoSaveEnabled,
+    userSettings,
     pocketInventory,
     saveChatHistory: saveChatHistoryMutation.mutate,
     saveToolToPocket: saveToolToPocketMutation.mutateAsync,
@@ -116,7 +109,11 @@ export function useAnalysisPageController() {
     saveMarketFeedback: saveMarketFeedbackMutation.mutate,
     setAutoSaveNotice,
     setSystemNotice,
-    enableAutoSave,
+    enableAutoSave: () => {
+      const current = userSettings
+      if (!current) return
+      saveUserSettingsMutation.mutate({ ...current, autoSaveToPocketEnabled: true })
+    },
   })
 
   const pocketGadgetModalActions = usePocketGadgetModalActions({
@@ -138,8 +135,9 @@ export function useAnalysisPageController() {
   })
 
   useLayoutEffect(() => {
-    document.documentElement.dataset.fontPreset = readFontPreset()
-  }, [])
+    if (!userSettings?.fontPreset) return
+    document.documentElement.dataset.fontPreset = userSettings.fontPreset
+  }, [userSettings?.fontPreset])
 
   useEffect(() => {
     if (selectedGadgetKey == null) {
@@ -160,6 +158,15 @@ export function useAnalysisPageController() {
 
   const canSendText = textFallback.trim().length > 0
   const promptPlaceholder = PAGE_COPY.analysis.promptPlaceholder
+  const setInputMode = useCallback(
+    (next: SetStateAction<InputMode>) => {
+      setInputModeOverride((current) => {
+        const resolvedCurrent = current ?? userSettings?.defaultInputMode ?? 'text'
+        return typeof next === 'function' ? next(resolvedCurrent) : next
+      })
+    },
+    [userSettings?.defaultInputMode],
+  )
 
   return {
     appState,

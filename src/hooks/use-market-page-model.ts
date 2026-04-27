@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { type ToolCategory, type ToolItem } from '@/services/tool-registry'
+import type { MarketReviewAggregate } from '@/shared/market-types'
 import { TOOL_CATEGORY_LABELS, TOOL_CATEGORY_ORDER } from '@/shared/tool-labels'
 import { PAGE_COPY } from '@/shared/ui-copy'
 
@@ -21,6 +22,10 @@ export const EMPTY_MARKET_DRAFT: Draft = {
   tags: '',
 }
 
+export type MarketToolCardItem = ToolItem & {
+  reviewAggregate: MarketReviewAggregate | null
+}
+
 function createToolGroups() {
   return {
     ai_assistant: [],
@@ -31,11 +36,11 @@ function createToolGroups() {
     media: [],
     learning: [],
     writing: [],
-  } satisfies Record<ToolCategory, ToolItem[]>
+  } satisfies Record<ToolCategory, MarketToolCardItem[]>
 }
 
-function groupTools(tools: ToolItem[]) {
-  return tools.reduce<Record<ToolCategory, ToolItem[]>>((groups, tool) => {
+function groupTools(tools: MarketToolCardItem[]) {
+  return tools.reduce<Record<ToolCategory, MarketToolCardItem[]>>((groups, tool) => {
     groups[tool.category].push(tool)
     return groups
   }, createToolGroups())
@@ -43,6 +48,7 @@ function groupTools(tools: ToolItem[]) {
 
 export function useMarketPageModel(
   toolsSource: ToolItem[],
+  reviewAggregates: Record<string, MarketReviewAggregate>,
   submitMarketTool: (input: {
     name: string
     url: string
@@ -54,16 +60,21 @@ export function useMarketPageModel(
   const [submitOpen, setSubmitOpen] = useState(false)
   const [draft, setDraft] = useState<Draft>(EMPTY_MARKET_DRAFT)
   const [selectedSection, setSelectedSection] = useState<'builtin' | ToolCategory>('builtin')
+  const [reviewToolId, setReviewToolId] = useState<string | null>(null)
 
   const keyword = query.trim().toLowerCase()
-  const tools = useMemo(() => {
-    if (!keyword) return toolsSource
-    return toolsSource.filter((tool) =>
+  const tools = useMemo<MarketToolCardItem[]>(() => {
+    const enriched = toolsSource.map((tool) => ({
+      ...tool,
+      reviewAggregate: reviewAggregates[tool.id] ?? null,
+    }))
+    if (!keyword) return enriched
+    return enriched.filter((tool) =>
       `${tool.name} ${tool.description} ${tool.tags.join(' ')} ${TOOL_CATEGORY_LABELS[tool.category]}`
         .toLowerCase()
         .includes(keyword),
     )
-  }, [keyword, toolsSource])
+  }, [keyword, reviewAggregates, toolsSource])
 
   const builtinTools = useMemo(() => tools.filter((tool) => tool.source === 'builtin'), [tools])
   const marketTools = useMemo(() => tools.filter((tool) => tool.source !== 'builtin'), [tools])
@@ -87,9 +98,10 @@ export function useMarketPageModel(
   const categoryEntries = useMemo((): ReadonlyArray<readonly [CategoryKey, string]> => {
     const entries: Array<readonly [CategoryKey, string]> = [
       ['builtin', PAGE_COPY.market.builtinSection],
-      ...TOOL_CATEGORY_ORDER.map(
-        (category): readonly [CategoryKey, string] => [category, TOOL_CATEGORY_LABELS[category]],
-      ),
+      ...TOOL_CATEGORY_ORDER.map((category): readonly [CategoryKey, string] => [
+        category,
+        TOOL_CATEGORY_LABELS[category],
+      ]),
     ]
     return entries.filter(([key]) => categoryCounts[key] > 0)
   }, [categoryCounts])
@@ -99,7 +111,12 @@ export function useMarketPageModel(
     return validKeys.has(selectedSection) ? selectedSection : (categoryEntries[0]?.[0] ?? 'builtin')
   }, [categoryEntries, selectedSection])
 
-  const currentCategoryTools = resolvedSection === 'builtin' ? builtinTools : grouped[resolvedSection]
+  const currentCategoryTools =
+    resolvedSection === 'builtin' ? builtinTools : grouped[resolvedSection]
+  const reviewTool = useMemo(
+    () => tools.find((tool) => tool.id === reviewToolId) ?? null,
+    [reviewToolId, tools],
+  )
 
   const submitDraft = () => {
     if (!draft.name.trim() || !draft.url.trim() || !draft.description.trim()) return
@@ -107,7 +124,10 @@ export function useMarketPageModel(
       name: draft.name,
       url: draft.url,
       description: draft.description,
-      tags: draft.tags.split(',').map((tag) => tag.trim()).filter(Boolean),
+      tags: draft.tags
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter(Boolean),
     })
     setDraft(EMPTY_MARKET_DRAFT)
     setSubmitOpen(false)
@@ -125,6 +145,10 @@ export function useMarketPageModel(
     categoryEntries,
     categoryCounts,
     currentCategoryTools,
+    reviewTool,
+    reviewOpen: reviewTool != null,
+    openReviewTool: setReviewToolId,
+    closeReviewTool: () => setReviewToolId(null),
     submitDraft,
   }
 }

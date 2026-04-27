@@ -1,11 +1,19 @@
 import { streamPocketGraph } from '@/server/agent/graph'
+import { verifySession } from '@/server/auth/dal'
+import { buildMarketContextForUser } from '@/server/market/context'
+import { createRecommendationSession } from '@/server/repositories/recommendation-session-repo'
+import type { ExplanationMode } from '@/services/user-settings'
 import { createEmptyMarketContext } from '@/shared/market-defaults'
-import type { MarketContext } from '@/shared/market-types'
+import type { AgentUiPayload, MarketContext } from '@/shared/market-types'
 
 type ChatRequestBody = {
   message?: string
   answerBookFromPocket?: boolean
-  marketContext?: MarketContext
+  explanationMode?: ExplanationMode
+}
+
+function normalizeExplanationMode(value: unknown): ExplanationMode {
+  return value === 'brief' ? 'brief' : 'standard'
 }
 
 function jsonLine(payload: unknown): Uint8Array {
@@ -16,7 +24,7 @@ export async function POST(request: Request) {
   try {
     const body = (await request.json()) as ChatRequestBody
     const message = body.message?.trim()
-    const marketContext: MarketContext = body.marketContext ?? createEmptyMarketContext()
+    const explanationMode = normalizeExplanationMode(body.explanationMode)
     if (!message) {
       return new Response(JSON.stringify({ error: 'message is required' }), {
         status: 400,
@@ -24,12 +32,45 @@ export async function POST(request: Request) {
       })
     }
 
+    const session = await verifySession()
+    const marketContext: MarketContext = session?.user
+      ? await buildMarketContextForUser(session.user.id, 'applied')
+      : createEmptyMarketContext()
+
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
         try {
-          for await (const event of streamPocketGraph(message, body.answerBookFromPocket === true, marketContext)) {
+          let finalText = ''
+          let selectedToolId: string | null = null
+          let finalUiPayload: AgentUiPayload | null = null
+
+          for await (const event of streamPocketGraph(
+            message,
+            body.answerBookFromPocket === true,
+            marketContext,
+            explanationMode,
+          )) {
+            if (event.type === 'meta') {
+              selectedToolId = event.selected_tool?.toolId ?? null
+              finalUiPayload = event.ui_payload ?? null
+            }
+            if (event.type === 'done') {
+              finalText = event.text
+              selectedToolId = event.selected_tool?.toolId ?? selectedToolId
+              finalUiPayload = event.ui_payload ?? finalUiPayload
+            }
             controller.enqueue(jsonLine(event))
           }
+
+          if (session?.user && finalText && finalUiPayload) {
+            await createRecommendationSession(session.user.id, {
+              userText: message,
+              finalText,
+              selectedToolId,
+              uiPayload: finalUiPayload,
+            })
+          }
+
           controller.close()
         } catch (error) {
           controller.enqueue(

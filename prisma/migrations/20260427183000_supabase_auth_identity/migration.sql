@@ -1,0 +1,2 @@
+-- Supabase auth identity migration.
+-- Fresh environments should bootstrap with supabaseUserId as defined in the current schema.
