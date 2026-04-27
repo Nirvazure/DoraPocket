@@ -1,13 +1,13 @@
-import { queryOptions, useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
-import { queryKeys } from '@/lib/query/query-keys'
 import {
-  loadPocketInventory,
-  savePocketInventory,
-  sortPocketInventory,
-  upsertPocketItem,
-  type PocketInventoryItem,
-} from '@/services/pocket-inventory'
-import { recordToolOpened, recordToolSaved } from '@/services/market-storage'
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type QueryClient,
+} from '@tanstack/react-query'
+import { apiFetch } from '@/lib/query/api-client'
+import { queryKeys } from '@/lib/query/query-keys'
+import type { PocketInventoryItem } from '@/services/pocket-inventory'
 
 type PocketMutationContext = {
   previousPocketInventory: PocketInventoryItem[]
@@ -23,24 +23,35 @@ type TogglePocketFlagInput = {
   toolId: string
 }
 
-function getPocketInventorySnapshot() {
-  return sortPocketInventory(loadPocketInventory())
-}
-
-function setPocketInventorySnapshot(next: PocketInventoryItem[]) {
-  savePocketInventory(next)
-  return next
-}
-
 function invalidatePocketDependents(queryClient: QueryClient) {
   void queryClient.invalidateQueries({ queryKey: queryKeys.preferenceProfile.all })
   void queryClient.invalidateQueries({ queryKey: queryKeys.marketContext.all })
 }
 
+function getPreviousPocketInventory(queryClient: QueryClient) {
+  return queryClient.getQueryData<PocketInventoryItem[]>(queryKeys.pocket.list()) ?? []
+}
+
+async function preparePocketOptimisticUpdate(queryClient: QueryClient) {
+  await queryClient.cancelQueries({ queryKey: queryKeys.pocket.list() })
+  return getPreviousPocketInventory(queryClient)
+}
+
+function rollbackPocketInventory(queryClient: QueryClient, context?: PocketMutationContext) {
+  if (context) {
+    queryClient.setQueryData(queryKeys.pocket.list(), context.previousPocketInventory)
+  }
+}
+
+function commitPocketInventory(queryClient: QueryClient, next: PocketInventoryItem[]) {
+  queryClient.setQueryData(queryKeys.pocket.list(), next)
+  invalidatePocketDependents(queryClient)
+}
+
 export function getPocketInventoryQueryOptions() {
   return queryOptions({
     queryKey: queryKeys.pocket.list(),
-    queryFn: async () => getPocketInventorySnapshot(),
+    queryFn: async () => apiFetch<PocketInventoryItem[]>('/api/me/pocket').catch(() => []),
   })
 }
 
@@ -52,26 +63,20 @@ export function useSaveToolToPocketMutation() {
   const queryClient = useQueryClient()
 
   return useMutation<PocketInventoryItem[], Error, SaveToolToPocketInput, PocketMutationContext>({
-    mutationFn: async ({ toolId, sourceQuestion, presetArgs }) => {
-      const next = upsertPocketItem(getPocketInventorySnapshot(), toolId, { sourceQuestion, presetArgs })
-      recordToolSaved(toolId)
-      return setPocketInventorySnapshot(next)
-    },
-    onMutate: async ({ toolId, sourceQuestion, presetArgs }) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.pocket.list() })
-      const previousPocketInventory = queryClient.getQueryData<PocketInventoryItem[]>(queryKeys.pocket.list()) ?? getPocketInventorySnapshot()
-      const next = upsertPocketItem(previousPocketInventory, toolId, { sourceQuestion, presetArgs })
-      queryClient.setQueryData(queryKeys.pocket.list(), next)
+    mutationFn: async ({ toolId, sourceQuestion, presetArgs }) =>
+      apiFetch<PocketInventoryItem[]>('/api/me/pocket', {
+        method: 'POST',
+        body: JSON.stringify({ toolId, sourceQuestion, presetArgs }),
+      }),
+    onMutate: async () => {
+      const previousPocketInventory = await preparePocketOptimisticUpdate(queryClient)
       return { previousPocketInventory }
     },
     onError: (_error, _variables, context) => {
-      if (context) {
-        queryClient.setQueryData(queryKeys.pocket.list(), context.previousPocketInventory)
-      }
+      rollbackPocketInventory(queryClient, context)
     },
     onSuccess: (next) => {
-      queryClient.setQueryData(queryKeys.pocket.list(), next)
-      invalidatePocketDependents(queryClient)
+      commitPocketInventory(queryClient, next)
     },
   })
 }
@@ -80,24 +85,19 @@ export function useRemoveToolFromPocketMutation() {
   const queryClient = useQueryClient()
 
   return useMutation<PocketInventoryItem[], Error, TogglePocketFlagInput, PocketMutationContext>({
-    mutationFn: async ({ toolId }) => setPocketInventorySnapshot(getPocketInventorySnapshot().filter((item) => item.toolId !== toolId)),
-    onMutate: async ({ toolId }) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.pocket.list() })
-      const previousPocketInventory = queryClient.getQueryData<PocketInventoryItem[]>(queryKeys.pocket.list()) ?? getPocketInventorySnapshot()
-      queryClient.setQueryData(
-        queryKeys.pocket.list(),
-        previousPocketInventory.filter((item) => item.toolId !== toolId),
-      )
+    mutationFn: async ({ toolId }) =>
+      apiFetch<PocketInventoryItem[]>(`/api/me/pocket/${toolId}`, {
+        method: 'DELETE',
+      }),
+    onMutate: async () => {
+      const previousPocketInventory = await preparePocketOptimisticUpdate(queryClient)
       return { previousPocketInventory }
     },
     onError: (_error, _variables, context) => {
-      if (context) {
-        queryClient.setQueryData(queryKeys.pocket.list(), context.previousPocketInventory)
-      }
+      rollbackPocketInventory(queryClient, context)
     },
     onSuccess: (next) => {
-      queryClient.setQueryData(queryKeys.pocket.list(), next)
-      invalidatePocketDependents(queryClient)
+      commitPocketInventory(queryClient, next)
     },
   })
 }
@@ -107,31 +107,20 @@ function createToggleMutation(field: 'pinned' | 'purchased' | 'archived') {
     const queryClient = useQueryClient()
 
     return useMutation<PocketInventoryItem[], Error, TogglePocketFlagInput, PocketMutationContext>({
-      mutationFn: async ({ toolId }) => {
-        const snapshot = getPocketInventorySnapshot()
-        const current = snapshot.find((item) => item.toolId === toolId)
-        if (!current) return snapshot
-        return setPocketInventorySnapshot(upsertPocketItem(snapshot, toolId, { [field]: !current[field] }))
-      },
-      onMutate: async ({ toolId }) => {
-        await queryClient.cancelQueries({ queryKey: queryKeys.pocket.list() })
-        const previousPocketInventory = queryClient.getQueryData<PocketInventoryItem[]>(queryKeys.pocket.list()) ?? getPocketInventorySnapshot()
-        const current = previousPocketInventory.find((item) => item.toolId === toolId)
-        if (!current) return { previousPocketInventory }
-        queryClient.setQueryData(
-          queryKeys.pocket.list(),
-          upsertPocketItem(previousPocketInventory, toolId, { [field]: !current[field] }),
-        )
+      mutationFn: async ({ toolId }) =>
+        apiFetch<PocketInventoryItem[]>(`/api/me/pocket/${toolId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ field }),
+        }),
+      onMutate: async () => {
+        const previousPocketInventory = await preparePocketOptimisticUpdate(queryClient)
         return { previousPocketInventory }
       },
       onError: (_error, _variables, context) => {
-        if (context) {
-          queryClient.setQueryData(queryKeys.pocket.list(), context.previousPocketInventory)
-        }
+        rollbackPocketInventory(queryClient, context)
       },
       onSuccess: (next) => {
-        queryClient.setQueryData(queryKeys.pocket.list(), next)
-        invalidatePocketDependents(queryClient)
+        commitPocketInventory(queryClient, next)
       },
     })
   }
@@ -145,40 +134,19 @@ export function useMarkToolUsedMutation() {
   const queryClient = useQueryClient()
 
   return useMutation<PocketInventoryItem[], Error, TogglePocketFlagInput, PocketMutationContext>({
-    mutationFn: async ({ toolId }) => {
-      recordToolOpened(toolId)
-      const snapshot = getPocketInventorySnapshot()
-      const current = snapshot.find((item) => item.toolId === toolId)
-      if (!current) return snapshot
-      return setPocketInventorySnapshot(
-        upsertPocketItem(snapshot, toolId, {
-          lastUsedAt: Date.now(),
-          useCount: current.useCount + 1,
-        }),
-      )
-    },
-    onMutate: async ({ toolId }) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.pocket.list() })
-      const previousPocketInventory = queryClient.getQueryData<PocketInventoryItem[]>(queryKeys.pocket.list()) ?? getPocketInventorySnapshot()
-      const current = previousPocketInventory.find((item) => item.toolId === toolId)
-      if (!current) return { previousPocketInventory }
-      queryClient.setQueryData(
-        queryKeys.pocket.list(),
-        upsertPocketItem(previousPocketInventory, toolId, {
-          lastUsedAt: Date.now(),
-          useCount: current.useCount + 1,
-        }),
-      )
+    mutationFn: async ({ toolId }) =>
+      apiFetch<PocketInventoryItem[]>(`/api/me/pocket/${toolId}/used`, {
+        method: 'POST',
+      }),
+    onMutate: async () => {
+      const previousPocketInventory = await preparePocketOptimisticUpdate(queryClient)
       return { previousPocketInventory }
     },
     onError: (_error, _variables, context) => {
-      if (context) {
-        queryClient.setQueryData(queryKeys.pocket.list(), context.previousPocketInventory)
-      }
+      rollbackPocketInventory(queryClient, context)
     },
     onSuccess: (next) => {
-      queryClient.setQueryData(queryKeys.pocket.list(), next)
-      invalidatePocketDependents(queryClient)
+      commitPocketInventory(queryClient, next)
     },
   })
 }

@@ -1,10 +1,7 @@
-import { Annotation, END, START, StateGraph } from '@langchain/langgraph'
+﻿import { Annotation, END, START, StateGraph } from '@langchain/langgraph'
 import { tool } from '@langchain/core/tools'
-import type {
-  AgentTaskFrame,
-  AgentUiPayload,
-  MarketContext,
-} from '@/shared/market-types'
+import type { AgentUiPayload, MarketContext } from '@/shared/market-types'
+import type { ExplanationMode } from '@/services/user-settings'
 import {
   createInitialState,
   type PocketIntent,
@@ -12,29 +9,20 @@ import {
   type PocketState,
 } from '@/server/agent/state'
 import { executeTool, TOOL_DEFINITIONS } from '@/server/agent/tools'
-import {
-  ANSWER_BOOK_PROMPT,
-  createModel,
-  DORA_PROMPT,
-  invokeModel,
-} from '@/server/agent/model'
+import { ANSWER_BOOK_PROMPT, createModel, DORA_PROMPT, invokeModel } from '@/server/agent/model'
 import {
   buildAgentUiPayload,
   buildRankedCandidates,
   defaultSelectionReason,
-  formatCandidateLines,
-  matchingSubmissionLines,
 } from '@/server/agent/ui-payload'
 import { chunkResponseText } from '@/server/agent/stream'
+import { buildBuiltinResponsePrompt, buildDiscoveryResponsePrompt } from '@/server/agent/prompts'
+import { buildTaskFrame, intentFromToolId, type Classified } from '@/server/agent/task-frame'
+import { normalizeArgs, normalizeToolArgs } from '@/server/agent/tool-args'
 
 type ModelToolCall = {
   name?: string
   args?: Record<string, unknown> | string
-}
-
-type Classified = {
-  intent: PocketIntent
-  selectedTool: PocketSelectedTool
 }
 
 const MODEL_TOOLS = TOOL_DEFINITIONS.map((definition) =>
@@ -49,106 +37,7 @@ const TOOL_NAME_TO_ID = new Map(
   TOOL_DEFINITIONS.map((definition) => [definition.name, definition.toolId] as const),
 )
 
-function intentFromToolId(toolId: string): PocketIntent {
-  if (toolId === 'weather') return 'weather'
-  if (toolId === 'time') return 'time'
-  if (toolId === 'exchange_rate') return 'exchange'
-  if (toolId === 'air_quality') return 'air_quality'
-  if (toolId === 'web_summary') return 'web_summary'
-  return 'discover'
-}
-
-function normalizeArgs(value: ModelToolCall['args']): Record<string, unknown> {
-  if (!value) return {}
-  if (typeof value === 'string') {
-    try {
-      const parsed = JSON.parse(value) as unknown
-      return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
-        ? (parsed as Record<string, unknown>)
-        : {}
-    } catch {
-      return {}
-    }
-  }
-  return value
-}
-
-function normalizeToolArgs(toolId: string, args: Record<string, unknown>): Record<string, unknown> {
-  if (toolId === 'weather' || toolId === 'air_quality') {
-    const location =
-      typeof args.location === 'string' && args.location.trim() ? args.location.trim() : '上海'
-    return { location }
-  }
-  if (toolId === 'exchange_rate') {
-    const from =
-      typeof args.from === 'string' && args.from.trim() ? args.from.trim().toUpperCase() : 'USD'
-    const to =
-      typeof args.to === 'string' && args.to.trim() ? args.to.trim().toUpperCase() : 'CNY'
-    const amount =
-      typeof args.amount === 'number' && Number.isFinite(args.amount) && args.amount > 0
-        ? args.amount
-        : 1
-    return { from, to, amount }
-  }
-  if (toolId === 'web_summary') {
-    const url = typeof args.url === 'string' ? args.url.trim() : ''
-    return { url }
-  }
-  return {}
-}
-
-function buildTaskFrame(userText: string, answerBookFromPocket: boolean): AgentTaskFrame {
-  if (answerBookFromPocket) {
-    return {
-      goal: userText,
-      mode: 'answer_book',
-      missingInputs: [],
-    }
-  }
-
-  const text = userText.trim()
-  const lower = text.toLowerCase()
-  const missingInputs: string[] = []
-  if (
-    (lower.includes('网页') || lower.includes('链接') || lower.includes('摘要')) &&
-    !/^https?:\/\//i.test(text) &&
-    !lower.includes('www.')
-  ) {
-    missingInputs.push('网页链接')
-  }
-  if (
-    (lower.includes('天气') || lower.includes('空气')) &&
-    !/[北京上海广州深圳杭州西安成都重庆南京苏州天津武汉长沙]/.test(text)
-  ) {
-    missingInputs.push('城市')
-  }
-
-  if (lower.includes('收藏') || lower.includes('口袋')) {
-    return { goal: text, mode: 'manage_pocket', missingInputs }
-  }
-  if (
-    lower.includes('工具') ||
-    lower.includes('推荐') ||
-    lower.includes('找个') ||
-    lower.includes('网站') ||
-    lower.includes('资源') ||
-    lower.includes('怎么找')
-  ) {
-    return { goal: text, mode: 'discover', missingInputs }
-  }
-  if (
-    lower.includes('天气') ||
-    lower.includes('时间') ||
-    lower.includes('汇率') ||
-    lower.includes('空气') ||
-    lower.includes('摘要') ||
-    lower.includes('链接')
-  ) {
-    return { goal: text, mode: 'use_builtin', missingInputs }
-  }
-  return { goal: text, mode: 'chat', missingInputs }
-}
-
+// classifyMessage 只负责把自然语言压成 intent + tool args，不处理 UI 推荐排序。
 async function classifyMessage(
   userText: string,
   answerBookFromPocket: boolean,
@@ -200,15 +89,18 @@ const PocketStateAnnotation = Annotation.Root({
   final_text: Annotation<PocketState['final_text']>(),
   answerBookFromPocket: Annotation<PocketState['answerBookFromPocket']>(),
   market_context: Annotation<PocketState['market_context']>(),
+  explanation_mode: Annotation<PocketState['explanation_mode']>(),
 })
 
+// classifierNode 负责把任务框架、候选召回和 UI 解释层一次性补齐。
 const classifierNode = async (state: PocketState): Promise<Partial<PocketState>> => {
   const userText = state.messages[state.messages.length - 1]?.content ?? ''
   const taskFrame = buildTaskFrame(userText, state.answerBookFromPocket)
   const classified = await classifyMessage(userText, state.answerBookFromPocket)
-  const { candidates, topTool } = buildRankedCandidates(userText, state.market_context)
+  const { candidates, topTool } = await buildRankedCandidates(userText, state.market_context)
   const selectedTool =
-    classified.selectedTool ?? (topTool ? { toolId: topTool.id, args: topTool.defaultArgs ?? {} } : null)
+    classified.selectedTool ??
+    (topTool ? { toolId: topTool.id, args: topTool.defaultArgs ?? {} } : null)
   const selectionReason = defaultSelectionReason(taskFrame, topTool)
   const uiPayload: AgentUiPayload = buildAgentUiPayload(
     taskFrame,
@@ -233,6 +125,7 @@ const classifierNode = async (state: PocketState): Promise<Partial<PocketState>>
   }
 }
 
+// toolNode 只在原生能力 intent 下执行工具，市场推荐不会在服务端直接强制执行。
 const toolNode = async (state: PocketState): Promise<Partial<PocketState>> => {
   if (!state.selected_tool) return { tool_result: '' }
   if (!isBuiltinIntent(state.intent)) return { tool_result: '' }
@@ -240,6 +133,7 @@ const toolNode = async (state: PocketState): Promise<Partial<PocketState>> => {
   return { tool_result: toolResult }
 }
 
+// responseNode 根据不同 intent 走三条路径：答案之书、原生能力结果整合、发现型推荐解释。
 const responseNode = async (state: PocketState): Promise<Partial<PocketState>> => {
   if (state.intent === 'answer_book') {
     const finalText = await invokeModel(
@@ -251,29 +145,12 @@ const responseNode = async (state: PocketState): Promise<Partial<PocketState>> =
   }
 
   if (isBuiltinIntent(state.intent) && state.tool_result) {
-    const prompt = [
-      `用户问题：${state.messages[state.messages.length - 1]?.content ?? ''}`,
-      `工具结果：${state.tool_result}`,
-      `选择理由：${state.selection_reason}`,
-      '请用简洁方式回答，并补一句“下一步可做什么”。',
-    ].join('\n')
+    const prompt = buildBuiltinResponsePrompt(state)
     const finalText = await invokeModel(prompt, DORA_PROMPT, 0.2)
     return { final_text: finalText || state.tool_result }
   }
 
-  const promptInput = [
-    `用户问题：${state.messages[state.messages.length - 1]?.content ?? ''}`,
-    `任务模式：${state.task_frame.mode}`,
-    `缺失参数：${state.task_frame.missingInputs.join('、') || '无'}`,
-    `推荐理由：${state.selection_reason}`,
-    `用户偏好画像：${state.ui_payload.preferenceSignals.join('、') || '无'}`,
-    `候选工具：\n${formatCandidateLines(state.candidate_tools)}`,
-    `用户提交的市场条目：\n${matchingSubmissionLines(
-      state.messages[state.messages.length - 1]?.content ?? '',
-      state.market_context,
-    )}`,
-    '请输出：一句总判断 + 最值得试的工具 + 为什么 + 建议下一步。',
-  ].join('\n')
+  const promptInput = buildDiscoveryResponsePrompt(state)
   const finalText = await invokeModel(promptInput, DORA_PROMPT, 0.35)
   return { final_text: finalText }
 }
@@ -298,12 +175,19 @@ export type PocketGraphResult = {
   ui_payload: AgentUiPayload
 }
 
+// 完整 graph 路径用于一次性求值场景。
 export async function runPocketGraph(
   message: string,
   answerBookFromPocket: boolean,
   marketContext: MarketContext,
+  explanationMode: ExplanationMode = 'standard',
 ): Promise<PocketGraphResult> {
-  const initialState = createInitialState(message, answerBookFromPocket, marketContext)
+  const initialState = createInitialState(
+    message,
+    answerBookFromPocket,
+    marketContext,
+    explanationMode,
+  )
   const result = await pocketGraph.invoke(initialState)
   return {
     text: result.final_text,
@@ -317,12 +201,19 @@ export type PocketStreamEvent =
   | { type: 'delta'; text: string }
   | { type: 'done'; text: string; selected_tool: PocketSelectedTool; ui_payload: AgentUiPayload }
 
+// 流式路径为了边算边吐 chunk，改为手动串联 node，而不是直接走 compile graph。
 export async function* streamPocketGraph(
   message: string,
   answerBookFromPocket: boolean,
   marketContext: MarketContext,
+  explanationMode: ExplanationMode = 'standard',
 ): AsyncGenerator<PocketStreamEvent> {
-  const initialState = createInitialState(message, answerBookFromPocket, marketContext)
+  const initialState = createInitialState(
+    message,
+    answerBookFromPocket,
+    marketContext,
+    explanationMode,
+  )
   const classifiedState = {
     ...initialState,
     ...(await classifierNode(initialState)),

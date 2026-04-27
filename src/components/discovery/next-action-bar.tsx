@@ -1,5 +1,6 @@
-import { ArrowRight, FolderOpenDot } from 'lucide-react'
+﻿import { ArrowRight, FolderOpenDot } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { DisplayPanel, DisplayPanelContent } from '@/components/ui/display-shell'
 import { getToolById } from '@/services/tool-registry'
 import type { AgentUiPayload } from '@/shared/market-types'
 import type { ChatToolPayload } from '@/services/llm'
@@ -17,8 +18,8 @@ export function NextActionBar({ payload, selectedToolPayload, onLaunchCandidate,
   const tool = getToolById(leadingToolId)
 
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white/94 p-3 shadow-lg shadow-slate-900/6 backdrop-blur-xl">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <DisplayPanel className="rounded-3xl border-slate-200 bg-white/94 p-3 shadow-lg shadow-slate-900/6 backdrop-blur-xl">
+      <DisplayPanelContent className="flex flex-wrap items-center justify-between gap-3 p-0">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">下一步</p>
           <p className="mt-1 text-sm font-black text-foreground">
@@ -42,7 +43,7 @@ export function NextActionBar({ payload, selectedToolPayload, onLaunchCandidate,
             去复用
           </Button>
         </div>
-      </div>
-    </section>
+      </DisplayPanelContent>
+    </DisplayPanel>
   )
 }

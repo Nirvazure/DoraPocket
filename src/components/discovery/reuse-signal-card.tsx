@@ -1,5 +1,6 @@
 import { RotateCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { DisplayPanel, DisplayPanelContent } from '@/components/ui/display-shell'
 import { getToolById } from '@/services/tool-registry'
 import type { AgentUiPayload } from '@/shared/market-types'
 
@@ -18,12 +19,12 @@ export function ReuseSignalCard({ payload, autoSaveNotice, autoSaveEnabled, onOp
   const shouldSave = Boolean(payload?.shouldAutoSave || autoSaveNotice)
 
   return (
-    <section className="rounded-3xl border border-emerald-200/70 bg-emerald-50/55 p-4 text-emerald-950 shadow-sm">
+    <DisplayPanel className="rounded-3xl border-emerald-200/70 bg-emerald-50/55 p-4 text-emerald-950 shadow-sm">
       <div className="flex items-start gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-emerald-700 shadow-sm">
           <RotateCw className="h-4 w-4" />
         </div>
-        <div className="min-w-0 flex-1">
+        <DisplayPanelContent className="min-w-0 flex-1 p-0">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">复用信号</p>
           <h3 className="mt-1 text-base font-black">
             {autoSaveNotice ? `${autoSaveNotice.label} 已经入口袋` : shouldSave ? '这轮结果值得沉淀' : '只沉淀以后能省事的结果'}
@@ -46,8 +47,8 @@ export function ReuseSignalCard({ payload, autoSaveNotice, autoSaveEnabled, onOp
               </Button>
             ) : null}
           </div>
-        </div>
+        </DisplayPanelContent>
       </div>
-    </section>
+    </DisplayPanel>
   )
 }

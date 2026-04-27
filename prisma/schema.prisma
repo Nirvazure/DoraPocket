@@ -1,0 +1,200 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                     String                    @id @default(cuid())
+  supabaseUserId         String                    @unique
+  email                  String?
+  nickname               String
+  avatarSrc              String?
+  createdAt              DateTime                  @default(now())
+  updatedAt              DateTime                  @updatedAt
+  settings               UserSettings?
+  pocketItems            PocketItem[]
+  marketFeedback         MarketFeedback[]
+  marketSubscriptions    MarketSubscription[]
+  marketSubmissions      MarketSubmission[]
+  toolActivities         ToolActivity[]
+  chatHistory            ChatHistoryEntry[]
+  preferenceOverride     PreferenceProfileOverride?
+  recommendationSessions RecommendationSession[]
+  migrationState         DataMigrationState?
+  createdTools           Tool[]
+}
+
+model UserSettings {
+  id                      String   @id @default(cuid())
+  userId                  String   @unique
+  voicePlaybackEnabled    Boolean  @default(true)
+  voicePlaybackMode       String   @default("key-result")
+  soundEffectsEnabled     Boolean  @default(true)
+  defaultInputMode        String   @default("text")
+  autoSaveToPocketEnabled Boolean  @default(true)
+  memoryEnabled           Boolean  @default(true)
+  explanationMode         String   @default("standard")
+  fontPreset              String   @default("c")
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Tool {
+  id                 String               @id
+  name               String
+  icon               String
+  iconType           String?
+  iconText           String?
+  iconImageUrl       String?
+  iconImageLocalPath String?
+  url                String?
+  description        String
+  category           String
+  tags               String[]
+  source             String
+  status             String
+  executionMode      String
+  pricingModel       String
+  requiresAuth       Boolean
+  platform           String
+  capabilities       String[]
+  recommendedFor     String[]
+  sourceNote         String?
+  trustSignals       Json
+  subscriptionSupport Boolean
+  defaultArgs        Json?
+  isBuiltin          Boolean @default(false)
+  siteHostname       String?
+  marketAssetOrigin  String?
+  seedSource         String   @default("system_seed")
+  createdByUserId    String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  createdBy          User?    @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
+  pocketItems        PocketItem[]
+  marketFeedback     MarketFeedback[]
+  marketSubscriptions MarketSubscription[]
+  toolActivities     ToolActivity[]
+}
+
+model PocketItem {
+  id             String   @id @default(cuid())
+  userId         String
+  toolId         String
+  savedAt        DateTime @default(now())
+  lastUsedAt     DateTime @default(now())
+  useCount       Int      @default(0)
+  pinned         Boolean  @default(false)
+  purchased      Boolean  @default(false)
+  archived       Boolean  @default(false)
+  sourceQuestion String?
+  presetArgs     Json?
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tool           Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, toolId])
+}
+
+model MarketFeedback {
+  id           String   @id @default(cuid())
+  userId       String
+  toolId       String
+  vote         String
+  starRating   Int
+  selectedTags String[]
+  updatedAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tool         Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, toolId])
+}
+
+model MarketSubscription {
+  id           String   @id @default(cuid())
+  userId       String
+  toolId       String
+  active       Boolean  @default(true)
+  subscribedAt DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tool         Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, toolId])
+}
+
+model MarketSubmission {
+  id          String   @id @default(cuid())
+  userId      String
+  toolId      String?
+  name        String
+  url         String
+  description String
+  tags        String[]
+  submittedAt DateTime @default(now())
+  status      String   @default("review")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ToolActivity {
+  id            String   @id @default(cuid())
+  userId        String
+  toolId        String
+  saves         Int      @default(0)
+  opens         Int      @default(0)
+  subscriptions Int      @default(0)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tool          Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, toolId])
+}
+
+model ChatHistoryEntry {
+  id             String   @id @default(cuid())
+  userId         String
+  userText       String
+  assistantText  String
+  selectedToolId String?
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PreferenceProfileOverride {
+  id                       String   @id @default(cuid())
+  userId                   String   @unique
+  preferredCategories      String[]
+  preferredTags            String[]
+  preferredPlatforms       String[]
+  preferredPricing         String[]
+  preferredExecutionModes  String[]
+  avoidAuthWall            Boolean?
+  prefersSubscriptionTools Boolean?
+  updatedAt                DateTime @updatedAt
+  user                     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model RecommendationSession {
+  id                String   @id @default(cuid())
+  userId            String
+  userText          String
+  taskFrame         Json
+  selectedToolId    String?
+  candidates        Json
+  selectionReason   String
+  selectionSignals  String[]
+  preferenceSignals String[]
+  finalText         String
+  createdAt         DateTime @default(now())
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model DataMigrationState {
+  id                  String    @id @default(cuid())
+  userId              String    @unique
+  localDataImportedAt DateTime?
+  toolSeedImportedAt  DateTime?
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

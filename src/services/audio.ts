@@ -10,11 +10,8 @@ export function disposeSpeechSession() {
   disposeAliyunSttSession()
 }
 
-export function startSpeechSession(callbacks: SpeechSessionCallbacks): boolean {
-  void startAliyunSttSession(callbacks).then((ok) => {
-    if (!ok) callbacks.onEnd()
-  })
-  return true
+export function startSpeechSession(callbacks: SpeechSessionCallbacks): Promise<boolean> {
+  return startAliyunSttSession(callbacks)
 }
 
 export function stopSpeechSession() {

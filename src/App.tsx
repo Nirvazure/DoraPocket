@@ -1,186 +1,54 @@
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import { AnalysisInputComposer } from '@/components/analysis-input-composer'
 import { AnalysisStagePanel } from '@/components/analysis-stage-panel'
-import { ListeningHud } from './components/listening-hud'
-import { TranscriptBarrage } from './components/transcript-barrage'
-import { ProfileEntryPill } from '@/components/common/profile-entry-pill'
 import { PageShell } from '@/components/common/page-shell'
+import { ProfileEntryPill } from '@/components/common/profile-entry-pill'
 import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
-import { useStore } from './store'
-import {
-  MODE_KEY_ANYWHERE_DOOR,
-  ASSISTANT_MODES,
-  getModeByToolId,
-  type AssistantModeCard,
-} from '@/shared/mode-registry'
-import { PocketGadgetModal } from './components/pocket-gadget-modal'
-import { cn } from '@/lib/utils'
 import { DiscoveryWorkspace } from '@/components/discovery-workspace'
-import {
-  useSaveMarketFeedbackMutation,
-} from '@/lib/query/market'
-import {
-  useMarkToolUsedMutation,
-  usePocketInventoryQuery,
-  useRemoveToolFromPocketMutation,
-  useSaveToolToPocketMutation,
-} from '@/lib/query/pocket'
-import { useSaveChatHistoryMutation } from '@/lib/query/chat-history'
-import { useAnalysisSession } from '@/hooks/use-analysis-session'
-import { useAutoSavePreference } from '@/hooks/use-auto-save-preference'
-import { useDiscoveryWorkspaceActions } from '@/hooks/use-discovery-workspace-actions'
-import { usePocketGadgetModalActions } from '@/hooks/use-pocket-gadget-modal-actions'
-import { useToolDial } from '@/hooks/use-tool-dial'
-import { useVoiceInput } from '@/hooks/use-voice-input'
-
-type InputMode = 'text' | 'voice'
-
-const AUTO_SAVE_POCKET_STORAGE_KEY = 'dp-pocket-autosave-enabled-v1'
-const FONT_PRESET_STORAGE_KEY = 'dorapocket-font-preset'
-const PROMPT_SUGGESTIONS = [
-  '帮我找一个最好用的 PDF 压缩工具',
-  '推荐适合查资料并带引用的 AI 搜索工具',
-  '我想做 GitHub 主页 README，给我靠谱工具',
-]
+import { ListeningHud } from '@/components/listening-hud'
+import { PocketGadgetModal } from '@/components/pocket-gadget-modal'
+import { TranscriptBarrage } from '@/components/transcript-barrage'
+import { useAnalysisPageController } from '@/hooks/use-analysis-page-controller'
+import { cn } from '@/lib/utils'
+import { PAGE_COPY } from '@/shared/ui-copy'
 
 export default function App() {
   const {
-    appState,
-    setAppState,
-    transcript,
-    setTranscript,
-    setBotResponse,
-    setLastSpeechError,
-    systemNotice,
-    setSystemNotice,
-    clearSystemNotice,
-    selectedGadgetKey,
-    setSelectedGadgetKey,
-  } = useStore()
-  const { data: pocketInventory = [] } = usePocketInventoryQuery()
-  const saveToolToPocketMutation = useSaveToolToPocketMutation()
-  const removeToolFromPocketMutation = useRemoveToolFromPocketMutation()
-  const markToolUsedMutation = useMarkToolUsedMutation()
-  const saveMarketFeedbackMutation = useSaveMarketFeedbackMutation()
-  const saveChatHistoryMutation = useSaveChatHistoryMutation()
-
-  const [inputMode, setInputMode] = useState<InputMode>('text')
-  const [textFallback, setTextFallback] = useState('')
-  const busyHint = ''
-  const [pocketModalOpen, setPocketModalOpen] = useState(false)
-  const [pocketGadget, setPocketGadget] = useState<AssistantModeCard | null>(null)
-  const { autoSaveEnabled, enableAutoSave } = useAutoSavePreference(
-    AUTO_SAVE_POCKET_STORAGE_KEY,
-  )
-  const {
-    toolDialOpen,
-    toolDialMode,
-    toolDialRef,
-    setToolDialMode,
-    closeToolDial,
-    toggleToolDial,
-  } = useToolDial()
-  const [starterDraftReady, setStarterDraftReady] = useState(false)
-
-  const {
-    selectedToolPayload,
-    agentUiPayload,
-    currentPrompt,
-    autoSaveNotice,
-    latestUserPromptRef,
-    setAutoSaveNotice,
-    clearResponseState,
-    runAgentTurn,
-  } = useAnalysisSession({
-    autoSaveEnabled,
-    pocketInventory,
-    saveChatHistory: saveChatHistoryMutation.mutate,
-    saveToolToPocket: saveToolToPocketMutation.mutateAsync,
-    setAppState,
-    setTranscript,
-    setBotResponse,
-    setLastSpeechError,
-    setSystemNotice,
-    getSelectedGadgetKey: () => useStore.getState().selectedGadgetKey,
-    onPocketGadgetChange: setPocketGadget,
-  })
-
-  const { holdToTalkStart, holdToTalkEnd, submitTextMessage } = useVoiceInput({
-    appState,
-    runAgentTurn,
-    setAppState,
-    setTranscript,
-    setBotResponse,
-    setLastSpeechError,
-    setSystemNotice,
-    clearResponseState,
-  })
-
-  const workspaceActions = useDiscoveryWorkspaceActions({
-    autoSaveNotice,
-    getLatestUserPrompt: () => latestUserPromptRef.current,
-    saveToolToPocket: saveToolToPocketMutation.mutate,
-    removeToolFromPocket: removeToolFromPocketMutation.mutate,
-    markToolUsed: markToolUsedMutation.mutate,
-    saveMarketFeedback: saveMarketFeedbackMutation.mutate,
-    setAutoSaveNotice,
-    setSystemNotice,
-    enableAutoSave,
-  })
-  const pocketGadgetModalActions = usePocketGadgetModalActions({
-    selectedToolPayload,
-    getLatestUserPrompt: () => latestUserPromptRef.current,
-    saveToolToPocket: saveToolToPocketMutation.mutate,
-    markToolUsed: markToolUsedMutation.mutate,
-  })
-
-  useLayoutEffect(() => {
-    document.documentElement.dataset.fontPreset = 'c'
-    try {
-      localStorage.setItem(FONT_PRESET_STORAGE_KEY, 'c')
-    } catch {
-      /* ignore */
-    }
-  }, [])
-
-  useEffect(() => {
-    if (selectedGadgetKey == null) {
-      setSelectedGadgetKey(MODE_KEY_ANYWHERE_DOOR)
-    }
-  }, [selectedGadgetKey, setSelectedGadgetKey])
-
-  useEffect(() => {
-    if (!systemNotice?.autoDismissMs) return
-    const id = window.setTimeout(() => clearSystemNotice(), systemNotice.autoDismissMs)
-    return () => window.clearTimeout(id)
-  }, [clearSystemNotice, systemNotice])
-
-  const handleDraftTask = useCallback((draft: string) => {
-    setTextFallback(draft)
-    setStarterDraftReady(Boolean(draft.trim()))
-  }, [])
-
-  const rootCursor =
-    appState === 'thinking' || appState === 'speaking' ? 'cursor-wait' : 'cursor-default'
-
-  const canSendText = textFallback.trim().length > 0
-  const toolBasedGadget = getModeByToolId(selectedToolPayload?.toolId)
-  const quickDialGadgets = toolBasedGadget
-    ? [toolBasedGadget, ...ASSISTANT_MODES].slice(0, 4)
-    : ASSISTANT_MODES.slice(0, 4)
-  const dialGadgets = toolDialMode === 'quick' ? quickDialGadgets : ASSISTANT_MODES
-  const randomPromptPlaceholder = `试试：${PROMPT_SUGGESTIONS[0]}`
-  const handleSelectDialGadget = (gadget: AssistantModeCard) => {
-    if (!gadget.selectKey && gadget.toolId) {
-      setPocketGadget(gadget)
-      setPocketModalOpen(true)
-      closeToolDial()
-      return
-    }
-    setSelectedGadgetKey(gadget.selectKey ?? null)
-    closeToolDial()
-  }
+    appState, //应用状态
+    transcript, //转录文本
+    systemNotice, //系统通知
+    selectedGadgetKey, //选中的工具键
+    pocketModalOpen, //口袋模态是否打开
+    pocketGadget, //口袋
+    currentPrompt,  //当前输入
+    autoSaveEnabled, //自动保存
+    autoSaveNotice, //自动保存通知
+    selectedToolPayload, //当前选中的工具
+    agentUiPayload, //agent的ui数据
+    rootCursor, //根光标
+    toolDialRef, //工具拨盘的ref
+    toolDialOpen, //工具拨盘是否打开
+    toolDialMode, //工具拨盘模式
+    dialGadgets, //工具拨盘的工具
+    inputMode, //输入模式
+    textFallback, //文本回退
+    starterDraftReady, //是否准备好开始草稿
+    canSendText, //是否可以发送文本
+    promptPlaceholder, //提示词占位符
+    workspaceActions, //工作空间动作
+    pocketGadgetModalActions, //口袋工具模态动作
+    handleDraftTask, //处理草稿任务     
+    toggleToolDial, //切换工具拨盘
+    handleSelectDialGadget, //选择工具拨盘工具  
+    setPocketModalOpen, //设置口袋模态是否打开
+    setToolDialMode, //设置工具拨盘模式
+    setInputMode, //设置输入模式
+    setTextFallback, //设置文本回退
+    setStarterDraftReady, //设置是否准备好开始草稿
+    submitTextMessage, //提交文本消息
+    holdToTalkStart, //开始长按说话
+    holdToTalkEnd, //结束长按说话
+  } = useAnalysisPageController() //分析页控制器
 
   return (
     <PageShell
@@ -188,8 +56,8 @@ export default function App() {
       contentClassName="grid min-h-0 grid-cols-1 gap-4 pb-6 lg:h-[calc(100dvh-6.9rem)] lg:grid-cols-[minmax(0,1.45fr)_minmax(21rem,0.72fr)] lg:items-stretch lg:overflow-hidden lg:pb-3"
       header={
         <UnifiedTopBar
-          title="DoraPocket · 分析页"
-          subtitle="不只是聊天，而是替你找全网最好用的工具，并把高价值能力沉淀进口袋。"
+          title={PAGE_COPY.analysis.title}
+          subtitle={PAGE_COPY.analysis.subtitle}
           statusSlot={
             systemNotice ? (
               <span className="rounded-full border border-border/60 bg-white px-3 py-1 text-[11px] font-semibold text-foreground/75">
@@ -221,7 +89,6 @@ export default function App() {
           appState={appState}
           agentPayload={agentUiPayload}
           selectedToolPayload={selectedToolPayload}
-          busyHint={busyHint}
           autoSaveEnabled={autoSaveEnabled}
           autoSaveNotice={autoSaveNotice}
           onOpenPocket={workspaceActions.onOpenPocket}
@@ -253,7 +120,7 @@ export default function App() {
           textFallback={textFallback}
           starterDraftReady={starterDraftReady}
           canSendText={canSendText}
-          placeholder={randomPromptPlaceholder}
+          placeholder={promptPlaceholder}
           onToggleInputMode={() => setInputMode((mode) => (mode === 'text' ? 'voice' : 'text'))}
           onTextChange={(value) => {
             setTextFallback(value)

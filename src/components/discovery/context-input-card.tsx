@@ -1,4 +1,4 @@
-import { MessageSquarePlus } from 'lucide-react'
+﻿import { MessageSquarePlus } from 'lucide-react'
 import type { AgentUiPayload } from '@/shared/market-types'
 
 type ContextInputCardProps = {
@@ -22,7 +22,7 @@ export function ContextInputCard({ payload }: ContextInputCardProps) {
           <MessageSquarePlus className="h-4 w-4" />
         </div>
         <div>
-          <p className="text-sm font-black text-foreground">{missingInputs.length > 0 ? '补充这些条件，裁决会更准' : '需要更精准时，再补充条件'}</p>
+          <p className="text-sm font-black text-foreground">补充这些条件，裁决会更准</p>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
             {missingInputs.length > 0 ? missingInputs.join('、') : '例如预算、是否能登录、是否要中文体验、是否需要引用来源。'}
           </p>

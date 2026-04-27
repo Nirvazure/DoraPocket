@@ -1,23 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
-import { useStore } from '@/store'
 import { playAudioStream, playDoraPocketSfx, stopAudioPlayback } from '@/services/audio'
 import { askQwen, type ChatToolPayload } from '@/services/llm'
 import { buildTTSAudioUrl } from '@/services/tts'
 import { getToolById } from '@/services/tool-registry'
+import type { UserSettings } from '@/services/user-settings'
 import {
   getModeByToolId,
   pickModeCardAfterTurn,
   type AssistantModeCard,
 } from '@/shared/mode-registry'
 import type { AgentUiPayload } from '@/shared/market-types'
-import { getMarketContextQueryOptions } from '@/lib/query/market'
-import { queryKeys } from '@/lib/query/query-keys'
+import { SYSTEM_NOTICE_COPY } from '@/shared/ui-copy'
 import type { AppState } from '@/store'
 
 type RunTurnOptions = {
   answerBookFromPocket?: boolean
-  skipPostAnswerPocket?: boolean
 }
 
 type PocketInventoryItem = {
@@ -26,6 +23,7 @@ type PocketInventoryItem = {
 
 type UseAnalysisSessionOptions = {
   autoSaveEnabled: boolean
+  userSettings?: UserSettings
   pocketInventory: PocketInventoryItem[]
   saveChatHistory: (input: {
     userText: string
@@ -50,8 +48,15 @@ type UseAnalysisSessionOptions = {
   onPocketGadgetChange: (gadget: AssistantModeCard) => void
 }
 
+type AgentTurnReply = {
+  text: string
+  selectedTool: ChatToolPayload
+  uiPayload: AgentUiPayload | null
+}
+
 export function useAnalysisSession({
   autoSaveEnabled,
+  userSettings,
   pocketInventory,
   saveChatHistory,
   saveToolToPocket,
@@ -63,36 +68,40 @@ export function useAnalysisSession({
   getSelectedGadgetKey,
   onPocketGadgetChange,
 }: UseAnalysisSessionOptions) {
-  const queryClient = useQueryClient()
   const pocketReachTimerRef = useRef(0)
   const latestUserPromptRef = useRef('')
+  const responseBufferRef = useRef('')
   const [selectedToolPayload, setSelectedToolPayload] = useState<ChatToolPayload>(null)
   const [agentUiPayload, setAgentUiPayload] = useState<AgentUiPayload | null>(null)
   const [currentPrompt, setCurrentPrompt] = useState<string | null>(null)
   const [autoSaveNotice, setAutoSaveNotice] = useState<{ toolId: string; label: string } | null>(
     null,
   )
+  const voicePlaybackMode = userSettings?.voicePlaybackMode ?? 'key-result'
+  const voicePlaybackEnabled =
+    userSettings?.voicePlaybackEnabled !== false && voicePlaybackMode !== 'off'
+  const soundEffectsEnabled = userSettings?.soundEffectsEnabled !== false
+  const memoryEnabled = userSettings?.memoryEnabled !== false
+  const explanationMode = userSettings?.explanationMode ?? 'standard'
 
-  const finishSpeakingTurn = useCallback(
-    (_skipPocket?: boolean) => {
-      void _skipPocket
-      setAppState('idle')
-      setTranscript('')
-      setBotResponse('')
-    },
-    [setAppState, setBotResponse, setTranscript],
-  )
+  const finishSpeakingTurn = useCallback(() => {
+    setAppState('idle')
+    setTranscript('')
+    setBotResponse('')
+  }, [setAppState, setBotResponse, setTranscript])
 
   const triggerPocketReveal = useCallback(
     (gadget: AssistantModeCard) => {
       onPocketGadgetChange(gadget)
-      void playDoraPocketSfx()
+      if (soundEffectsEnabled) {
+        void playDoraPocketSfx()
+      }
       window.clearTimeout(pocketReachTimerRef.current)
       pocketReachTimerRef.current = window.setTimeout(() => {
         pocketReachTimerRef.current = 0
       }, 1050)
     },
-    [onPocketGadgetChange],
+    [onPocketGadgetChange, soundEffectsEnabled],
   )
 
   const clearResponseState = useCallback(() => {
@@ -101,95 +110,163 @@ export function useAnalysisSession({
     setAgentUiPayload(null)
   }, [setLastSpeechError])
 
-  const runAgentTurn = useCallback(
-    async (text: string, options?: RunTurnOptions) => {
-      const safeText = text.trim()
-      if (!safeText) return
+  const handleReplyMeta = useCallback(
+    ({
+      selectedTool,
+      uiPayload,
+    }: {
+      selectedTool: ChatToolPayload
+      uiPayload: AgentUiPayload | null
+    }) => {
+      setSelectedToolPayload(selectedTool)
+      setAgentUiPayload(uiPayload)
+    },
+    [],
+  )
 
-      stopAudioPlayback()
-      setLastSpeechError('')
-      setBotResponse('')
-      setAppState('thinking')
-      latestUserPromptRef.current = safeText
-      setCurrentPrompt(safeText)
-      const marketContext = await queryClient.fetchQuery(getMarketContextQueryOptions('applied'))
-      const reply = await askQwen(safeText, {
-        answerBookFromPocket: options?.answerBookFromPocket === true,
-        marketContext,
-        onMeta: ({ selectedTool, uiPayload }) => {
-          setSelectedToolPayload(selectedTool)
-          setAgentUiPayload(uiPayload)
-        },
-        onDelta: (chunk) => {
-          setBotResponse(`${useStore.getState().botResponse}${chunk}`)
-        },
+  const handleReplyDelta = useCallback(
+    (chunk: string) => {
+      responseBufferRef.current += chunk
+      setBotResponse(responseBufferRef.current)
+    },
+    [setBotResponse],
+  )
+
+  const maybeAutoSaveTool = useCallback(
+    async (safeText: string, reply: AgentTurnReply) => {
+      const toolId = reply.selectedTool?.toolId
+      if (!autoSaveEnabled || !reply.uiPayload?.shouldAutoSave || !toolId) return
+
+      const existingPocketItem = pocketInventory.find((item) => item.toolId === toolId)
+      if (existingPocketItem) return
+
+      await saveToolToPocket({
+        toolId,
+        sourceQuestion: safeText,
+        presetArgs: reply.selectedTool?.args,
       })
-      const answer = reply.text
+      setAutoSaveNotice({
+        toolId,
+        label: getToolById(toolId)?.name ?? getModeByToolId(toolId)?.title ?? toolId,
+      })
+      setSystemNotice({
+        level: 'task',
+        message: SYSTEM_NOTICE_COPY.autoSaved,
+        autoDismissMs: 2200,
+      })
+    },
+    [autoSaveEnabled, pocketInventory, saveToolToPocket, setSystemNotice],
+  )
+
+  const handleReplySuccess = useCallback(
+    async (safeText: string, reply: AgentTurnReply) => {
       setSelectedToolPayload(reply.selectedTool)
       setAgentUiPayload(reply.uiPayload)
-      saveChatHistory({
-        userText: safeText,
-        assistantText: answer,
-        selectedToolId: reply.selectedTool?.toolId,
-      })
+      if (memoryEnabled) {
+        saveChatHistory({
+          userText: safeText,
+          assistantText: reply.text,
+          selectedToolId: reply.selectedTool?.toolId,
+        })
+      }
+
       const pocketKey = getSelectedGadgetKey()
       const nextPocketGadget = pickModeCardAfterTurn(pocketKey, reply.selectedTool?.toolId)
       onPocketGadgetChange(nextPocketGadget)
       if (reply.selectedTool?.toolId) {
         triggerPocketReveal(nextPocketGadget)
       }
-      const latestPocketInventory =
-        queryClient.getQueryData<PocketInventoryItem[]>(queryKeys.pocket.list()) ?? pocketInventory
-      const existingPocketItem = latestPocketInventory.find(
-        (item) => item.toolId === reply.selectedTool?.toolId,
-      )
-      if (
-        autoSaveEnabled &&
-        reply.uiPayload?.shouldAutoSave &&
-        reply.selectedTool?.toolId &&
-        !existingPocketItem
-      ) {
-        await saveToolToPocket({
-          toolId: reply.selectedTool.toolId,
-          sourceQuestion: safeText,
-          presetArgs: reply.selectedTool.args,
-        })
-        setAutoSaveNotice({
-          toolId: reply.selectedTool.toolId,
-          label:
-            getToolById(reply.selectedTool.toolId)?.name ??
-            getModeByToolId(reply.selectedTool.toolId)?.title ??
-            reply.selectedTool.toolId,
-        })
-        setSystemNotice({ level: 'task', message: '已沉淀为可复用入口', autoDismissMs: 2200 })
+
+      await maybeAutoSaveTool(safeText, reply)
+
+      setBotResponse(reply.text)
+
+      if (!voicePlaybackEnabled) {
+        finishSpeakingTurn()
+        return
       }
 
-      const audioUrl = await buildTTSAudioUrl(answer)
-      setBotResponse(answer)
+      if (voicePlaybackMode === 'key-result' && reply.text.trim().length > 120) {
+        finishSpeakingTurn()
+        return
+      }
+
+      const audioUrl = await buildTTSAudioUrl(reply.text)
 
       if (audioUrl) {
         setAppState('speaking')
         playAudioStream(audioUrl, () => {
-          finishSpeakingTurn(options?.skipPostAnswerPocket === true)
+          finishSpeakingTurn()
         })
-      } else {
-        finishSpeakingTurn(options?.skipPostAnswerPocket === true)
+        return
+      }
+
+      finishSpeakingTurn()
+    },
+    [
+      finishSpeakingTurn,
+      getSelectedGadgetKey,
+      memoryEnabled,
+      maybeAutoSaveTool,
+      onPocketGadgetChange,
+      saveChatHistory,
+      setAppState,
+      setBotResponse,
+      triggerPocketReveal,
+      voicePlaybackEnabled,
+      voicePlaybackMode,
+    ],
+  )
+
+  const handleReplyError = useCallback(
+    (error: unknown) => {
+      stopAudioPlayback()
+      setSelectedToolPayload(null)
+      setAgentUiPayload(null)
+      setBotResponse('')
+      setAppState('idle')
+      const message = error instanceof Error ? error.message : SYSTEM_NOTICE_COPY.analysisFailed
+      setLastSpeechError(message)
+      setSystemNotice({ level: 'critical', message, autoDismissMs: 2800 })
+    },
+    [setAppState, setBotResponse, setLastSpeechError, setSystemNotice],
+  )
+
+  const runAgentTurn = useCallback(
+    async (text: string, options?: RunTurnOptions) => {
+      const safeText = text.trim()
+      if (!safeText) return
+
+      try {
+        stopAudioPlayback()
+        responseBufferRef.current = ''
+        setLastSpeechError('')
+        setBotResponse('')
+        setAppState('thinking')
+        latestUserPromptRef.current = safeText
+        setCurrentPrompt(safeText)
+
+        const reply = await askQwen(safeText, {
+          answerBookFromPocket: options?.answerBookFromPocket === true,
+          explanationMode,
+          onMeta: handleReplyMeta,
+          onDelta: handleReplyDelta,
+        })
+
+        await handleReplySuccess(safeText, reply)
+      } catch (error) {
+        handleReplyError(error)
       }
     },
     [
-      autoSaveEnabled,
-      finishSpeakingTurn,
-      getSelectedGadgetKey,
-      onPocketGadgetChange,
-      pocketInventory,
-      queryClient,
-      saveChatHistory,
-      saveToolToPocket,
+      handleReplyDelta,
+      handleReplyError,
+      handleReplyMeta,
+      handleReplySuccess,
       setAppState,
       setBotResponse,
       setLastSpeechError,
-      setSystemNotice,
-      triggerPocketReveal,
+      explanationMode,
     ],
   )
 

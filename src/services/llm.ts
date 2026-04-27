@@ -1,8 +1,9 @@
-import type { AgentUiPayload, MarketContext } from '@/shared/market-types'
+import type { AgentUiPayload } from '@/shared/market-types'
+import type { ExplanationMode } from '@/services/user-settings'
 
 export type AskQwenOptions = {
   answerBookFromPocket?: boolean
-  marketContext?: MarketContext
+  explanationMode?: ExplanationMode
   onMeta?: (payload: { selectedTool: ChatToolPayload; uiPayload: AgentUiPayload | null }) => void
   onDelta?: (text: string) => void
 }
@@ -59,7 +60,7 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
     body: JSON.stringify({
       message,
       answerBookFromPocket: opts?.answerBookFromPocket === true,
-      marketContext: opts?.marketContext,
+      explanationMode: opts?.explanationMode ?? 'standard',
     }),
   })
 
