@@ -47,7 +47,7 @@ export function LoginEntryButton({ active = false, className }: LoginEntryButton
         )}
       >
         <Image
-          src={user.avatarSrc ?? '/branding/assistant-avatar.svg'}
+          src={user.avatarSrc ?? '/images/assistant-avatar.svg'}
           alt="个人头像"
           width={28}
           height={28}

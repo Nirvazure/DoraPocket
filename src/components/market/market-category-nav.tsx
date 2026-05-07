@@ -28,13 +28,12 @@ export function MarketCategoryNav({
     <>
       <aside
         className={cn(
-          'hidden h-full overflow-hidden rounded-[2rem] p-2.5 bg-white xl:block',
-          sidebarCollapsed ? 'px-2' : 'px-2.5',
+          'hidden w-full min-h-0 flex-col overflow-hidden rounded-[1.5rem] border border-border/60 bg-[linear-gradient(180deg,rgba(248,250,252,0.98),rgba(255,255,255,0.98))] p-3 shadow-sm xl:flex xl:self-start',
         )}
       >
         <div
           className={cn(
-            'flex items-center border-slate-200/80 bg-white px-2 py-2',
+            'flex shrink-0 items-center border-b border-border/60 px-0.5 pb-3',
             sidebarCollapsed ? 'justify-center' : 'justify-between',
           )}
         >
@@ -45,7 +44,7 @@ export function MarketCategoryNav({
           ) : null}
           <button
             type="button"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200/80 bg-slate-50 text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/70 bg-white/90 text-slate-600 shadow-sm transition-colors hover:bg-white hover:text-slate-950"
             onClick={onToggleCollapsed}
             aria-label={sidebarCollapsed ? '展开市场侧边栏' : '收起市场侧边栏'}
             title={sidebarCollapsed ? '展开市场侧边栏' : '收起市场侧边栏'}
@@ -58,7 +57,7 @@ export function MarketCategoryNav({
           </button>
         </div>
 
-        <div className="mt-1.5 space-y-1">
+        <div className="mt-3 space-y-1.5 pb-2">
           {categoryEntries.map(([key, label]) => {
             const count = categoryCounts[key]
             const active = selectedSection === key
@@ -69,10 +68,10 @@ export function MarketCategoryNav({
                 aria-label={label}
                 title={label}
                 className={cn(
-                  'relative flex w-full items-center rounded-2xl border text-left shadow-sm transition-all duration-200',
+                  'relative flex w-full items-center rounded-xl border text-left transition-all duration-200',
                   active
                     ? 'border-primary/20 bg-primary/[0.08] text-primary shadow-[0_12px_28px_rgba(37,99,235,0.10)]'
-                    : 'border-slate-200/80 bg-white text-slate-700 hover:border-primary/15 hover:bg-slate-50',
+                    : 'border-border/50 bg-white/85 text-slate-700 hover:border-primary/15 hover:bg-white',
                   sidebarCollapsed ? 'justify-center px-1.5 py-1.5' : 'justify-between px-2 py-2',
                 )}
                 onClick={() => onSelect(key)}
@@ -131,7 +130,7 @@ export function MarketCategoryNav({
       <div className="relative xl:hidden">
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-6 bg-gradient-to-r from-white/95 to-transparent" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-6 bg-gradient-to-l from-white/95 to-transparent" />
-        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {categoryEntries.map(([key, label]) => {
             const active = selectedSection === key
             return (

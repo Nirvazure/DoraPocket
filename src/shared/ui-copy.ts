@@ -13,6 +13,7 @@ export const PAGE_COPY = {
     collectAction: '收入口袋',
     openAction: '打开',
     reviewAction: '补充体验',
+    reviewSupplementScore: '补充评分',
     updateReviewAction: '更新体验',
     builtinSection: '内置工具',
     reviewDrawerTitle: '这次这个工具好用吗？',

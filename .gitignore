@@ -56,4 +56,4 @@ next-env.d.ts
 # generated assets / temp
 /tmp/
 .tmp-edge-profile/
-/public/market-favicons/manifest.json
+/public/images/manifest.json
