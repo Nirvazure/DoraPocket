@@ -14,29 +14,29 @@ import { cn } from '@/lib/utils'
 const MEMORY_ITEMS = {
   preference: {
     title: '偏好画像',
-    summary: '系统会记住你更偏好哪类帮助、价格门槛与执行方式。',
+    summary: '这是待开发能力，不把当前薄弱画像包装成成熟结论。',
     items: [
-      '把“免登录优先”“中文体验更好”这类真实偏好带回下一次裁决。',
-      '不让你每次都重新说明自己的习惯。',
-      '让下一次推荐更像在延续你，而不是重新认识你。',
+      '后续会把“免登录优先”“中文体验更好”这类真实偏好带回下一次裁决。',
+      '在数据不够之前，页面只说明方向，不展示过度推断。',
+      '画像成熟后，推荐才应该明显减少重复解释成本。',
     ],
   },
   history: {
     title: '历史记忆',
-    summary: '系统会记录你最近真正打开、保存、复用过什么。',
+    summary: '后续会记录你真正打开、保存、复用过什么。',
     items: [
-      '知道哪些帮助只是浏览过，哪些是被你证明过有效的。',
-      '让下一次不是从零开始，而是从已有记忆出发。',
-      '让推荐更贴近你已经形成的工作方式。',
+      '区分哪些帮助只是浏览过，哪些被你证明过有效。',
+      '让下一次不是从零开始，而是从已有路径出发。',
+      '先保留数据结构和入口，等体验闭环稳定后再强化展示。',
     ],
   },
   feedback: {
     title: '结果回流',
-    summary: '收藏、跳过、替换、归档都会回流成新的判断信号。',
+    summary: '评价、打开、保存会逐步回流成推荐判断信号。',
     items: [
-      '系统逐渐懂得“对你有效”不是抽象偏好，而是被结果验证过。',
-      '越用越像在关键时刻替你出手，而不是只会展示选项。',
-      '解释层、推荐层和沉淀层会越来越一致。',
+      '“对你有效”必须被结果验证，而不是靠页面文案宣布。',
+      '市场反馈会先保留，等待推荐排序继续吸收。',
+      '解释层、推荐层和沉淀层后续要保持一致。',
     ],
   },
 } as const
@@ -50,15 +50,22 @@ export function IntroMemorySection({ sectionRef }: IntroMemorySectionProps) {
   const activeContent = useMemo(() => MEMORY_ITEMS[activePanel], [activePanel])
 
   return (
-    <section id="intro-memory" ref={sectionRef} className="py-10 lg:min-h-[calc(100vh-7rem)] lg:py-16">
+    <section
+      id="intro-memory"
+      ref={sectionRef}
+      className="py-10 lg:min-h-[calc(100vh-7rem)] lg:py-16"
+    >
       <div className="rounded-[2.6rem] border border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(244,247,255,0.92))] p-6 shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl lg:flex lg:min-h-[calc(100vh-9rem)] lg:flex-col lg:justify-center lg:p-8">
         <div className="space-y-4" data-intro-reveal>
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">第六幕 / 越用越懂你</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
+            第五幕 / 记忆待开发
+          </p>
           <h2 className="max-w-4xl text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-            DoraPocket 最终不是更会展示工具，而是更会在关键时刻替你出手。
+            个人画像先降级为待开发，不再假装已经成熟。
           </h2>
           <p className="max-w-3xl text-base leading-8 text-slate-600">
-            收藏、复用、跳过、偏好校准、历史回流，都会慢慢变成对你的理解。系统不只是记住你喜欢什么，而是更懂什么样的帮助在这个情境里真的有效。
+            历史、偏好和反馈以后会让 DoraPocket
+            更懂你。但在闭环真正稳定前，个人中心只保留方向说明和入口，不展示过度复杂的画像工作台。
           </p>
         </div>
 
@@ -79,11 +86,21 @@ export function IntroMemorySection({ sectionRef }: IntroMemorySectionProps) {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className={cn('text-[11px] font-bold uppercase tracking-[0.18em]', activePanel === key ? 'text-sky-100' : 'text-primary')}>
+                    <p
+                      className={cn(
+                        'text-[11px] font-bold uppercase tracking-[0.18em]',
+                        activePanel === key ? 'text-sky-100' : 'text-primary',
+                      )}
+                    >
                       0{index + 1}
                     </p>
                     <p className="mt-2 text-lg font-black">{panel.title}</p>
-                    <p className={cn('mt-2 text-sm leading-7', activePanel === key ? 'text-sky-50' : 'text-slate-600')}>
+                    <p
+                      className={cn(
+                        'mt-2 text-sm leading-7',
+                        activePanel === key ? 'text-sky-50' : 'text-slate-600',
+                      )}
+                    >
                       {panel.summary}
                     </p>
                   </div>
@@ -95,8 +112,12 @@ export function IntroMemorySection({ sectionRef }: IntroMemorySectionProps) {
           <div className="space-y-4">
             <DisplayPanel data-memory-item className="rounded-[2rem] bg-white/92 p-5 shadow-sm">
               <DisplayPanelHeader className="p-0">
-                <DisplayPanelTitle className="text-xl text-slate-950">{activeContent.title}</DisplayPanelTitle>
-                <DisplayPanelDescription className="mt-3 text-sm text-slate-600">{activeContent.summary}</DisplayPanelDescription>
+                <DisplayPanelTitle className="text-xl text-slate-950">
+                  {activeContent.title}
+                </DisplayPanelTitle>
+                <DisplayPanelDescription className="mt-3 text-sm text-slate-600">
+                  {activeContent.summary}
+                </DisplayPanelDescription>
               </DisplayPanelHeader>
               <DisplayPanelContent className="mt-5 grid gap-3 p-0">
                 {activeContent.items.map((item) => (

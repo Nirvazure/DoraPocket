@@ -3,7 +3,7 @@ import { readStorageJson, writeStorageJson } from '@/lib/storage'
 
 export const USER_PROFILE_STORAGE_KEY = 'dp-user-profile-v1'
 export const USER_PROFILE_UPDATED_EVENT = 'dp-user-profile-updated'
-export const DEFAULT_USER_NICKNAME = 'Nirvazure'
+export const DEFAULT_USER_NICKNAME = '野比大雄'
 export const DEFAULT_USER_AVATAR_SRC = '/branding/assistant-avatar.svg'
 
 export type UserProfile = {

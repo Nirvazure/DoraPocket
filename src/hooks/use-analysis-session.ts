@@ -93,15 +93,12 @@ export function useAnalysisSession({
   const triggerPocketReveal = useCallback(
     (gadget: AssistantModeCard) => {
       onPocketGadgetChange(gadget)
-      if (soundEffectsEnabled) {
-        void playDoraPocketSfx()
-      }
       window.clearTimeout(pocketReachTimerRef.current)
       pocketReachTimerRef.current = window.setTimeout(() => {
         pocketReachTimerRef.current = 0
       }, 1050)
     },
-    [onPocketGadgetChange, soundEffectsEnabled],
+    [onPocketGadgetChange],
   )
 
   const clearResponseState = useCallback(() => {
@@ -180,6 +177,9 @@ export function useAnalysisSession({
       await maybeAutoSaveTool(safeText, reply)
 
       setBotResponse(reply.text)
+      if (soundEffectsEnabled && reply.text.trim()) {
+        void playDoraPocketSfx()
+      }
 
       if (!voicePlaybackEnabled) {
         finishSpeakingTurn()
@@ -213,6 +213,7 @@ export function useAnalysisSession({
       setAppState,
       setBotResponse,
       triggerPocketReveal,
+      soundEffectsEnabled,
       voicePlaybackEnabled,
       voicePlaybackMode,
     ],

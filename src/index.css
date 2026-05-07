@@ -4,32 +4,45 @@
 
 @layer base {
   :root {
-    --background: 210 55% 97%;
-    --foreground: 210 35% 14%;
-    --card: 210 45% 99%;
-    --card-foreground: 210 35% 14%;
-    --popover: 210 45% 99%;
-    --popover-foreground: 210 35% 14%;
-    --primary: 199 89% 48%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 210 35% 92%;
-    --secondary-foreground: 210 35% 18%;
-    --muted: 210 30% 93%;
-    --muted-foreground: 210 14% 42%;
-    --accent: 45 96% 58%;
-    --accent-foreground: 210 35% 14%;
-    --destructive: 0 72% 51%;
+    --background: 1 0 0;
+    --foreground: 0.145 0 0;
+    --card: 1 0 0;
+    --card-foreground: 0.145 0 0;
+    --popover: 1 0 0;
+    --popover-foreground: 0.145 0 0;
+    --primary: 0.65 0.16 250;
+    --primary-foreground: 0.985 0 0;
+    --secondary: 0.97 0 0;
+    --secondary-foreground: 0.205 0 0;
+    --muted: 0.97 0 0;
+    --muted-foreground: 0.556 0 0;
+    --accent: 0.97 0 0;
+    --accent-foreground: 0.205 0 0;
+    --destructive: 0.577 0.245 27.325;
     --destructive-foreground: 0 0% 100%;
-    --border: 210 22% 88%;
-    --input: 210 22% 88%;
-    --ring: 199 89% 48%;
-    --radius: 0.75rem;
+    --border: 0.922 0 0;
+    --input: 0.922 0 0;
+    --ring: 0.65 0.16 250;
+    --radius: 0.625rem;
     --dora-red: 0 72% 52%;
     --bell: 45 96% 58%;
     --font-sans: 'DM Sans', 'Noto Sans SC', system-ui, sans-serif;
     --surface-strong: 0 0% 100%;
     --surface-soft: 210 30% 98%;
     --surface-float: 0 0% 100% / 0.76;
+    --chart-1: 0.87 0 0;
+    --chart-2: 0.556 0 0;
+    --chart-3: 0.439 0 0;
+    --chart-4: 0.371 0 0;
+    --chart-5: 0.269 0 0;
+    --sidebar: 0.985 0 0;
+    --sidebar-foreground: 0.145 0 0;
+    --sidebar-primary: 0.65 0.16 250;
+    --sidebar-primary-foreground: 0.985 0 0;
+    --sidebar-accent: 0.97 0 0;
+    --sidebar-accent-foreground: 0.205 0 0;
+    --sidebar-border: 0.922 0 0;
+    --sidebar-ring: 0.65 0.16 250;
   }
 
   html[data-font-preset='a'] {
@@ -49,11 +62,11 @@
   }
 
   * {
-    @apply border-border;
+    @apply border-border outline-ring/50;
   }
 
   body {
-    @apply text-foreground font-sans antialiased;
+    @apply font-sans antialiased bg-background text-foreground;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
@@ -80,7 +93,46 @@
     width: 100vw;
     height: 100vh;
   }
-
+  .theme {
+    --font-heading: var(--font-sans);
+    --font-sans: var(--font-sans);
+  }
+  .dark {
+    --background: 0.145 0 0;
+    --foreground: 0.985 0 0;
+    --card: 0.205 0 0;
+    --card-foreground: 0.985 0 0;
+    --popover: 0.205 0 0;
+    --popover-foreground: 0.985 0 0;
+    --primary: 0.7 0.16 250;
+    --primary-foreground: 0.985 0 0;
+    --secondary: 0.269 0 0;
+    --secondary-foreground: 0.985 0 0;
+    --muted: 0.269 0 0;
+    --muted-foreground: 0.708 0 0;
+    --accent: 0.269 0 0;
+    --accent-foreground: 0.985 0 0;
+    --destructive: 0.704 0.191 22.216;
+    --border: 1 0 0 / 10%;
+    --input: 1 0 0 / 15%;
+    --ring: 0.7 0.16 250;
+    --chart-1: 0.87 0 0;
+    --chart-2: 0.556 0 0;
+    --chart-3: 0.439 0 0;
+    --chart-4: 0.371 0 0;
+    --chart-5: 0.269 0 0;
+    --sidebar: 0.205 0 0;
+    --sidebar-foreground: 0.985 0 0;
+    --sidebar-primary: 0.7 0.16 250;
+    --sidebar-primary-foreground: 0.985 0 0;
+    --sidebar-accent: 0.269 0 0;
+    --sidebar-accent-foreground: 0.985 0 0;
+    --sidebar-border: 1 0 0 / 10%;
+    --sidebar-ring: 0.7 0.16 250;
+  }
+  html {
+    @apply font-sans;
+  }
 }
 
 @keyframes dp-listen-ring {
@@ -188,6 +240,17 @@
   }
 }
 
+@keyframes dp-rail-slide {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 @layer components {
   .dp-pocket-surface {
     @apply overflow-hidden rounded-3xl border-2 border-primary/35 bg-gradient-to-b from-primary/10 to-card text-card-foreground shadow-[0_10px_36px_hsl(199_89%_48%/0.12)] backdrop-blur-md;
@@ -202,7 +265,7 @@
   }
 
   .dp-page-surface {
-    @apply rounded-[2rem] border border-white/75 bg-white/84 shadow-2xl shadow-slate-900/10 backdrop-blur-xl;
+    @apply rounded-[2rem] border border-white/75 bg-white/80 shadow-2xl shadow-slate-900/10 backdrop-blur-xl;
   }
 
   .dp-reading-surface {
@@ -262,6 +325,10 @@
   .animate-dp-tab-pop {
     animation: dp-tab-pop 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
+
+  .animate-dp-rail-slide {
+    animation: dp-rail-slide 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -295,6 +362,12 @@
 
   .animate-dp-tab-pop {
     animation: none;
+    transform: none;
+  }
+
+  .animate-dp-rail-slide {
+    animation: none;
+    opacity: 1;
     transform: none;
   }
 }

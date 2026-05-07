@@ -1,4 +1,4 @@
-﻿import {
+import {
   DisplayPanel,
   DisplayPanelContent,
   DisplayPanelDescription,

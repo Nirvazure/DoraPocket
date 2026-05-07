@@ -16,6 +16,12 @@ type MarketToolGridProps = {
   onReviewTool: (toolId: string) => void
 }
 
+function sourceLabelFor(tool: MarketToolCardItem): string {
+  if (tool.source === 'builtin') return '系统工具'
+  if (tool.marketAssetOrigin === 'community' || tool.source === 'submitted') return '用户提交'
+  return TOOL_SOURCE_LABELS[tool.source]
+}
+
 export function MarketToolGrid({
   tools,
   onSaveTool,
@@ -47,7 +53,7 @@ export function MarketToolGrid({
                   : 'bg-white text-muted-foreground',
               )}
             >
-              {TOOL_SOURCE_LABELS[tool.source]}
+              {sourceLabelFor(tool)}
             </span>
           </div>
           <div className="mt-2 flex flex-wrap gap-1.5">

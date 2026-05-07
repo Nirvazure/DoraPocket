@@ -106,18 +106,6 @@ export const SETTINGS_COPY = {
         { value: 'full', label: '完整播报' },
       ],
     },
-    soundEffects: {
-      title: '操作音效',
-      description: '是否保留轻提示音，帮助你感知动作已经完成。',
-    },
-    defaultInputMode: {
-      title: '默认输入方式',
-      description: '决定下次进入分析页时，是先打开文字输入还是语音输入。',
-      options: [
-        { value: 'text', label: '文字输入' },
-        { value: 'voice', label: '语音输入' },
-      ],
-    },
     autoSave: {
       title: '自动沉淀进口袋',
       description: '当系统判断这次帮助值得再用时，是否替你先收好。',

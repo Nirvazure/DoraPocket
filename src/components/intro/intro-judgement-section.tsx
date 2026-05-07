@@ -33,15 +33,18 @@ const JUDGEMENT_CARDS = [
   },
 ]
 
-export function IntroJudgementSection({
-  sectionRef,
-  trackRef,
-}: IntroJudgementSectionProps) {
+export function IntroJudgementSection({ sectionRef, trackRef }: IntroJudgementSectionProps) {
   return (
-    <section id="intro-judgement" ref={sectionRef} className="relative py-10 lg:min-h-[calc(100vh-7rem)] lg:py-16">
+    <section
+      id="intro-judgement"
+      ref={sectionRef}
+      className="relative py-10 lg:min-h-[calc(100vh-7rem)] lg:py-16"
+    >
       <div className="rounded-[2.6rem] border border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(239,246,255,0.9))] p-6 shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur-xl lg:flex lg:min-h-[calc(100vh-9rem)] lg:flex-col lg:justify-center lg:p-8">
         <div data-intro-reveal className="max-w-3xl">
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">第二幕 / 理解与裁决</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
+            第二幕 / 理解与裁决
+          </p>
           <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
             DoraPocket 的关键，不是聊天，而是替你把“这次先用什么”收束出来。
           </h2>
@@ -62,13 +65,24 @@ export function IntroJudgementSection({
               }`}
             >
               <DisplayPanelHeader className="p-0">
-                <Badge variant={index === 2 ? 'dark' : 'accent'} className={index === 2 ? 'w-fit border-white/15 bg-white/10 text-sky-100' : 'w-fit'}>
+                <Badge
+                  variant="outline"
+                  className={
+                    index === 2
+                      ? 'w-fit border-white/15 bg-white/10 text-sky-100'
+                      : 'w-fit border-sky-200 bg-sky-50 text-sky-800'
+                  }
+                >
                   0{index + 1}
                 </Badge>
-                <DisplayPanelTitle className={`mt-3 text-2xl ${index === 2 ? 'text-white' : 'text-slate-950'}`}>
+                <DisplayPanelTitle
+                  className={`mt-3 text-2xl ${index === 2 ? 'text-white' : 'text-slate-950'}`}
+                >
                   {card.title}
                 </DisplayPanelTitle>
-                <DisplayPanelDescription className={`mt-3 text-sm ${index === 2 ? 'text-sky-50' : 'text-slate-600'}`}>
+                <DisplayPanelDescription
+                  className={`mt-3 text-sm ${index === 2 ? 'text-sky-50' : 'text-slate-600'}`}
+                >
                   {card.body}
                 </DisplayPanelDescription>
               </DisplayPanelHeader>
@@ -76,8 +90,12 @@ export function IntroJudgementSection({
                 {card.chips.map((chip) => (
                   <Badge
                     key={chip}
-                    variant={index === 2 ? 'dark' : 'muted'}
-                    className={index === 2 ? 'border-white/15 bg-white/10 text-white' : 'border-slate-200 bg-slate-50 text-slate-600'}
+                    variant="outline"
+                    className={
+                      index === 2
+                        ? 'border-white/15 bg-white/10 text-white'
+                        : 'border-slate-200 bg-slate-50 text-slate-600'
+                    }
                   >
                     {chip}
                   </Badge>
@@ -86,13 +104,17 @@ export function IntroJudgementSection({
             </DisplayPanel>
           ))}
         </div>
-        <DisplayPanel data-intro-reveal className="mt-6 rounded-[1.8rem] border-sky-100 bg-white/85 p-4 shadow-sm">
+        <DisplayPanel
+          data-intro-reveal
+          className="mt-6 rounded-[1.8rem] border-sky-100 bg-white/85 p-4 shadow-sm"
+        >
           <DisplayPanelHeader className="p-0">
-            <Badge variant="accent" className="w-fit">结论优先于过程展示</Badge>
+            <Badge className="w-fit">结论优先于过程展示</Badge>
           </DisplayPanelHeader>
           <DisplayPanelContent className="p-0 pt-2">
             <DisplayPanelDescription className="text-sm text-slate-600">
-              用户不需要盯着系统怎样一步步思考，而是需要在关键时刻先看到一个可信的方向。Scroll 只负责把这个逻辑讲清楚，不应该抢走裁决本身。
+              用户不需要盯着系统怎样一步步思考，而是需要在关键时刻先看到一个可信的方向。Scroll
+              只负责把这个逻辑讲清楚，不应该抢走裁决本身。
             </DisplayPanelDescription>
           </DisplayPanelContent>
         </DisplayPanel>

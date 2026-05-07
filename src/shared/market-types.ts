@@ -98,14 +98,16 @@ export type AgentTaskFrame = {
 }
 
 export type AgentCandidate = {
-  toolId: string
+  toolId?: string
   title: string
   url?: string | null
-  candidateType: 'tool' | 'submission'
+  candidateType: 'tool' | 'submission' | 'external_suggestion'
   assetOrigin?: 'builtin' | 'curated_market' | 'bookmark_seed'
   score: number
-  sourceLabel: 'builtin' | 'pocket' | 'market'
+  sourceLabel: 'builtin' | 'pocket' | 'market' | 'external'
   reason: string
+  externalConfidence?: number
+  externalBoundary?: string
 }
 
 export type AgentUiPayload = {

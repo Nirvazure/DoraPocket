@@ -32,6 +32,7 @@ export function buildDiscoveryResponsePrompt(state: PocketState) {
       state.market_context,
     )}`,
     buildExplanationStyleInstruction(state),
-    '请输出：一句总判断 + 最值得试的工具 + 为什么 + 建议下一步。',
+    '请输出：一句结论 + 最值得先用的工具 + 简短理由 + 代价或边界 + 下一步动作。不要堆列表，不要暴露内部 ID。',
+    '如果首选是 Hub 外建议，必须明确说它当前不在 Tool Hub，不能说成已收录、可评价、可自动沉淀；下一步只能建议先打开试用，确认有效后再手动提交到 Tool Hub。',
   ].join('\n')
 }

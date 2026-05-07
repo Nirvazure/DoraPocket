@@ -1,8 +1,16 @@
 import 'server-only'
 
+import { createHash } from 'node:crypto'
 import type * as Prisma from '../../generated/prisma/internal/prismaNamespace'
 import { prisma } from '@/server/db/prisma'
-import { TOOL_REGISTRY, type ToolItem } from '@/shared/tool-registry'
+import {
+  TOOL_REGISTRY,
+  type ToolCategory,
+  type ToolExecutionMode,
+  type ToolItem,
+  type ToolPlatform,
+  type ToolPricingModel,
+} from '@/shared/tool-registry'
 
 function toJsonValue(value: unknown): Prisma.InputJsonValue | undefined {
   if (value == null) return undefined
@@ -40,6 +48,98 @@ function toToolCreateInput(tool: ToolItem, ownerUserId?: string | null) {
     seedSource: tool.source === 'submitted' ? 'user_submission' : 'system_seed',
     createdByUserId: ownerUserId ?? null,
   }
+}
+
+export type ImportedToolInput = {
+  name: string
+  url: string
+  description: string
+  category: ToolCategory
+  tags: string[]
+  executionMode?: ToolExecutionMode
+  pricingModel?: ToolPricingModel
+  requiresAuth?: boolean
+  platform?: ToolPlatform
+  capabilities?: string[]
+  recommendedFor?: string[]
+  sourceNote?: string
+  siteHostname?: string
+  createdByUserId?: string | null
+}
+
+function normalizeHostname(url: string): string | null {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return null
+  }
+}
+
+export function createImportedToolId(url: string): string {
+  const hash = createHash('sha1').update(url.trim().toLowerCase()).digest('hex').slice(0, 14)
+  return `tool_${hash}`
+}
+
+export async function upsertImportedTool(input: ImportedToolInput) {
+  const url = input.url.trim()
+  const hostname = input.siteHostname ?? normalizeHostname(url)
+  const id = createImportedToolId(url)
+  const data = {
+    id,
+    name: input.name.trim(),
+    icon: '🌐',
+    iconType: 'emoji',
+    iconText: '🌐',
+    iconImageUrl: null,
+    iconImageLocalPath: null,
+    url,
+    description: input.description.trim(),
+    category: input.category,
+    tags: input.tags
+      .map((tag) => tag.trim())
+      .filter(Boolean)
+      .slice(0, 8),
+    source: 'submitted',
+    status: 'active',
+    executionMode: input.executionMode ?? 'external_link',
+    pricingModel: input.pricingModel ?? 'freemium',
+    requiresAuth: input.requiresAuth ?? false,
+    platform: input.platform ?? 'web',
+    capabilities:
+      input.capabilities
+        ?.map((item) => item.trim())
+        .filter(Boolean)
+        .slice(0, 8) ??
+      input.tags
+        .map((tag) => tag.trim())
+        .filter(Boolean)
+        .slice(0, 5),
+    recommendedFor: input.recommendedFor
+      ?.map((item) => item.trim())
+      .filter(Boolean)
+      .slice(0, 5) ?? [`需要${input.name.trim()}相关能力`],
+    sourceNote: input.sourceNote ?? '用户提交',
+    trustSignals: {
+      curated: false,
+      official: false,
+      communityVerified: false,
+    },
+    subscriptionSupport: false,
+    defaultArgs: undefined,
+    isBuiltin: false,
+    siteHostname: hostname,
+    marketAssetOrigin: 'community',
+    seedSource: 'community_submission',
+    createdByUserId: input.createdByUserId ?? null,
+  }
+
+  return prisma.tool.upsert({
+    where: { id },
+    create: data,
+    update: {
+      ...data,
+    },
+  })
 }
 
 export async function listActiveTools() {

@@ -50,8 +50,12 @@ export function HelpStarterStrip({ onDraftChange }: HelpStarterStripProps) {
     <section className="rounded-3xl border border-primary/15 bg-primary/[0.04] p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">从一个具体场景开始</p>
-          <p className="mt-1 text-sm font-semibold text-foreground">不用想怎么问，先选一个高频求助入口。</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
+            从一个具体场景开始
+          </p>
+          <p className="mt-1 text-sm font-semibold text-foreground">
+            不用想怎么问，先选一个高频求助入口。
+          </p>
         </div>
         <span className="rounded-full border border-primary/15 bg-white px-3 py-1 text-[11px] font-semibold text-primary">
           填入右侧输入框

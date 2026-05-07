@@ -3,7 +3,11 @@
 import type { RefObject } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { DisplayPanel, DisplayPanelContent, DisplayPanelHeader } from '@/components/ui/display-shell'
+import {
+  DisplayPanel,
+  DisplayPanelContent,
+  DisplayPanelHeader,
+} from '@/components/ui/display-shell'
 
 const SIGNAL_GROUPS = [
   {
@@ -30,23 +34,30 @@ type IntroMarketSectionProps = {
 
 export function IntroMarketSection({ sectionRef }: IntroMarketSectionProps) {
   return (
-    <section id="intro-market" ref={sectionRef} className="py-10 lg:min-h-[calc(100vh-7rem)] lg:py-16">
+    <section
+      id="intro-market"
+      ref={sectionRef}
+      className="py-10 lg:min-h-[calc(100vh-7rem)] lg:py-16"
+    >
       <div className="rounded-[2.8rem] border border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(244,249,255,0.94))] p-6 shadow-[0_28px_90px_rgba(15,23,42,0.10)] backdrop-blur-xl lg:flex lg:min-h-[calc(100vh-9rem)] lg:flex-col lg:justify-center lg:p-8">
         <div className="grid gap-8 xl:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
           <div data-intro-reveal className="space-y-5">
             <div className="space-y-4">
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">第四幕 / 市场收束</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
+                第三幕 / 市场反馈
+              </p>
               <h2 className="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-                市场不是一面榜单墙，而是一层帮助裁决成立的证据。
+                市场保留提交和评价，但不抢主任务。
               </h2>
               <p className="text-base leading-8 text-slate-600">
-                DoraPocket 不会把热度、品牌和评分原样扔给你，而是先消化这些市场信号，再把真正适合这次的答案收敛出来。
+                DoraPocket
+                需要市场反馈来校准推荐，但用户不该先被工具海淹没。提交、评价和打开记录会作为证据回流，而不是替代这次裁决。
               </p>
             </div>
 
             <DisplayPanel className="rounded-[2rem] bg-white/92 p-5 shadow-sm">
               <DisplayPanelHeader className="p-0 pb-4">
-                <Badge variant="accent" className="w-fit">裁决镜头</Badge>
+                <Badge className="w-fit">裁决镜头</Badge>
               </DisplayPanelHeader>
               <Separator />
               <DisplayPanelContent className="mt-4 space-y-3 p-0 pt-4">
@@ -73,8 +84,13 @@ export function IntroMarketSection({ sectionRef }: IntroMarketSectionProps) {
               className="overflow-hidden rounded-[2.2rem] bg-white/92 p-5 shadow-sm"
             >
               <div className="flex items-center justify-between gap-3">
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">市场还很吵的时候</p>
-                <Badge variant="muted" className="px-3 py-1 text-[10px] font-bold text-slate-500">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">
+                  反馈还没收束时
+                </p>
+                <Badge
+                  variant="outline"
+                  className="bg-slate-100 px-3 py-1 text-[10px] font-bold text-slate-500"
+                >
                   Raw Signals
                 </Badge>
               </div>
@@ -107,17 +123,25 @@ export function IntroMarketSection({ sectionRef }: IntroMarketSectionProps) {
             >
               <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-sky-200/30 blur-3xl" />
               <div className="relative">
-                <Badge variant="accent" className="w-fit">DoraPocket 如何收束</Badge>
+                <Badge className="w-fit">DoraPocket 怎么使用这些反馈</Badge>
                 <DisplayPanel className="mt-4 rounded-[1.7rem] bg-white/86 p-4 shadow-none">
                   <div className="flex flex-col gap-3 md:flex-row md:items-center">
                     <DisplayPanel className="flex-1 rounded-[1.4rem] border-slate-100 bg-slate-50/80 px-4 py-4 shadow-none">
-                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">先排除</p>
-                      <p className="mt-2 text-sm font-black text-slate-800">不适合这次的候选先退出画面</p>
+                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
+                        先排除
+                      </p>
+                      <p className="mt-2 text-sm font-black text-slate-800">
+                        跟当前任务无关的信号先退出画面
+                      </p>
                     </DisplayPanel>
                     <div className="text-center text-lg font-black text-sky-500">→</div>
                     <DisplayPanel className="flex-1 rounded-[1.4rem] border-sky-200 bg-sky-50 px-4 py-4 shadow-none">
-                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-500">再收束</p>
-                      <p className="mt-2 text-sm font-black text-sky-800">只留下少数值得先试的方案</p>
+                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-500">
+                        再收束
+                      </p>
+                      <p className="mt-2 text-sm font-black text-sky-800">
+                        留下能解释这次选择的证据
+                      </p>
                     </DisplayPanel>
                   </div>
                 </DisplayPanel>
@@ -130,8 +154,10 @@ export function IntroMarketSection({ sectionRef }: IntroMarketSectionProps) {
               className="rounded-[2.2rem] border border-sky-200 bg-slate-950 p-5 text-white shadow-[0_24px_50px_rgba(15,23,42,0.18)]"
             >
               <div className="flex items-center justify-between gap-3">
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-sky-300">用户最后看到的</p>
-                <Badge variant="dark" className="border-white/10 bg-white/5 px-3 py-1 text-[10px] font-bold text-sky-100">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-sky-300">
+                  用户最后看到的
+                </p>
+                <Badge className="border-white/10 bg-white/5 px-3 py-1 text-[10px] font-bold text-sky-100">
                   Final Judgement
                 </Badge>
               </div>
@@ -139,7 +165,6 @@ export function IntroMarketSection({ sectionRef }: IntroMarketSectionProps) {
                 {DECISION_POINTS.map((item) => (
                   <Badge
                     key={item}
-                    variant="dark"
                     className="border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-bold text-slate-100"
                   >
                     {item}
@@ -147,7 +172,7 @@ export function IntroMarketSection({ sectionRef }: IntroMarketSectionProps) {
                 ))}
               </div>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
-                所以用户看到的不是一堆待研究的榜单，而是这次先用什么，以及为什么它比别的更适合现在。
+                所以市场页可以继续积累工具和反馈，但主路径仍然回到一个问题：这次先用什么。
               </p>
             </DisplayPanel>
           </div>

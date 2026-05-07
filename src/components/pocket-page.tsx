@@ -1,85 +1,45 @@
-﻿'use client'
+'use client'
 
-import { useMemo, useState } from 'react'
-import { Search } from 'lucide-react'
+import { ArrowRight, Archive, History, RotateCcw } from 'lucide-react'
 import { PageShell } from '@/components/common/page-shell'
 import { ProfileEntryPill } from '@/components/common/profile-entry-pill'
 import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
-import { PocketToolCard } from '@/components/pocket/pocket-tool-card'
+import { Button } from '@/components/ui/button'
 import {
   DisplayPanel,
+  DisplayPanelContent,
   DisplayPanelDescription,
   DisplayPanelHeader,
   DisplayPanelTitle,
 } from '@/components/ui/display-shell'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { useToolCardActions } from '@/hooks/use-tool-card-actions'
-import { useAuthSessionQuery } from '@/lib/query/auth-session'
-import {
-  useMarkToolUsedMutation,
-  usePocketInventoryQuery,
-  useRemoveToolFromPocketMutation,
-  useToggleArchiveToolMutation,
-  useTogglePinToolMutation,
-  useTogglePurchasedToolMutation,
-} from '@/lib/query/pocket'
-import type { PocketInventoryItem } from '@/services/pocket-inventory'
-import { getToolById } from '@/services/tool-registry'
 import { PAGE_COPY } from '@/shared/ui-copy'
 
-type ResolvedPocketTool = {
-  entry: PocketInventoryItem
-  tool: NonNullable<ReturnType<typeof getToolById>>
-}
-
-function resolvePocketTools(items: PocketInventoryItem[]) {
-  return items
-    .map((entry) => ({ entry, tool: getToolById(entry.toolId) }))
-    .filter((item): item is ResolvedPocketTool => Boolean(item.tool))
-}
+const POCKET_DIRECTIONS = [
+  {
+    title: '沉淀有效帮助',
+    body: '只保存这次真的帮上忙的工具、入口和使用线索，而不是堆普通收藏。',
+    Icon: Archive,
+  },
+  {
+    title: '复用历史路径',
+    body: '下次遇到相似任务时，从已验证路径重新启动，减少重复比较。',
+    Icon: History,
+  },
+  {
+    title: '回流推荐判断',
+    body: '打开、保存、复用和跳过会逐步变成下一次裁决的信号。',
+    Icon: RotateCcw,
+  },
+] as const
 
 export function PocketPage() {
-  const { data: authSession } = useAuthSessionQuery()
-  const { data: pocketInventory = [] } = usePocketInventoryQuery()
-  const removeToolFromPocketMutation = useRemoveToolFromPocketMutation()
-  const togglePinToolMutation = useTogglePinToolMutation()
-  const togglePurchasedToolMutation = useTogglePurchasedToolMutation()
-  const toggleArchiveToolMutation = useToggleArchiveToolMutation()
-  const markToolUsedMutation = useMarkToolUsedMutation()
-  const [query, setQuery] = useState('')
-  const toolCardActions = useToolCardActions({
-    markToolUsed: markToolUsedMutation.mutate,
-  })
-
-  const keyword = query.trim().toLowerCase()
-  const activeItems = useMemo(
-    () => pocketInventory.filter((item) => !item.archived),
-    [pocketInventory],
-  )
-  const archivedItems = useMemo(
-    () => pocketInventory.filter((item) => item.archived),
-    [pocketInventory],
-  )
-
-  const activeTools = useMemo(() => {
-    const resolved = resolvePocketTools(activeItems)
-    if (!keyword) return resolved
-    return resolved.filter(({ tool }) =>
-      `${tool.name} ${tool.description} ${tool.tags.join(' ')}`.toLowerCase().includes(keyword),
-    )
-  }, [activeItems, keyword])
-
-  const pinnedTools = useMemo(() => activeTools.filter(({ entry }) => entry.pinned), [activeTools])
-  const archivedTools = useMemo(() => resolvePocketTools(archivedItems), [archivedItems])
-
   return (
     <PageShell
       header={
         <UnifiedTopBar
           title={PAGE_COPY.pocket.title}
-          subtitle={PAGE_COPY.pocket.subtitle}
+          subtitle="口袋入口保留，资产系统后续实现。"
           rightSlot={
             <div className="flex items-center gap-2">
               <TopNavSwitch current="pocket" />
@@ -89,163 +49,62 @@ export function PocketPage() {
         />
       }
     >
-      <div className="relative min-w-0 flex-1">
-        <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder={PAGE_COPY.pocket.searchPlaceholder}
-          className="pl-11"
-        />
-      </div>
-
-      {!authSession?.authenticated ? (
-        <DisplayPanel className="rounded-[2rem] bg-white/90 p-8 text-center">
-          <DisplayPanelHeader className="p-0">
-            <DisplayPanelTitle className="text-lg">登录后开启云端口袋</DisplayPanelTitle>
-            <DisplayPanelDescription className="mt-2 text-sm">
-              你的口袋、复用记录和工具偏好会跟着账号走，换设备也不会丢。
-            </DisplayPanelDescription>
-          </DisplayPanelHeader>
-          <div className="mt-5 flex justify-center gap-3">
-            <Button asChild className="h-10 rounded-full px-4 text-xs font-bold">
-              <a href="/login">立即登录</a>
-            </Button>
-            <Button asChild variant="outline" className="h-10 rounded-full px-4 text-xs font-bold">
-              <a href="/market">{PAGE_COPY.pocket.goMarketAction}</a>
-            </Button>
+      <DisplayPanel className="overflow-hidden rounded-[2.4rem] border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(239,248,255,0.94)_48%,rgba(224,242,254,0.9)_100%)] shadow-[0_28px_86px_rgba(14,165,233,0.12)]">
+        <DisplayPanelHeader className="space-y-5 p-6 sm:p-8">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-sky-700">
+              规划中
+            </span>
+            <span className="text-xs font-semibold text-slate-500">入口保留，复杂管理暂不开放</span>
           </div>
-        </DisplayPanel>
-      ) : activeItems.length === 0 ? (
-        <DisplayPanel className="rounded-[2rem] bg-white/90 p-8 text-center">
-          <DisplayPanelHeader className="p-0">
-            <DisplayPanelTitle className="text-lg">{PAGE_COPY.pocket.emptyTitle}</DisplayPanelTitle>
-            <DisplayPanelDescription className="mt-2 text-sm">
-              {PAGE_COPY.pocket.emptyDescription}
+          <div className="max-w-4xl space-y-4">
+            <DisplayPanelTitle className="text-3xl font-black tracking-[-0.04em] text-slate-950 sm:text-5xl">
+              口袋资产系统待实现。
+            </DisplayPanelTitle>
+            <DisplayPanelDescription className="max-w-2xl text-base leading-8 text-slate-650">
+              这里不会先做成普通收藏夹。口袋后续要承接“这次真的有用的帮助”、可复用路径和推荐回流信号。
             </DisplayPanelDescription>
-          </DisplayPanelHeader>
-          <Button asChild className="mt-5 h-10 rounded-full px-4 text-xs font-bold">
-            <a href="/market">{PAGE_COPY.pocket.goMarketAction}</a>
-          </Button>
-        </DisplayPanel>
-      ) : (
-        <>
-          {pinnedTools.length > 0 ? (
-            <DisplayPanel className="rounded-[2rem] bg-white/90 p-5">
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
-                    {PAGE_COPY.pocket.pinnedSection}
-                  </p>
-                  <h2 className="mt-1 text-2xl font-black text-foreground">
-                    {PAGE_COPY.pocket.pinnedSection}
-                  </h2>
-                </div>
-              </div>
-              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                {pinnedTools.map(({ entry, tool }) => (
-                  <PocketToolCard
-                    key={entry.toolId}
-                    toolId={entry.toolId}
-                    toolName={tool.name}
-                    toolIcon={tool.icon}
-                    toolDescription={tool.description}
-                    tags={tool.tags}
-                    pinned={entry.pinned}
-                    purchased={entry.purchased}
-                    canOpenExternally={Boolean(tool.url)}
-                    onTogglePin={() => togglePinToolMutation.mutate({ toolId: entry.toolId })}
-                    onTogglePurchased={() =>
-                      togglePurchasedToolMutation.mutate({ toolId: entry.toolId })
-                    }
-                    onToggleArchive={() =>
-                      toggleArchiveToolMutation.mutate({ toolId: entry.toolId })
-                    }
-                    onRemove={() => removeToolFromPocketMutation.mutate({ toolId: entry.toolId })}
-                    onOpenExternal={() => toolCardActions.openTool(entry.toolId)}
-                  />
-                ))}
-              </div>
+          </div>
+        </DisplayPanelHeader>
+
+        <DisplayPanelContent className="grid gap-4 border-t border-sky-100/70 bg-white/48 p-6 sm:p-8 lg:grid-cols-3">
+          {POCKET_DIRECTIONS.map(({ title, body, Icon }) => (
+            <DisplayPanel
+              key={title}
+              className="rounded-[1.7rem] border-white/90 bg-white/84 p-5 shadow-sm"
+            >
+              <DisplayPanelHeader className="space-y-3 p-0">
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-500 text-white shadow-[0_14px_28px_rgba(14,165,233,0.18)]">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <DisplayPanelTitle className="text-lg text-slate-950">{title}</DisplayPanelTitle>
+                <DisplayPanelDescription className="text-sm leading-7 text-slate-600">
+                  {body}
+                </DisplayPanelDescription>
+              </DisplayPanelHeader>
             </DisplayPanel>
-          ) : null}
+          ))}
+        </DisplayPanelContent>
+      </DisplayPanel>
 
-          <DisplayPanel className="rounded-[2rem] bg-white/90 p-5">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
-                  {PAGE_COPY.pocket.collectionSection}
-                </p>
-                <h2 className="mt-1 text-2xl font-black text-foreground">
-                  {PAGE_COPY.pocket.collectionSection}
-                </h2>
-              </div>
-            </div>
-            {activeTools.length === 0 ? (
-              <DisplayPanel className="rounded-3xl border-dashed bg-slate-50 p-8 text-center text-sm font-semibold text-muted-foreground shadow-none">
-                {PAGE_COPY.pocket.noSearchResult}
-              </DisplayPanel>
-            ) : (
-              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                {activeTools.map(({ entry, tool }) => (
-                  <PocketToolCard
-                    key={entry.toolId}
-                    toolId={entry.toolId}
-                    toolName={tool.name}
-                    toolIcon={tool.icon}
-                    toolDescription={tool.description}
-                    tags={tool.tags}
-                    pinned={entry.pinned}
-                    purchased={entry.purchased}
-                    canOpenExternally={Boolean(tool.url)}
-                    onTogglePin={() => togglePinToolMutation.mutate({ toolId: entry.toolId })}
-                    onTogglePurchased={() =>
-                      togglePurchasedToolMutation.mutate({ toolId: entry.toolId })
-                    }
-                    onToggleArchive={() =>
-                      toggleArchiveToolMutation.mutate({ toolId: entry.toolId })
-                    }
-                    onRemove={() => removeToolFromPocketMutation.mutate({ toolId: entry.toolId })}
-                    onOpenExternal={() => toolCardActions.openTool(entry.toolId)}
-                  />
-                ))}
-              </div>
-            )}
-          </DisplayPanel>
-        </>
-      )}
-
-      {archivedTools.length > 0 ? (
-        <DisplayPanel className="rounded-[2rem] bg-white/90 p-5">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
-                {PAGE_COPY.pocket.archivedSection}
-              </p>
-              <h2 className="mt-1 text-2xl font-black text-foreground">
-                {PAGE_COPY.pocket.archivedSection}
-              </h2>
-            </div>
-          </div>
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            {archivedTools.map(({ entry, tool }) => (
-              <PocketToolCard
-                key={entry.toolId}
-                toolId={entry.toolId}
-                toolName={tool.name}
-                toolIcon={tool.icon}
-                toolDescription={tool.description}
-                tags={tool.tags}
-                pinned={entry.pinned}
-                purchased={entry.purchased}
-                archived
-                canOpenExternally={Boolean(tool.url)}
-                onToggleArchive={() => toggleArchiveToolMutation.mutate({ toolId: entry.toolId })}
-                onRemove={() => removeToolFromPocketMutation.mutate({ toolId: entry.toolId })}
-              />
-            ))}
-          </div>
-        </DisplayPanel>
-      ) : null}
+      <div className="flex flex-wrap gap-3">
+        <Button
+          nativeButton={false}
+          render={<a href="/analyse" />}
+          className="h-11 rounded-full px-5 text-sm font-black"
+        >
+          先去完成一次求助
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+        <Button
+          nativeButton={false}
+          render={<a href="/market" />}
+          variant="outline"
+          className="h-11 rounded-full bg-white/86 px-5 text-sm font-bold"
+        >
+          浏览工具市场
+        </Button>
+      </div>
     </PageShell>
   )
 }

@@ -87,8 +87,13 @@ export function MagicLinkLoginForm() {
       ) : null}
 
       <div className="flex flex-wrap items-center gap-3">
-        <Button asChild variant="outline" className="h-11 rounded-full px-5 text-sm font-bold">
-          <Link href="/analyse">先匿名体验</Link>
+        <Button
+          nativeButton={false}
+          render={<Link href="/analyse" />}
+          variant="outline"
+          className="h-11 rounded-full px-5 text-sm font-bold"
+        >
+          先匿名体验
         </Button>
       </div>
     </div>

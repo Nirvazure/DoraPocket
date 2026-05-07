@@ -7,7 +7,7 @@ import { useDiscoveryWorkspaceActions } from '@/hooks/use-discovery-workspace-ac
 import { usePocketGadgetModalActions } from '@/hooks/use-pocket-gadget-modal-actions'
 import { useToolDial } from '@/hooks/use-tool-dial'
 import { useVoiceInput } from '@/hooks/use-voice-input'
-import { useSaveChatHistoryMutation } from '@/lib/query/chat-history'
+import { useChatHistoryQuery, useSaveChatHistoryMutation } from '@/lib/query/chat-history'
 import { useSaveMarketFeedbackMutation } from '@/lib/query/market'
 import {
   useMarkToolUsedMutation,
@@ -21,6 +21,15 @@ import { PAGE_COPY } from '@/shared/ui-copy'
 import { useStore } from '@/store'
 
 type InputMode = 'text' | 'voice'
+
+function formatHistoryTime(value: number) {
+  return new Date(value).toLocaleString('zh-CN', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
 
 export function useAnalysisPageController() {
   // 页面级共享状态：分析页本身依赖的 UI / 会话状态仍挂在 store 中。
@@ -43,6 +52,7 @@ export function useAnalysisPageController() {
   const markToolUsedMutation = useMarkToolUsedMutation()
   const saveMarketFeedbackMutation = useSaveMarketFeedbackMutation()
   const saveChatHistoryMutation = useSaveChatHistoryMutation()
+  const { data: chatHistory = [] } = useChatHistoryQuery()
   const { data: userSettings } = useUserSettingsQuery()
   const saveUserSettingsMutation = useSaveUserSettingsMutation()
 
@@ -158,6 +168,7 @@ export function useAnalysisPageController() {
 
   const canSendText = textFallback.trim().length > 0
   const promptPlaceholder = PAGE_COPY.analysis.promptPlaceholder
+  const conversationHistory = chatHistory.slice(0, 6)
   const setInputMode = useCallback(
     (next: SetStateAction<InputMode>) => {
       setInputModeOverride((current) => {
@@ -190,6 +201,8 @@ export function useAnalysisPageController() {
     starterDraftReady,
     canSendText,
     promptPlaceholder,
+    conversationHistory,
+    formatHistoryTime,
     workspaceActions,
     pocketGadgetModalActions,
     handleDraftTask,

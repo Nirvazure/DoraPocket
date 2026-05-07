@@ -1,80 +1,49 @@
 'use client'
 
-import Link from 'next/link'
+import { ArrowRight, History, Settings2, SlidersHorizontal, UserRound } from 'lucide-react'
 import { PageShell } from '@/components/common/page-shell'
 import { ProfileEntryPill } from '@/components/common/profile-entry-pill'
 import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
-import { ProfilePreferencePanel } from '@/components/profile/profile-preference-panel'
-import { ProfileTimelineSection } from '@/components/profile/profile-timeline-section'
 import { Button } from '@/components/ui/button'
-import { useProfilePageModel } from '@/hooks/use-profile-page-model'
+import {
+  DisplayPanel,
+  DisplayPanelContent,
+  DisplayPanelDescription,
+  DisplayPanelHeader,
+  DisplayPanelTitle,
+} from '@/components/ui/display-shell'
 import { useAuthSessionQuery } from '@/lib/query/auth-session'
-import { useChatHistoryQuery } from '@/lib/query/chat-history'
-import { useMarketActivityQuery } from '@/lib/query/market-activity'
-import {
-  useMarketContextQuery,
-  useMarketFeedbackQuery,
-  useMarketSubscriptionsQuery,
-  usePreferenceProfileOverrideQuery,
-  useResetPreferenceProfileOverrideMutation,
-  useSavePreferenceProfileOverrideMutation,
-} from '@/lib/query/market'
-import { usePocketInventoryQuery } from '@/lib/query/pocket'
-import {
-  useSaveUserProfileMutation,
-  useUserProfileQuery,
-  useUserProfileSubscription,
-} from '@/lib/query/user-profile'
-import { getPreferenceCalibrationOptions } from '@/services/market-storage'
-import { PAGE_COPY } from '@/shared/ui-copy'
+
+const PROFILE_DIRECTIONS = [
+  {
+    title: '画像校准',
+    body: '后续允许你修正系统对价格、平台、注册门槛和工具类型的判断。',
+    Icon: SlidersHorizontal,
+  },
+  {
+    title: '历史回流',
+    body: '把真正打开、保存、复用过的帮助路径带回下一次推荐。',
+    Icon: History,
+  },
+  {
+    title: '体验控制',
+    body: '管理播报、记忆和解释详细度，让系统更安静也更可控。',
+    Icon: Settings2,
+  },
+] as const
 
 export function ProfilePage() {
   const { data: authSession } = useAuthSessionQuery()
-  const { data: history = [] } = useChatHistoryQuery()
-  const { data: pocketInventory = [] } = usePocketInventoryQuery()
-  const { data: feedback = [] } = useMarketFeedbackQuery()
-  const { data: subscriptionRecords = [] } = useMarketSubscriptionsQuery()
-  const { data: preferenceOverride } = usePreferenceProfileOverrideQuery()
-  const { data: marketContext } = useMarketContextQuery()
-  const { data: activities = [] } = useMarketActivityQuery(4)
-  const savePreferenceProfileOverrideMutation = useSavePreferenceProfileOverrideMutation()
-  const resetPreferenceProfileOverrideMutation = useResetPreferenceProfileOverrideMutation()
-  useUserProfileSubscription()
-  const { data: profile } = useUserProfileQuery()
-  const saveUserProfileMutation = useSaveUserProfileMutation()
-  const calibrationOptions = getPreferenceCalibrationOptions()
-
-  const profileModel = useProfilePageModel({
-    history,
-    pocketInventory,
-    feedback,
-    subscriptionRecords,
-    preferenceOverride,
-    marketContext,
-    activities,
-    profile,
-    savePreferenceProfileOverride: savePreferenceProfileOverrideMutation.mutate,
-    resetPreferenceProfileOverride: () => resetPreferenceProfileOverrideMutation.mutate(),
-    saveUserProfile: saveUserProfileMutation.mutateAsync,
-  })
+  const isAuthenticated = authSession?.authenticated === true
 
   return (
     <PageShell
+      contentClassName="pb-8 pt-4 sm:pt-5 lg:pt-6"
       header={
         <UnifiedTopBar
-          title={PAGE_COPY.profile.title}
-          subtitle={PAGE_COPY.profile.subtitle}
-          leftSlot={
-            <Button
-              asChild
-              type="button"
-              variant="outline"
-              className="h-10 rounded-full bg-white/90 px-3 text-xs font-semibold sm:text-sm"
-            >
-              <Link href="/profile/settings">设置</Link>
-            </Button>
-          }
+          title="个人中心"
+          subtitle="个人画像与历史回流正在建设中。"
           rightSlot={
             <div className="flex items-center gap-2">
               <TopNavSwitch current="profile" />
@@ -84,54 +53,80 @@ export function ProfilePage() {
         />
       }
     >
-      {!authSession?.authenticated ? (
-        <div className="mx-auto flex max-w-3xl flex-col gap-4 rounded-[2rem] border border-white/80 bg-white/92 p-8 shadow-[0_18px_60px_rgba(15,23,42,0.08)]">
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
-            Profile Memory
-          </p>
-          <h2 className="text-3xl font-black tracking-tight text-foreground">
-            登录后，这里才会开始积累你的偏好与资产。
-          </h2>
-          <p className="text-sm leading-7 text-muted-foreground">
-            个人中心会汇总你的口袋资产、市场反馈、推荐历史和偏好校准。当前未登录状态下，这些都不会进入云端记忆。
-          </p>
-          <div className="flex gap-3">
-            <Button asChild className="h-10 rounded-full px-4 text-sm font-bold">
-              <Link href="/login">立即登录</Link>
-            </Button>
-            <Button asChild variant="outline" className="h-10 rounded-full px-4 text-sm font-bold">
-              <Link href="/analyse">返回分析页</Link>
-            </Button>
+      <DisplayPanel className="overflow-hidden rounded-[2.4rem] border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(248,251,255,0.94)_48%,rgba(235,242,252,0.92)_100%)] shadow-[0_28px_86px_rgba(15,23,42,0.10)]">
+        <DisplayPanelHeader className="space-y-5 p-6 sm:p-8">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-slate-700">
+              待开发
+            </span>
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+              <UserRound className="h-3.5 w-3.5" />
+              {isAuthenticated ? '已登录，暂不展示复杂画像' : '登录后未来用于同步资产和偏好'}
+            </span>
           </div>
-        </div>
-      ) : (
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(17.5rem,0.78fr)] xl:grid-cols-[minmax(0,1.68fr)_minmax(19rem,0.72fr)]">
-          <ProfileTimelineSection
-            feedbackCount={profileModel.feedbackCount}
-            subscriptionCount={profileModel.subscriptionCount}
-            archivedCount={profileModel.archivedCount}
-            activities={profileModel.activities}
-            history={profileModel.history}
-            formatTime={profileModel.formatTime}
-          />
 
-          <ProfilePreferencePanel
-            fileInputRef={profileModel.fileInputRef}
-            onPickAvatar={profileModel.handlePickAvatar}
-            onReset={profileModel.resetPreferenceProfileOverride}
-            calibrationCount={profileModel.calibrationCount}
-            profileAvatarSrc={profileModel.profileAvatarSrc}
-            profileNickname={profileModel.profileNickname}
-            profileSummary={profileModel.profileSummary}
-            profileFacts={profileModel.profileFacts}
-            calibrationOptions={calibrationOptions}
-            preferenceOverride={profileModel.preferenceOverride}
-            preferenceLabel={profileModel.preferenceLabel}
-            onToggleListValue={profileModel.toggleListValue}
-            onSetBooleanPreference={profileModel.setBooleanPreference}
-          />
-        </div>
-      )}
+          <div className="max-w-4xl space-y-4">
+            <DisplayPanelTitle className="text-3xl font-black tracking-[-0.04em] text-slate-950 sm:text-5xl">
+              {isAuthenticated ? '画像与历史回流正在建设中。' : '个人中心先保留入口。'}
+            </DisplayPanelTitle>
+            <DisplayPanelDescription className="max-w-2xl text-base leading-8 text-slate-650">
+              {isAuthenticated
+                ? '当前不会把未成熟画像包装成最终能力。后续这里会承接偏好校准、历史回流和体验控制。'
+                : '登录后，未来会用于同步口袋、历史与偏好。当前阶段先把主裁决体验打稳。'}
+            </DisplayPanelDescription>
+          </div>
+        </DisplayPanelHeader>
+
+        <DisplayPanelContent className="grid gap-4 border-t border-slate-200/70 bg-white/48 p-6 sm:p-8 lg:grid-cols-3">
+          {PROFILE_DIRECTIONS.map(({ title, body, Icon }) => (
+            <DisplayPanel
+              key={title}
+              className="rounded-[1.7rem] border-white/90 bg-white/84 p-5 shadow-sm"
+            >
+              <DisplayPanelHeader className="space-y-3 p-0">
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-[0_14px_28px_rgba(15,23,42,0.16)]">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <DisplayPanelTitle className="text-lg text-slate-950">{title}</DisplayPanelTitle>
+                <DisplayPanelDescription className="text-sm leading-7 text-slate-600">
+                  {body}
+                </DisplayPanelDescription>
+              </DisplayPanelHeader>
+            </DisplayPanel>
+          ))}
+        </DisplayPanelContent>
+      </DisplayPanel>
+
+      <div className="flex flex-wrap gap-3">
+        {!isAuthenticated ? (
+          <Button
+            nativeButton={false}
+            render={<a href="/login" />}
+            className="h-11 rounded-full px-5 text-sm font-black"
+          >
+            登录并保留未来同步入口
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        ) : null}
+        <Button
+          nativeButton={false}
+          render={<a href="/analyse" />}
+          className="h-11 rounded-full px-5 text-sm font-black"
+          variant={isAuthenticated ? 'default' : 'outline'}
+        >
+          回到分析页
+        </Button>
+        {isAuthenticated ? (
+          <Button
+            nativeButton={false}
+            render={<a href="/market" />}
+            variant="outline"
+            className="h-11 rounded-full bg-white/86 px-5 text-sm font-bold"
+          >
+            去市场补充反馈
+          </Button>
+        ) : null}
+      </div>
     </PageShell>
   )
 }

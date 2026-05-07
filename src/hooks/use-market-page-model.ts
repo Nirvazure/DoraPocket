@@ -60,6 +60,7 @@ export function useMarketPageModel(
   const [submitOpen, setSubmitOpen] = useState(false)
   const [draft, setDraft] = useState<Draft>(EMPTY_MARKET_DRAFT)
   const [selectedSection, setSelectedSection] = useState<'builtin' | ToolCategory>('builtin')
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [reviewToolId, setReviewToolId] = useState<string | null>(null)
 
   const keyword = query.trim().toLowerCase()
@@ -140,6 +141,8 @@ export function useMarketPageModel(
     setSubmitOpen,
     draft,
     setDraft,
+    sidebarCollapsed,
+    setSidebarCollapsed,
     selectedSection: resolvedSection,
     setSelectedSection,
     categoryEntries,

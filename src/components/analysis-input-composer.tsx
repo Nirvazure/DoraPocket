@@ -38,7 +38,7 @@ export function AnalysisInputComposer({
     <div
       data-dorapocket-textbox
       data-dorapocket-ui
-      className="relative z-10 shrink-0 pointer-events-auto border-t border-white/60 bg-white/78 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md"
+      className="relative z-10 shrink-0 pointer-events-auto border-t border-white/60 bg-white/78 p-2.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur-md sm:p-3"
     >
       <div className="space-y-2">
         {starterDraftReady && textFallback.trim() ? (

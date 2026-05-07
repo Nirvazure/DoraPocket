@@ -2,7 +2,6 @@
 
 import { Plus, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { PAGE_COPY } from '@/shared/ui-copy'
 
 type MarketToolbarProps = {
   query: string
@@ -19,7 +18,7 @@ export function MarketToolbar({ query, onQueryChange, onOpenSubmit }: MarketTool
           <input
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
-            placeholder={PAGE_COPY.market.searchPlaceholder}
+            placeholder="搜索工具、能力、标签或类别…"
             className="h-10 w-full rounded-full border border-border/70 bg-background pl-11 pr-4 text-sm outline-none ring-primary/30 placeholder:text-muted-foreground focus-visible:ring-2"
           />
         </div>
@@ -30,7 +29,7 @@ export function MarketToolbar({ query, onQueryChange, onOpenSubmit }: MarketTool
           onClick={onOpenSubmit}
         >
           <Plus className="mr-1.5 h-3.5 w-3.5" />
-          {PAGE_COPY.market.submitAction}
+          提交工具
         </Button>
       </div>
     </section>

@@ -1,4 +1,5 @@
 <!-- BEGIN:nextjs-agent-rules -->
+
 # DoraPocket Agent Rules
 
 ## 必读文档
@@ -47,4 +48,12 @@
 - `GUIDE.md`：产品未来演进策略、阶段路线、近期优先级、UED 原则唯一依据。
 - `README.md`：项目概览、当前状态、本地启动、文档索引。
 - `AGENTS.md`：AI 协作边界、工程修改规则、必要硬约束。
+
+## 提交卫生规则
+
+- 提交前必须清理 CRLF 噪音、trailing whitespace 和无意义格式化；文本文件默认使用 LF。
+- 不提交临时设计原型、截图草稿、一次性 HTML、无引用 demo 图片或本地生成产物。
+- `src/generated/prisma/` 只在 `prisma/schema.prisma` 或 Prisma 版本真实变化后提交；如果只是生成器格式噪音，应从暂存区移除。
+- 修改 `.husky/*` 时保持可执行脚本逻辑最小化，避免只因为换行符变化制造提交噪音。
+
 <!-- END:nextjs-agent-rules -->
