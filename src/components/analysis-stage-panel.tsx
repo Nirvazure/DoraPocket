@@ -19,7 +19,7 @@ type AnalysisStagePanelProps = {
   onToggleToolDial: () => void
   onSelectDialGadget: (gadget: AssistantModeCard) => void
   onToggleToolDialMode: () => void
-  children: React.ReactNode
+  children?: React.ReactNode
 }
 
 function ToolDialMenu({

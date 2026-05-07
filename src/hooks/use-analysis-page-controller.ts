@@ -60,7 +60,6 @@ export function useAnalysisPageController() {
   const [textFallback, setTextFallback] = useState('')
   const [pocketModalOpen, setPocketModalOpen] = useState(false)
   const [pocketGadget, setPocketGadget] = useState<AssistantModeCard | null>(null)
-  const [starterDraftReady, setStarterDraftReady] = useState(false)
   const autoSaveEnabled = userSettings?.autoSaveToPocketEnabled ?? true
   const {
     toolDialOpen,
@@ -163,7 +162,6 @@ export function useAnalysisPageController() {
 
   const handleDraftTask = useCallback((draft: string) => {
     setTextFallback(draft)
-    setStarterDraftReady(Boolean(draft.trim()))
   }, [])
 
   const canSendText = textFallback.trim().length > 0
@@ -198,7 +196,6 @@ export function useAnalysisPageController() {
     dialGadgets,
     inputMode,
     textFallback,
-    starterDraftReady,
     canSendText,
     promptPlaceholder,
     conversationHistory,
@@ -212,7 +209,6 @@ export function useAnalysisPageController() {
     setToolDialMode,
     setInputMode,
     setTextFallback,
-    setStarterDraftReady,
     submitTextMessage,
     holdToTalkStart,
     holdToTalkEnd,

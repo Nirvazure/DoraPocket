@@ -30,7 +30,6 @@ export default function App() {
     dialGadgets,
     inputMode,
     textFallback,
-    starterDraftReady,
     canSendText,
     promptPlaceholder,
     workspaceActions,
@@ -42,7 +41,6 @@ export default function App() {
     setToolDialMode,
     setInputMode,
     setTextFallback,
-    setStarterDraftReady,
     submitTextMessage,
     holdToTalkStart,
     holdToTalkEnd,
@@ -116,21 +114,15 @@ export default function App() {
           appState={appState}
           inputMode={inputMode}
           textFallback={textFallback}
-          starterDraftReady={starterDraftReady}
           canSendText={canSendText}
           placeholder={promptPlaceholder}
           onToggleInputMode={() => setInputMode((mode) => (mode === 'text' ? 'voice' : 'text'))}
-          onTextChange={(value) => {
-            setTextFallback(value)
-            if (!value.trim()) setStarterDraftReady(false)
-          }}
+          onTextChange={setTextFallback}
           onSubmit={() => {
             submitTextMessage(textFallback, () => {
               setTextFallback('')
-              setStarterDraftReady(false)
             })
           }}
-          onDismissDraft={() => setStarterDraftReady(false)}
           onHoldToTalkStart={holdToTalkStart}
           onHoldToTalkEnd={holdToTalkEnd}
         />

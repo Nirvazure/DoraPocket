@@ -28,13 +28,13 @@ export function MarketCategoryNav({
     <>
       <aside
         className={cn(
-          'hidden h-full overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white p-2.5 shadow-xl shadow-slate-900/8 xl:block',
+          'hidden h-full overflow-hidden rounded-[2rem] p-2.5 bg-white xl:block',
           sidebarCollapsed ? 'px-2' : 'px-2.5',
         )}
       >
         <div
           className={cn(
-            'flex items-center rounded-[1.25rem] border border-slate-200/80 bg-white px-2 py-2',
+            'flex items-center border-slate-200/80 bg-white px-2 py-2',
             sidebarCollapsed ? 'justify-center' : 'justify-between',
           )}
         >
