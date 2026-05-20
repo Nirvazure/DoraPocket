@@ -30,7 +30,7 @@ export function LoginEntryButton({ active = false, className }: LoginEntryButton
 
   return (
     <Link
-      href="/profile"
+      href="/pocket"
       aria-current={active ? 'page' : undefined}
       className={cn(
         'inline-flex h-10 items-center gap-2 rounded-full border px-2.5 pr-3 shadow-sm transition-colors',
@@ -47,8 +47,8 @@ export function LoginEntryButton({ active = false, className }: LoginEntryButton
         )}
       >
         <Image
-          src={user.avatarSrc ?? '/branding/assistant-avatar.svg'}
-          alt="个人头像"
+          src={user.avatarSrc ?? '/images/assistant-avatar.svg'}
+          alt="我的头像"
           width={28}
           height={28}
           unoptimized

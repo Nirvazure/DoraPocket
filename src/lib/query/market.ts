@@ -207,12 +207,13 @@ export function useSubmitMarketToolMutation() {
 
   return useMutation<MarketSubmission[], Error, SubmitMarketToolInput>({
     mutationFn: async (input) =>
-      apiFetch<MarketSubmission[]>('/api/me/market/submissions', {
+      apiFetch<MarketSubmission[]>('/api/tools/submit', {
         method: 'POST',
         body: JSON.stringify(input),
       }),
     onSuccess: (next) => {
       queryClient.setQueryData(queryKeys.marketSubmissions.list(), next)
+      void queryClient.invalidateQueries({ queryKey: ['marketTools'] })
       invalidateMarketDependents(queryClient)
     },
   })

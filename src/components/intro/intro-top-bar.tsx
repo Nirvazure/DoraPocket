@@ -10,7 +10,7 @@ export function IntroTopBar() {
       <div className="mx-auto max-w-[1440px] px-4 py-3 sm:px-6 lg:px-8">
         <UnifiedTopBar
           title="DoraPocket"
-          subtitle="在你需要帮助的瞬间，先给裁决"
+          subtitle="你说任务，DoraPocket 先替你挑工具。"
           rightSlot={
             <div className="flex items-center gap-1.5">
               <TopNavSwitch current="intro" />

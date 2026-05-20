@@ -3,7 +3,13 @@
 import { useMemo, useState, type RefObject } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { DisplayPanel, DisplayPanelContent, DisplayPanelDescription, DisplayPanelHeader, DisplayPanelTitle } from '@/components/ui/display-shell'
+import {
+  DisplayPanel,
+  DisplayPanelContent,
+  DisplayPanelDescription,
+  DisplayPanelHeader,
+  DisplayPanelTitle,
+} from '@/components/ui/display-shell'
 import { cn } from '@/lib/utils'
 
 type IntroHeroSectionProps = {
@@ -40,10 +46,17 @@ const SCENARIOS = [
 
 export function IntroHeroSection({ sectionRef, visualRef }: IntroHeroSectionProps) {
   const [activeScenario, setActiveScenario] = useState<(typeof SCENARIOS)[number]['id']>('pdf')
-  const currentScenario = useMemo(() => SCENARIOS.find((scenario) => scenario.id === activeScenario) ?? SCENARIOS[0], [activeScenario])
+  const currentScenario = useMemo(
+    () => SCENARIOS.find((scenario) => scenario.id === activeScenario) ?? SCENARIOS[0],
+    [activeScenario],
+  )
 
   return (
-    <section id="intro-hero" ref={sectionRef} className="relative overflow-hidden py-10 sm:py-14 lg:min-h-[calc(100vh-5rem)] lg:py-16">
+    <section
+      id="intro-hero"
+      ref={sectionRef}
+      className="relative overflow-hidden py-10 sm:py-14 lg:min-h-[calc(100vh-5rem)] lg:py-16"
+    >
       <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.02fr)_minmax(22rem,0.98fr)]">
         <div className="space-y-6">
           <div data-intro-reveal className="space-y-4">
@@ -57,7 +70,18 @@ export function IntroHeroSection({ sectionRef, visualRef }: IntroHeroSectionProp
           </div>
           <div data-intro-reveal className="flex flex-wrap gap-2">
             {SCENARIOS.map((scenario) => (
-              <Button key={scenario.id} type="button" onClick={() => setActiveScenario(scenario.id)} variant={scenario.id === activeScenario ? 'default' : 'outline'} className={cn('h-auto rounded-full px-4 py-2 text-xs font-bold shadow-sm transition-all', scenario.id === activeScenario ? 'border-sky-200 bg-sky-500 text-white shadow-[0_12px_28px_rgba(14,165,233,0.22)]' : 'border-white/80 bg-white/92 text-slate-700 hover:bg-white')}>
+              <Button
+                key={scenario.id}
+                type="button"
+                onClick={() => setActiveScenario(scenario.id)}
+                variant={scenario.id === activeScenario ? 'default' : 'outline'}
+                className={cn(
+                  'h-auto rounded-full px-4 py-2 text-xs font-bold shadow-sm transition-all',
+                  scenario.id === activeScenario
+                    ? 'border-sky-200 bg-sky-500 text-white shadow-[0_12px_28px_rgba(14,165,233,0.22)]'
+                    : 'border-white/80 bg-white/92 text-slate-700 hover:bg-white',
+                )}
+              >
                 {scenario.label}
               </Button>
             ))}
@@ -65,13 +89,15 @@ export function IntroHeroSection({ sectionRef, visualRef }: IntroHeroSectionProp
           <DisplayPanel data-intro-reveal className="rounded-[1.8rem] bg-white/88 shadow-sm">
             <DisplayPanelHeader className="p-5 pb-3">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="accent">更快开始</Badge>
-                <Badge variant="accent">解释一致</Badge>
-                <Badge variant="accent">更懂上下文</Badge>
+                <Badge>更快开始</Badge>
+                <Badge>解释一致</Badge>
+                <Badge>更懂上下文</Badge>
               </div>
             </DisplayPanelHeader>
             <DisplayPanelContent className="p-5 pt-0">
-              <DisplayPanelDescription className="text-sm">它不是让你继续研究很多答案，而是替你先收敛出这次最值得先试的方案，并把理由讲清楚。</DisplayPanelDescription>
+              <DisplayPanelDescription className="text-sm">
+                它不是让你继续研究很多答案，而是替你先收敛出这次最值得先试的方案，并把理由讲清楚。
+              </DisplayPanelDescription>
             </DisplayPanelContent>
           </DisplayPanel>
         </div>
@@ -82,20 +108,33 @@ export function IntroHeroSection({ sectionRef, visualRef }: IntroHeroSectionProp
             <DisplayPanelContent className="p-0">
               <DisplayPanel className="rounded-[2rem] border-sky-100 bg-slate-950 p-5 text-white shadow-inner">
                 <DisplayPanelHeader className="p-0">
-                  <Badge variant="dark" className="w-fit border-white/10 bg-white/5 text-[11px] font-bold uppercase tracking-[0.18em] text-sky-300">求助瞬间</Badge>
-                  <DisplayPanelTitle className="mt-3 text-xl text-white">{currentScenario.title}</DisplayPanelTitle>
+                  <Badge className="w-fit border-white/10 bg-white/5 text-[11px] font-bold uppercase tracking-[0.18em] text-sky-300">
+                    求助瞬间
+                  </Badge>
+                  <DisplayPanelTitle className="mt-3 text-xl text-white">
+                    {currentScenario.title}
+                  </DisplayPanelTitle>
                 </DisplayPanelHeader>
                 <DisplayPanelContent className="mt-5 space-y-3 p-0 text-sm text-slate-300">
                   <DisplayPanel className="rounded-2xl border-white/10 bg-white/5 p-3 text-blue-400 shadow-none">
-                    <DisplayPanelContent className="p-0">DoraPocket 先理解：{currentScenario.context}</DisplayPanelContent>
+                    <DisplayPanelContent className="p-0">
+                      DoraPocket 先理解：{currentScenario.context}
+                    </DisplayPanelContent>
                   </DisplayPanel>
                   <DisplayPanel className="rounded-2xl border-sky-400/20 bg-sky-400/10 p-3 text-sky-100 shadow-none">
-                    <DisplayPanelContent className="p-0">然后直接给出结论：{currentScenario.decision}</DisplayPanelContent>
+                    <DisplayPanelContent className="p-0">
+                      然后直接给出结论：{currentScenario.decision}
+                    </DisplayPanelContent>
                   </DisplayPanel>
                 </DisplayPanelContent>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {currentScenario.tags.map((tag) => (
-                    <Badge key={tag} variant="dark" className="border-white/10 bg-white/5 px-3 py-1 text-[11px] font-bold text-slate-200">{tag}</Badge>
+                    <Badge
+                      key={tag}
+                      className="border-white/10 bg-white/5 px-3 py-1 text-[11px] font-bold text-slate-200"
+                    >
+                      {tag}
+                    </Badge>
                   ))}
                 </div>
               </DisplayPanel>

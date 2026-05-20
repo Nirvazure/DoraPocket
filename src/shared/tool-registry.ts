@@ -14,13 +14,7 @@ export type ToolCategory =
   | 'learning'
   | 'writing'
 
-export type ToolSource =
-  | 'builtin'
-  | 'market'
-  | 'submitted'
-  | 'imported'
-  | 'external_resource'
-  | 'official'
+export type ToolSource = 'builtin' | 'market' | 'submitted' | 'external_resource' | 'official'
 export type ToolStatus = 'active' | 'review' | 'blocked'
 export type ToolExecutionMode = 'native_card' | 'external_link' | 'workflow' | 'reference_only'
 export type ToolPlatform = 'web' | 'desktop' | 'mobile' | 'api' | 'mixed'
@@ -73,7 +67,7 @@ export type ToolItem = {
   defaultArgs?: Record<string, unknown>
   isBuiltin?: boolean
   siteHostname?: string
-  marketAssetOrigin?: 'registry' | 'bookmark_seed'
+  marketAssetOrigin?: 'registry' | 'bookmark_seed' | 'community'
 }
 
 export type ToolMeta = {

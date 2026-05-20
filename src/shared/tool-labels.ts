@@ -1,4 +1,4 @@
-﻿import type {
+import type {
   ToolCategory,
   ToolExecutionMode,
   ToolPricingModel,
@@ -31,7 +31,6 @@ export const TOOL_SOURCE_LABELS: Record<ToolSource, string> = {
   builtin: '原生能力',
   market: '市场精选',
   submitted: '用户提交',
-  imported: '导入工具',
   external_resource: '参考资源',
   official: '官方资源',
 }

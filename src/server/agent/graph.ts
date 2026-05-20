@@ -97,17 +97,26 @@ const classifierNode = async (state: PocketState): Promise<Partial<PocketState>>
   const userText = state.messages[state.messages.length - 1]?.content ?? ''
   const taskFrame = buildTaskFrame(userText, state.answerBookFromPocket)
   const classified = await classifyMessage(userText, state.answerBookFromPocket)
-  const { candidates, topTool } = await buildRankedCandidates(userText, state.market_context)
+  const {
+    candidates,
+    topTool,
+    primaryCandidate,
+    selectionReason: judgedSelectionReason,
+  } = await buildRankedCandidates(userText, state.market_context, taskFrame)
   const selectedTool =
     classified.selectedTool ??
-    (topTool ? { toolId: topTool.id, args: topTool.defaultArgs ?? {} } : null)
-  const selectionReason = defaultSelectionReason(taskFrame, topTool)
+    (topTool && primaryCandidate?.candidateType !== 'external_suggestion'
+      ? { toolId: topTool.id, args: topTool.defaultArgs ?? {} }
+      : null)
+  const selectionReason =
+    judgedSelectionReason ?? defaultSelectionReason(taskFrame, topTool, primaryCandidate)
   const uiPayload: AgentUiPayload = buildAgentUiPayload(
     taskFrame,
     topTool,
     candidates,
     selectionReason,
     state.market_context,
+    primaryCandidate,
   )
 
   return {

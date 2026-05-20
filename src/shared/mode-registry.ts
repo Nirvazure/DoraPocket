@@ -25,16 +25,16 @@ export const MODE_KEY_SHRINK_LAMP = 'mode_shrink_lamp' as const
 export const MODE_KEY_ENLARGE_LAMP = 'mode_enlarge_lamp' as const
 export const MODE_KEY_AIR_CANNON = 'mode_air_cannon' as const
 
-export const DEFAULT_MODE_IMAGE = '/branding/assistant-avatar.svg'
+export const DEFAULT_MODE_IMAGE = '/images/assistant-avatar.svg'
 
 const DORA_PROP_IMG = {
-  a1: '/image/dora%20(1).webp',
-  a2: '/image/dora%20(2).webp',
-  a3: '/image/dora%20(3).webp',
-  a4: '/image/dora%20(4).webp',
-  a5: '/image/dora%20(5).webp',
-  a6: '/image/dora%20(6).webp',
-  a7: '/image/dora%20(7).webp',
+  a1: '/images/dora%20(1).webp',
+  a2: '/images/dora%20(2).webp',
+  a3: '/images/dora%20(3).webp',
+  a4: '/images/dora%20(4).webp',
+  a5: '/images/dora%20(5).webp',
+  a6: '/images/dora%20(6).webp',
+  a7: '/images/dora%20(7).webp',
 } as const
 
 export const ANSWER_BOOK_MODE: AssistantModeCard = {
@@ -135,7 +135,10 @@ export function getModeByToolId(toolId: string | null | undefined): AssistantMod
   return TOOL_MODE_CARD_MAP[toolId] ?? null
 }
 
-export function pickModeCardAfterTurn(activeKey: string | null, selectedToolId?: string): AssistantModeCard {
+export function pickModeCardAfterTurn(
+  activeKey: string | null,
+  selectedToolId?: string,
+): AssistantModeCard {
   const selected = getModeBySelectKey(activeKey)
   if (selected) return { ...selected }
   const byTool = getModeByToolId(selectedToolId)

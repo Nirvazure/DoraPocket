@@ -1,4 +1,5 @@
 import { listActiveToolItems } from '@/server/market/tool-catalog'
+import { judgeToolRecommendations } from '@/server/agent/tool-rerank'
 import { rankToolItems, type ToolItem, type ToolMatch } from '@/shared/tool-registry'
 import type {
   AgentCandidate,
@@ -73,7 +74,11 @@ export function rankSubmissionCandidates(
 export function defaultSelectionReason(
   taskFrame: AgentTaskFrame,
   topTool: ToolItem | null,
+  primaryCandidate?: AgentCandidate | null,
 ): string {
+  if (primaryCandidate?.candidateType === 'external_suggestion') {
+    return `${primaryCandidate.title} 是 Hub 外建议：当前 Tool Hub 没有更贴合的沉淀工具，先试这个外部工具更直接。`
+  }
   if (!topTool) return '当前没有高置信度工具命中，先走解释型回答。'
   if (topTool.executionMode === 'native_card') {
     return `${topTool.name} 是可直接执行的原生能力，适合当前问题。`
@@ -87,7 +92,11 @@ export function defaultSelectionReason(
 export function buildRecommendedActions(
   taskFrame: AgentTaskFrame,
   topTool: ToolItem | null,
+  primaryCandidate?: AgentCandidate | null,
 ): string[] {
+  if (primaryCandidate?.candidateType === 'external_suggestion') {
+    return ['打开外部工具', '试用后判断是否有效', '如有效再提交到 Tool Hub']
+  }
   if (!topTool) return ['继续澄清目标', '缩小任务范围', '改用任意门模式再搜一轮']
   const actions =
     topTool.executionMode === 'native_card'
@@ -102,7 +111,14 @@ export function buildRecommendedActions(
 export function buildSelectionSignals(
   topTool: ToolItem | null,
   marketContext: MarketContext,
+  primaryCandidate?: AgentCandidate | null,
 ): string[] {
+  if (primaryCandidate?.candidateType === 'external_suggestion') {
+    return [
+      'Hub 外建议',
+      primaryCandidate.externalBoundary ?? '当前不在 Tool Hub，不能直接沉淀市场反馈。',
+    ].slice(0, 5)
+  }
   if (!topTool) return []
   const signals: string[] = []
   if (marketContext.savedItems.some((item) => item.toolId === topTool.id))
@@ -143,19 +159,34 @@ export function buildPreferenceSignals(
   return Array.from(new Set(signals)).slice(0, 5)
 }
 
-export function stageLabelFor(taskFrame: AgentTaskFrame, topTool: ToolItem | null): string {
+export function stageLabelFor(
+  taskFrame: AgentTaskFrame,
+  topTool: ToolItem | null,
+  primaryCandidate?: AgentCandidate | null,
+): string {
   if (taskFrame.mode === 'answer_book') return '答案之书'
   if (taskFrame.mode === 'manage_pocket') return '整理口袋'
+  if (primaryCandidate?.candidateType === 'external_suggestion') return '外部建议'
   if (topTool?.executionMode === 'native_card') return '原生执行'
   if (taskFrame.mode === 'discover') return '发现与排序'
   return '任务分析'
 }
 
-export function stageTrailFor(taskFrame: AgentTaskFrame, topTool: ToolItem | null): string[] {
+export function stageTrailFor(
+  taskFrame: AgentTaskFrame,
+  topTool: ToolItem | null,
+  primaryCandidate?: AgentCandidate | null,
+): string[] {
   const trail = ['识别任务']
   if (taskFrame.mode === 'discover') {
     trail.push('召回候选', '排序解释')
-    trail.push(topTool?.executionMode === 'native_card' ? '原生执行' : '市场推荐')
+    trail.push(
+      primaryCandidate?.candidateType === 'external_suggestion'
+        ? '外部建议'
+        : topTool?.executionMode === 'native_card'
+          ? '原生执行'
+          : '市场推荐',
+    )
   } else if (taskFrame.mode === 'use_builtin') {
     trail.push('命中原生能力', '执行工具')
   } else if (taskFrame.mode === 'manage_pocket') {
@@ -184,27 +215,60 @@ export function matchingSubmissionLines(userText: string, marketContext: MarketC
 export function formatCandidateLines(candidates: AgentCandidate[]): string {
   if (candidates.length === 0) return '无候选工具。'
   return candidates
-    .map(
-      (candidate, index) =>
-        `${index + 1}. ${candidate.title}｜来源：${candidate.sourceLabel}｜理由：${candidate.reason}`,
-    )
+    .map((candidate, index) => {
+      const boundary =
+        candidate.candidateType === 'external_suggestion'
+          ? `｜边界：${candidate.externalBoundary ?? '不在 Tool Hub，不能直接沉淀市场反馈'}`
+          : ''
+      return `${index + 1}. ${candidate.title}｜来源：${candidate.sourceLabel}｜理由：${candidate.reason}${boundary}`
+    })
     .join('\n')
 }
 
-export async function buildRankedCandidates(userText: string, marketContext: MarketContext) {
+export async function buildRankedCandidates(
+  userText: string,
+  marketContext: MarketContext,
+  taskFrame?: AgentTaskFrame,
+) {
   const toolItems = await listActiveToolItems()
-  const matches = rankToolItems(toolItems, userText, marketSignalsFromContext(marketContext))
-  const candidates = [
-    ...toCandidates(matches),
-    ...rankSubmissionCandidates(userText, marketContext),
-  ]
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 5)
+  const initialMatches = rankToolItems(toolItems, userText, marketSignalsFromContext(marketContext))
+  const judgement =
+    taskFrame?.mode === 'discover'
+      ? await judgeToolRecommendations(userText, initialMatches).catch(() => ({
+          matches: initialMatches,
+          externalSuggestion: null,
+          preferExternal: false,
+          selectionReason: undefined,
+        }))
+      : {
+          matches: initialMatches,
+          externalSuggestion: null,
+          preferExternal: false,
+          selectionReason: undefined,
+        }
+  const hubCandidates = toCandidates(judgement.matches)
+  const submissionCandidates = rankSubmissionCandidates(userText, marketContext)
+  const externalCandidates = judgement.externalSuggestion ? [judgement.externalSuggestion] : []
+  const candidates = (
+    judgement.preferExternal
+      ? [...externalCandidates, ...hubCandidates, ...submissionCandidates]
+      : [
+          ...[...hubCandidates, ...submissionCandidates].sort((a, b) => b.score - a.score),
+          ...externalCandidates,
+        ]
+  ).slice(0, 5)
+  const primaryCandidate = candidates[0] ?? null
+  const topTool =
+    primaryCandidate?.candidateType === 'tool' && primaryCandidate.toolId
+      ? (judgement.matches.find((match) => match.tool.id === primaryCandidate.toolId)?.tool ?? null)
+      : null
 
   return {
-    matches,
+    matches: judgement.matches,
     candidates,
-    topTool: matches[0]?.tool ?? null,
+    topTool,
+    primaryCandidate,
+    selectionReason: judgement.selectionReason,
   }
 }
 
@@ -214,18 +278,21 @@ export function buildAgentUiPayload(
   candidates: AgentCandidate[],
   selectionReason: string,
   marketContext: MarketContext,
+  primaryCandidate?: AgentCandidate | null,
 ): AgentUiPayload {
   return {
-    stageLabel: stageLabelFor(taskFrame, topTool),
-    stageTrail: stageTrailFor(taskFrame, topTool),
+    stageLabel: stageLabelFor(taskFrame, topTool, primaryCandidate),
+    stageTrail: stageTrailFor(taskFrame, topTool, primaryCandidate),
     taskFrame,
     candidates,
     selectionReason,
-    selectionSignals: buildSelectionSignals(topTool, marketContext),
+    selectionSignals: buildSelectionSignals(topTool, marketContext, primaryCandidate),
     preferenceSignals: buildPreferenceSignals(topTool, marketContext),
-    recommendedActions: buildRecommendedActions(taskFrame, topTool),
+    recommendedActions: buildRecommendedActions(taskFrame, topTool, primaryCandidate),
     shouldAutoSave: Boolean(
-      topTool && (topTool.executionMode === 'native_card' || taskFrame.mode === 'discover'),
+      topTool &&
+      primaryCandidate?.candidateType !== 'external_suggestion' &&
+      (topTool.executionMode === 'native_card' || taskFrame.mode === 'discover'),
     ),
   }
 }

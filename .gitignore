@@ -50,6 +50,10 @@ next-env.d.ts
 # tooling
 .eslintcache
 
+# Codex agent skills (local / generated)
+.codex/skills/
+
 # generated assets / temp
 /tmp/
-/public/market-favicons/manifest.json
+.tmp-edge-profile/
+/public/images/manifest.json

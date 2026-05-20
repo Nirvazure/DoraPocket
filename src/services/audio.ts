@@ -1,4 +1,8 @@
-import { disposeAliyunSttSession, startAliyunSttSession, stopAliyunSttSession } from '@/services/stt-aliyun-ws'
+import {
+  disposeAliyunSttSession,
+  startAliyunSttSession,
+  stopAliyunSttSession,
+} from '@/services/stt-aliyun-ws'
 
 export type SpeechSessionCallbacks = {
   onResult: (text: string) => void
@@ -26,7 +30,8 @@ let currentSource: MediaElementAudioSourceNode | null = null
 
 export function initAudioContext() {
   if (!audioContext) {
-    const webkitCtor = (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+    const webkitCtor = (window as Window & { webkitAudioContext?: typeof AudioContext })
+      .webkitAudioContext
     const Ctor = window.AudioContext ?? webkitCtor
     if (!Ctor) return
     audioContext = new Ctor()
@@ -78,10 +83,13 @@ export function stopAudioPlayback() {
 export function playDoraPocketSfx(): Promise<void> {
   initAudioContext()
   try {
-    const el = new Audio('/dora.mp3')
-    return el.play().then(() => undefined).catch((error) => {
-      console.warn('Dora pocket sfx failed', error)
-    })
+    const el = new Audio('/audio/dora.mp3')
+    return el
+      .play()
+      .then(() => undefined)
+      .catch((error) => {
+        console.warn('Dora pocket sfx failed', error)
+      })
   } catch (error) {
     console.warn('Dora pocket sfx failed', error)
     return Promise.resolve()

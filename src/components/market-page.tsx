@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { ProfileEntryPill } from '@/components/common/profile-entry-pill'
@@ -6,12 +6,14 @@ import { PageShell } from '@/components/common/page-shell'
 import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
 import { MarketCategoryNav } from '@/components/market/market-category-nav'
+import { MarketPageSkeleton } from '@/components/market/market-page-skeleton'
 import { MarketReviewDrawer } from '@/components/market/market-review-drawer'
 import { MarketSubmitModal } from '@/components/market/market-submit-modal'
 import { MarketToolGrid } from '@/components/market/market-tool-grid'
 import { MarketToolbar } from '@/components/market/market-toolbar'
 import { useMarketPageModel } from '@/hooks/use-market-page-model'
 import { useToolCardActions } from '@/hooks/use-tool-card-actions'
+import { cn } from '@/lib/utils'
 import {
   useMarketReviewAggregatesQuery,
   useSaveMarketFeedbackMutation,
@@ -26,12 +28,14 @@ export function MarketPage() {
   const markToolUsedMutation = useMarkToolUsedMutation()
   const submitMarketToolMutation = useSubmitMarketToolMutation()
   const saveMarketFeedbackMutation = useSaveMarketFeedbackMutation()
-  const { data: marketTools = [] } = useMarketToolsQuery()
-  const { data: reviewAggregates = {} } = useMarketReviewAggregatesQuery()
+  const { data: marketTools = [], isPending: marketToolsPending } = useMarketToolsQuery()
+  const { data: reviewAggregates = {}, isPending: reviewAggregatesPending } =
+    useMarketReviewAggregatesQuery()
+  const showMarketShellSkeleton = marketToolsPending || reviewAggregatesPending
   const toolCardActions = useToolCardActions({
     markToolUsed: markToolUsedMutation.mutate,
     saveToolToPocket: saveToolToPocketMutation.mutate,
-    getSourceQuestion: () => '从市场页收入口袋',
+    getSourceQuestion: () => '从道具库收进我的口袋',
   })
   const marketModel = useMarketPageModel(
     marketTools,
@@ -42,7 +46,7 @@ export function MarketPage() {
   return (
     <PageShell
       className="overflow-hidden"
-      contentClassName="pb-5 pt-5 sm:pt-6 lg:pt-6"
+      contentClassName="pb-5 pt-5 sm:pt-6 lg:px-4 lg:pt-6 xl:px-3"
       header={
         <UnifiedTopBar
           title={PAGE_COPY.market.title}
@@ -56,31 +60,44 @@ export function MarketPage() {
         />
       }
     >
-      <div className="grid min-h-0 gap-5 xl:grid-cols-[15rem_minmax(0,1fr)]">
-        <MarketCategoryNav
-          categoryEntries={marketModel.categoryEntries}
-          categoryCounts={marketModel.categoryCounts}
-          selectedSection={marketModel.selectedSection}
-          onSelect={marketModel.setSelectedSection}
-        />
-
-        <div className="grid min-h-0 gap-4 xl:grid-rows-[auto_minmax(0,1fr)]">
-          <MarketToolbar
-            query={marketModel.query}
-            onQueryChange={marketModel.setQuery}
-            onOpenSubmit={() => marketModel.setSubmitOpen(true)}
+      {showMarketShellSkeleton ? (
+        <MarketPageSkeleton />
+      ) : (
+        <div
+          className={cn(
+            'grid min-h-0 gap-5',
+            marketModel.sidebarCollapsed
+              ? 'xl:grid-cols-[5rem_minmax(0,1fr)]'
+              : 'xl:grid-cols-[15rem_minmax(0,1fr)]',
+          )}
+        >
+          <MarketCategoryNav
+            categoryEntries={marketModel.categoryEntries}
+            categoryCounts={marketModel.categoryCounts}
+            sidebarCollapsed={marketModel.sidebarCollapsed}
+            selectedSection={marketModel.selectedSection}
+            onSelect={marketModel.setSelectedSection}
+            onToggleCollapsed={() => marketModel.setSidebarCollapsed((value: boolean) => !value)}
           />
 
-          <ScrollArea className="min-h-0 px-1">
-            <MarketToolGrid
-              tools={marketModel.currentCategoryTools}
-              onSaveTool={toolCardActions.saveTool}
-              onOpenTool={toolCardActions.openTool}
-              onReviewTool={marketModel.openReviewTool}
+          <div className="grid min-h-0 gap-4 xl:grid-rows-[auto_minmax(0,1fr)]">
+            <MarketToolbar
+              query={marketModel.query}
+              onQueryChange={marketModel.setQuery}
+              onOpenSubmit={() => marketModel.setSubmitOpen(true)}
             />
-          </ScrollArea>
+
+            <ScrollArea className="min-h-0 px-1">
+              <MarketToolGrid
+                tools={marketModel.currentCategoryTools}
+                onSaveTool={toolCardActions.saveTool}
+                onOpenTool={toolCardActions.openTool}
+                onReviewTool={marketModel.openReviewTool}
+              />
+            </ScrollArea>
+          </div>
         </div>
-      </div>
+      )}
 
       <MarketSubmitModal
         open={marketModel.submitOpen}
