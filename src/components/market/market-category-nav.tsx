@@ -39,15 +39,15 @@ export function MarketCategoryNav({
         >
           {!sidebarCollapsed ? (
             <p className="truncate text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
-              市场导航
+              道具库导航
             </p>
           ) : null}
           <button
             type="button"
             className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/70 bg-white/90 text-slate-600 shadow-sm transition-colors hover:bg-white hover:text-slate-950"
             onClick={onToggleCollapsed}
-            aria-label={sidebarCollapsed ? '展开市场侧边栏' : '收起市场侧边栏'}
-            title={sidebarCollapsed ? '展开市场侧边栏' : '收起市场侧边栏'}
+            aria-label={sidebarCollapsed ? '展开侧边栏' : '收起侧边栏'}
+            title={sidebarCollapsed ? '展开侧边栏' : '收起侧边栏'}
           >
             {sidebarCollapsed ? (
               <ChevronRight className="h-4 w-4" />

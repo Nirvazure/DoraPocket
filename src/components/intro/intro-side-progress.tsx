@@ -11,11 +11,9 @@ type IntroSideProgressProps = {
 const SCENES = [
   { id: 'hero', label: '求助瞬间', href: '#intro-hero' },
   { id: 'judgement', label: '理解裁决', href: '#intro-judgement' },
-  { id: 'contrast', label: '价值对比', href: '#intro-contrast' },
-  { id: 'market', label: '市场收束', href: '#intro-market' },
-  { id: 'pocket', label: '沉淀口袋', href: '#intro-pocket' },
-  { id: 'memory', label: '记忆回流', href: '#intro-memory' },
-  { id: 'final', label: '开始使用', href: '#intro-final' },
+  { id: 'market', label: '道具库', href: '#intro-market' },
+  { id: 'pocket', label: '我的口袋', href: '#intro-pocket' },
+  { id: 'final', label: '现在开始', href: '#intro-final' },
 ] as const
 
 export function IntroSideProgress({ activeScene }: IntroSideProgressProps) {

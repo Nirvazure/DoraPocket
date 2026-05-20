@@ -1,11 +1,10 @@
-﻿'use client'
+'use client'
 
 import { useRef, useState } from 'react'
 import { IntroFinalCtaSection } from '@/components/intro/intro-final-cta-section'
 import { IntroHeroSection } from '@/components/intro/intro-hero-section'
 import { IntroJudgementSection } from '@/components/intro/intro-judgement-section'
 import { IntroMarketSection } from '@/components/intro/intro-market-section'
-import { IntroMemorySection } from '@/components/intro/intro-memory-section'
 import { IntroPocketSection } from '@/components/intro/intro-pocket-section'
 import { IntroSideProgress } from '@/components/intro/intro-side-progress'
 import { IntroTopBar } from '@/components/intro/intro-top-bar'
@@ -50,15 +49,6 @@ const SCENE_STYLES = {
     ambientTint: 'from-white/0 via-cyan-100/65 to-white/0',
     meshTone: 'from-cyan-100/70 via-white/0 to-sky-100/28',
   },
-  memory: {
-    rootBackground:
-      'bg-[radial-gradient(circle_at_16%_16%,rgba(165,243,252,0.16),transparent_22%),radial-gradient(circle_at_84%_18%,rgba(196,181,253,0.18),transparent_24%),linear-gradient(180deg,#f8fbff_0%,#f2f8ff_32%,#e9f2fd_100%)]',
-    leftGlow: 'bg-cyan-200/18',
-    rightGlow: 'bg-violet-300/22',
-    bottomGlow: 'bg-indigo-200/18',
-    ambientTint: 'from-white/0 via-indigo-100/55 to-white/0',
-    meshTone: 'from-cyan-100/55 via-white/0 to-violet-100/30',
-  },
   final: {
     rootBackground:
       'bg-[radial-gradient(circle_at_14%_12%,rgba(56,189,248,0.18),transparent_24%),radial-gradient(circle_at_84%_16%,rgba(15,23,42,0.18),transparent_28%),linear-gradient(180deg,#f3faff_0%,#eaf4ff_24%,#dcecff_100%)]',
@@ -72,10 +62,9 @@ const SCENE_STYLES = {
 
 const SCENE_DIVIDERS = [
   { from: '求助瞬间', to: '理解与裁决' },
-  { from: '理解与裁决', to: '市场反馈' },
-  { from: '市场反馈', to: '口袋待实现' },
-  { from: '口袋待实现', to: '记忆待开发' },
-  { from: '记忆待开发', to: '开始使用' },
+  { from: '理解与裁决', to: '道具库' },
+  { from: '道具库', to: '我的口袋' },
+  { from: '我的口袋', to: '现在开始' },
 ] as const
 
 function IntroSceneDivider({ from, to }: { from: string; to: string }) {
@@ -105,7 +94,6 @@ export function IntroPage() {
   const marketRef = useRef<HTMLElement | null>(null)
   const pocketRef = useRef<HTMLElement | null>(null)
   const pocketOrbitRef = useRef<HTMLDivElement | null>(null)
-  const memoryRef = useRef<HTMLElement | null>(null)
   const finalRef = useRef<HTMLElement | null>(null)
   const reducedMotion = useIntroReducedMotion()
 
@@ -119,7 +107,6 @@ export function IntroPage() {
       marketRef,
       pocketRef,
       pocketOrbitRef,
-      memoryRef,
       finalRef,
     },
     reducedMotion,
@@ -188,8 +175,6 @@ export function IntroPage() {
         <IntroSceneDivider {...SCENE_DIVIDERS[2]} />
         <IntroPocketSection sectionRef={pocketRef} orbitRef={pocketOrbitRef} />
         <IntroSceneDivider {...SCENE_DIVIDERS[3]} />
-        <IntroMemorySection sectionRef={memoryRef} />
-        <IntroSceneDivider {...SCENE_DIVIDERS[4]} />
         <IntroFinalCtaSection sectionRef={finalRef} />
       </main>
     </div>

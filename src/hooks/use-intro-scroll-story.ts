@@ -13,7 +13,6 @@ type IntroStoryRefs = {
   marketRef: RefObject<HTMLElement | null>
   pocketRef: RefObject<HTMLElement | null>
   pocketOrbitRef: RefObject<HTMLDivElement | null>
-  memoryRef: RefObject<HTMLElement | null>
   finalRef: RefObject<HTMLElement | null>
 }
 
@@ -37,7 +36,6 @@ export function useIntroScrollStory(
         judgement: { scale: 1.02, y: -12, opacity: 0.56 },
         market: { scale: 1.01, y: -10, opacity: 0.36 },
         pocket: { scale: 1.03, y: -26, opacity: 0.62 },
-        memory: { scale: 1.015, y: -16, opacity: 0.44 },
         final: { scale: 1.02, y: -22, opacity: 0.52 },
       } as const
 
@@ -70,7 +68,6 @@ export function useIntroScrollStory(
         '--intro-grid-opacity-value': 0.4,
       })
 
-      // 全局 reveal 负责统一入场感，各场景再叠加自己的滚动表现。
       gsap.fromTo(
         sections,
         { opacity: 0, y: INTRO_TOKENS.revealY },
@@ -83,7 +80,6 @@ export function useIntroScrollStory(
         },
       )
 
-      // Hero：建立“求助瞬间”的第一视角与舞台基调。
       if (refs.heroVisualRef.current && refs.heroRef.current) {
         ScrollTrigger.create({
           trigger: refs.heroRef.current,
@@ -104,7 +100,6 @@ export function useIntroScrollStory(
         })
       }
 
-      // Judgement：强调“理解 → 收束 → 裁决”的三步过程。
       if (refs.judgementRef.current && refs.judgementTrackRef.current) {
         ScrollTrigger.create({
           trigger: refs.judgementRef.current,
@@ -134,7 +129,6 @@ export function useIntroScrollStory(
         )
       }
 
-      // Market：通过横向 lane 动画表现“从嘈杂市场到收束裁决”。
       if (refs.marketRef.current) {
         ScrollTrigger.create({
           trigger: refs.marketRef.current,
@@ -167,7 +161,6 @@ export function useIntroScrollStory(
         })
       }
 
-      // Pocket：突出高价值帮助如何变成可复用入口。
       if (refs.pocketRef.current && refs.pocketOrbitRef.current) {
         ScrollTrigger.create({
           trigger: refs.pocketRef.current,
@@ -216,34 +209,6 @@ export function useIntroScrollStory(
         )
       }
 
-      // Memory：展示历史行为与反馈如何持续回流成偏好信号。
-      if (refs.memoryRef.current) {
-        ScrollTrigger.create({
-          trigger: refs.memoryRef.current,
-          start: 'top center',
-          end: 'bottom center',
-          onEnter: () => applySceneStage('memory'),
-          onEnterBack: () => applySceneStage('memory'),
-        })
-        const memoryItems =
-          refs.memoryRef.current.querySelectorAll<HTMLElement>('[data-memory-item]')
-        gsap.fromTo(
-          memoryItems,
-          { opacity: 0, y: INTRO_TOKENS.memoryShift },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.55,
-            stagger: 0.12,
-            scrollTrigger: {
-              trigger: refs.memoryRef.current,
-              start: 'top 75%',
-            },
-          },
-        )
-      }
-
-      // Final：把前面所有逻辑收口成明确 CTA。
       if (refs.finalRef.current) {
         ScrollTrigger.create({
           trigger: refs.finalRef.current,

@@ -2,7 +2,7 @@
 
 import type { RefObject } from 'react'
 import Link from 'next/link'
-import { ArrowRight, ShoppingBag } from 'lucide-react'
+import { ArrowRight, PackageSearch } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DisplayPanel, DisplayPanelContent } from '@/components/ui/display-shell'
 
@@ -23,21 +23,21 @@ export function IntroFinalCtaSection({ sectionRef }: IntroFinalCtaSectionProps) 
             data-final-cta
             className="text-[11px] font-bold uppercase tracking-[0.18em] text-sky-300"
           >
-            最后一幕 / 真正开始使用
+            最后一幕 / 现在开始
           </p>
           <h2 data-final-cta className="text-3xl font-black tracking-tight sm:text-4xl">
-            如果你现在就需要帮助，直接去分析页。先完成一次真实求助，比继续看介绍更重要。
+            真正的 DoraPocket，不在介绍页里，而在你说出任务之后。
           </h2>
           <p data-final-cta className="text-base leading-8 text-slate-300">
-            它会先给结论，再给理由，再给动作。口袋和画像会继续建设，但主体验先从一次明确裁决开始。
+            它会先给结论，再给理由，再给动作。道具库负责继续成长，我的口袋负责收好你的工具，但主体验永远从这次先掏什么开始。
           </p>
         </div>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-3">
           {[
-            { value: '先结论', label: '不是先展示过程' },
-            { value: '市场反馈', label: '保留评价与提交' },
-            { value: '口袋后置', label: '不把半成品说满' },
+            { value: '先给结论', label: '不是先让你研究一堆工具' },
+            { value: '道具库共建', label: '让 DoraPocket 的知识库持续成长' },
+            { value: '我的口袋', label: '账户、设置、我的工具都回到一个页面' },
           ].map((item) => (
             <DisplayPanel
               key={item.value}
@@ -59,7 +59,7 @@ export function IntroFinalCtaSection({ sectionRef }: IntroFinalCtaSectionProps) 
             data-final-cta
             className="h-12 rounded-full px-5 text-sm font-black shadow-[0_18px_34px_rgba(14,165,233,0.28)]"
           >
-            去分析页开始
+            去让 Dora 出手
             <ArrowRight className="h-4 w-4" />
           </Button>
           <Button
@@ -69,8 +69,8 @@ export function IntroFinalCtaSection({ sectionRef }: IntroFinalCtaSectionProps) 
             variant="outline"
             className="h-12 rounded-full border-white/20 bg-white/8 px-5 text-sm font-bold text-white hover:bg-white/12 hover:text-white"
           >
-            <ShoppingBag className="h-4 w-4" />
-            先逛市场
+            <PackageSearch className="h-4 w-4" />
+            先逛道具库
           </Button>
         </div>
       </div>

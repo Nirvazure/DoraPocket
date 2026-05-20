@@ -1,27 +1,34 @@
 # DoraPocket-Next
 
-做陪伴你的哆啦 A 梦，我们每个人都可以是大雄。
+DoraPocket 是一个哆啦A梦式工具服务 Agent。
 
-## 项目定位
+它不是聊天助手，也不是普通工具导航站。它要做的事情是：当用户说出当前任务时，先理解处境，再从一套持续成长的工具知识库里，挑出这次最值得先用的工具，并推动用户进入下一步。
 
-DoraPocket 不是聊天壳，也不是纯工具导航站。它的目标是在用户需要帮助时，理解处境，拿出合适工具，并帮助用户完成下一步。
+## 产品定位
 
-当前版本的基础能力：
+DoraPocket 的前台价值是 `Agent`，不是工具目录。
 
-- 认证：`Supabase Auth`
-- 持久化：`Supabase Postgres`
-- 用户头像：`Supabase Storage`
-- 模型能力：`LangChain` / `LangGraph` 接入大模型完成意图识别、工具裁决与解释生成
+当前产品结构只保留三层：
 
-## 当前页面状态
+- `/analyse`：主舞台。用户描述任务，DoraPocket 负责理解场景、收敛候选、给出结论与下一步动作。
+- `/market`：`道具库`。用户发现工具、提交工具、补充体验，帮助 DoraPocket 的工具知识库继续生长。
+- `/pocket`：`我的口袋`。承接账户信息、设置、我的工具，是唯一的“我的”页面。
 
-- `/analyse`：核心主体验，承载任务输入、工具裁决、推荐解释与下一步动作。
-- `/` 与 `/intro`：精简介绍页，保留 GSAP 场景叙事，但不承担主任务流。
-- `/market`：工具浏览、提交工具与评价反馈，用于后续推荐质量回流。
-- `/pocket`：口袋资产系统待实现入口，当前不展示未成熟收藏管理。
-- `/profile`：个人画像与历史回流待开发入口，当前不展示复杂画像工作台。
+## 当前进度
 
-## 技术概览
+目前项目已经完成的核心部分：
+
+- 主 Agent 链路已经成立：任务输入、候选工具裁决、解释与流式返回都已接通。
+- 道具库已经具备雏形：工具条目、分类、标签、提交、反馈、口袋保存与使用记录都已打通。
+- 个人侧入口已经收口到“我的口袋”：账户信息、设置、我的工具回到一个页面。
+
+目前还在持续演进的部分：
+
+- 工具知识库还在从“带反馈的工具池”成长为真正的任务决策知识库。
+- 哆啦A梦式“掏工具”交互感还在继续打磨。
+- 道具库和我的口袋会继续围绕主 Agent 体验做减法，而不是各自长成独立平台。
+
+## 技术栈
 
 - 框架：`Next.js 16.2.4`
 - UI：`React 19.2.4`
@@ -45,7 +52,7 @@ npm run dev
 
 ## 环境变量
 
-最少需要配置：
+至少需要配置：
 
 - `DATABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_URL`
@@ -55,7 +62,7 @@ npm run dev
 - `NEXT_PUBLIC_SITE_URL`
 - `QWEN_API_KEY`
 
-语音与市场资源相关能力还依赖以下变量：
+语音与道具库资源相关能力还依赖以下变量：
 
 - `ALIYUN_AK_ID`
 - `ALIYUN_AK_SECRET`
@@ -70,15 +77,26 @@ npm run dev
 - `ALIYUN_OSS_PUBLIC_BASE_URL`
 - `ALIYUN_OSS_FAVICON_PREFIX`
 
-`.env.example` 提供占位模板。
+`.env.example` 提供了占位模板。
 
-## 部署前平台配置
+## 部署前配置
 
 除了部署平台环境变量，Supabase 控制台还需要完成这些配置：
 
 - 在 `Auth` 中配置站点 URL 与允许的回调地址，确保包含生产域名和 `/api/auth/callback`
-- 创建 `avatars` bucket，或让 `SUPABASE_STORAGE_BUCKET_AVATARS` 与实际 bucket 名保持一致
-- 当前头像展示方案依赖公开 URL，因此头像 bucket 需要可公开读取
-- `SUPABASE_SECRET_KEY` 必须是真正的 `sb_secret_...`，不能填写 publishable key
+- 创建 `avatars` bucket，或保证 `SUPABASE_STORAGE_BUCKET_AVATARS` 与实际 bucket 名一致
+- 当前头像展示依赖公开 URL，因此头像 bucket 需要可公开读取
+- `SUPABASE_SECRET_KEY` 必须是真正的 `sb_secret_...`，不能填 publishable key
 - 生产数据库需要执行 migration
-- 首次部署后需要按需执行 `npm run seed:tools`
+- 首次部署后按需执行 `npm run seed:tools`
+
+## 当前边界
+
+当前阶段的重点不是继续堆页面，而是先把主 Agent 产品体验做实。
+
+换句话说：
+
+- 主舞台优先于后台管理
+- 道具库优先于“市场感”
+- 我的口袋优先于抽象资产概念
+- 知识库成长优先于预设技术口号

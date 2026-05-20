@@ -35,7 +35,7 @@ export function MarketPage() {
   const toolCardActions = useToolCardActions({
     markToolUsed: markToolUsedMutation.mutate,
     saveToolToPocket: saveToolToPocketMutation.mutate,
-    getSourceQuestion: () => '从市场页收入口袋',
+    getSourceQuestion: () => '从道具库收进我的口袋',
   })
   const marketModel = useMarketPageModel(
     marketTools,

@@ -40,9 +40,9 @@ export function MarketSubmitModal({
         <div className="flex items-start justify-between gap-3">
           <DisplayPanelHeader className="p-0">
             <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
-              My Submission
+              Contribute
             </p>
-            <DisplayPanelTitle className="mt-1 text-2xl">提交到我的市场投稿</DisplayPanelTitle>
+            <DisplayPanelTitle className="mt-1 text-2xl">提交到道具库</DisplayPanelTitle>
           </DisplayPanelHeader>
           <Button
             type="button"
@@ -70,7 +70,7 @@ export function MarketSubmitModal({
           <textarea
             value={draft.description}
             onChange={(event) => onDraftChange({ ...draft, description: event.target.value })}
-            placeholder="它解决什么问题？为什么值得进入我的 DoraPocket 市场资产？"
+            placeholder="它解决什么问题？为什么值得进入 DoraPocket 的道具库？"
             className="min-h-28 w-full rounded-2xl border border-border/70 bg-background px-3 py-2 text-sm outline-none ring-primary/30 focus-visible:ring-2"
           />
           <Input
@@ -90,7 +90,7 @@ export function MarketSubmitModal({
             取消
           </Button>
           <Button type="button" className="h-10 rounded-full px-4" onClick={onSubmit}>
-            提交到我的投稿库
+            提交工具
           </Button>
         </div>
       </DisplayPanel>
