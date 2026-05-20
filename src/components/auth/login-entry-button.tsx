@@ -14,20 +14,6 @@ export function LoginEntryButton({ active = false, className }: LoginEntryButton
   const { data } = useAuthSessionQuery()
   const user = data?.authenticated && data && 'user' in data ? (data.user ?? null) : null
 
-  if (!user) {
-    return (
-      <Link
-        href="/login"
-        className={cn(
-          'inline-flex h-10 items-center rounded-full border border-slate-200/80 bg-white/92 px-4 text-xs font-bold text-foreground shadow-sm transition-colors hover:bg-white',
-          className,
-        )}
-      >
-        登录
-      </Link>
-    )
-  }
-
   return (
     <Link
       href="/pocket"
@@ -47,7 +33,7 @@ export function LoginEntryButton({ active = false, className }: LoginEntryButton
         )}
       >
         <Image
-          src={user.avatarSrc ?? '/images/assistant-avatar.svg'}
+          src={user?.avatarSrc ?? '/images/assistant-avatar.svg'}
           alt="我的头像"
           width={28}
           height={28}
@@ -57,11 +43,11 @@ export function LoginEntryButton({ active = false, className }: LoginEntryButton
       </span>
       <span
         className={cn(
-          'max-w-24 truncate text-xs font-bold',
+          'text-xs font-bold',
           active ? 'text-primary-foreground' : 'text-foreground/82',
         )}
       >
-        {user.nickname}
+        我的口袋
       </span>
     </Link>
   )
