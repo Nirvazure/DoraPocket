@@ -19,6 +19,7 @@ export default function App() {
     pocketModalOpen,
     pocketGadget,
     currentPrompt,
+    analysisStage,
     autoSaveEnabled,
     autoSaveNotice,
     selectedToolPayload,
@@ -31,6 +32,8 @@ export default function App() {
     inputMode,
     textFallback,
     canSendText,
+    inputLocked,
+    canSkipVoice,
     promptPlaceholder,
     workspaceActions,
     pocketGadgetModalActions,
@@ -44,6 +47,7 @@ export default function App() {
     submitTextMessage,
     holdToTalkStart,
     holdToTalkEnd,
+    revealNow,
   } = useAnalysisPageController()
 
   return (
@@ -82,6 +86,7 @@ export default function App() {
         <DiscoveryWorkspace
           currentPrompt={currentPrompt}
           appState={appState}
+          analysisStage={analysisStage}
           agentPayload={agentUiPayload}
           selectedToolPayload={selectedToolPayload}
           autoSaveEnabled={autoSaveEnabled}
@@ -99,6 +104,7 @@ export default function App() {
 
       <AnalysisStagePanel
         appState={appState}
+        analysisStage={analysisStage}
         toolDialRef={toolDialRef}
         toolDialOpen={toolDialOpen}
         toolDialMode={toolDialMode}
@@ -109,12 +115,15 @@ export default function App() {
         onToggleToolDialMode={() =>
           setToolDialMode((value) => (value === 'quick' ? 'all' : 'quick'))
         }
+        canSkipVoice={canSkipVoice}
+        onRevealNow={revealNow}
       >
         <AnalysisInputComposer
           appState={appState}
           inputMode={inputMode}
           textFallback={textFallback}
           canSendText={canSendText}
+          locked={inputLocked}
           placeholder={promptPlaceholder}
           onToggleInputMode={() => setInputMode((mode) => (mode === 'text' ? 'voice' : 'text'))}
           onTextChange={setTextFallback}

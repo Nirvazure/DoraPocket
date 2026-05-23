@@ -1,9 +1,5 @@
 ﻿import { useMemo } from 'react'
-import {
-  ASSISTANT_MODES,
-  getModeByToolId,
-  type AssistantModeCard,
-} from '@/shared/mode-registry'
+import { ASSISTANT_MODES, getModeByToolId, type AssistantModeCard } from '@/shared/mode-registry'
 import type { ChatToolPayload } from '@/services/llm'
 import type { AppState } from '@/store'
 
@@ -18,7 +14,6 @@ type UseAppShellStateOptions = {
 }
 
 export function useAppShellState({
-  appState,
   selectedToolPayload,
   toolDialMode,
   setPocketGadget,
@@ -26,8 +21,7 @@ export function useAppShellState({
   closeToolDial,
   setSelectedGadgetKey,
 }: UseAppShellStateOptions) {
-  const rootCursor =
-    appState === 'thinking' || appState === 'speaking' ? 'cursor-wait' : 'cursor-default'
+  const rootCursor = 'cursor-default'
 
   const toolBasedGadget = getModeByToolId(selectedToolPayload?.toolId)
   const quickDialGadgets = toolBasedGadget

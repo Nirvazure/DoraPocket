@@ -1,13 +1,21 @@
-﻿'use client'
+'use client'
 
-import { useCallback, useEffect, useLayoutEffect, useState, type SetStateAction } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type SetStateAction,
+} from 'react'
+import { type AnalysisStage } from '@/components/discovery/analysis-stage-content'
 import { useAnalysisSession } from '@/hooks/use-analysis-session'
 import { useAppShellState } from '@/hooks/use-app-shell-state'
 import { useDiscoveryWorkspaceActions } from '@/hooks/use-discovery-workspace-actions'
 import { usePocketGadgetModalActions } from '@/hooks/use-pocket-gadget-modal-actions'
 import { useToolDial } from '@/hooks/use-tool-dial'
 import { useVoiceInput } from '@/hooks/use-voice-input'
-import { useChatHistoryQuery, useSaveChatHistoryMutation } from '@/lib/query/chat-history'
+import { useSaveChatHistoryMutation, useChatHistoryQuery } from '@/lib/query/chat-history'
 import { useSaveMarketFeedbackMutation } from '@/lib/query/market'
 import {
   useMarkToolUsedMutation,
@@ -32,7 +40,6 @@ function formatHistoryTime(value: number) {
 }
 
 export function useAnalysisPageController() {
-  // 页面级共享状态：分析页本身依赖的 UI / 会话状态仍挂在 store 中。
   const appState = useStore((state) => state.appState)
   const transcript = useStore((state) => state.transcript)
   const systemNotice = useStore((state) => state.systemNotice)
@@ -45,7 +52,6 @@ export function useAnalysisPageController() {
   const clearSystemNotice = useStore((state) => state.clearSystemNotice)
   const setSelectedGadgetKey = useStore((state) => state.setSelectedGadgetKey)
 
-  // 页面装配用的 query / mutation：主流程只依赖这里暴露的 mutate 接口。
   const { data: pocketInventory = [] } = usePocketInventoryQuery()
   const saveToolToPocketMutation = useSaveToolToPocketMutation()
   const removeToolFromPocketMutation = useRemoveToolFromPocketMutation()
@@ -60,6 +66,12 @@ export function useAnalysisPageController() {
   const [textFallback, setTextFallback] = useState('')
   const [pocketModalOpen, setPocketModalOpen] = useState(false)
   const [pocketGadget, setPocketGadget] = useState<AssistantModeCard | null>(null)
+  const [analysisStage, setAnalysisStage] = useState<AnalysisStage>('idle')
+  const analysisStageRef = useRef<AnalysisStage>('idle')
+  const stageImmediateTimerRef = useRef<number | null>(null)
+  const stageTimerRef = useRef<number | null>(null)
+  const revealTimerRef = useRef<number | null>(null)
+  const coveredRevealTimerRef = useRef<number | null>(null)
   const autoSaveEnabled = userSettings?.autoSaveToPocketEnabled ?? true
   const {
     toolDialOpen,
@@ -71,7 +83,6 @@ export function useAnalysisPageController() {
   } = useToolDial()
   const inputMode = inputModeOverride ?? userSettings?.defaultInputMode ?? 'text'
 
-  // 分析会话主链路：统一处理问答、推荐、自动沉淀与语音播报。
   const {
     selectedToolPayload,
     agentUiPayload,
@@ -81,6 +92,7 @@ export function useAnalysisPageController() {
     setAutoSaveNotice,
     clearResponseState,
     runAgentTurn,
+    revealNow,
   } = useAnalysisSession({
     autoSaveEnabled,
     userSettings,
@@ -94,9 +106,46 @@ export function useAnalysisPageController() {
     setSystemNotice,
     getSelectedGadgetKey: () => useStore.getState().selectedGadgetKey,
     onPocketGadgetChange: setPocketGadget,
+    onCoverRecommendation: () => {
+      if (revealTimerRef.current) {
+        window.clearTimeout(revealTimerRef.current)
+        revealTimerRef.current = null
+      }
+      if (coveredRevealTimerRef.current) {
+        window.clearTimeout(coveredRevealTimerRef.current)
+        coveredRevealTimerRef.current = null
+      }
+      setAnalysisStage('covered')
+      coveredRevealTimerRef.current = window.setTimeout(() => {
+        if (analysisStageRef.current === 'covered') {
+          analysisStageRef.current = 'revealing'
+          setAnalysisStage('revealing')
+          revealTimerRef.current = window.setTimeout(() => {
+            analysisStageRef.current = 'ready'
+            setAnalysisStage('ready')
+            revealTimerRef.current = null
+          }, 420)
+        }
+        coveredRevealTimerRef.current = null
+      }, 2600)
+    },
+    onRevealRecommendation: () => {
+      if (coveredRevealTimerRef.current) {
+        window.clearTimeout(coveredRevealTimerRef.current)
+        coveredRevealTimerRef.current = null
+      }
+      if (revealTimerRef.current) {
+        window.clearTimeout(revealTimerRef.current)
+        revealTimerRef.current = null
+      }
+      setAnalysisStage('revealing')
+      revealTimerRef.current = window.setTimeout(() => {
+        setAnalysisStage('ready')
+        revealTimerRef.current = null
+      }, 420)
+    },
   })
 
-  // 语音和文本输入最终都会汇入 runAgentTurn，保证主流程只有一套提交入口。
   const { holdToTalkStart, holdToTalkEnd, submitTextMessage } = useVoiceInput({
     appState,
     runAgentTurn,
@@ -108,7 +157,6 @@ export function useAnalysisPageController() {
     clearResponseState,
   })
 
-  // 工作区动作层只负责把页面交互翻译成 query / session 调用。
   const workspaceActions = useDiscoveryWorkspaceActions({
     autoSaveNotice,
     getLatestUserPrompt: () => latestUserPromptRef.current,
@@ -132,7 +180,6 @@ export function useAnalysisPageController() {
     markToolUsed: markToolUsedMutation.mutate,
   })
 
-  // 页面壳层、快捷拨盘和 Gadget 交互统一由 shell state 管理。
   const { rootCursor, dialGadgets, handleSelectDialGadget } = useAppShellState({
     appState,
     selectedToolPayload,
@@ -160,11 +207,80 @@ export function useAnalysisPageController() {
     return () => window.clearTimeout(id)
   }, [clearSystemNotice, systemNotice])
 
+  useEffect(() => {
+    analysisStageRef.current = analysisStage
+  }, [analysisStage])
+
+  useEffect(() => {
+    const clearTimers = () => {
+      if (stageImmediateTimerRef.current) {
+        window.clearTimeout(stageImmediateTimerRef.current)
+        stageImmediateTimerRef.current = null
+      }
+      if (stageTimerRef.current) {
+        window.clearTimeout(stageTimerRef.current)
+        stageTimerRef.current = null
+      }
+    }
+    const clearRevealTimer = () => {
+      if (revealTimerRef.current) {
+        window.clearTimeout(revealTimerRef.current)
+        revealTimerRef.current = null
+      }
+      if (coveredRevealTimerRef.current) {
+        window.clearTimeout(coveredRevealTimerRef.current)
+        coveredRevealTimerRef.current = null
+      }
+    }
+    const scheduleStage = (stage: AnalysisStage) => {
+      stageImmediateTimerRef.current = window.setTimeout(() => {
+        setAnalysisStage(stage)
+        stageImmediateTimerRef.current = null
+      }, 0)
+    }
+
+    const hasPrompt = Boolean(currentPrompt?.trim())
+    if (!hasPrompt) {
+      clearTimers()
+      clearRevealTimer()
+      scheduleStage('idle')
+      return clearTimers
+    }
+
+    const currentStage = analysisStageRef.current
+    if (currentStage === 'covered' || currentStage === 'revealing' || currentStage === 'ready') {
+      return clearTimers
+    }
+
+    if (appState === 'thinking') {
+      clearTimers()
+      scheduleStage('understanding')
+      stageTimerRef.current = window.setTimeout(() => {
+        setAnalysisStage((current) => (current === 'understanding' ? 'judging' : current))
+        stageTimerRef.current = null
+      }, 700)
+      return clearTimers
+    }
+
+    if (appState === 'speaking') {
+      return clearTimers
+    }
+
+    scheduleStage('understanding')
+    return clearTimers
+  }, [appState, currentPrompt])
+
   const handleDraftTask = useCallback((draft: string) => {
     setTextFallback(draft)
   }, [])
 
   const canSendText = textFallback.trim().length > 0
+  const inputLocked =
+    appState === 'thinking' ||
+    analysisStage === 'judging' ||
+    analysisStage === 'covered' ||
+    analysisStage === 'revealing'
+  const canSkipVoice = appState === 'speaking' && analysisStage === 'covered'
   const promptPlaceholder = PAGE_COPY.analysis.promptPlaceholder
   const conversationHistory = chatHistory.slice(0, 6)
   const setInputMode = useCallback(
@@ -185,6 +301,7 @@ export function useAnalysisPageController() {
     pocketModalOpen,
     pocketGadget,
     currentPrompt,
+    analysisStage,
     autoSaveEnabled,
     autoSaveNotice,
     selectedToolPayload,
@@ -197,6 +314,8 @@ export function useAnalysisPageController() {
     inputMode,
     textFallback,
     canSendText,
+    inputLocked,
+    canSkipVoice,
     promptPlaceholder,
     conversationHistory,
     formatHistoryTime,
@@ -212,5 +331,6 @@ export function useAnalysisPageController() {
     submitTextMessage,
     holdToTalkStart,
     holdToTalkEnd,
+    revealNow,
   }
 }

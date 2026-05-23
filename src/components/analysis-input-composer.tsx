@@ -10,6 +10,7 @@ type AnalysisInputComposerProps = {
   inputMode: InputMode
   textFallback: string
   canSendText: boolean
+  locked: boolean
   placeholder: string
   onToggleInputMode: () => void
   onTextChange: (value: string) => void
@@ -23,6 +24,7 @@ export function AnalysisInputComposer({
   inputMode,
   textFallback,
   canSendText,
+  locked,
   placeholder,
   onToggleInputMode,
   onTextChange,
@@ -54,14 +56,15 @@ export function AnalysisInputComposer({
               value={textFallback}
               onChange={(event) => onTextChange(event.target.value)}
               placeholder={placeholder}
+              disabled={locked}
               className="min-w-0 flex-1 rounded-full border border-border/70 bg-transparent px-3 py-2 font-sans text-sm text-foreground outline-none ring-primary/30 placeholder:text-muted-foreground focus-visible:ring-2"
               onKeyDown={(event) => {
-                if (event.key === 'Enter' && canSendText) onSubmit()
+                if (event.key === 'Enter' && canSendText && !locked) onSubmit()
               }}
             />
             <Button
               type="button"
-              disabled={!canSendText}
+              disabled={!canSendText || locked}
               className="h-10 shrink-0 rounded-full border-2 border-primary/25 px-4 font-sans text-xs font-semibold shadow-sm disabled:cursor-not-allowed disabled:opacity-45"
               onClick={onSubmit}
             >
@@ -71,11 +74,13 @@ export function AnalysisInputComposer({
         ) : (
           <button
             type="button"
+            disabled={locked}
             className={cn(
               'flex h-11 min-w-0 flex-1 items-center justify-center rounded-2xl border px-4 font-sans text-sm font-semibold backdrop-blur-md transition-colors',
               appState === 'listening'
                 ? 'border-primary bg-primary text-primary-foreground'
                 : 'border-white/70 bg-white/90 text-foreground hover:bg-white',
+              locked && 'cursor-not-allowed opacity-55',
             )}
             onPointerDown={onHoldToTalkStart}
             onPointerUp={onHoldToTalkEnd}

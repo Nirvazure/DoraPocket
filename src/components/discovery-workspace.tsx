@@ -1,6 +1,12 @@
-import { useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { CompactDecisionPanel } from '@/components/discovery/compact-decision-panel'
 import { ContextInputCard } from '@/components/discovery/context-input-card'
+import {
+  isStepDone,
+  resolveCurrentStep,
+  resolveMaxVisibleStep,
+  type AnalysisStage,
+} from '@/components/discovery/analysis-stage-content'
 import { DecisionProgressSteps } from '@/components/discovery/decision-progress-steps'
 import { DecisionSummaryCard } from '@/components/discovery/decision-summary-card'
 import { NextActionBar } from '@/components/discovery/next-action-bar'
@@ -15,6 +21,7 @@ import type { AppState } from '@/store'
 type DiscoveryWorkspaceProps = {
   currentPrompt: string | null
   appState: AppState
+  analysisStage: AnalysisStage
   agentPayload: AgentUiPayload | null
   selectedToolPayload: ChatToolPayload
   autoSaveEnabled: boolean
@@ -29,29 +36,16 @@ type DiscoveryWorkspaceProps = {
   onDraftTask?: (draft: string) => void
 }
 
-function resolveWorkspaceStepState(
-  currentPrompt: string | null,
-  agentPayload: AgentUiPayload | null,
-  stepViewState: { suggestedStep: number; activeStep: number },
-) {
-  const hasPrompt = Boolean(currentPrompt?.trim())
-  const hasPayload = Boolean(agentPayload)
-  const suggestedStep = hasPayload ? 3 : hasPrompt ? 2 : 1
-  const activeStep =
-    stepViewState.suggestedStep === suggestedStep ? stepViewState.activeStep : suggestedStep
-
-  return {
-    hasPrompt,
-    hasPayload,
-    suggestedStep,
-    activeStep,
-    showStarterStrip: !hasPrompt && !hasPayload,
-  }
-}
+const STEP_TITLES = {
+  1: '理解任务',
+  2: '做出判断',
+  3: '正式出手',
+} as const
 
 export function DiscoveryWorkspace({
   currentPrompt,
   appState,
+  analysisStage,
   agentPayload,
   selectedToolPayload,
   autoSaveEnabled,
@@ -65,46 +59,135 @@ export function DiscoveryWorkspace({
   onFeedback,
   onDraftTask,
 }: DiscoveryWorkspaceProps) {
-  const [stepViewState, setStepViewState] = useState({ suggestedStep: 1, activeStep: 1 })
-  const { activeStep, suggestedStep, showStarterStrip } = resolveWorkspaceStepState(
-    currentPrompt,
-    agentPayload,
-    stepViewState,
+  const hasPrompt = Boolean(currentPrompt?.trim())
+  const hasResult = Boolean(agentPayload || selectedToolPayload?.toolId)
+  const currentStep = useMemo(
+    () => resolveCurrentStep(analysisStage, hasPrompt, hasResult),
+    [analysisStage, hasPrompt, hasResult],
   )
-  const setActiveStep = (step: number) => setStepViewState({ suggestedStep, activeStep: step })
+  const maxVisibleStep = useMemo(
+    () => resolveMaxVisibleStep(analysisStage, hasPrompt, hasResult),
+    [analysisStage, hasPrompt, hasResult],
+  )
+  const [manualExpandedStep, setManualExpandedStep] = useState<number | null>(null)
+  const expandedStep =
+    manualExpandedStep != null &&
+    manualExpandedStep < currentStep &&
+    manualExpandedStep <= maxVisibleStep
+      ? manualExpandedStep
+      : currentStep
+
+  const handleStepClick = (step: number) => {
+    if (step > maxVisibleStep) return
+    if (step === currentStep) {
+      setManualExpandedStep(null)
+      return
+    }
+    if (isStepDone(step, currentStep)) {
+      setManualExpandedStep(step)
+    }
+  }
+
+  const renderStepSection = (step: 1 | 2 | 3, content: ReactNode) => {
+    if (step > maxVisibleStep) return null
+
+    const active = step === currentStep
+    const done = isStepDone(step, currentStep)
+    const expanded = expandedStep === step
+
+    return (
+      <section
+        key={step}
+        className="overflow-hidden rounded-[1.8rem] border border-border/65 bg-white/86 shadow-sm"
+      >
+        <button
+          type="button"
+          className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-slate-50/80 sm:px-5"
+          onClick={() => handleStepClick(step)}
+        >
+          <div className="min-w-0">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
+              Step {step}
+            </p>
+            <p className="mt-1 text-base font-black text-slate-950 sm:text-lg">
+              {STEP_TITLES[step]}
+            </p>
+          </div>
+          <div className="shrink-0 text-right">
+            <p className="text-[11px] font-semibold text-slate-500">
+              {active ? '进行中' : done ? '点击回看' : ''}
+            </p>
+            <div
+              className={
+                active
+                  ? 'mt-1 h-2 w-14 rounded-full bg-primary/15'
+                  : 'mt-1 h-2 w-14 rounded-full bg-slate-100'
+              }
+            >
+              <div
+                className={
+                  active
+                    ? 'h-full w-8 rounded-full bg-primary transition-all'
+                    : done
+                      ? 'h-full w-full rounded-full bg-primary/35'
+                      : 'h-full w-0 rounded-full bg-primary'
+                }
+              />
+            </div>
+          </div>
+        </button>
+        {expanded ? <div className="border-t border-border/50">{content}</div> : null}
+      </section>
+    )
+  }
 
   return (
     <DisplayPanel className="pointer-events-auto flex h-full min-h-0 flex-col overflow-hidden rounded-[2rem] bg-white/90">
       <div className="shrink-0 border-b border-border/45 px-3 py-2 sm:px-4 sm:py-2.5">
-        <DecisionProgressSteps currentStep={activeStep} onStepClick={setActiveStep} />
+        <DecisionProgressSteps
+          currentStep={currentStep}
+          maxVisibleStep={maxVisibleStep}
+          expandedStep={expandedStep}
+          onStepClick={handleStepClick}
+        />
       </div>
 
       <ScrollArea className="min-h-0 flex-1 px-3 py-2 sm:px-4">
         <div className="mx-auto flex max-w-6xl flex-col gap-3">
-          {activeStep === 1 ? (
-            showStarterStrip && onDraftTask ? (
-              <HelpStarterStrip onDraftChange={onDraftTask} />
-            ) : currentPrompt?.trim() ? (
-              <StepOneContextStack currentPrompt={currentPrompt.trim()} />
-            ) : null
-          ) : null}
+          {!hasPrompt && onDraftTask ? <HelpStarterStrip onDraftChange={onDraftTask} /> : null}
 
-          {activeStep === 2 ? (
-            <div className="space-y-3">
+          {renderStepSection(
+            1,
+            <div className="space-y-3 p-3 sm:p-4">
+              <StepOneContextStack
+                currentPrompt={currentPrompt}
+                payload={agentPayload}
+                appState={appState}
+                analysisStage={analysisStage}
+              />
+              {hasPrompt ? <ContextInputCard payload={agentPayload} /> : null}
+            </div>,
+          )}
+
+          {renderStepSection(
+            2,
+            <div className="p-3 sm:p-4">
               <DecisionSummaryCard
                 payload={agentPayload}
-                currentPrompt={currentPrompt}
+                selectedToolPayload={selectedToolPayload}
                 appState={appState}
+                analysisStage={analysisStage}
               />
-              <ContextInputCard payload={agentPayload} />
-            </div>
-          ) : null}
+            </div>,
+          )}
 
-          {activeStep === 3 ? (
-            <div className="space-y-3">
+          {renderStepSection(
+            3,
+            <div className="p-3 sm:p-4">
               <CompactDecisionPanel
                 payload={agentPayload}
                 selectedToolPayload={selectedToolPayload}
+                analysisStage={analysisStage}
                 autoSaveNotice={autoSaveNotice}
                 autoSaveEnabled={autoSaveEnabled}
                 onSaveCandidate={onSaveCandidate}
@@ -115,8 +198,8 @@ export function DiscoveryWorkspace({
                 onEnableAutoSave={onEnableAutoSave}
                 onFeedback={onFeedback}
               />
-            </div>
-          ) : null}
+            </div>,
+          )}
         </div>
       </ScrollArea>
 
