@@ -8,6 +8,7 @@ import type {
   ToolTrustSignals,
   ToolUsageStats,
 } from '@/shared/tool-registry'
+import { filterToolsByBuiltinAvailability as filterVisibleTools } from '@/shared/tool-registry'
 
 function defaultRatingSummary(): ToolRatingSummary {
   return {
@@ -74,7 +75,7 @@ export function mapDbToolToToolItem(tool: DbTool): ToolItem {
   }
 }
 
-export async function listActiveToolItems() {
+export async function listActiveToolItems(builtinToolsEnabled = true) {
   const tools = await listActiveTools()
-  return tools.map(mapDbToolToToolItem)
+  return filterVisibleTools(tools.map(mapDbToolToToolItem), builtinToolsEnabled)
 }

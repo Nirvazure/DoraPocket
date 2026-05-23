@@ -19,6 +19,7 @@ import { chunkResponseText } from '@/server/agent/stream'
 import { buildBuiltinResponsePrompt, buildDiscoveryResponsePrompt } from '@/server/agent/prompts'
 import { buildTaskFrame, intentFromToolId, type Classified } from '@/server/agent/task-frame'
 import { normalizeArgs, normalizeToolArgs } from '@/server/agent/tool-args'
+import { getToolById, isBuiltinTool } from '@/shared/tool-registry'
 
 type ModelToolCall = {
   name?: string
@@ -77,6 +78,15 @@ function isBuiltinIntent(intent: PocketIntent): boolean {
   return ['time', 'weather', 'exchange', 'air_quality', 'web_summary'].includes(intent)
 }
 
+function canUseBuiltinTool(
+  toolId: string | null | undefined,
+  builtinToolsEnabled: boolean,
+): boolean {
+  if (!toolId) return false
+  if (builtinToolsEnabled) return true
+  return !isBuiltinTool(getToolById(toolId))
+}
+
 const PocketStateAnnotation = Annotation.Root({
   messages: Annotation<PocketState['messages']>(),
   intent: Annotation<PocketState['intent']>(),
@@ -89,24 +99,41 @@ const PocketStateAnnotation = Annotation.Root({
   final_text: Annotation<PocketState['final_text']>(),
   answerBookFromPocket: Annotation<PocketState['answerBookFromPocket']>(),
   market_context: Annotation<PocketState['market_context']>(),
+  builtin_tools_enabled: Annotation<PocketState['builtin_tools_enabled']>(),
   explanation_mode: Annotation<PocketState['explanation_mode']>(),
 })
 
 // classifierNode 负责把任务框架、候选召回和 UI 解释层一次性补齐。
 const classifierNode = async (state: PocketState): Promise<Partial<PocketState>> => {
   const userText = state.messages[state.messages.length - 1]?.content ?? ''
-  const taskFrame = buildTaskFrame(userText, state.answerBookFromPocket)
+  const taskFrame = buildTaskFrame(
+    userText,
+    state.answerBookFromPocket,
+    state.builtin_tools_enabled,
+  )
   const classified = await classifyMessage(userText, state.answerBookFromPocket)
   const {
     candidates,
     topTool,
     primaryCandidate,
     selectionReason: judgedSelectionReason,
-  } = await buildRankedCandidates(userText, state.market_context, taskFrame)
+  } = await buildRankedCandidates(
+    userText,
+    state.market_context,
+    state.builtin_tools_enabled,
+    taskFrame,
+  )
+  const classifiedSelectedTool =
+    classified.selectedTool &&
+    canUseBuiltinTool(classified.selectedTool.toolId, state.builtin_tools_enabled)
+      ? classified.selectedTool
+      : null
   const selectedTool =
-    classified.selectedTool ??
+    classifiedSelectedTool ??
     (topTool && primaryCandidate?.candidateType !== 'external_suggestion'
-      ? { toolId: topTool.id, args: topTool.defaultArgs ?? {} }
+      ? canUseBuiltinTool(topTool.id, state.builtin_tools_enabled)
+        ? { toolId: topTool.id, args: topTool.defaultArgs ?? {} }
+        : null
       : null)
   const selectionReason =
     judgedSelectionReason ?? defaultSelectionReason(taskFrame, topTool, primaryCandidate)
@@ -121,7 +148,7 @@ const classifierNode = async (state: PocketState): Promise<Partial<PocketState>>
 
   return {
     intent:
-      classified.selectedTool != null
+      classifiedSelectedTool != null
         ? classified.intent
         : taskFrame.mode === 'discover'
           ? 'discover'
@@ -138,6 +165,9 @@ const classifierNode = async (state: PocketState): Promise<Partial<PocketState>>
 const toolNode = async (state: PocketState): Promise<Partial<PocketState>> => {
   if (!state.selected_tool) return { tool_result: '' }
   if (!isBuiltinIntent(state.intent)) return { tool_result: '' }
+  if (!canUseBuiltinTool(state.selected_tool.toolId, state.builtin_tools_enabled)) {
+    return { tool_result: '' }
+  }
   const toolResult = await executeTool(state.selected_tool.toolId, state.selected_tool.args)
   return { tool_result: toolResult }
 }
@@ -189,12 +219,14 @@ export async function runPocketGraph(
   message: string,
   answerBookFromPocket: boolean,
   marketContext: MarketContext,
+  builtinToolsEnabled: boolean,
   explanationMode: ExplanationMode = 'standard',
 ): Promise<PocketGraphResult> {
   const initialState = createInitialState(
     message,
     answerBookFromPocket,
     marketContext,
+    builtinToolsEnabled,
     explanationMode,
   )
   const result = await pocketGraph.invoke(initialState)
@@ -215,12 +247,14 @@ export async function* streamPocketGraph(
   message: string,
   answerBookFromPocket: boolean,
   marketContext: MarketContext,
+  builtinToolsEnabled: boolean,
   explanationMode: ExplanationMode = 'standard',
 ): AsyncGenerator<PocketStreamEvent> {
   const initialState = createInitialState(
     message,
     answerBookFromPocket,
     marketContext,
+    builtinToolsEnabled,
     explanationMode,
   )
   const classifiedState = {

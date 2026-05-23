@@ -149,6 +149,33 @@ export function PocketSettingsModal({ open, settings, onClose, onSave }: PocketS
               </div>
             </DisplayPanelContent>
           </DisplayPanel>
+
+          <DisplayPanel className="rounded-[1.5rem] border-white/90 bg-slate-50/80 shadow-none md:col-span-2">
+            <DisplayPanelContent className="space-y-3 p-5">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-black text-slate-950">内置道具开关</p>
+                  <p className="text-xs text-slate-600">
+                    关闭后，系统会把内置道具视为不存在，不展示、不推荐，也不允许使用。
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant={settings?.builtinToolsEnabled ? 'default' : 'outline'}
+                  className="rounded-full px-4 text-xs font-bold"
+                  onClick={() =>
+                    updateSettings(
+                      settings,
+                      { builtinToolsEnabled: !settings?.builtinToolsEnabled },
+                      onSave,
+                    )
+                  }
+                >
+                  {settings?.builtinToolsEnabled ? '已开启' : '已关闭'}
+                </Button>
+              </div>
+            </DisplayPanelContent>
+          </DisplayPanel>
         </DisplayPanelContent>
       </DisplayPanel>
     </div>

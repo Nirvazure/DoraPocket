@@ -48,6 +48,7 @@ export async function POST(request: Request) {
             message,
             body.answerBookFromPocket === true,
             marketContext,
+            marketContext.builtinToolsEnabled,
             explanationMode,
           )) {
             if (event.type === 'meta') {

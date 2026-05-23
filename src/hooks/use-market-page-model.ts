@@ -59,7 +59,7 @@ export function useMarketPageModel(
   const [query, setQuery] = useState('')
   const [submitOpen, setSubmitOpen] = useState(false)
   const [draft, setDraft] = useState<Draft>(EMPTY_MARKET_DRAFT)
-  const [selectedSection, setSelectedSection] = useState<'builtin' | ToolCategory>('builtin')
+  const [selectedSection, setSelectedSection] = useState<'builtin' | ToolCategory>('ai_assistant')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [reviewToolId, setReviewToolId] = useState<string | null>(null)
 
@@ -97,19 +97,24 @@ export function useMarketPageModel(
   )
 
   const categoryEntries = useMemo((): ReadonlyArray<readonly [CategoryKey, string]> => {
-    const entries: Array<readonly [CategoryKey, string]> = [
-      ['builtin', PAGE_COPY.market.builtinSection],
+    const entries: Array<readonly [CategoryKey, string]> = []
+    if (builtinTools.length > 0) {
+      entries.push(['builtin', PAGE_COPY.market.builtinSection])
+    }
+    entries.push(
       ...TOOL_CATEGORY_ORDER.map((category): readonly [CategoryKey, string] => [
         category,
         TOOL_CATEGORY_LABELS[category],
       ]),
-    ]
+    )
     return entries.filter(([key]) => categoryCounts[key] > 0)
-  }, [categoryCounts])
+  }, [builtinTools.length, categoryCounts])
 
   const resolvedSection = useMemo(() => {
     const validKeys = new Set(categoryEntries.map(([key]) => key))
-    return validKeys.has(selectedSection) ? selectedSection : (categoryEntries[0]?.[0] ?? 'builtin')
+    return validKeys.has(selectedSection)
+      ? selectedSection
+      : (categoryEntries[0]?.[0] ?? 'ai_assistant')
   }, [categoryEntries, selectedSection])
 
   const currentCategoryTools =

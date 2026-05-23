@@ -1,5 +1,5 @@
-import { IntroPage } from '@/components/intro-page'
+import { redirect } from 'next/navigation'
 
 export default function HomePage() {
-  return <IntroPage />
+  redirect('/analyse')
 }

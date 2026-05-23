@@ -33,6 +33,7 @@ export type PocketState = {
   final_text: string
   answerBookFromPocket: boolean
   market_context: MarketContext
+  builtin_tools_enabled: boolean
   explanation_mode: ExplanationMode
 }
 
@@ -40,6 +41,7 @@ export function createInitialState(
   input: string,
   answerBookFromPocket: boolean,
   marketContext: MarketContext,
+  builtinToolsEnabled: boolean,
   explanationMode: ExplanationMode,
 ): PocketState {
   return {
@@ -72,6 +74,7 @@ export function createInitialState(
     final_text: '',
     answerBookFromPocket,
     market_context: marketContext,
+    builtin_tools_enabled: builtinToolsEnabled,
     explanation_mode: explanationMode,
   }
 }

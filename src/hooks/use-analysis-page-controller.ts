@@ -27,6 +27,7 @@ import { useSaveUserSettingsMutation, useUserSettingsQuery } from '@/lib/query/u
 import { MODE_KEY_ANYWHERE_DOOR, type AssistantModeCard } from '@/shared/mode-registry'
 import { PAGE_COPY } from '@/shared/ui-copy'
 import { useStore } from '@/store'
+import { shouldRestartAnalysisFlow } from '@/hooks/analysis-stage-restart'
 
 type InputMode = 'text' | 'voice'
 
@@ -42,6 +43,7 @@ function formatHistoryTime(value: number) {
 export function useAnalysisPageController() {
   const appState = useStore((state) => state.appState)
   const transcript = useStore((state) => state.transcript)
+  const botResponse = useStore((state) => state.botResponse)
   const systemNotice = useStore((state) => state.systemNotice)
   const selectedGadgetKey = useStore((state) => state.selectedGadgetKey)
   const setAppState = useStore((state) => state.setAppState)
@@ -68,6 +70,7 @@ export function useAnalysisPageController() {
   const [pocketGadget, setPocketGadget] = useState<AssistantModeCard | null>(null)
   const [analysisStage, setAnalysisStage] = useState<AnalysisStage>('idle')
   const analysisStageRef = useRef<AnalysisStage>('idle')
+  const previousPromptRef = useRef<string | null>(null)
   const stageImmediateTimerRef = useRef<number | null>(null)
   const stageTimerRef = useRef<number | null>(null)
   const revealTimerRef = useRef<number | null>(null)
@@ -240,6 +243,9 @@ export function useAnalysisPageController() {
     }
 
     const hasPrompt = Boolean(currentPrompt?.trim())
+    const normalizedPrompt = currentPrompt?.trim() ?? null
+    const previousPrompt = previousPromptRef.current
+    previousPromptRef.current = normalizedPrompt
     if (!hasPrompt) {
       clearTimers()
       clearRevealTimer()
@@ -248,7 +254,15 @@ export function useAnalysisPageController() {
     }
 
     const currentStage = analysisStageRef.current
-    if (currentStage === 'covered' || currentStage === 'revealing' || currentStage === 'ready') {
+    const restartingForNewPrompt = shouldRestartAnalysisFlow({
+      previousPrompt,
+      nextPrompt: normalizedPrompt,
+      currentStage,
+    })
+    if (
+      !restartingForNewPrompt &&
+      (currentStage === 'covered' || currentStage === 'revealing' || currentStage === 'ready')
+    ) {
       return clearTimers
     }
 
@@ -296,6 +310,7 @@ export function useAnalysisPageController() {
   return {
     appState,
     transcript,
+    botResponse,
     systemNotice,
     selectedGadgetKey,
     pocketModalOpen,

@@ -122,6 +122,7 @@ export function usePreferenceProfileQuery(mode: PreferenceMode = 'applied') {
     queryFn: async () =>
       (
         await apiFetch<MarketContext>(`/api/me/market/context?mode=${mode}`).catch(() => ({
+          builtinToolsEnabled: false,
           savedItems: [],
           feedback: [],
           subscriptions: [],
