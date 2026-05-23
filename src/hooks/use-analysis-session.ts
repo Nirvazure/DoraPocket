@@ -88,6 +88,7 @@ export function useAnalysisSession({
     userSettings?.voicePlaybackEnabled !== false && voicePlaybackMode !== 'off'
   const soundEffectsEnabled = userSettings?.soundEffectsEnabled !== false
   const memoryEnabled = userSettings?.memoryEnabled !== false
+  const builtinToolsEnabled = userSettings?.builtinToolsEnabled === true
   const explanationMode = userSettings?.explanationMode ?? 'standard'
 
   const finishSpeakingTurn = useCallback(() => {
@@ -268,6 +269,7 @@ export function useAnalysisSession({
         const reply = await askQwen(safeText, {
           answerBookFromPocket: options?.answerBookFromPocket === true,
           explanationMode,
+          builtinToolsEnabled,
           onMeta: handleReplyMeta,
           onDelta: handleReplyDelta,
         })
@@ -278,6 +280,7 @@ export function useAnalysisSession({
       }
     },
     [
+      builtinToolsEnabled,
       explanationMode,
       handleReplyDelta,
       handleReplyError,

@@ -228,10 +228,14 @@ export function formatCandidateLines(candidates: AgentCandidate[]): string {
 export async function buildRankedCandidates(
   userText: string,
   marketContext: MarketContext,
+  builtinToolsEnabled: boolean,
   taskFrame?: AgentTaskFrame,
 ) {
-  const toolItems = await listActiveToolItems()
-  const initialMatches = rankToolItems(toolItems, userText, marketSignalsFromContext(marketContext))
+  const toolItems = await listActiveToolItems(builtinToolsEnabled)
+  const initialMatches = rankToolItems(toolItems, userText, {
+    ...marketSignalsFromContext(marketContext),
+    builtinToolsEnabled,
+  })
   const judgement =
     taskFrame?.mode === 'discover'
       ? await judgeToolRecommendations(userText, initialMatches).catch(() => ({

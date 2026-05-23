@@ -4,9 +4,12 @@ import type { ExplanationMode } from '@/services/user-settings'
 export type AskQwenOptions = {
   answerBookFromPocket?: boolean
   explanationMode?: ExplanationMode
+  builtinToolsEnabled?: boolean
   onMeta?: (payload: { selectedTool: ChatToolPayload; uiPayload: AgentUiPayload | null }) => void
   onDelta?: (text: string) => void
 }
+
+const CHAT_REQUEST_TIMEOUT_MS = 15000
 
 export type ChatToolPayload = {
   toolId: string
@@ -53,75 +56,101 @@ function parseStreamLine(line: string): StreamEvent | null {
   }
 }
 
+function timeoutError() {
+  return new Error(`分析超时（>${CHAT_REQUEST_TIMEOUT_MS / 1000} 秒），请重试`)
+}
+
 export async function askQwen(message: string, opts?: AskQwenOptions): Promise<ChatReply> {
-  const response = await fetch('/api/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      message,
-      answerBookFromPocket: opts?.answerBookFromPocket === true,
-      explanationMode: opts?.explanationMode ?? 'standard',
-    }),
-  })
+  const controller = new AbortController()
+  const timeoutId = window.setTimeout(
+    () => controller.abort('analysis-timeout'),
+    CHAT_REQUEST_TIMEOUT_MS,
+  )
 
-  if (!response.ok) {
-    const detail = await response.text().catch(() => '')
-    throw new Error(`chat api failed: ${response.status} ${detail}`)
-  }
-  if (!response.body) {
-    throw new Error('chat api stream body is empty')
-  }
-
-  const reader = response.body.getReader()
-  const decoder = new TextDecoder()
-  let selectedTool: ChatToolPayload = null
-  let uiPayload: AgentUiPayload | null = null
-  let fullText = ''
-  let buffer = ''
-
-  while (true) {
-    const { done, value } = await reader.read()
-    if (done) break
-    buffer += decoder.decode(value, { stream: true })
-    const lines = buffer.split('\n')
-    buffer = lines.pop() ?? ''
-
-    for (const line of lines) {
-      const event = parseStreamLine(line)
-      if (!event) continue
-      if (event.type === 'meta') {
-        selectedTool = event.selected_tool ?? null
-        uiPayload = event.ui_payload ?? null
-        opts?.onMeta?.({ selectedTool, uiPayload })
-        continue
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({
+        message,
+        answerBookFromPocket: opts?.answerBookFromPocket === true,
+        explanationMode: opts?.explanationMode ?? 'standard',
+        builtinToolsEnabled: opts?.builtinToolsEnabled === true,
+      }),
+    }).catch((error: unknown) => {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        throw timeoutError()
       }
-      if (event.type === 'delta') {
-        const text = event.text ?? ''
-        fullText += text
-        if (text) opts?.onDelta?.(text)
-        continue
-      }
-      if (event.type === 'done') {
-        if (typeof event.text === 'string' && event.text.length > 0) {
-          fullText = event.text
+      throw error
+    })
+
+    if (!response.ok) {
+      const detail = await response.text().catch(() => '')
+      throw new Error(`chat api failed: ${response.status} ${detail}`)
+    }
+    if (!response.body) {
+      throw new Error('chat api stream body is empty')
+    }
+
+    const reader = response.body.getReader()
+    const decoder = new TextDecoder()
+    let selectedTool: ChatToolPayload = null
+    let uiPayload: AgentUiPayload | null = null
+    let fullText = ''
+    let buffer = ''
+
+    while (true) {
+      const { done, value } = await reader.read().catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          throw timeoutError()
         }
-        if (event.selected_tool !== undefined) {
-          selectedTool = event.selected_tool
-        }
-        if (event.ui_payload !== undefined) {
+        throw error
+      })
+      if (done) break
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop() ?? ''
+
+      for (const line of lines) {
+        const event = parseStreamLine(line)
+        if (!event) continue
+        if (event.type === 'meta') {
+          selectedTool = event.selected_tool ?? null
           uiPayload = event.ui_payload ?? null
+          opts?.onMeta?.({ selectedTool, uiPayload })
+          continue
         }
-        continue
-      }
-      if (event.type === 'error') {
-        throw new Error(event.error || 'chat stream failed')
+        if (event.type === 'delta') {
+          const text = event.text ?? ''
+          fullText += text
+          if (text) opts?.onDelta?.(text)
+          continue
+        }
+        if (event.type === 'done') {
+          if (typeof event.text === 'string' && event.text.length > 0) {
+            fullText = event.text
+          }
+          if (event.selected_tool !== undefined) {
+            selectedTool = event.selected_tool
+          }
+          if (event.ui_payload !== undefined) {
+            uiPayload = event.ui_payload ?? null
+          }
+          continue
+        }
+        if (event.type === 'error') {
+          throw new Error(event.error || 'chat stream failed')
+        }
       }
     }
-  }
 
-  return {
-    text: fullText,
-    selectedTool,
-    uiPayload,
+    return {
+      text: fullText,
+      selectedTool,
+      uiPayload,
+    }
+  } finally {
+    window.clearTimeout(timeoutId)
   }
 }

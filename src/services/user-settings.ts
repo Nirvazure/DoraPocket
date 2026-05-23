@@ -18,6 +18,7 @@ export type UserSettings = {
   defaultInputMode: InputModePreference
   autoSaveToPocketEnabled: boolean
   memoryEnabled: boolean
+  builtinToolsEnabled: boolean
   explanationMode: ExplanationMode
   fontPreset: FontPreset
 }
@@ -49,6 +50,7 @@ export function getDefaultUserSettings(): UserSettings {
     defaultInputMode: 'text',
     autoSaveToPocketEnabled: true,
     memoryEnabled: true,
+    builtinToolsEnabled: false,
     explanationMode: 'standard',
     fontPreset: 'c',
   }
@@ -96,6 +98,7 @@ export function loadUserSettings(): UserSettings {
       resolveLegacyAutoSaveValue(),
     ),
     memoryEnabled: normalizeBoolean(raw.memoryEnabled, defaults.memoryEnabled),
+    builtinToolsEnabled: normalizeBoolean(raw.builtinToolsEnabled, defaults.builtinToolsEnabled),
     explanationMode: normalizeExplanationMode(raw.explanationMode),
     fontPreset: normalizeFontPreset(raw.fontPreset ?? resolveLegacyFontPreset()),
   }
@@ -114,6 +117,7 @@ export function saveUserSettings(settings: UserSettings): UserSettings {
     defaultInputMode: normalizeInputMode(settings.defaultInputMode),
     autoSaveToPocketEnabled: Boolean(settings.autoSaveToPocketEnabled),
     memoryEnabled: Boolean(settings.memoryEnabled),
+    builtinToolsEnabled: Boolean(settings.builtinToolsEnabled),
     explanationMode: normalizeExplanationMode(settings.explanationMode),
     fontPreset: normalizeFontPreset(settings.fontPreset),
   } satisfies UserSettings

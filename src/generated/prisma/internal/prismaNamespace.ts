@@ -1384,6 +1384,7 @@ export const UserSettingsScalarFieldEnum = {
   defaultInputMode: 'defaultInputMode',
   autoSaveToPocketEnabled: 'autoSaveToPocketEnabled',
   memoryEnabled: 'memoryEnabled',
+  builtinToolsEnabled: 'builtinToolsEnabled',
   explanationMode: 'explanationMode',
   fontPreset: 'fontPreset',
   createdAt: 'createdAt',

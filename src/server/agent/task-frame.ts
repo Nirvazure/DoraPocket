@@ -22,7 +22,11 @@ export function intentFromToolId(toolId: string): PocketIntent {
   return 'discover'
 }
 
-export function buildTaskFrame(userText: string, answerBookFromPocket: boolean): AgentTaskFrame {
+export function buildTaskFrame(
+  userText: string,
+  answerBookFromPocket: boolean,
+  builtinToolsEnabled: boolean,
+): AgentTaskFrame {
   if (answerBookFromPocket) {
     return {
       goal: userText,
@@ -58,8 +62,12 @@ export function buildTaskFrame(userText: string, answerBookFromPocket: boolean):
     return { goal: text, mode: 'discover', missingInputs }
   }
 
-  if (BUILTIN_KEYWORDS.some((keyword) => lower.includes(keyword))) {
+  if (builtinToolsEnabled && BUILTIN_KEYWORDS.some((keyword) => lower.includes(keyword))) {
     return { goal: text, mode: 'use_builtin', missingInputs }
+  }
+
+  if (!builtinToolsEnabled && BUILTIN_KEYWORDS.some((keyword) => lower.includes(keyword))) {
+    return { goal: text, mode: missingInputs.length > 0 ? 'discover' : 'chat', missingInputs }
   }
 
   return { goal: text, mode: 'chat', missingInputs }

@@ -37,6 +37,7 @@ model UserSettings {
   defaultInputMode        String   @default("text")
   autoSaveToPocketEnabled Boolean  @default(true)
   memoryEnabled           Boolean  @default(true)
+  builtinToolsEnabled     Boolean  @default(false)
   explanationMode         String   @default("standard")
   fontPreset              String   @default("c")
   createdAt               DateTime @default(now())

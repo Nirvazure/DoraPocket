@@ -8,9 +8,9 @@ type DecisionProgressStepsProps = {
 }
 
 const STEPS = [
-  { step: 1, title: '理解任务' },
-  { step: 2, title: '做出判断' },
-  { step: 3, title: '正式出手' },
+  { step: 1, title: '从哪里开始' },
+  { step: 2, title: '分析过程' },
+  { step: 3, title: '推荐结果和反馈' },
 ] as const
 
 export function DecisionProgressSteps({
@@ -62,19 +62,6 @@ export function DecisionProgressSteps({
               </span>
               <span className="min-w-0">
                 <span className="block truncate text-[11px] font-black">{item.title}</span>
-                {active ? (
-                  <span className="block text-[9px] font-semibold uppercase tracking-[0.14em] text-current/80">
-                    进行中
-                  </span>
-                ) : done ? (
-                  <span className="block text-[9px] font-semibold uppercase tracking-[0.14em] text-current/70">
-                    可回看
-                  </span>
-                ) : !visible ? (
-                  <span className="block text-[9px] font-semibold uppercase tracking-[0.14em] text-current/60">
-                    未开始
-                  </span>
-                ) : null}
               </span>
             </button>
           )

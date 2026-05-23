@@ -15,6 +15,7 @@ export default function App() {
   const {
     appState,
     systemNotice,
+    botResponse,
     selectedGadgetKey,
     pocketModalOpen,
     pocketGadget,
@@ -110,6 +111,9 @@ export default function App() {
         toolDialMode={toolDialMode}
         selectedGadgetKey={selectedGadgetKey}
         dialGadgets={dialGadgets}
+        currentPrompt={currentPrompt}
+        botResponse={botResponse}
+        hasResult={Boolean(agentUiPayload || selectedToolPayload?.toolId)}
         onToggleToolDial={toggleToolDial}
         onSelectDialGadget={handleSelectDialGadget}
         onToggleToolDialMode={() =>

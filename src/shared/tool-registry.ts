@@ -723,6 +723,19 @@ export function getBookmarkSeedTools(): ToolItem[] {
   return BOOKMARK_SEED_TOOL_REGISTRY.filter((item) => item.status === 'active')
 }
 
+export function isBuiltinTool(tool: ToolItem | null | undefined): boolean {
+  if (!tool) return false
+  return tool.source === 'builtin' || tool.isBuiltin === true
+}
+
+export function filterToolsByBuiltinAvailability(
+  tools: ToolItem[],
+  builtinToolsEnabled = true,
+): ToolItem[] {
+  if (builtinToolsEnabled) return tools
+  return tools.filter((tool) => !isBuiltinTool(tool))
+}
+
 export function resolveToolUrlById(id: string | null | undefined): string | null {
   const tool = getToolById(id)
   if (!tool || tool.status !== 'active') return null
@@ -786,6 +799,7 @@ export function scoreToolMatch(query: string, tool: ToolItem): number {
 export function rankTools(
   query: string,
   opts?: {
+    builtinToolsEnabled?: boolean
     savedToolIds?: string[]
     subscribedToolIds?: string[]
     upvotedToolIds?: string[]
@@ -806,6 +820,7 @@ export function rankToolItems(
   tools: ToolItem[],
   query: string,
   opts?: {
+    builtinToolsEnabled?: boolean
     savedToolIds?: string[]
     subscribedToolIds?: string[]
     upvotedToolIds?: string[]
@@ -828,7 +843,7 @@ export function rankToolItems(
   const preferredPlatforms = new Set(opts?.preferredPlatforms ?? [])
   const preferredPricing = new Set(opts?.preferredPricing ?? [])
   const preferredExecutionModes = new Set(opts?.preferredExecutionModes ?? [])
-  return tools
+  return filterToolsByBuiltinAvailability(tools, opts?.builtinToolsEnabled ?? true)
     .filter((tool) => tool.status === 'active')
     .map((tool) => {
       let score = scoreToolMatch(query, tool)

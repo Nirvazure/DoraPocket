@@ -485,6 +485,7 @@ export function buildMarketContext(
 
   const inferredProfile = inferUserPreferenceProfile(pocketInventory)
   return {
+    builtinToolsEnabled: false,
     savedItems,
     feedback: loadMarketFeedback(),
     subscriptions: loadMarketSubscriptions().filter((item) => item.active),

@@ -32,6 +32,7 @@ export type UserSettingsMinAggregateOutputType = {
   defaultInputMode: string | null
   autoSaveToPocketEnabled: boolean | null
   memoryEnabled: boolean | null
+  builtinToolsEnabled: boolean | null
   explanationMode: string | null
   fontPreset: string | null
   createdAt: Date | null
@@ -47,6 +48,7 @@ export type UserSettingsMaxAggregateOutputType = {
   defaultInputMode: string | null
   autoSaveToPocketEnabled: boolean | null
   memoryEnabled: boolean | null
+  builtinToolsEnabled: boolean | null
   explanationMode: string | null
   fontPreset: string | null
   createdAt: Date | null
@@ -62,6 +64,7 @@ export type UserSettingsCountAggregateOutputType = {
   defaultInputMode: number
   autoSaveToPocketEnabled: number
   memoryEnabled: number
+  builtinToolsEnabled: number
   explanationMode: number
   fontPreset: number
   createdAt: number
@@ -78,6 +81,7 @@ export type UserSettingsMinAggregateInputType = {
   defaultInputMode?: true
   autoSaveToPocketEnabled?: true
   memoryEnabled?: true
+  builtinToolsEnabled?: true
   explanationMode?: true
   fontPreset?: true
   createdAt?: true
@@ -93,6 +97,7 @@ export type UserSettingsMaxAggregateInputType = {
   defaultInputMode?: true
   autoSaveToPocketEnabled?: true
   memoryEnabled?: true
+  builtinToolsEnabled?: true
   explanationMode?: true
   fontPreset?: true
   createdAt?: true
@@ -108,6 +113,7 @@ export type UserSettingsCountAggregateInputType = {
   defaultInputMode?: true
   autoSaveToPocketEnabled?: true
   memoryEnabled?: true
+  builtinToolsEnabled?: true
   explanationMode?: true
   fontPreset?: true
   createdAt?: true
@@ -201,6 +207,7 @@ export type UserSettingsGroupByOutputType = {
   defaultInputMode: string
   autoSaveToPocketEnabled: boolean
   memoryEnabled: boolean
+  builtinToolsEnabled: boolean
   explanationMode: string
   fontPreset: string
   createdAt: Date
@@ -234,6 +241,7 @@ export type UserSettingsWhereInput = {
   defaultInputMode?: Prisma.StringFilter<'UserSettings'> | string
   autoSaveToPocketEnabled?: Prisma.BoolFilter<'UserSettings'> | boolean
   memoryEnabled?: Prisma.BoolFilter<'UserSettings'> | boolean
+  builtinToolsEnabled?: Prisma.BoolFilter<'UserSettings'> | boolean
   explanationMode?: Prisma.StringFilter<'UserSettings'> | string
   fontPreset?: Prisma.StringFilter<'UserSettings'> | string
   createdAt?: Prisma.DateTimeFilter<'UserSettings'> | Date | string
@@ -250,6 +258,7 @@ export type UserSettingsOrderByWithRelationInput = {
   defaultInputMode?: Prisma.SortOrder
   autoSaveToPocketEnabled?: Prisma.SortOrder
   memoryEnabled?: Prisma.SortOrder
+  builtinToolsEnabled?: Prisma.SortOrder
   explanationMode?: Prisma.SortOrder
   fontPreset?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -270,6 +279,7 @@ export type UserSettingsWhereUniqueInput = Prisma.AtLeast<
     defaultInputMode?: Prisma.StringFilter<'UserSettings'> | string
     autoSaveToPocketEnabled?: Prisma.BoolFilter<'UserSettings'> | boolean
     memoryEnabled?: Prisma.BoolFilter<'UserSettings'> | boolean
+    builtinToolsEnabled?: Prisma.BoolFilter<'UserSettings'> | boolean
     explanationMode?: Prisma.StringFilter<'UserSettings'> | string
     fontPreset?: Prisma.StringFilter<'UserSettings'> | string
     createdAt?: Prisma.DateTimeFilter<'UserSettings'> | Date | string
@@ -288,6 +298,7 @@ export type UserSettingsOrderByWithAggregationInput = {
   defaultInputMode?: Prisma.SortOrder
   autoSaveToPocketEnabled?: Prisma.SortOrder
   memoryEnabled?: Prisma.SortOrder
+  builtinToolsEnabled?: Prisma.SortOrder
   explanationMode?: Prisma.SortOrder
   fontPreset?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -313,6 +324,7 @@ export type UserSettingsScalarWhereWithAggregatesInput = {
   defaultInputMode?: Prisma.StringWithAggregatesFilter<'UserSettings'> | string
   autoSaveToPocketEnabled?: Prisma.BoolWithAggregatesFilter<'UserSettings'> | boolean
   memoryEnabled?: Prisma.BoolWithAggregatesFilter<'UserSettings'> | boolean
+  builtinToolsEnabled?: Prisma.BoolWithAggregatesFilter<'UserSettings'> | boolean
   explanationMode?: Prisma.StringWithAggregatesFilter<'UserSettings'> | string
   fontPreset?: Prisma.StringWithAggregatesFilter<'UserSettings'> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<'UserSettings'> | Date | string
@@ -327,6 +339,7 @@ export type UserSettingsCreateInput = {
   defaultInputMode?: string
   autoSaveToPocketEnabled?: boolean
   memoryEnabled?: boolean
+  builtinToolsEnabled?: boolean
   explanationMode?: string
   fontPreset?: string
   createdAt?: Date | string
@@ -343,6 +356,7 @@ export type UserSettingsUncheckedCreateInput = {
   defaultInputMode?: string
   autoSaveToPocketEnabled?: boolean
   memoryEnabled?: boolean
+  builtinToolsEnabled?: boolean
   explanationMode?: string
   fontPreset?: string
   createdAt?: Date | string
@@ -357,6 +371,7 @@ export type UserSettingsUpdateInput = {
   defaultInputMode?: Prisma.StringFieldUpdateOperationsInput | string
   autoSaveToPocketEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   memoryEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  builtinToolsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   explanationMode?: Prisma.StringFieldUpdateOperationsInput | string
   fontPreset?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -373,6 +388,7 @@ export type UserSettingsUncheckedUpdateInput = {
   defaultInputMode?: Prisma.StringFieldUpdateOperationsInput | string
   autoSaveToPocketEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   memoryEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  builtinToolsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   explanationMode?: Prisma.StringFieldUpdateOperationsInput | string
   fontPreset?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -388,6 +404,7 @@ export type UserSettingsCreateManyInput = {
   defaultInputMode?: string
   autoSaveToPocketEnabled?: boolean
   memoryEnabled?: boolean
+  builtinToolsEnabled?: boolean
   explanationMode?: string
   fontPreset?: string
   createdAt?: Date | string
@@ -402,6 +419,7 @@ export type UserSettingsUpdateManyMutationInput = {
   defaultInputMode?: Prisma.StringFieldUpdateOperationsInput | string
   autoSaveToPocketEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   memoryEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  builtinToolsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   explanationMode?: Prisma.StringFieldUpdateOperationsInput | string
   fontPreset?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -417,6 +435,7 @@ export type UserSettingsUncheckedUpdateManyInput = {
   defaultInputMode?: Prisma.StringFieldUpdateOperationsInput | string
   autoSaveToPocketEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   memoryEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  builtinToolsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   explanationMode?: Prisma.StringFieldUpdateOperationsInput | string
   fontPreset?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -437,6 +456,7 @@ export type UserSettingsCountOrderByAggregateInput = {
   defaultInputMode?: Prisma.SortOrder
   autoSaveToPocketEnabled?: Prisma.SortOrder
   memoryEnabled?: Prisma.SortOrder
+  builtinToolsEnabled?: Prisma.SortOrder
   explanationMode?: Prisma.SortOrder
   fontPreset?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -452,6 +472,7 @@ export type UserSettingsMaxOrderByAggregateInput = {
   defaultInputMode?: Prisma.SortOrder
   autoSaveToPocketEnabled?: Prisma.SortOrder
   memoryEnabled?: Prisma.SortOrder
+  builtinToolsEnabled?: Prisma.SortOrder
   explanationMode?: Prisma.SortOrder
   fontPreset?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -467,6 +488,7 @@ export type UserSettingsMinOrderByAggregateInput = {
   defaultInputMode?: Prisma.SortOrder
   autoSaveToPocketEnabled?: Prisma.SortOrder
   memoryEnabled?: Prisma.SortOrder
+  builtinToolsEnabled?: Prisma.SortOrder
   explanationMode?: Prisma.SortOrder
   fontPreset?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -541,6 +563,7 @@ export type UserSettingsCreateWithoutUserInput = {
   defaultInputMode?: string
   autoSaveToPocketEnabled?: boolean
   memoryEnabled?: boolean
+  builtinToolsEnabled?: boolean
   explanationMode?: string
   fontPreset?: string
   createdAt?: Date | string
@@ -555,6 +578,7 @@ export type UserSettingsUncheckedCreateWithoutUserInput = {
   defaultInputMode?: string
   autoSaveToPocketEnabled?: boolean
   memoryEnabled?: boolean
+  builtinToolsEnabled?: boolean
   explanationMode?: string
   fontPreset?: string
   createdAt?: Date | string
@@ -597,6 +621,7 @@ export type UserSettingsUpdateWithoutUserInput = {
   defaultInputMode?: Prisma.StringFieldUpdateOperationsInput | string
   autoSaveToPocketEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   memoryEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  builtinToolsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   explanationMode?: Prisma.StringFieldUpdateOperationsInput | string
   fontPreset?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -611,6 +636,7 @@ export type UserSettingsUncheckedUpdateWithoutUserInput = {
   defaultInputMode?: Prisma.StringFieldUpdateOperationsInput | string
   autoSaveToPocketEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   memoryEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  builtinToolsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   explanationMode?: Prisma.StringFieldUpdateOperationsInput | string
   fontPreset?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -629,6 +655,7 @@ export type UserSettingsSelect<
     defaultInputMode?: boolean
     autoSaveToPocketEnabled?: boolean
     memoryEnabled?: boolean
+    builtinToolsEnabled?: boolean
     explanationMode?: boolean
     fontPreset?: boolean
     createdAt?: boolean
@@ -650,6 +677,7 @@ export type UserSettingsSelectCreateManyAndReturn<
     defaultInputMode?: boolean
     autoSaveToPocketEnabled?: boolean
     memoryEnabled?: boolean
+    builtinToolsEnabled?: boolean
     explanationMode?: boolean
     fontPreset?: boolean
     createdAt?: boolean
@@ -671,6 +699,7 @@ export type UserSettingsSelectUpdateManyAndReturn<
     defaultInputMode?: boolean
     autoSaveToPocketEnabled?: boolean
     memoryEnabled?: boolean
+    builtinToolsEnabled?: boolean
     explanationMode?: boolean
     fontPreset?: boolean
     createdAt?: boolean
@@ -689,6 +718,7 @@ export type UserSettingsSelectScalar = {
   defaultInputMode?: boolean
   autoSaveToPocketEnabled?: boolean
   memoryEnabled?: boolean
+  builtinToolsEnabled?: boolean
   explanationMode?: boolean
   fontPreset?: boolean
   createdAt?: boolean
@@ -706,6 +736,7 @@ export type UserSettingsOmit<
   | 'defaultInputMode'
   | 'autoSaveToPocketEnabled'
   | 'memoryEnabled'
+  | 'builtinToolsEnabled'
   | 'explanationMode'
   | 'fontPreset'
   | 'createdAt'
@@ -745,6 +776,7 @@ export type $UserSettingsPayload<
       defaultInputMode: string
       autoSaveToPocketEnabled: boolean
       memoryEnabled: boolean
+      builtinToolsEnabled: boolean
       explanationMode: string
       fontPreset: string
       createdAt: Date
@@ -1340,6 +1372,7 @@ export interface UserSettingsFieldRefs {
   readonly defaultInputMode: Prisma.FieldRef<'UserSettings', 'String'>
   readonly autoSaveToPocketEnabled: Prisma.FieldRef<'UserSettings', 'Boolean'>
   readonly memoryEnabled: Prisma.FieldRef<'UserSettings', 'Boolean'>
+  readonly builtinToolsEnabled: Prisma.FieldRef<'UserSettings', 'Boolean'>
   readonly explanationMode: Prisma.FieldRef<'UserSettings', 'String'>
   readonly fontPreset: Prisma.FieldRef<'UserSettings', 'String'>
   readonly createdAt: Prisma.FieldRef<'UserSettings', 'DateTime'>

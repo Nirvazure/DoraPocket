@@ -84,6 +84,7 @@ export type PreferenceProfileOverride = {
 }
 
 export type MarketContext = {
+  builtinToolsEnabled: boolean
   savedItems: PocketSavedItem[]
   subscriptions: MarketSubscriptionRecord[]
   feedback: MarketFeedbackRecord[]

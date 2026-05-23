@@ -1,6 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import { CompactDecisionPanel } from '@/components/discovery/compact-decision-panel'
-import { ContextInputCard } from '@/components/discovery/context-input-card'
 import {
   isStepDone,
   resolveCurrentStep,
@@ -8,10 +7,9 @@ import {
   type AnalysisStage,
 } from '@/components/discovery/analysis-stage-content'
 import { DecisionProgressSteps } from '@/components/discovery/decision-progress-steps'
-import { DecisionSummaryCard } from '@/components/discovery/decision-summary-card'
+import { LiveAnalysisTrackCard } from '@/components/discovery/live-analysis-track-card'
 import { NextActionBar } from '@/components/discovery/next-action-bar'
-import { StepOneContextStack } from '@/components/discovery/step-one-context-stack'
-import { HelpStarterStrip } from '@/components/help-starter-panel'
+import { WhereToStartSection } from '@/components/discovery/where-to-start-section'
 import { DisplayPanel } from '@/components/ui/display-shell'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import type { ChatToolPayload } from '@/services/llm'
@@ -37,9 +35,9 @@ type DiscoveryWorkspaceProps = {
 }
 
 const STEP_TITLES = {
-  1: '理解任务',
-  2: '做出判断',
-  3: '正式出手',
+  1: '从哪里开始',
+  2: '分析过程',
+  3: '推荐结果和反馈',
 } as const
 
 export function DiscoveryWorkspace({
@@ -154,25 +152,18 @@ export function DiscoveryWorkspace({
 
       <ScrollArea className="min-h-0 flex-1 px-3 py-2 sm:px-4">
         <div className="mx-auto flex max-w-6xl flex-col gap-3">
-          {!hasPrompt && onDraftTask ? <HelpStarterStrip onDraftChange={onDraftTask} /> : null}
-
           {renderStepSection(
             1,
             <div className="space-y-3 p-3 sm:p-4">
-              <StepOneContextStack
-                currentPrompt={currentPrompt}
-                payload={agentPayload}
-                appState={appState}
-                analysisStage={analysisStage}
-              />
-              {hasPrompt ? <ContextInputCard payload={agentPayload} /> : null}
+              <WhereToStartSection onDraftTask={onDraftTask} />
             </div>,
           )}
 
           {renderStepSection(
             2,
             <div className="p-3 sm:p-4">
-              <DecisionSummaryCard
+              <LiveAnalysisTrackCard
+                currentPrompt={currentPrompt}
                 payload={agentPayload}
                 selectedToolPayload={selectedToolPayload}
                 appState={appState}

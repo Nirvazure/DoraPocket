@@ -2,6 +2,7 @@ import type { AnalysisStage } from '@/components/discovery/analysis-stage-conten
 import { PackageOpen, Sparkles, VolumeX } from 'lucide-react'
 import Image from 'next/image'
 import { AnalysisStageCanvas } from '@/components/analysis-stage-canvas'
+import { DoraSpeechBubble } from '@/components/dora-speech-bubble'
 import { RightStatusShowcase } from '@/components/right-status-showcase'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -18,6 +19,9 @@ type AnalysisStagePanelProps = {
   toolDialMode: ToolDialMode
   selectedGadgetKey: string | null
   dialGadgets: AssistantModeCard[]
+  currentPrompt: string | null
+  botResponse: string
+  hasResult: boolean
   onToggleToolDial: () => void
   onSelectDialGadget: (gadget: AssistantModeCard) => void
   onToggleToolDialMode: () => void
@@ -93,6 +97,9 @@ export function AnalysisStagePanel({
   toolDialMode,
   selectedGadgetKey,
   dialGadgets,
+  currentPrompt,
+  botResponse,
+  hasResult,
   onToggleToolDial,
   onSelectDialGadget,
   onToggleToolDialMode,
@@ -123,6 +130,13 @@ export function AnalysisStagePanel({
         <div
           className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-white/64 via-white/34 to-white/72"
           aria-hidden
+        />
+        <DoraSpeechBubble
+          appState={appState}
+          analysisStage={analysisStage}
+          currentPrompt={currentPrompt}
+          botResponse={botResponse}
+          hasResult={hasResult}
         />
         {showPocketStage ? (
           <div className="pointer-events-none absolute inset-x-5 bottom-24 z-20 flex justify-center">

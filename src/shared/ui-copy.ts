@@ -65,7 +65,7 @@ export const SETTINGS_COPY = {
   title: '设置',
   subtitle: '决定 DoraPocket 怎么陪你、怎么说、什么时候替你记住。',
   heading: '设置',
-  description: '这些设置不决定 DoraPocket 推荐什么工具，而是决定它以什么方式出手、解释和陪伴。',
+  description: '这些设置会同时影响 DoraPocket 怎么出手、怎么解释，以及哪些道具会进入系统决策。',
   sections: {
     companion: {
       title: '陪伴方式',
@@ -105,6 +105,10 @@ export const SETTINGS_COPY = {
     memory: {
       title: '记录历史帮助推荐',
       description: '允许系统记住你怎么选，减少下一次重复判断。',
+    },
+    builtinToolsEnabled: {
+      title: '内置道具开关',
+      description: '关闭后，系统会把内置道具视为不存在，不展示、不推荐，也不允许使用。',
     },
     explanationMode: {
       title: '解释详细度',
