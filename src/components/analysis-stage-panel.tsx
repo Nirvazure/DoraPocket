@@ -1,4 +1,5 @@
-import { Sparkles } from 'lucide-react'
+import type { AnalysisStage } from '@/components/discovery/analysis-stage-content'
+import { PackageOpen, Sparkles, VolumeX } from 'lucide-react'
 import Image from 'next/image'
 import { AnalysisStageCanvas } from '@/components/analysis-stage-canvas'
 import { RightStatusShowcase } from '@/components/right-status-showcase'
@@ -11,6 +12,7 @@ type ToolDialMode = 'quick' | 'all'
 
 type AnalysisStagePanelProps = {
   appState: AppState
+  analysisStage: AnalysisStage
   toolDialRef: React.RefObject<HTMLElement | null>
   toolDialOpen: boolean
   toolDialMode: ToolDialMode
@@ -19,6 +21,8 @@ type AnalysisStagePanelProps = {
   onToggleToolDial: () => void
   onSelectDialGadget: (gadget: AssistantModeCard) => void
   onToggleToolDialMode: () => void
+  canSkipVoice: boolean
+  onRevealNow: () => void
   children?: React.ReactNode
 }
 
@@ -38,7 +42,7 @@ function ToolDialMenu({
   return (
     <div
       role="menu"
-      aria-label="内置工具拨盘"
+      aria-label="内置道具拨盘"
       className="absolute bottom-14 right-0 z-10 w-56 rounded-2xl border border-white/85 bg-white/95 p-2 shadow-md"
     >
       <div className="grid grid-cols-1 gap-1.5">
@@ -83,6 +87,7 @@ function ToolDialMenu({
 
 export function AnalysisStagePanel({
   appState,
+  analysisStage,
   toolDialRef,
   toolDialOpen,
   toolDialMode,
@@ -91,8 +96,13 @@ export function AnalysisStagePanel({
   onToggleToolDial,
   onSelectDialGadget,
   onToggleToolDialMode,
+  canSkipVoice,
+  onRevealNow,
   children,
 }: AnalysisStagePanelProps) {
+  const showPocketStage =
+    analysisStage === 'judging' || analysisStage === 'covered' || analysisStage === 'revealing'
+
   return (
     <section
       ref={toolDialRef}
@@ -104,7 +114,7 @@ export function AnalysisStagePanel({
       />
       <div className="relative z-10 shrink-0 border-b border-border/45 bg-white/90 px-4 py-2.5 backdrop-blur-md">
         <div className="flex items-center justify-between gap-3">
-          <RightStatusShowcase appState={appState} />
+          <RightStatusShowcase appState={appState} analysisStage={analysisStage} />
         </div>
       </div>
 
@@ -114,7 +124,49 @@ export function AnalysisStagePanel({
           className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-white/64 via-white/34 to-white/72"
           aria-hidden
         />
+        {showPocketStage ? (
+          <div className="pointer-events-none absolute inset-x-5 bottom-24 z-20 flex justify-center">
+            <div
+              className={cn(
+                'relative flex min-w-[12rem] items-center gap-3 rounded-[1.35rem] border border-white/85 bg-white/86 px-4 py-3 shadow-xl shadow-slate-900/10 backdrop-blur-md',
+                analysisStage === 'revealing' && 'animate-dp-tab-pop',
+              )}
+            >
+              <span className="relative flex h-12 w-12 shrink-0 items-center justify-center">
+                <span className="absolute inset-0 rounded-full bg-sky-100 motion-safe:animate-pulse" />
+                <Image
+                  src="/images/pocket.png"
+                  alt=""
+                  width={48}
+                  height={48}
+                  className="relative h-11 w-11 object-contain drop-shadow-sm"
+                />
+              </span>
+              <span className="flex min-w-0 flex-col">
+                <span className="text-xs font-black text-slate-950">
+                  {analysisStage === 'revealing' ? '出手' : '翻口袋中'}
+                </span>
+                <span className="mt-1 inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600">
+                  <PackageOpen className="h-3.5 w-3.5 text-sky-600" />
+                  {analysisStage === 'covered' ? '已经摸到一个合适的道具' : '正在收敛方向'}
+                </span>
+              </span>
+            </div>
+          </div>
+        ) : null}
         <div className="pointer-events-none relative z-10 min-h-0 flex-1" />
+        {canSkipVoice ? (
+          <Button
+            type="button"
+            variant="outline"
+            className="pointer-events-auto absolute right-3 top-3 z-30 h-10 w-10 rounded-full border-white/85 bg-white/94 p-0 text-slate-700 shadow-lg shadow-slate-900/10 backdrop-blur-md hover:bg-white"
+            onClick={onRevealNow}
+            aria-label="停止语音并直接揭晓"
+            title="停止语音并直接揭晓"
+          >
+            <VolumeX className="h-4 w-4" />
+          </Button>
+        ) : null}
         <div className="pointer-events-auto absolute bottom-3 right-3 z-20">
           <div className="relative">
             <Button
@@ -123,7 +175,7 @@ export function AnalysisStagePanel({
               className="h-11 w-11 rounded-full border-white/85 bg-white/94 p-0 text-xs shadow-lg shadow-slate-900/10 backdrop-blur-md hover:bg-white"
               onClick={onToggleToolDial}
               aria-expanded={toolDialOpen}
-              aria-label="打开内置工具拨盘"
+              aria-label="打开内置道具拨盘"
             >
               <Sparkles className="h-4 w-4" />
             </Button>

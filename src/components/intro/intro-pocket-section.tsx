@@ -4,7 +4,6 @@ import type { RefObject } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   DisplayPanel,
-  DisplayPanelContent,
   DisplayPanelDescription,
   DisplayPanelTitle,
 } from '@/components/ui/display-shell'

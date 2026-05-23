@@ -1,3 +1,5 @@
+'use client'
+
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { playAudioStream, playDoraPocketSfx, stopAudioPlayback } from '@/services/audio'
 import { askQwen, type ChatToolPayload } from '@/services/llm'
@@ -46,6 +48,8 @@ type UseAnalysisSessionOptions = {
   }) => void
   getSelectedGadgetKey: () => string | null
   onPocketGadgetChange: (gadget: AssistantModeCard) => void
+  onCoverRecommendation: () => void
+  onRevealRecommendation: () => void
 }
 
 type AgentTurnReply = {
@@ -67,6 +71,8 @@ export function useAnalysisSession({
   setSystemNotice,
   getSelectedGadgetKey,
   onPocketGadgetChange,
+  onCoverRecommendation,
+  onRevealRecommendation,
 }: UseAnalysisSessionOptions) {
   const pocketReachTimerRef = useRef(0)
   const latestUserPromptRef = useRef('')
@@ -117,8 +123,11 @@ export function useAnalysisSession({
     }) => {
       setSelectedToolPayload(selectedTool)
       setAgentUiPayload(uiPayload)
+      if (selectedTool?.toolId || uiPayload) {
+        onCoverRecommendation()
+      }
     },
-    [],
+    [onCoverRecommendation],
   )
 
   const handleReplyDelta = useCallback(
@@ -159,6 +168,9 @@ export function useAnalysisSession({
     async (safeText: string, reply: AgentTurnReply) => {
       setSelectedToolPayload(reply.selectedTool)
       setAgentUiPayload(reply.uiPayload)
+      if (reply.selectedTool?.toolId || reply.uiPayload) {
+        onCoverRecommendation()
+      }
       if (memoryEnabled) {
         saveChatHistory({
           userText: safeText,
@@ -182,11 +194,13 @@ export function useAnalysisSession({
       }
 
       if (!voicePlaybackEnabled) {
+        onRevealRecommendation()
         finishSpeakingTurn()
         return
       }
 
       if (voicePlaybackMode === 'key-result' && reply.text.trim().length > 120) {
+        onRevealRecommendation()
         finishSpeakingTurn()
         return
       }
@@ -196,11 +210,13 @@ export function useAnalysisSession({
       if (audioUrl) {
         setAppState('speaking')
         playAudioStream(audioUrl, () => {
+          onRevealRecommendation()
           finishSpeakingTurn()
         })
         return
       }
 
+      onRevealRecommendation()
       finishSpeakingTurn()
     },
     [
@@ -208,12 +224,14 @@ export function useAnalysisSession({
       getSelectedGadgetKey,
       memoryEnabled,
       maybeAutoSaveTool,
+      onCoverRecommendation,
       onPocketGadgetChange,
+      onRevealRecommendation,
       saveChatHistory,
       setAppState,
       setBotResponse,
-      triggerPocketReveal,
       soundEffectsEnabled,
+      triggerPocketReveal,
       voicePlaybackEnabled,
       voicePlaybackMode,
     ],
@@ -260,6 +278,7 @@ export function useAnalysisSession({
       }
     },
     [
+      explanationMode,
       handleReplyDelta,
       handleReplyError,
       handleReplyMeta,
@@ -267,21 +286,27 @@ export function useAnalysisSession({
       setAppState,
       setBotResponse,
       setLastSpeechError,
-      explanationMode,
     ],
   )
 
-  useEffect(() => {
-    return () => {
-      window.clearTimeout(pocketReachTimerRef.current)
-    }
-  }, [])
+  const revealNow = useCallback(() => {
+    stopAudioPlayback()
+    onRevealRecommendation()
+    finishSpeakingTurn()
+  }, [finishSpeakingTurn, onRevealRecommendation])
 
   useEffect(() => {
     if (!autoSaveNotice) return
-    const id = window.setTimeout(() => setAutoSaveNotice(null), 3600)
+    const id = window.setTimeout(() => setAutoSaveNotice(null), 3200)
     return () => window.clearTimeout(id)
   }, [autoSaveNotice])
+
+  useEffect(() => {
+    return () => {
+      stopAudioPlayback()
+      window.clearTimeout(pocketReachTimerRef.current)
+    }
+  }, [])
 
   return {
     selectedToolPayload,
@@ -290,9 +315,8 @@ export function useAnalysisSession({
     autoSaveNotice,
     latestUserPromptRef,
     setAutoSaveNotice,
-    setSelectedToolPayload,
-    setAgentUiPayload,
     clearResponseState,
     runAgentTurn,
+    revealNow,
   }
 }
