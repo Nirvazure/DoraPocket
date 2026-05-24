@@ -11,7 +11,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import type { ToolCategory } from '@/services/tool-registry'
+import type { ToolCategory } from '@/shared/tool-registry'
 
 export type MarketCategoryKey = 'builtin' | ToolCategory
 

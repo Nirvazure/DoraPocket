@@ -2,7 +2,7 @@ import {
   disposeAliyunSttSession,
   startAliyunSttSession,
   stopAliyunSttSession,
-} from '@/services/stt-aliyun-ws'
+} from '@/lib/client/stt-aliyun-ws'
 
 export type SpeechSessionCallbacks = {
   onResult: (text: string) => void

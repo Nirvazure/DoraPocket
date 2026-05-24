@@ -1,6 +1,6 @@
-import type { ToolCategory } from '@/services/tool-registry'
-import type { PocketInventoryItem } from '@/services/pocket-inventory'
-import { getToolById } from '@/services/tool-registry'
+import type { ToolCategory } from '@/shared/tool-registry'
+import type { PocketInventoryItem } from '@/lib/client/pocket-inventory'
+import { getToolById } from '@/shared/tool-registry'
 import { TOOL_CATEGORY_LABELS, TOOL_CATEGORY_ORDER } from '@/shared/tool-labels'
 
 export type PocketCategoryFilter = 'all' | ToolCategory

@@ -1,11 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiFetch } from '@/lib/query/api-client'
 import { queryKeys } from '@/lib/query/query-keys'
-import {
-  applyUserSettingsToDocument,
-  getDefaultUserSettings,
-  type UserSettings,
-} from '@/services/user-settings'
+import { applyUserSettingsToDocument } from '@/lib/client/user-settings'
+import { getDefaultUserSettings, type UserSettings } from '@/shared/user-settings'
 
 export function useUserSettingsQuery() {
   return useQuery({

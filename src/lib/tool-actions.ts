@@ -1,4 +1,4 @@
-import { resolveToolUrlById } from '@/services/tool-registry'
+import { resolveToolUrlById } from '@/shared/tool-registry'
 
 type MarkToolUsed = (input: { toolId: string }) => void
 type SaveToolToPocket = (input: {

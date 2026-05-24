@@ -2,7 +2,7 @@ import { streamPocketGraph } from '@/server/agent/graph'
 import { verifySession } from '@/server/auth/dal'
 import { buildMarketContextForUser } from '@/server/market/context'
 import { createRecommendationSession } from '@/server/repositories/recommendation-session-repo'
-import type { ExplanationMode } from '@/services/user-settings'
+import type { ExplanationMode } from '@/shared/user-settings'
 import { createEmptyMarketContext } from '@/shared/market-defaults'
 import type { AgentUiPayload, MarketContext } from '@/shared/market-types'
 

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiFetch } from '@/lib/query/api-client'
 import { queryKeys } from '@/lib/query/query-keys'
-import type { ChatHistoryEntry } from '@/services/chat-history'
+import type { ChatHistoryEntry } from '@/lib/client/chat-history'
 
 type SaveChatHistoryInput = Omit<ChatHistoryEntry, 'id' | 'createdAt'>
 

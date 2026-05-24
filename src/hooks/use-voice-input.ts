@@ -4,7 +4,7 @@ import {
   initAudioContext,
   startSpeechSession,
   stopAudioPlayback,
-} from '@/services/audio'
+} from '@/lib/client/audio'
 import { ANSWER_BOOK_SELECT_KEY } from '@/shared/mode-registry'
 import { VOICE_COPY } from '@/shared/ui-copy'
 import type { AppState } from '@/store'

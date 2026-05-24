@@ -12,7 +12,7 @@ import { NextActionBar } from '@/components/discovery/next-action-bar'
 import { WhereToStartSection } from '@/components/discovery/where-to-start-section'
 import { DisplayPanel } from '@/components/ui/display-shell'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import type { ChatToolPayload } from '@/services/llm'
+import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
 import type { AppState } from '@/store'
 

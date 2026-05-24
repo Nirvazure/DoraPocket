@@ -1,6 +1,6 @@
 ﻿import { useMemo } from 'react'
 import { ASSISTANT_MODES, getModeByToolId, type AssistantModeCard } from '@/shared/mode-registry'
-import type { ChatToolPayload } from '@/services/llm'
+import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AppState } from '@/store'
 
 type UseAppShellStateOptions = {

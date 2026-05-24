@@ -1,5 +1,5 @@
-import { getToolById } from '@/services/tool-registry'
-import type { ChatToolPayload } from '@/services/llm'
+import { getToolById } from '@/shared/tool-registry'
+import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentCandidate, AgentUiPayload } from '@/shared/market-types'
 import type { AppState } from '@/store'
 

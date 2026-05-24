@@ -15,7 +15,7 @@ import {
   isRecommendationCovered,
   type AnalysisStage,
 } from '@/components/discovery/analysis-stage-content'
-import type { ChatToolPayload } from '@/services/llm'
+import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
 
 type PrimaryRecommendationCardProps = {

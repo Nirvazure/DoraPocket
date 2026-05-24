@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import { useStore } from '../store'
 import type { Group } from 'three'
-import { getAudioFrequency } from '../services/audio'
+import { getAudioFrequency } from '@/lib/client/audio'
 
 /** 略下移整模，但向上回收一些空间，让右侧舞台重心更平衡 */
 const AVATAR_FLOOR_Y_OFFSET = -0.87

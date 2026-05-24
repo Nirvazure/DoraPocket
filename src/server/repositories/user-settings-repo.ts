@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { prisma } from '@/server/db/prisma'
-import { getDefaultUserSettings, type UserSettings } from '@/services/user-settings'
+import { getDefaultUserSettings, type UserSettings } from '@/shared/user-settings'
 
 function isMissingBuiltinToolsColumnError(error: unknown): boolean {
   return (

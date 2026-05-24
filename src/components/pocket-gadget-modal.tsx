@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { AssistantModeCard } from '@/shared/mode-registry'
 import { modeImageSrc } from '@/shared/mode-registry'
-import { resolveToolUrlById } from '@/services/tool-registry'
+import { resolveToolUrlById } from '@/shared/tool-registry'
 
 type PocketGadgetModalProps = {
   open: boolean
@@ -14,7 +14,13 @@ type PocketGadgetModalProps = {
   onOpenTool?: (toolId: string) => void
 }
 
-export function PocketGadgetModal({ open, gadget, onClose, onSaveToPocket, onOpenTool }: PocketGadgetModalProps) {
+export function PocketGadgetModal({
+  open,
+  gadget,
+  onClose,
+  onSaveToPocket,
+  onOpenTool,
+}: PocketGadgetModalProps) {
   useEffect(() => {
     if (!open) return
     const onKey = (event: KeyboardEvent) => {
@@ -51,8 +57,13 @@ export function PocketGadgetModal({ open, gadget, onClose, onSaveToPocket, onOpe
         className="dp-pocket-surface relative z-[1] w-full max-w-md overflow-hidden border-2 border-primary/35 shadow-lg"
       >
         <CardHeader className="space-y-1 pb-2">
-          <p className="dp-pocket-heading text-[0.65rem] uppercase tracking-widest text-primary/90">四次元口袋</p>
-          <CardTitle id="pocket-gadget-title" className="font-sans text-2xl font-black tracking-tight text-primary drop-shadow-sm">
+          <p className="dp-pocket-heading text-[0.65rem] uppercase tracking-widest text-primary/90">
+            四次元口袋
+          </p>
+          <CardTitle
+            id="pocket-gadget-title"
+            className="font-sans text-2xl font-black tracking-tight text-primary drop-shadow-sm"
+          >
             {gadget.title}
           </CardTitle>
         </CardHeader>

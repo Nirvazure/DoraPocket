@@ -1,7 +1,7 @@
 ﻿import { Annotation, END, START, StateGraph } from '@langchain/langgraph'
 import { tool } from '@langchain/core/tools'
 import type { AgentUiPayload, MarketContext } from '@/shared/market-types'
-import type { ExplanationMode } from '@/services/user-settings'
+import type { ExplanationMode } from '@/shared/user-settings'
 import {
   createInitialState,
   type PocketIntent,
