@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server'
 import { fetchNlsToken } from '@/server/aliyun/token'
 
 async function createUpstream(text: string, voice?: string): Promise<Response> {
-  const akId = process.env.ALIYUN_AK_ID?.trim() || process.env.ALIYUN_ACCESS_KEY_ID?.trim() || ''
-  const akSecret = process.env.ALIYUN_AK_SECRET?.trim() || process.env.ALIYUN_ACCESS_KEY_SECRET?.trim() || ''
+  const akId = process.env.ALIYUN_AK_ID?.trim() || ''
+  const akSecret = process.env.ALIYUN_AK_SECRET?.trim() || ''
   const appkey = process.env.ALIYUN_NLS_APPKEY?.trim() || ''
   if (!akId || !akSecret || !appkey) throw new Error('Aliyun env missing')
 
@@ -67,4 +67,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: String(error) }, { status: 500 })
   }
 }
-

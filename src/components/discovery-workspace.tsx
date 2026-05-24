@@ -89,8 +89,6 @@ export function DiscoveryWorkspace({
   const renderStepSection = (step: 1 | 2 | 3, content: ReactNode) => {
     if (step > maxVisibleStep) return null
 
-    const active = step === currentStep
-    const done = isStepDone(step, currentStep)
     const expanded = expandedStep === step
 
     return (
@@ -100,7 +98,7 @@ export function DiscoveryWorkspace({
       >
         <button
           type="button"
-          className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-slate-50/80 sm:px-5"
+          className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-slate-50/80 sm:px-5"
           onClick={() => handleStepClick(step)}
         >
           <div className="min-w-0">
@@ -110,28 +108,6 @@ export function DiscoveryWorkspace({
             <p className="mt-1 text-base font-black text-slate-950 sm:text-lg">
               {STEP_TITLES[step]}
             </p>
-          </div>
-          <div className="shrink-0 text-right">
-            <p className="text-[11px] font-semibold text-slate-500">
-              {active ? '进行中' : done ? '点击回看' : ''}
-            </p>
-            <div
-              className={
-                active
-                  ? 'mt-1 h-2 w-14 rounded-full bg-primary/15'
-                  : 'mt-1 h-2 w-14 rounded-full bg-slate-100'
-              }
-            >
-              <div
-                className={
-                  active
-                    ? 'h-full w-8 rounded-full bg-primary transition-all'
-                    : done
-                      ? 'h-full w-full rounded-full bg-primary/35'
-                      : 'h-full w-0 rounded-full bg-primary'
-                }
-              />
-            </div>
           </div>
         </button>
         {expanded ? <div className="border-t border-border/50">{content}</div> : null}
