@@ -59,18 +59,18 @@ export function UnifiedTopBar({
         ) : null}
       </div>
       <div className="min-w-0 text-center sm:text-left">
-        <Link href="/" className="group inline-flex min-w-0 flex-col items-center sm:items-start">
+        <div className="inline-flex min-w-0 flex-col items-center sm:items-start">
           <div className="flex min-w-0 flex-wrap items-center justify-center gap-2 sm:justify-start">
-            <p className="truncate font-sans text-sm font-black tracking-tight text-foreground transition-colors group-hover:text-primary sm:text-base">
+            <p className="truncate font-sans text-sm font-black tracking-tight text-foreground sm:text-base">
               {title}
             </p>
           </div>
           {subtitle ? (
-            <p className="mt-0.5 truncate text-[11px] text-muted-foreground transition-colors group-hover:text-foreground/80 sm:text-xs">
+            <p className="mt-0.5 truncate text-[11px] text-muted-foreground sm:text-xs">
               {subtitle}
             </p>
           ) : null}
-        </Link>
+        </div>
       </div>
       <div className="flex min-w-[2.75rem] items-center justify-end gap-2">
         {statusSlot ? <div className="hidden sm:flex">{statusSlot}</div> : null}

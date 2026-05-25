@@ -7,7 +7,7 @@ import {
   DisplayPanelHeader,
   DisplayPanelTitle,
 } from '@/components/ui/display-shell'
-import { getToolById } from '@/services/tool-registry'
+import { getToolById } from '@/shared/tool-registry'
 import type { AgentUiPayload } from '@/shared/market-types'
 
 type CandidateComparisonListProps = {

@@ -5,8 +5,8 @@ import {
   DisplayPanelTitle,
 } from '@/components/ui/display-shell'
 import { resolveAlternativeCandidates } from '@/components/discovery/analysis-stage-content'
-import { getToolById } from '@/services/tool-registry'
-import type { ChatToolPayload } from '@/services/llm'
+import { getToolById } from '@/shared/tool-registry'
+import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
 
 type CandidateAlternativesCardProps = {

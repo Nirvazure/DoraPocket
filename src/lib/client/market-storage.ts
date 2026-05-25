@@ -1,7 +1,7 @@
 // Legacy local storage bridge. Cloud market data is now served via /api/me/market/*.
 import { readStorageJson, writeStorageJson } from '@/lib/storage'
-import type { PocketInventoryItem } from '@/services/pocket-inventory'
-import { getToolById } from '@/services/tool-registry'
+import type { PocketInventoryItem } from '@/lib/client/pocket-inventory'
+import { getToolById } from '@/shared/tool-registry'
 import { MARKET_ACTIVITY_COPY } from '@/shared/ui-copy'
 import type {
   ToolCategory,

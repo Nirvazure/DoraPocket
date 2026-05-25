@@ -1,7 +1,7 @@
 import 'server-only'
 
 import type { ToolModel as Tool } from '../../generated/prisma/models/Tool'
-import type { PocketInventoryItem } from '@/services/pocket-inventory'
+import type { PocketInventoryItem } from '@/lib/client/pocket-inventory'
 import type {
   MarketFeedbackRecord,
   MarketSubscriptionRecord,

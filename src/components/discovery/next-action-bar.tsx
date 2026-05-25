@@ -1,9 +1,9 @@
 import { ArrowRight, FolderOpenDot } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DisplayPanel } from '@/components/ui/display-shell'
-import { getToolById } from '@/services/tool-registry'
+import { getToolById } from '@/shared/tool-registry'
 import type { AgentUiPayload } from '@/shared/market-types'
-import type { ChatToolPayload } from '@/services/llm'
+import type { ChatToolPayload } from '@/lib/client/llm'
 
 type NextActionBarProps = {
   payload: AgentUiPayload | null

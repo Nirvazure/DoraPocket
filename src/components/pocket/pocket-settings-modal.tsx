@@ -9,7 +9,7 @@ import {
   DisplayPanelHeader,
   DisplayPanelTitle,
 } from '@/components/ui/display-shell'
-import type { UserSettings } from '@/services/user-settings'
+import type { UserSettings } from '@/shared/user-settings'
 
 type PocketSettingsModalProps = {
   open: boolean

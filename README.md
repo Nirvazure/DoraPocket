@@ -52,32 +52,35 @@ npm run dev
 
 ## 环境变量
 
-至少需要配置：
+Core required (local minimum)：
 
 - `DATABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 - `SUPABASE_SECRET_KEY`
 - `SUPABASE_STORAGE_BUCKET_AVATARS`
-- `NEXT_PUBLIC_SITE_URL`
 - `QWEN_API_KEY`
 
-语音与道具库资源相关能力还依赖以下变量：
+Optional (defaults available)：
+
+- `NEXT_PUBLIC_SITE_URL`（默认 `http://localhost:3000`）
+- `QWEN_MODEL`（默认 `qwen-plus`）
+- `QWEN_BASE_URL`（默认 `https://dashscope.aliyuncs.com/compatible-mode/v1`）
+
+Optional voice features：
 
 - `ALIYUN_AK_ID`
 - `ALIYUN_AK_SECRET`
 - `ALIYUN_NLS_APPKEY`
 - `ALIYUN_TTS_VOICE`
-- `ALIYUN_NLS_STT_WS_URL`
-- `ALIYUN_OSS_REGION`
-- `ALIYUN_OSS_BUCKET`
-- `ALIYUN_OSS_ACCESS_KEY_ID`
-- `ALIYUN_OSS_ACCESS_KEY_SECRET`
-- `ALIYUN_OSS_ENDPOINT`
-- `ALIYUN_OSS_PUBLIC_BASE_URL`
-- `ALIYUN_OSS_FAVICON_PREFIX`
+- `ALIYUN_NLS_STT_WS_URL`（默认 `wss://nls-gateway-cn-shanghai.aliyuncs.com/ws/v1`）
+- `NEXT_PUBLIC_ALIYUN_TTS_VOICE`
 
 `.env.example` 提供了占位模板。
+
+本地开发只需配置 Core required 即可跑通主链路；语音功能可按需补齐 Optional voice features。
+
+Aliyun 命名规范统一为 `ALIYUN_AK_ID` / `ALIYUN_AK_SECRET`，若旧环境仍使用 `ALIYUN_ACCESS_KEY_ID` / `ALIYUN_ACCESS_KEY_SECRET`，请迁移后再部署。
 
 ## 部署前配置
 
@@ -89,14 +92,3 @@ npm run dev
 - `SUPABASE_SECRET_KEY` 必须是真正的 `sb_secret_...`，不能填 publishable key
 - 生产数据库需要执行 migration
 - 首次部署后按需执行 `npm run seed:tools`
-
-## 当前边界
-
-当前阶段的重点不是继续堆页面，而是先把主 Agent 产品体验做实。
-
-换句话说：
-
-- 主舞台优先于后台管理
-- 道具库优先于“市场感”
-- 我的口袋优先于抽象资产概念
-- 知识库成长优先于预设技术口号

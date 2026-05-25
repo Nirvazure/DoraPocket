@@ -4,7 +4,7 @@ import type {
   AgentUiPayload,
   MarketContext,
 } from '@/shared/market-types'
-import type { ExplanationMode } from '@/services/user-settings'
+import type { ExplanationMode } from '@/shared/user-settings'
 
 export type PocketIntent =
   | 'chat'

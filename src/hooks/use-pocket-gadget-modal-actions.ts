@@ -1,5 +1,5 @@
 import type { AssistantModeCard } from '@/shared/mode-registry'
-import type { ChatToolPayload } from '@/services/llm'
+import type { ChatToolPayload } from '@/lib/client/llm'
 import { openToolById, saveToolById } from '@/lib/tool-actions'
 
 type UsePocketGadgetModalActionsOptions = {
@@ -30,12 +30,7 @@ export function usePocketGadgetModalActions({
           ? selectedToolPayload.args
           : undefined
 
-      saveToolById(
-        gadget.toolId,
-        saveToolToPocket,
-        getLatestUserPrompt() || undefined,
-        presetArgs,
-      )
+      saveToolById(gadget.toolId, saveToolToPocket, getLatestUserPrompt() || undefined, presetArgs)
     },
   }
 }

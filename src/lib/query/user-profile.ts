@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiFetch } from '@/lib/query/api-client'
 import { queryKeys } from '@/lib/query/query-keys'
-import { getDefaultUserProfile, type UserProfile } from '@/services/user-profile'
+import { getDefaultUserProfile, type UserProfile } from '@/lib/client/user-profile'
 
 export function useUserProfileQuery() {
   return useQuery({

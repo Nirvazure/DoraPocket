@@ -10,7 +10,7 @@ import {
   DisplayPanelHeader,
 } from '@/components/ui/display-shell'
 import { cn } from '@/lib/utils'
-import type { ChatToolPayload } from '@/services/llm'
+import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
 import type { AppState } from '@/store'
 

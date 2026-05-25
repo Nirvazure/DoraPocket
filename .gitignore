@@ -26,8 +26,11 @@ Thumbs.db
 Desktop.ini
 *.pem
 
-# SpecStory
+# SpecStory (auto-save; do not commit)
 .specstory
+
+# Cursor IDE — local indexing config (see .cursorindexingignore on disk; not tracked)
+.cursorindexingignore
 
 # debug
 npm-debug.log*

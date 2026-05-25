@@ -9,7 +9,7 @@ import {
   TOOL_ID_TIME,
   TOOL_ID_WEATHER,
   TOOL_ID_WEB_SUMMARY,
-} from '@/services/tool-registry'
+} from '@/shared/tool-registry'
 
 export type AssistantModeCard = {
   title: string

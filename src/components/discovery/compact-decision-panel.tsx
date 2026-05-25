@@ -5,7 +5,7 @@ import {
 import { ActionClosureCard } from '@/components/discovery/action-closure-card'
 import { CandidateAlternativesCard } from '@/components/discovery/candidate-alternatives-card'
 import { PrimaryRecommendationCard } from '@/components/discovery/primary-recommendation-card'
-import type { ChatToolPayload } from '@/services/llm'
+import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
 
 type CompactDecisionPanelProps = {

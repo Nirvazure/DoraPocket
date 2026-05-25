@@ -1,5 +1,5 @@
 import type { AgentUiPayload } from '@/shared/market-types'
-import type { ExplanationMode } from '@/services/user-settings'
+import type { ExplanationMode } from '@/shared/user-settings'
 
 export type AskQwenOptions = {
   answerBookFromPocket?: boolean

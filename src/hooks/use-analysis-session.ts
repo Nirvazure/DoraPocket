@@ -1,11 +1,11 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { playAudioStream, playDoraPocketSfx, stopAudioPlayback } from '@/services/audio'
-import { askQwen, type ChatToolPayload } from '@/services/llm'
-import { buildTTSAudioUrl } from '@/services/tts'
-import { getToolById } from '@/services/tool-registry'
-import type { UserSettings } from '@/services/user-settings'
+import { playAudioStream, playDoraPocketSfx, stopAudioPlayback } from '@/lib/client/audio'
+import { askQwen, type ChatToolPayload } from '@/lib/client/llm'
+import { buildTTSAudioUrl } from '@/lib/client/tts'
+import { getToolById } from '@/shared/tool-registry'
+import type { UserSettings } from '@/shared/user-settings'
 import {
   getModeByToolId,
   pickModeCardAfterTurn,

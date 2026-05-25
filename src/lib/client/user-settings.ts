@@ -1,27 +1,18 @@
 // Legacy local storage bridge. Cloud settings are now served via /api/me/settings.
 import { readStorageJson, writeStorageJson } from '@/lib/storage'
+import {
+  getDefaultUserSettings,
+  type ExplanationMode,
+  type FontPreset,
+  type InputModePreference,
+  type UserSettings,
+  type VoicePlaybackMode,
+} from '@/shared/user-settings'
 
 export const USER_SETTINGS_STORAGE_KEY = 'dp-user-settings-v1'
 export const USER_SETTINGS_UPDATED_EVENT = 'dp-user-settings-updated'
 export const LEGACY_AUTO_SAVE_STORAGE_KEY = 'dp-pocket-autosave-enabled-v1'
 export const LEGACY_FONT_PRESET_STORAGE_KEY = 'dorapocket-font-preset'
-
-export type VoicePlaybackMode = 'off' | 'key-result' | 'full'
-export type InputModePreference = 'text' | 'voice'
-export type ExplanationMode = 'brief' | 'standard'
-export type FontPreset = 'a' | 'b' | 'c' | 'd'
-
-export type UserSettings = {
-  voicePlaybackEnabled: boolean
-  voicePlaybackMode: VoicePlaybackMode
-  soundEffectsEnabled: boolean
-  defaultInputMode: InputModePreference
-  autoSaveToPocketEnabled: boolean
-  memoryEnabled: boolean
-  builtinToolsEnabled: boolean
-  explanationMode: ExplanationMode
-  fontPreset: FontPreset
-}
 
 function resolveLegacyAutoSaveValue(): boolean {
   if (typeof window === 'undefined') return true
@@ -39,20 +30,6 @@ function resolveLegacyFontPreset(): FontPreset {
     return normalizeFontPreset(value)
   } catch {
     return 'c'
-  }
-}
-
-export function getDefaultUserSettings(): UserSettings {
-  return {
-    voicePlaybackEnabled: true,
-    voicePlaybackMode: 'key-result',
-    soundEffectsEnabled: true,
-    defaultInputMode: 'text',
-    autoSaveToPocketEnabled: true,
-    memoryEnabled: true,
-    builtinToolsEnabled: false,
-    explanationMode: 'standard',
-    fontPreset: 'c',
   }
 }
 

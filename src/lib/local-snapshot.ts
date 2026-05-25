@@ -1,15 +1,15 @@
 'use client'
 
-import { loadChatHistory, CHAT_HISTORY_STORAGE_KEY } from '@/services/chat-history'
+import { loadChatHistory, CHAT_HISTORY_STORAGE_KEY } from '@/lib/client/chat-history'
 import {
   loadMarketFeedback,
   loadMarketSubmissions,
   loadMarketSubscriptions,
   loadPreferenceProfileOverride,
-} from '@/services/market-storage'
-import { loadPocketInventory, POCKET_INVENTORY_STORAGE_KEY } from '@/services/pocket-inventory'
-import { loadUserProfile, USER_PROFILE_STORAGE_KEY } from '@/services/user-profile'
-import { loadUserSettings, USER_SETTINGS_STORAGE_KEY } from '@/services/user-settings'
+} from '@/lib/client/market-storage'
+import { loadPocketInventory, POCKET_INVENTORY_STORAGE_KEY } from '@/lib/client/pocket-inventory'
+import { loadUserProfile, USER_PROFILE_STORAGE_KEY } from '@/lib/client/user-profile'
+import { loadUserSettings, USER_SETTINGS_STORAGE_KEY } from '@/lib/client/user-settings'
 
 export type LegacyLocalSnapshot = {
   userProfile: ReturnType<typeof loadUserProfile>

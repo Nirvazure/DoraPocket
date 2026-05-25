@@ -1,7 +1,7 @@
 ﻿'use client'
 
 import { useMemo, useState } from 'react'
-import { type ToolCategory, type ToolItem } from '@/services/tool-registry'
+import { type ToolCategory, type ToolItem } from '@/shared/tool-registry'
 import type { MarketReviewAggregate } from '@/shared/market-types'
 import { TOOL_CATEGORY_LABELS, TOOL_CATEGORY_ORDER } from '@/shared/tool-labels'
 import { PAGE_COPY } from '@/shared/ui-copy'
