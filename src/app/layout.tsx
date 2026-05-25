@@ -3,10 +3,7 @@ import { AuthBootstrap } from '@/components/providers/auth-bootstrap'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { UserSettingsSync } from '@/components/providers/user-settings-sync'
 import './globals.css'
-import { Geist } from 'next/font/google'
 import { cn } from '@/lib/utils'
-
-const geist = Geist({ subsets: ['latin'], variable: '--font-sans' })
 
 export const metadata: Metadata = {
   title: 'DoraPocket · 陪伴式能力口袋',
@@ -23,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="zh-CN" className={cn('h-full antialiased', 'font-sans', geist.variable)}>
+    <html lang="zh-CN" className={cn('h-full antialiased', 'font-sans')}>
       <body className="min-h-full flex flex-col">
         <QueryProvider>
           <AuthBootstrap />

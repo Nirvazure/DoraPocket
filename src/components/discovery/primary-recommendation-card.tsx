@@ -13,7 +13,8 @@ import {
 import {
   buildPrimaryRecommendation,
   isRecommendationCovered,
-  type AnalysisStage,
+  isRecommendationRevealing,
+  type AnalysisFlow,
 } from '@/components/discovery/analysis-stage-content'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
@@ -21,7 +22,7 @@ import type { AgentUiPayload } from '@/shared/market-types'
 type PrimaryRecommendationCardProps = {
   payload: AgentUiPayload | null
   selectedToolPayload: ChatToolPayload
-  analysisStage: AnalysisStage
+  analysisFlow: AnalysisFlow
   onSaveCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
   onOpenExternalCandidate: (url: string) => void
@@ -30,7 +31,7 @@ type PrimaryRecommendationCardProps = {
 export function PrimaryRecommendationCard({
   payload,
   selectedToolPayload,
-  analysisStage,
+  analysisFlow,
   onSaveCandidate,
   onLaunchCandidate,
   onOpenExternalCandidate,
@@ -40,8 +41,8 @@ export function PrimaryRecommendationCard({
   const leaderToolId = leader?.toolId ?? null
   const leaderExternalUrl =
     leader?.candidateType === 'external_suggestion' ? (leader.url ?? null) : null
-  const revealing = analysisStage === 'revealing'
-  const covered = isRecommendationCovered(analysisStage)
+  const revealing = isRecommendationRevealing(analysisFlow)
+  const covered = isRecommendationCovered(analysisFlow)
 
   if (covered) {
     return (

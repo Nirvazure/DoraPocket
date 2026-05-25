@@ -62,7 +62,7 @@
   }
 
   body {
-    @apply font-sans antialiased text-foreground;
+    @apply font-sans antialiased text-foreground select-text;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
@@ -82,7 +82,13 @@
   }
 
   ::selection {
-    background: hsl(var(--primary) / 0.18);
+    background: oklch(var(--primary) / 0.32);
+    color: oklch(var(--foreground));
+  }
+
+  ::-moz-selection {
+    background: oklch(var(--primary) / 0.32);
+    color: oklch(var(--foreground));
   }
 
   #root {

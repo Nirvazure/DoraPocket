@@ -1,6 +1,6 @@
 import {
   resolveLeadingCandidate,
-  type AnalysisStage,
+  type AnalysisFlow,
 } from '@/components/discovery/analysis-stage-content'
 import { ActionClosureCard } from '@/components/discovery/action-closure-card'
 import { CandidateAlternativesCard } from '@/components/discovery/candidate-alternatives-card'
@@ -11,7 +11,7 @@ import type { AgentUiPayload } from '@/shared/market-types'
 type CompactDecisionPanelProps = {
   payload: AgentUiPayload | null
   selectedToolPayload: ChatToolPayload
-  analysisStage: AnalysisStage
+  analysisFlow: AnalysisFlow
   autoSaveNotice: { toolId: string; label: string } | null
   autoSaveEnabled: boolean
   onSaveCandidate: (toolId: string) => void
@@ -26,7 +26,7 @@ type CompactDecisionPanelProps = {
 export function CompactDecisionPanel({
   payload,
   selectedToolPayload,
-  analysisStage,
+  analysisFlow,
   autoSaveNotice,
   autoSaveEnabled,
   onSaveCandidate,
@@ -45,14 +45,19 @@ export function CompactDecisionPanel({
       <PrimaryRecommendationCard
         payload={payload}
         selectedToolPayload={selectedToolPayload}
-        analysisStage={analysisStage}
+        analysisFlow={analysisFlow}
         onSaveCandidate={onSaveCandidate}
         onLaunchCandidate={onLaunchCandidate}
         onOpenExternalCandidate={onOpenExternalCandidate}
       />
-      <CandidateAlternativesCard payload={payload} selectedToolPayload={selectedToolPayload} />
+      <CandidateAlternativesCard
+        payload={payload}
+        selectedToolPayload={selectedToolPayload}
+        analysisFlow={analysisFlow}
+      />
       <ActionClosureCard
         leaderToolId={leaderToolId}
+        analysisFlow={analysisFlow}
         autoSaveNotice={autoSaveNotice}
         autoSaveEnabled={autoSaveEnabled}
         onOpenPocket={onOpenPocket}

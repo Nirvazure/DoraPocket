@@ -4,7 +4,7 @@ import {
   isStepDone,
   resolveCurrentStep,
   resolveMaxVisibleStep,
-  type AnalysisStage,
+  type AnalysisFlow,
 } from '@/components/discovery/analysis-stage-content'
 import { DecisionProgressSteps } from '@/components/discovery/decision-progress-steps'
 import { LiveAnalysisTrackCard } from '@/components/discovery/live-analysis-track-card'
@@ -18,7 +18,7 @@ import type { AppState } from '@/store'
 type DiscoveryWorkspaceProps = {
   currentPrompt: string | null
   appState: AppState
-  analysisStage: AnalysisStage
+  analysisFlow: AnalysisFlow
   agentPayload: AgentUiPayload | null
   selectedToolPayload: ChatToolPayload
   autoSaveEnabled: boolean
@@ -36,7 +36,7 @@ type DiscoveryWorkspaceProps = {
 export function DiscoveryWorkspace({
   currentPrompt,
   appState,
-  analysisStage,
+  analysisFlow,
   agentPayload,
   selectedToolPayload,
   autoSaveEnabled,
@@ -53,12 +53,12 @@ export function DiscoveryWorkspace({
   const hasPrompt = Boolean(currentPrompt?.trim())
   const hasResult = Boolean(agentPayload || selectedToolPayload?.toolId)
   const currentStep = useMemo(
-    () => resolveCurrentStep(analysisStage, hasPrompt, hasResult),
-    [analysisStage, hasPrompt, hasResult],
+    () => resolveCurrentStep(analysisFlow, hasPrompt, hasResult),
+    [analysisFlow, hasPrompt, hasResult],
   )
   const maxVisibleStep = useMemo(
-    () => resolveMaxVisibleStep(analysisStage, hasPrompt, hasResult),
-    [analysisStage, hasPrompt, hasResult],
+    () => resolveMaxVisibleStep(analysisFlow, hasPrompt, hasResult),
+    [analysisFlow, hasPrompt, hasResult],
   )
   const [manualExpandedStep, setManualExpandedStep] = useState<number | null>(null)
   const expandedStep =
@@ -105,16 +105,15 @@ export function DiscoveryWorkspace({
                 <LiveAnalysisTrackCard
                   currentPrompt={currentPrompt}
                   payload={agentPayload}
-                  selectedToolPayload={selectedToolPayload}
                   appState={appState}
-                  analysisStage={analysisStage}
+                  analysisFlow={analysisFlow}
                 />
               ) : null}
               {activePanelStep === 3 ? (
                 <CompactDecisionPanel
                   payload={agentPayload}
                   selectedToolPayload={selectedToolPayload}
-                  analysisStage={analysisStage}
+                  analysisFlow={analysisFlow}
                   autoSaveNotice={autoSaveNotice}
                   autoSaveEnabled={autoSaveEnabled}
                   onSaveCandidate={onSaveCandidate}

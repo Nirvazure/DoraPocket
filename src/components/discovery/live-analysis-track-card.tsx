@@ -1,20 +1,18 @@
 import { Check, Loader2 } from 'lucide-react'
 import {
   buildLiveAnalysisTrack,
-  type AnalysisStage,
+  type AnalysisFlow,
   type LiveAnalysisTrackItem,
 } from '@/components/discovery/analysis-stage-content'
 import { cn } from '@/lib/utils'
-import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
 import type { AppState } from '@/store'
 
 type LiveAnalysisTrackCardProps = {
   currentPrompt: string | null
   payload: AgentUiPayload | null
-  selectedToolPayload: ChatToolPayload
   appState: AppState
-  analysisStage: AnalysisStage
+  analysisFlow: AnalysisFlow
 }
 
 function TrackIcon({ item }: { item: LiveAnalysisTrackItem }) {
@@ -30,16 +28,14 @@ function TrackIcon({ item }: { item: LiveAnalysisTrackItem }) {
 export function LiveAnalysisTrackCard({
   currentPrompt,
   payload,
-  selectedToolPayload,
   appState,
-  analysisStage,
+  analysisFlow,
 }: LiveAnalysisTrackCardProps) {
   const items = buildLiveAnalysisTrack({
     currentPrompt,
     payload,
-    selectedToolPayload,
     appState,
-    analysisStage,
+    analysisFlow,
   })
 
   return (

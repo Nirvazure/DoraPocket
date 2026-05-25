@@ -8,7 +8,12 @@ import {
   useState,
   type SetStateAction,
 } from 'react'
-import { type AnalysisStage } from '@/components/discovery/analysis-stage-content'
+import {
+  IDLE_ANALYSIS_FLOW,
+  resolveAnalysisFlowAfterError,
+  shouldPreserveTurnFlow,
+  type AnalysisFlow,
+} from '@/components/discovery/analysis-stage-content'
 import { useAnalysisSession } from '@/hooks/use-analysis-session'
 import { useAppShellState } from '@/hooks/use-app-shell-state'
 import { useDiscoveryWorkspaceActions } from '@/hooks/use-discovery-workspace-actions'
@@ -68,11 +73,10 @@ export function useAnalysisPageController() {
   const [textFallback, setTextFallback] = useState('')
   const [pocketModalOpen, setPocketModalOpen] = useState(false)
   const [pocketGadget, setPocketGadget] = useState<AssistantModeCard | null>(null)
-  const [analysisStage, setAnalysisStage] = useState<AnalysisStage>('idle')
-  const analysisStageRef = useRef<AnalysisStage>('idle')
+  const [analysisFlow, setAnalysisFlow] = useState<AnalysisFlow>(IDLE_ANALYSIS_FLOW)
+  const analysisFlowRef = useRef<AnalysisFlow>(IDLE_ANALYSIS_FLOW)
   const previousPromptRef = useRef<string | null>(null)
   const stageImmediateTimerRef = useRef<number | null>(null)
-  const stageTimerRef = useRef<number | null>(null)
   const revealTimerRef = useRef<number | null>(null)
   const coveredRevealTimerRef = useRef<number | null>(null)
   const autoSaveEnabled = userSettings?.autoSaveToPocketEnabled ?? true
@@ -85,6 +89,24 @@ export function useAnalysisPageController() {
     toggleToolDial,
   } = useToolDial()
   const inputMode = inputModeOverride ?? userSettings?.defaultInputMode ?? 'text'
+
+  const clearRevealTimers = useCallback(() => {
+    if (revealTimerRef.current) {
+      window.clearTimeout(revealTimerRef.current)
+      revealTimerRef.current = null
+    }
+    if (coveredRevealTimerRef.current) {
+      window.clearTimeout(coveredRevealTimerRef.current)
+      coveredRevealTimerRef.current = null
+    }
+  }, [])
+
+  const resetAnalysisFlowAfterError = useCallback(() => {
+    clearRevealTimers()
+    const nextFlow = resolveAnalysisFlowAfterError()
+    analysisFlowRef.current = nextFlow
+    setAnalysisFlow(nextFlow)
+  }, [clearRevealTimers])
 
   const {
     selectedToolPayload,
@@ -109,6 +131,7 @@ export function useAnalysisPageController() {
     setSystemNotice,
     getSelectedGadgetKey: () => useStore.getState().selectedGadgetKey,
     onPocketGadgetChange: setPocketGadget,
+    onAnalysisError: resetAnalysisFlowAfterError,
     onCoverRecommendation: () => {
       if (revealTimerRef.current) {
         window.clearTimeout(revealTimerRef.current)
@@ -118,14 +141,21 @@ export function useAnalysisPageController() {
         window.clearTimeout(coveredRevealTimerRef.current)
         coveredRevealTimerRef.current = null
       }
-      setAnalysisStage('covered')
+      const coverFlow: AnalysisFlow = { phase: 'analyzing', beat: 'cover' }
+      analysisFlowRef.current = coverFlow
+      setAnalysisFlow(coverFlow)
       coveredRevealTimerRef.current = window.setTimeout(() => {
-        if (analysisStageRef.current === 'covered') {
-          analysisStageRef.current = 'revealing'
-          setAnalysisStage('revealing')
+        if (
+          analysisFlowRef.current.phase === 'analyzing' &&
+          analysisFlowRef.current.beat === 'cover'
+        ) {
+          const revealFlow: AnalysisFlow = { phase: 'analyzing', beat: 'reveal' }
+          analysisFlowRef.current = revealFlow
+          setAnalysisFlow(revealFlow)
           revealTimerRef.current = window.setTimeout(() => {
-            analysisStageRef.current = 'ready'
-            setAnalysisStage('ready')
+            const revealedFlow: AnalysisFlow = { phase: 'revealed', beat: 'working' }
+            analysisFlowRef.current = revealedFlow
+            setAnalysisFlow(revealedFlow)
             revealTimerRef.current = null
           }, 420)
         }
@@ -141,9 +171,13 @@ export function useAnalysisPageController() {
         window.clearTimeout(revealTimerRef.current)
         revealTimerRef.current = null
       }
-      setAnalysisStage('revealing')
+      const revealFlow: AnalysisFlow = { phase: 'analyzing', beat: 'reveal' }
+      analysisFlowRef.current = revealFlow
+      setAnalysisFlow(revealFlow)
       revealTimerRef.current = window.setTimeout(() => {
-        setAnalysisStage('ready')
+        const revealedFlow: AnalysisFlow = { phase: 'revealed', beat: 'working' }
+        analysisFlowRef.current = revealedFlow
+        setAnalysisFlow(revealedFlow)
         revealTimerRef.current = null
       }, 420)
     },
@@ -211,8 +245,8 @@ export function useAnalysisPageController() {
   }, [clearSystemNotice, systemNotice])
 
   useEffect(() => {
-    analysisStageRef.current = analysisStage
-  }, [analysisStage])
+    analysisFlowRef.current = analysisFlow
+  }, [analysisFlow])
 
   useEffect(() => {
     const clearTimers = () => {
@@ -220,24 +254,14 @@ export function useAnalysisPageController() {
         window.clearTimeout(stageImmediateTimerRef.current)
         stageImmediateTimerRef.current = null
       }
-      if (stageTimerRef.current) {
-        window.clearTimeout(stageTimerRef.current)
-        stageTimerRef.current = null
-      }
     }
     const clearRevealTimer = () => {
-      if (revealTimerRef.current) {
-        window.clearTimeout(revealTimerRef.current)
-        revealTimerRef.current = null
-      }
-      if (coveredRevealTimerRef.current) {
-        window.clearTimeout(coveredRevealTimerRef.current)
-        coveredRevealTimerRef.current = null
-      }
+      clearRevealTimers()
     }
-    const scheduleStage = (stage: AnalysisStage) => {
+    const scheduleFlow = (flow: AnalysisFlow) => {
       stageImmediateTimerRef.current = window.setTimeout(() => {
-        setAnalysisStage(stage)
+        analysisFlowRef.current = flow
+        setAnalysisFlow(flow)
         stageImmediateTimerRef.current = null
       }, 0)
     }
@@ -249,30 +273,23 @@ export function useAnalysisPageController() {
     if (!hasPrompt) {
       clearTimers()
       clearRevealTimer()
-      scheduleStage('idle')
+      scheduleFlow(IDLE_ANALYSIS_FLOW)
       return clearTimers
     }
 
-    const currentStage = analysisStageRef.current
+    const currentFlow = analysisFlowRef.current
     const restartingForNewPrompt = shouldRestartAnalysisFlow({
       previousPrompt,
       nextPrompt: normalizedPrompt,
-      currentStage,
+      currentFlow,
     })
-    if (
-      !restartingForNewPrompt &&
-      (currentStage === 'covered' || currentStage === 'revealing' || currentStage === 'ready')
-    ) {
+    if (!restartingForNewPrompt && shouldPreserveTurnFlow(currentFlow)) {
       return clearTimers
     }
 
     if (appState === 'thinking') {
       clearTimers()
-      scheduleStage('understanding')
-      stageTimerRef.current = window.setTimeout(() => {
-        setAnalysisStage((current) => (current === 'understanding' ? 'judging' : current))
-        stageTimerRef.current = null
-      }, 700)
+      scheduleFlow({ phase: 'analyzing', beat: 'working' })
       return clearTimers
     }
 
@@ -280,21 +297,15 @@ export function useAnalysisPageController() {
       return clearTimers
     }
 
-    scheduleStage('understanding')
     return clearTimers
-  }, [appState, currentPrompt])
+  }, [appState, clearRevealTimers, currentPrompt])
 
   const handleDraftTask = useCallback((draft: string) => {
     setTextFallback(draft)
   }, [])
 
   const canSendText = textFallback.trim().length > 0
-  const inputLocked =
-    appState === 'thinking' ||
-    analysisStage === 'judging' ||
-    analysisStage === 'covered' ||
-    analysisStage === 'revealing'
-  const canSkipVoice = appState === 'speaking' && analysisStage === 'covered'
+  const canSkipVoice = appState === 'speaking' && analysisFlow.beat === 'cover'
   const promptPlaceholder = PAGE_COPY.analysis.promptPlaceholder
   const conversationHistory = chatHistory.slice(0, 6)
   const setInputMode = useCallback(
@@ -316,7 +327,7 @@ export function useAnalysisPageController() {
     pocketModalOpen,
     pocketGadget,
     currentPrompt,
-    analysisStage,
+    analysisFlow,
     autoSaveEnabled,
     autoSaveNotice,
     selectedToolPayload,
@@ -329,7 +340,6 @@ export function useAnalysisPageController() {
     inputMode,
     textFallback,
     canSendText,
-    inputLocked,
     canSkipVoice,
     promptPlaceholder,
     conversationHistory,

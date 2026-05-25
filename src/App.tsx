@@ -1,4 +1,4 @@
-import { AnalysisInputComposer } from '@/components/analysis-input-composer'
+import { AnalysisBottomBar } from '@/components/analysis-bottom-bar'
 import { AnalysisStagePanel } from '@/components/analysis-stage-panel'
 import { PageShell } from '@/components/common/page-shell'
 import { ProfileEntryPill } from '@/components/common/profile-entry-pill'
@@ -8,7 +8,7 @@ import { DiscoveryWorkspace } from '@/components/discovery-workspace'
 import { ListeningHud } from '@/components/listening-hud'
 import { PocketGadgetModal } from '@/components/pocket-gadget-modal'
 import { useAnalysisPageController } from '@/hooks/use-analysis-page-controller'
-import { cn } from '@/lib/utils'
+import { stopAudioPlayback } from '@/lib/client/audio'
 import { PAGE_COPY } from '@/shared/ui-copy'
 
 export default function App() {
@@ -20,7 +20,7 @@ export default function App() {
     pocketModalOpen,
     pocketGadget,
     currentPrompt,
-    analysisStage,
+    analysisFlow,
     autoSaveEnabled,
     autoSaveNotice,
     selectedToolPayload,
@@ -33,7 +33,6 @@ export default function App() {
     inputMode,
     textFallback,
     canSendText,
-    inputLocked,
     canSkipVoice,
     promptPlaceholder,
     workspaceActions,
@@ -53,7 +52,7 @@ export default function App() {
 
   return (
     <PageShell
-      className={cn('touch-manipulation', rootCursor)}
+      className={rootCursor}
       contentClassName="grid min-h-0 grid-cols-1 gap-3 px-3 pb-4 pt-2 sm:px-4 sm:pt-3 lg:h-[calc(100dvh-6.9rem)] lg:grid-cols-[minmax(0,1.45fr)_minmax(21rem,0.72fr)] lg:items-stretch lg:gap-3 lg:overflow-hidden lg:px-4 lg:pb-2 lg:pt-4"
       header={
         <UnifiedTopBar
@@ -87,7 +86,7 @@ export default function App() {
         <DiscoveryWorkspace
           currentPrompt={currentPrompt}
           appState={appState}
-          analysisStage={analysisStage}
+          analysisFlow={analysisFlow}
           agentPayload={agentUiPayload}
           selectedToolPayload={selectedToolPayload}
           autoSaveEnabled={autoSaveEnabled}
@@ -105,7 +104,7 @@ export default function App() {
 
       <AnalysisStagePanel
         appState={appState}
-        analysisStage={analysisStage}
+        analysisFlow={analysisFlow}
         toolDialRef={toolDialRef}
         toolDialOpen={toolDialOpen}
         toolDialMode={toolDialMode}
@@ -122,12 +121,12 @@ export default function App() {
         canSkipVoice={canSkipVoice}
         onRevealNow={revealNow}
       >
-        <AnalysisInputComposer
+        <AnalysisBottomBar
+          analysisFlow={analysisFlow}
           appState={appState}
           inputMode={inputMode}
           textFallback={textFallback}
           canSendText={canSendText}
-          locked={inputLocked}
           placeholder={promptPlaceholder}
           onToggleInputMode={() => setInputMode((mode) => (mode === 'text' ? 'voice' : 'text'))}
           onTextChange={setTextFallback}
@@ -138,6 +137,7 @@ export default function App() {
           }}
           onHoldToTalkStart={holdToTalkStart}
           onHoldToTalkEnd={holdToTalkEnd}
+          onStopVoicePlayback={stopAudioPlayback}
         />
       </AnalysisStagePanel>
     </PageShell>

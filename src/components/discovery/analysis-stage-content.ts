@@ -3,7 +3,32 @@ import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentCandidate, AgentUiPayload } from '@/shared/market-types'
 import type { AppState } from '@/store'
 
-export type AnalysisStage = 'idle' | 'understanding' | 'judging' | 'covered' | 'revealing' | 'ready'
+export type AnalysisPhase = 'idle' | 'analyzing' | 'revealed'
+export type AnalysisBeat = 'working' | 'cover' | 'reveal'
+
+export type AnalysisFlow = {
+  phase: AnalysisPhase
+  beat: AnalysisBeat
+}
+
+export const IDLE_ANALYSIS_FLOW: AnalysisFlow = { phase: 'idle', beat: 'working' }
+
+export function isAnalyzingFlow(flow: AnalysisFlow) {
+  return flow.phase === 'analyzing'
+}
+
+export function resolveAnalysisFlowAfterError(): AnalysisFlow {
+  return { phase: 'idle', beat: 'working' }
+}
+
+export function isInputLockedFlow(flow: AnalysisFlow) {
+  return flow.phase === 'analyzing'
+}
+
+export function shouldPreserveTurnFlow(flow: AnalysisFlow) {
+  return flow.phase === 'revealed' || (flow.phase === 'analyzing' && flow.beat !== 'working')
+}
+
 export type LiveAnalysisTrackStatus = 'done' | 'active' | 'pending'
 export type LiveAnalysisTrackItem = {
   title: string
@@ -12,23 +37,21 @@ export type LiveAnalysisTrackItem = {
   status: LiveAnalysisTrackStatus
 }
 
-export function resolveCurrentStep(stage: AnalysisStage, hasPrompt: boolean, hasResult: boolean) {
+export function resolveCurrentStep(flow: AnalysisFlow, hasPrompt: boolean, hasResult: boolean) {
   if (!hasPrompt) return 1
-  if (stage === 'idle') return hasResult ? 3 : 1
-  if (stage === 'understanding') return 1
-  if (stage === 'judging') return 2
+  if (flow.phase === 'idle') return hasResult ? 3 : 1
+  if (flow.phase === 'analyzing') {
+    return flow.beat === 'working' ? 2 : 3
+  }
   return 3
 }
 
-export function resolveMaxVisibleStep(
-  stage: AnalysisStage,
-  hasPrompt: boolean,
-  hasResult: boolean,
-) {
+export function resolveMaxVisibleStep(flow: AnalysisFlow, hasPrompt: boolean, hasResult: boolean) {
   if (!hasPrompt) return 1
-  if (stage === 'idle') return hasResult ? 3 : 1
-  if (stage === 'understanding') return 1
-  if (stage === 'judging') return 2
+  if (flow.phase === 'idle') return hasResult ? 3 : 1
+  if (flow.phase === 'analyzing') {
+    return flow.beat === 'working' ? 2 : 3
+  }
   return 3
 }
 
@@ -36,8 +59,42 @@ export function isStepDone(step: number, currentStep: number) {
   return step < currentStep
 }
 
-export function isRecommendationCovered(stage: AnalysisStage) {
-  return stage === 'covered'
+export function isRecommendationCovered(flow: AnalysisFlow) {
+  return flow.phase === 'analyzing' && flow.beat === 'cover'
+}
+
+export function isRecommendationRevealing(flow: AnalysisFlow) {
+  return flow.phase === 'analyzing' && flow.beat === 'reveal'
+}
+
+export function resolvePocketBarCopy(flow: AnalysisFlow) {
+  if (flow.phase !== 'analyzing') {
+    return { title: '翻口袋中', detail: '正在收敛方向' }
+  }
+  if (flow.beat === 'reveal') {
+    return { title: '出手', detail: '准备正式揭晓' }
+  }
+  if (flow.beat === 'cover') {
+    return { title: '翻口袋中', detail: '已经摸到一个合适的道具' }
+  }
+  return { title: '翻口袋中', detail: '正在收敛方向' }
+}
+
+export function resolveAnalysisStatusDetail(flow: AnalysisFlow): string | null {
+  if (flow.phase === 'analyzing') {
+    if (flow.beat === 'cover') return '正在翻口袋'
+    if (flow.beat === 'reveal') return '准备正式出手'
+    return '正在做出判断'
+  }
+  if (flow.phase === 'revealed') return '本次出手已到位'
+  return null
+}
+
+export function shouldShowAnalysisLoadingDots(flow: AnalysisFlow, appState: AppState) {
+  return (
+    appState === 'thinking' ||
+    (flow.phase === 'analyzing' && (flow.beat === 'working' || flow.beat === 'cover'))
+  )
 }
 
 export function resolveLeadingCandidate(
@@ -141,35 +198,32 @@ function resolveTrackStatus(index: number, activeIndex: number): LiveAnalysisTra
   return 'pending'
 }
 
-function resolveActiveTrackIndex(stage: AnalysisStage, appState: AppState, hasPayload: boolean) {
-  if (stage === 'understanding') return 0
-  if (stage === 'judging') return appState === 'thinking' && !hasPayload ? 1 : 2
-  if (stage === 'covered') return 3
-  if (stage === 'revealing' || stage === 'ready') return 4
-  return hasPayload ? 4 : 0
+function resolveActiveTrackIndex(flow: AnalysisFlow, appState: AppState, hasPayload: boolean) {
+  if (flow.phase === 'analyzing' && flow.beat === 'working') {
+    return appState === 'thinking' && !hasPayload ? 1 : 2
+  }
+  if (flow.phase === 'analyzing' && (flow.beat === 'cover' || flow.beat === 'reveal')) return 3
+  if (flow.phase === 'revealed') return 3
+  return hasPayload ? 3 : 0
 }
 
 export function buildLiveAnalysisTrack({
   currentPrompt,
   payload,
-  selectedToolPayload,
   appState,
-  analysisStage,
+  analysisFlow,
 }: {
   currentPrompt: string | null
   payload: AgentUiPayload | null
-  selectedToolPayload: ChatToolPayload
   appState: AppState
-  analysisStage: AnalysisStage
+  analysisFlow: AnalysisFlow
 }): LiveAnalysisTrackItem[] {
   const prompt = currentPrompt?.trim()
   const goal = payload?.taskFrame.goal?.trim() || prompt || '等待任务输入'
-  const activeIndex = resolveActiveTrackIndex(analysisStage, appState, Boolean(payload))
+  const activeIndex = resolveActiveTrackIndex(analysisFlow, appState, Boolean(payload))
   const candidates = payload?.candidates ?? []
-  const leadingCandidate = resolveLeadingCandidate(payload, selectedToolPayload)
   const missingInputs = payload?.taskFrame.missingInputs ?? []
   const preferenceHint = payload?.preferenceSignals[0]
-  const selectionReason = payload?.selectionReason?.trim()
 
   return [
     {
@@ -199,15 +253,6 @@ export function buildLiveAnalysisTrack({
           : '正在从工具、口袋和可行路径里排除不适合当前任务的选项。',
       meta: candidates.length > 1 ? '最终行动会在 Step 3 展示' : undefined,
       status: resolveTrackStatus(2, activeIndex),
-    },
-    {
-      title: '准备推荐',
-      detail:
-        selectionReason ||
-        leadingCandidate?.reason ||
-        '正在把结论、理由和下一步动作整理成一次可执行的推荐。',
-      meta: leadingCandidate?.title ? `主方向：${leadingCandidate.title}` : undefined,
-      status: resolveTrackStatus(3, activeIndex),
     },
   ]
 }
