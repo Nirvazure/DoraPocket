@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { useMemo, useState } from 'react'
 import { CompactDecisionPanel } from '@/components/discovery/compact-decision-panel'
 import {
   isStepDone,
@@ -33,12 +33,6 @@ type DiscoveryWorkspaceProps = {
   onFeedback: (toolId: string, vote: 'up' | 'down') => void
   onDraftTask?: (draft: string) => void
 }
-
-const STEP_TITLES = {
-  1: '从哪里开始',
-  2: '分析过程',
-  3: '推荐结果和反馈',
-} as const
 
 export function DiscoveryWorkspace({
   currentPrompt,
@@ -86,34 +80,7 @@ export function DiscoveryWorkspace({
     }
   }
 
-  const renderStepSection = (step: 1 | 2 | 3, content: ReactNode) => {
-    if (step > maxVisibleStep) return null
-
-    const expanded = expandedStep === step
-
-    return (
-      <section
-        key={step}
-        className="overflow-hidden rounded-[1.8rem] border border-border/65 bg-white/86 shadow-sm"
-      >
-        <button
-          type="button"
-          className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-slate-50/80 sm:px-5"
-          onClick={() => handleStepClick(step)}
-        >
-          <div className="min-w-0">
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
-              Step {step}
-            </p>
-            <p className="mt-1 text-base font-black text-slate-950 sm:text-lg">
-              {STEP_TITLES[step]}
-            </p>
-          </div>
-        </button>
-        {expanded ? <div className="border-t border-border/50">{content}</div> : null}
-      </section>
-    )
-  }
+  const activePanelStep = expandedStep <= maxVisibleStep ? (expandedStep as 1 | 2 | 3) : null
 
   return (
     <DisplayPanel className="pointer-events-auto flex h-full min-h-0 flex-col overflow-hidden rounded-[2rem] bg-white/90">
@@ -128,57 +95,45 @@ export function DiscoveryWorkspace({
 
       <ScrollArea className="min-h-0 flex-1 px-3 py-2 sm:px-4">
         <div className="mx-auto flex max-w-6xl flex-col gap-3">
-          {renderStepSection(
-            1,
-            <div className="space-y-3 p-3 sm:p-4">
-              <WhereToStartSection onDraftTask={onDraftTask} />
-            </div>,
-          )}
-
-          {renderStepSection(
-            2,
-            <div className="p-3 sm:p-4">
-              <LiveAnalysisTrackCard
-                currentPrompt={currentPrompt}
-                payload={agentPayload}
-                selectedToolPayload={selectedToolPayload}
-                appState={appState}
-                analysisStage={analysisStage}
-              />
-            </div>,
-          )}
-
-          {renderStepSection(
-            3,
-            <div className="p-3 sm:p-4">
-              <CompactDecisionPanel
-                payload={agentPayload}
-                selectedToolPayload={selectedToolPayload}
-                analysisStage={analysisStage}
-                autoSaveNotice={autoSaveNotice}
-                autoSaveEnabled={autoSaveEnabled}
-                onSaveCandidate={onSaveCandidate}
-                onLaunchCandidate={onLaunchCandidate}
-                onOpenExternalCandidate={onOpenExternalCandidate}
-                onOpenPocket={onOpenPocket}
-                onUndoAutoSave={onUndoAutoSave}
-                onEnableAutoSave={onEnableAutoSave}
-                onFeedback={onFeedback}
-              />
-            </div>,
-          )}
+          {activePanelStep != null ? (
+            <section className="overflow-hidden rounded-[1.8rem] border border-border/65 bg-white/86 p-3 shadow-sm sm:p-4">
+              {activePanelStep === 1 ? (
+                <div className="space-y-3">
+                  <WhereToStartSection onDraftTask={onDraftTask} />
+                </div>
+              ) : null}
+              {activePanelStep === 2 ? (
+                <LiveAnalysisTrackCard
+                  currentPrompt={currentPrompt}
+                  payload={agentPayload}
+                  selectedToolPayload={selectedToolPayload}
+                  appState={appState}
+                  analysisStage={analysisStage}
+                />
+              ) : null}
+              {activePanelStep === 3 ? (
+                <CompactDecisionPanel
+                  payload={agentPayload}
+                  selectedToolPayload={selectedToolPayload}
+                  analysisStage={analysisStage}
+                  autoSaveNotice={autoSaveNotice}
+                  autoSaveEnabled={autoSaveEnabled}
+                  onSaveCandidate={onSaveCandidate}
+                  onLaunchCandidate={onLaunchCandidate}
+                  onOpenExternalCandidate={onOpenExternalCandidate}
+                  onOpenPocket={onOpenPocket}
+                  onUndoAutoSave={onUndoAutoSave}
+                  onEnableAutoSave={onEnableAutoSave}
+                  onFeedback={onFeedback}
+                />
+              ) : null}
+            </section>
+          ) : null}
         </div>
       </ScrollArea>
 
       <div className="shrink-0 px-3 pb-3 sm:px-4">
-        <NextActionBar
-          payload={agentPayload}
-          selectedToolPayload={selectedToolPayload}
-          onLaunchCandidate={onLaunchCandidate}
-          onOpenExternalCandidate={onOpenExternalCandidate}
-          onSaveCandidate={onSaveCandidate}
-          onOpenPocket={onOpenPocket}
-        />
+        <NextActionBar panelStep={activePanelStep ?? 1} onOpenPocket={onOpenPocket} />
       </div>
     </DisplayPanel>
   )
