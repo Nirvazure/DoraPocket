@@ -7,12 +7,14 @@ import {
 } from '@/components/market/market-category-icons'
 import { cn } from '@/lib/utils'
 
+type DiscoverCategoryKey = Exclude<MarketCategoryKey, 'pocket'>
+
 type MarketCategoryNavProps = {
-  categoryEntries: ReadonlyArray<readonly [MarketCategoryKey, string]>
-  categoryCounts: Record<MarketCategoryKey, number>
+  categoryEntries: ReadonlyArray<readonly [DiscoverCategoryKey, string]>
+  categoryCounts: Record<DiscoverCategoryKey, number>
   sidebarCollapsed: boolean
-  selectedSection: MarketCategoryKey
-  onSelect: (key: MarketCategoryKey) => void
+  selectedSection: DiscoverCategoryKey | 'pocket'
+  onSelect: (key: DiscoverCategoryKey) => void
   onToggleCollapsed: () => void
 }
 

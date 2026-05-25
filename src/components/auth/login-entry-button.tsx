@@ -16,7 +16,7 @@ export function LoginEntryButton({ active = false, className }: LoginEntryButton
 
   return (
     <Link
-      href="/pocket"
+      href="/profile"
       aria-current={active ? 'page' : undefined}
       className={cn(
         'inline-flex h-10 items-center gap-2 rounded-full border px-2.5 pr-3 shadow-sm transition-colors',
@@ -47,7 +47,7 @@ export function LoginEntryButton({ active = false, className }: LoginEntryButton
           active ? 'text-primary-foreground' : 'text-foreground/82',
         )}
       >
-        我的口袋
+        我的
       </span>
     </Link>
   )

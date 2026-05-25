@@ -1,12 +1,18 @@
 ﻿'use client'
 
 import { useMemo, useState } from 'react'
-import { type ToolCategory, type ToolItem } from '@/shared/tool-registry'
 import type { MarketReviewAggregate } from '@/shared/market-types'
-import { TOOL_CATEGORY_LABELS, TOOL_CATEGORY_ORDER } from '@/shared/tool-labels'
-import { PAGE_COPY } from '@/shared/ui-copy'
-
-type CategoryKey = 'builtin' | ToolCategory
+import { type ToolItem } from '@/shared/tool-registry'
+import {
+  buildMarketNavigation,
+  filterToolsByKeyword,
+  resolveCurrentTools,
+  resolveMarketSection,
+  resolveScopedTools,
+  type MarketScope,
+  type MarketSectionKey,
+  type MarketToolCardItem,
+} from '@/hooks/market-scope'
 
 type Draft = {
   name: string
@@ -22,28 +28,13 @@ export const EMPTY_MARKET_DRAFT: Draft = {
   tags: '',
 }
 
-export type MarketToolCardItem = ToolItem & {
-  reviewAggregate: MarketReviewAggregate | null
-}
+export type { MarketScope, MarketSectionKey, MarketToolCardItem }
 
-function createToolGroups() {
-  return {
-    ai_assistant: [],
-    search: [],
-    developer: [],
-    design: [],
-    productivity: [],
-    media: [],
-    learning: [],
-    writing: [],
-  } satisfies Record<ToolCategory, MarketToolCardItem[]>
-}
+type DiscoverSectionKey = Exclude<MarketSectionKey, 'pocket'>
 
-function groupTools(tools: MarketToolCardItem[]) {
-  return tools.reduce<Record<ToolCategory, MarketToolCardItem[]>>((groups, tool) => {
-    groups[tool.category].push(tool)
-    return groups
-  }, createToolGroups())
+type UseMarketPageModelOptions = {
+  pocketToolIds: Set<string>
+  initialSection?: MarketSectionKey | null
 }
 
 export function useMarketPageModel(
@@ -55,74 +46,75 @@ export function useMarketPageModel(
     description: string
     tags: string[]
   }) => void,
+  options: UseMarketPageModelOptions,
 ) {
+  const { pocketToolIds, initialSection = null } = options
   const [query, setQuery] = useState('')
   const [submitOpen, setSubmitOpen] = useState(false)
   const [draft, setDraft] = useState<Draft>(EMPTY_MARKET_DRAFT)
-  const [selectedSection, setSelectedSection] = useState<'builtin' | ToolCategory>('ai_assistant')
+  const [marketScope, setMarketScope] = useState<MarketScope>(
+    initialSection === 'pocket' ? 'pocket' : 'discover',
+  )
+  const [selectedSection, setSelectedSection] = useState<MarketSectionKey>(
+    initialSection === 'pocket' ? 'pocket' : 'ai_assistant',
+  )
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [reviewToolId, setReviewToolId] = useState<string | null>(null)
 
-  const keyword = query.trim().toLowerCase()
   const tools = useMemo<MarketToolCardItem[]>(() => {
     const enriched = toolsSource.map((tool) => ({
       ...tool,
       reviewAggregate: reviewAggregates[tool.id] ?? null,
     }))
-    if (!keyword) return enriched
-    return enriched.filter((tool) =>
-      `${tool.name} ${tool.description} ${tool.tags.join(' ')} ${TOOL_CATEGORY_LABELS[tool.category]}`
-        .toLowerCase()
-        .includes(keyword),
-    )
-  }, [keyword, reviewAggregates, toolsSource])
+    return filterToolsByKeyword(enriched, query)
+  }, [query, reviewAggregates, toolsSource])
 
-  const builtinTools = useMemo(() => tools.filter((tool) => tool.source === 'builtin'), [tools])
-  const marketTools = useMemo(() => tools.filter((tool) => tool.source !== 'builtin'), [tools])
-  const grouped = useMemo(() => groupTools(marketTools), [marketTools])
-
-  const categoryCounts = useMemo<Record<CategoryKey, number>>(
-    () => ({
-      builtin: builtinTools.length,
-      ai_assistant: grouped.ai_assistant.length,
-      search: grouped.search.length,
-      developer: grouped.developer.length,
-      design: grouped.design.length,
-      productivity: grouped.productivity.length,
-      media: grouped.media.length,
-      learning: grouped.learning.length,
-      writing: grouped.writing.length,
-    }),
-    [builtinTools.length, grouped],
+  const scopedTools = useMemo(
+    () => resolveScopedTools({ scope: marketScope, tools, pocketToolIds }),
+    [marketScope, pocketToolIds, tools],
   )
 
-  const categoryEntries = useMemo((): ReadonlyArray<readonly [CategoryKey, string]> => {
-    const entries: Array<readonly [CategoryKey, string]> = []
-    if (builtinTools.length > 0) {
-      entries.push(['builtin', PAGE_COPY.market.builtinSection])
-    }
-    entries.push(
-      ...TOOL_CATEGORY_ORDER.map((category): readonly [CategoryKey, string] => [
-        category,
-        TOOL_CATEGORY_LABELS[category],
-      ]),
-    )
-    return entries.filter(([key]) => categoryCounts[key] > 0)
-  }, [builtinTools.length, categoryCounts])
+  const navigation = useMemo(
+    () => buildMarketNavigation({ scopedTools, pocketToolIds, allTools: tools }),
+    [pocketToolIds, scopedTools, tools],
+  )
 
-  const resolvedSection = useMemo(() => {
-    const validKeys = new Set(categoryEntries.map(([key]) => key))
-    return validKeys.has(selectedSection)
-      ? selectedSection
-      : (categoryEntries[0]?.[0] ?? 'ai_assistant')
-  }, [categoryEntries, selectedSection])
+  const resolvedSection = useMemo(
+    () =>
+      resolveMarketSection({
+        selectedSection,
+        categoryEntries: navigation.categoryEntries,
+        marketScope,
+      }),
+    [marketScope, navigation.categoryEntries, selectedSection],
+  )
 
-  const currentCategoryTools =
-    resolvedSection === 'builtin' ? builtinTools : grouped[resolvedSection]
+  const currentCategoryTools = useMemo(
+    () => resolveCurrentTools({ selectedSection: resolvedSection, scopedTools }),
+    [resolvedSection, scopedTools],
+  )
+
   const reviewTool = useMemo(
     () => tools.find((tool) => tool.id === reviewToolId) ?? null,
     [reviewToolId, tools],
   )
+
+  const setScope = (scope: MarketScope) => {
+    if (scope === marketScope) return
+    if (scope === 'pocket') {
+      setMarketScope('pocket')
+      setSelectedSection('pocket')
+      return
+    }
+    setMarketScope('discover')
+    if (selectedSection === 'pocket') {
+      setSelectedSection(navigation.categoryEntries[0]?.[0] ?? 'ai_assistant')
+    }
+  }
+
+  const selectSection = (key: DiscoverSectionKey) => {
+    setSelectedSection(key)
+  }
 
   const submitDraft = () => {
     if (!draft.name.trim() || !draft.url.trim() || !draft.description.trim()) return
@@ -139,6 +131,10 @@ export function useMarketPageModel(
     setSubmitOpen(false)
   }
 
+  const discoverCategoryEntries = navigation.categoryEntries as ReadonlyArray<
+    readonly [DiscoverSectionKey, string]
+  >
+
   return {
     query,
     setQuery,
@@ -148,10 +144,13 @@ export function useMarketPageModel(
     setDraft,
     sidebarCollapsed,
     setSidebarCollapsed,
+    marketScope,
+    setScope,
     selectedSection: resolvedSection,
-    setSelectedSection,
-    categoryEntries,
-    categoryCounts,
+    selectSection,
+    categoryEntries: discoverCategoryEntries,
+    categoryCounts: navigation.categoryCounts,
+    pocketCount: navigation.pocketCount,
     currentCategoryTools,
     reviewTool,
     reviewOpen: reviewTool != null,

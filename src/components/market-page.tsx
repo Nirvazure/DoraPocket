@@ -1,5 +1,7 @@
 'use client'
 
+import { useMemo } from 'react'
+import { LogIn } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { ProfileEntryPill } from '@/components/common/profile-entry-pill'
 import { PageShell } from '@/components/common/page-shell'
@@ -11,8 +13,17 @@ import { MarketReviewDrawer } from '@/components/market/market-review-drawer'
 import { MarketSubmitModal } from '@/components/market/market-submit-modal'
 import { MarketToolGrid } from '@/components/market/market-tool-grid'
 import { MarketToolbar } from '@/components/market/market-toolbar'
+import { buildActivePocketToolIds } from '@/hooks/market-scope'
 import { useMarketPageModel } from '@/hooks/use-market-page-model'
 import { useToolCardActions } from '@/hooks/use-tool-card-actions'
+import { Button, buttonVariants } from '@/components/ui/button'
+import {
+  DisplayPanel,
+  DisplayPanelContent,
+  DisplayPanelDescription,
+  DisplayPanelTitle,
+} from '@/components/ui/display-shell'
+import { useAuthSessionQuery } from '@/lib/query/auth-session'
 import { cn } from '@/lib/utils'
 import {
   useMarketReviewAggregatesQuery,
@@ -20,11 +31,24 @@ import {
   useMarketToolsQuery,
   useSubmitMarketToolMutation,
 } from '@/lib/query/market'
-import { useMarkToolUsedMutation, useSaveToolToPocketMutation } from '@/lib/query/pocket'
+import {
+  useMarkToolUsedMutation,
+  usePocketInventoryQuery,
+  useRemoveToolFromPocketMutation,
+  useSaveToolToPocketMutation,
+} from '@/lib/query/pocket'
+import type { MarketSectionKey } from '@/hooks/market-scope'
 import { PAGE_COPY } from '@/shared/ui-copy'
 
-export function MarketPage() {
+type MarketPageProps = {
+  initialSection?: MarketSectionKey | null
+}
+
+export function MarketPage({ initialSection = null }: MarketPageProps) {
+  const { data: authSession } = useAuthSessionQuery()
+  const { data: pocketInventory = [] } = usePocketInventoryQuery()
   const saveToolToPocketMutation = useSaveToolToPocketMutation()
+  const removeToolFromPocketMutation = useRemoveToolFromPocketMutation()
   const markToolUsedMutation = useMarkToolUsedMutation()
   const submitMarketToolMutation = useSubmitMarketToolMutation()
   const saveMarketFeedbackMutation = useSaveMarketFeedbackMutation()
@@ -32,16 +56,32 @@ export function MarketPage() {
   const { data: reviewAggregates = {}, isPending: reviewAggregatesPending } =
     useMarketReviewAggregatesQuery()
   const showMarketShellSkeleton = marketToolsPending || reviewAggregatesPending
+
+  const pocketToolIds = useMemo(() => buildActivePocketToolIds(pocketInventory), [pocketInventory])
+
+  const isAuthenticated =
+    authSession != null &&
+    authSession.authenticated === true &&
+    'user' in authSession &&
+    authSession.user != null
+
   const toolCardActions = useToolCardActions({
     markToolUsed: markToolUsedMutation.mutate,
     saveToolToPocket: saveToolToPocketMutation.mutate,
-    getSourceQuestion: () => '从道具库收进我的口袋',
+    getSourceQuestion: () =>
+      initialSection === 'pocket' ? '从我的口袋打开' : '从道具库收进我的口袋',
   })
+
   const marketModel = useMarketPageModel(
     marketTools,
     reviewAggregates,
     submitMarketToolMutation.mutate,
+    { pocketToolIds, initialSection },
   )
+
+  const showPocketLoginState = marketModel.marketScope === 'pocket' && !isAuthenticated
+  const showPocketEmptyState =
+    marketModel.marketScope === 'pocket' && isAuthenticated && marketModel.pocketCount === 0
 
   return (
     <PageShell
@@ -76,7 +116,7 @@ export function MarketPage() {
             categoryCounts={marketModel.categoryCounts}
             sidebarCollapsed={marketModel.sidebarCollapsed}
             selectedSection={marketModel.selectedSection}
-            onSelect={marketModel.setSelectedSection}
+            onSelect={marketModel.selectSection}
             onToggleCollapsed={() => marketModel.setSidebarCollapsed((value: boolean) => !value)}
           />
 
@@ -85,15 +125,75 @@ export function MarketPage() {
               query={marketModel.query}
               onQueryChange={marketModel.setQuery}
               onOpenSubmit={() => marketModel.setSubmitOpen(true)}
+              marketScope={marketModel.marketScope}
+              pocketCount={marketModel.pocketCount}
+              onScopeChange={marketModel.setScope}
             />
 
             <ScrollArea className="min-h-0 px-1">
-              <MarketToolGrid
-                tools={marketModel.currentCategoryTools}
-                onSaveTool={toolCardActions.saveTool}
-                onOpenTool={toolCardActions.openTool}
-                onReviewTool={marketModel.openReviewTool}
-              />
+              {showPocketLoginState ? (
+                <DisplayPanel className="rounded-[1.8rem] border-dashed border-slate-200 bg-slate-50/80 shadow-none">
+                  <DisplayPanelContent className="space-y-3 p-6 text-center">
+                    <DisplayPanelTitle className="text-xl text-slate-950">
+                      先登录，再管理口袋里的工具
+                    </DisplayPanelTitle>
+                    <DisplayPanelDescription className="text-sm text-slate-600">
+                      登录后，DoraPocket 才能替你同步收藏。
+                    </DisplayPanelDescription>
+                    <a
+                      href="/login"
+                      className={cn(
+                        buttonVariants({ variant: 'default' }),
+                        'mt-2 inline-flex h-10 rounded-full px-4 text-sm font-bold',
+                      )}
+                    >
+                      <LogIn className="h-4 w-4" />
+                      去登录
+                    </a>
+                  </DisplayPanelContent>
+                </DisplayPanel>
+              ) : showPocketEmptyState ? (
+                <DisplayPanel className="rounded-[1.8rem] border-dashed border-slate-200 bg-slate-50/80 shadow-none">
+                  <DisplayPanelContent className="space-y-3 p-6 text-center">
+                    <DisplayPanelTitle className="text-xl text-slate-950">
+                      {PAGE_COPY.market.pocketEmptyTitle}
+                    </DisplayPanelTitle>
+                    <DisplayPanelDescription className="text-sm text-slate-600">
+                      {PAGE_COPY.market.pocketEmptyDescription}
+                    </DisplayPanelDescription>
+                    <Button
+                      type="button"
+                      className="mt-2 h-10 rounded-full px-4 text-sm font-bold"
+                      onClick={() => marketModel.setScope('discover')}
+                    >
+                      {PAGE_COPY.market.pocketEmptyAction}
+                    </Button>
+                  </DisplayPanelContent>
+                </DisplayPanel>
+              ) : marketModel.currentCategoryTools.length === 0 ? (
+                <DisplayPanel className="rounded-[1.8rem] border-dashed border-slate-200 bg-slate-50/80 shadow-none">
+                  <DisplayPanelContent className="space-y-2 p-6 text-center">
+                    <DisplayPanelTitle className="text-xl text-slate-950">
+                      没有找到匹配的工具
+                    </DisplayPanelTitle>
+                    <DisplayPanelDescription className="text-sm text-slate-600">
+                      {marketModel.marketScope === 'pocket'
+                        ? PAGE_COPY.pocket.noSearchResult
+                        : PAGE_COPY.market.searchPlaceholder}
+                    </DisplayPanelDescription>
+                  </DisplayPanelContent>
+                </DisplayPanel>
+              ) : (
+                <MarketToolGrid
+                  tools={marketModel.currentCategoryTools}
+                  mode={marketModel.marketScope}
+                  savedToolIds={pocketToolIds}
+                  onSaveTool={toolCardActions.saveTool}
+                  onRemoveTool={(toolId) => removeToolFromPocketMutation.mutate({ toolId })}
+                  onOpenTool={toolCardActions.openTool}
+                  onReviewTool={marketModel.openReviewTool}
+                />
+              )}
             </ScrollArea>
           </div>
         </div>
