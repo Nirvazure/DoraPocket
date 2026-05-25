@@ -8,7 +8,6 @@ import {
 } from '@/components/discovery/analysis-stage-content'
 import { DecisionProgressSteps } from '@/components/discovery/decision-progress-steps'
 import { LiveAnalysisTrackCard } from '@/components/discovery/live-analysis-track-card'
-import { NextActionBar } from '@/components/discovery/next-action-bar'
 import { WhereToStartSection } from '@/components/discovery/where-to-start-section'
 import { DisplayPanel } from '@/components/ui/display-shell'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -93,7 +92,7 @@ export function DiscoveryWorkspace({
         />
       </div>
 
-      <ScrollArea className="min-h-0 flex-1 px-3 py-2 sm:px-4">
+      <ScrollArea className="min-h-0 flex-1 px-3 pt-2 pb-4 sm:px-4 sm:pb-4">
         <div className="mx-auto flex max-w-6xl flex-col gap-3">
           {activePanelStep != null ? (
             <section className="overflow-hidden rounded-[1.8rem] border border-border/65 bg-white/86 p-3 shadow-sm sm:p-4">
@@ -131,10 +130,6 @@ export function DiscoveryWorkspace({
           ) : null}
         </div>
       </ScrollArea>
-
-      <div className="shrink-0 px-3 pb-3 sm:px-4">
-        <NextActionBar panelStep={activePanelStep ?? 1} onOpenPocket={onOpenPocket} />
-      </div>
     </DisplayPanel>
   )
 }
