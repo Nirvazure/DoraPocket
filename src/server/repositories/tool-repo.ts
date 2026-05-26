@@ -3,8 +3,6 @@ import 'server-only'
 import { createHash } from 'node:crypto'
 import type * as Prisma from '../../generated/prisma/internal/prismaNamespace'
 import { prisma } from '@/server/db/prisma'
-import { syncToolFavicon } from '@/server/market/tool-favicon'
-import { syncToolEmbedding } from '@/server/retrieval/tool-embedding'
 import { isSupabaseMarketAssetUrl } from '@/shared/market-asset-url'
 import {
   TOOL_REGISTRY,
@@ -165,8 +163,6 @@ export async function upsertImportedTool(input: ImportedToolInput) {
     create: data,
     update: updateData,
   })
-  void syncToolEmbedding(tool.id)
-  void syncToolFavicon(tool.id, url)
   return tool
 }
 
@@ -189,6 +185,5 @@ export async function upsertSeedTools(ownerUserId?: string | null) {
       create: input,
       update: withoutIconFields(input),
     })
-    void syncToolEmbedding(tool.id)
   }
 }

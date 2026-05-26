@@ -50,6 +50,7 @@ export function rankSubmissionCandidates(
   const lower = userText.trim().toLowerCase()
   if (!lower) return []
   return marketContext.submissions
+    .filter((item) => item.status !== 'duplicate')
     .map((item) => {
       const haystack = `${item.name} ${item.description} ${item.tags.join(' ')}`.toLowerCase()
       let score = 0

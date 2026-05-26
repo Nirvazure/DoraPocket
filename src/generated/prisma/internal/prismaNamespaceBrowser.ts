@@ -201,7 +201,9 @@ export const MarketSubmissionScalarFieldEnum = {
   description: 'description',
   tags: 'tags',
   submittedAt: 'submittedAt',
-  status: 'status'
+  status: 'status',
+  dedupCheckedAt: 'dedupCheckedAt',
+  duplicateSimilarity: 'duplicateSimilarity'
 } as const
 
 export type MarketSubmissionScalarFieldEnum = (typeof MarketSubmissionScalarFieldEnum)[keyof typeof MarketSubmissionScalarFieldEnum]

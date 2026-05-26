@@ -20,8 +20,18 @@ export type MarketSubmissionModel = runtime.Types.Result.DefaultSelection<Prisma
 
 export type AggregateMarketSubmission = {
   _count: MarketSubmissionCountAggregateOutputType | null
+  _avg: MarketSubmissionAvgAggregateOutputType | null
+  _sum: MarketSubmissionSumAggregateOutputType | null
   _min: MarketSubmissionMinAggregateOutputType | null
   _max: MarketSubmissionMaxAggregateOutputType | null
+}
+
+export type MarketSubmissionAvgAggregateOutputType = {
+  duplicateSimilarity: number | null
+}
+
+export type MarketSubmissionSumAggregateOutputType = {
+  duplicateSimilarity: number | null
 }
 
 export type MarketSubmissionMinAggregateOutputType = {
@@ -33,6 +43,8 @@ export type MarketSubmissionMinAggregateOutputType = {
   description: string | null
   submittedAt: Date | null
   status: string | null
+  dedupCheckedAt: Date | null
+  duplicateSimilarity: number | null
 }
 
 export type MarketSubmissionMaxAggregateOutputType = {
@@ -44,6 +56,8 @@ export type MarketSubmissionMaxAggregateOutputType = {
   description: string | null
   submittedAt: Date | null
   status: string | null
+  dedupCheckedAt: Date | null
+  duplicateSimilarity: number | null
 }
 
 export type MarketSubmissionCountAggregateOutputType = {
@@ -56,9 +70,19 @@ export type MarketSubmissionCountAggregateOutputType = {
   tags: number
   submittedAt: number
   status: number
+  dedupCheckedAt: number
+  duplicateSimilarity: number
   _all: number
 }
 
+
+export type MarketSubmissionAvgAggregateInputType = {
+  duplicateSimilarity?: true
+}
+
+export type MarketSubmissionSumAggregateInputType = {
+  duplicateSimilarity?: true
+}
 
 export type MarketSubmissionMinAggregateInputType = {
   id?: true
@@ -69,6 +93,8 @@ export type MarketSubmissionMinAggregateInputType = {
   description?: true
   submittedAt?: true
   status?: true
+  dedupCheckedAt?: true
+  duplicateSimilarity?: true
 }
 
 export type MarketSubmissionMaxAggregateInputType = {
@@ -80,6 +106,8 @@ export type MarketSubmissionMaxAggregateInputType = {
   description?: true
   submittedAt?: true
   status?: true
+  dedupCheckedAt?: true
+  duplicateSimilarity?: true
 }
 
 export type MarketSubmissionCountAggregateInputType = {
@@ -92,6 +120,8 @@ export type MarketSubmissionCountAggregateInputType = {
   tags?: true
   submittedAt?: true
   status?: true
+  dedupCheckedAt?: true
+  duplicateSimilarity?: true
   _all?: true
 }
 
@@ -133,6 +163,18 @@ export type MarketSubmissionAggregateArgs<ExtArgs extends runtime.Types.Extensio
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: MarketSubmissionAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: MarketSubmissionSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: MarketSubmissionMinAggregateInputType
@@ -163,6 +205,8 @@ export type MarketSubmissionGroupByArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   _count?: MarketSubmissionCountAggregateInputType | true
+  _avg?: MarketSubmissionAvgAggregateInputType
+  _sum?: MarketSubmissionSumAggregateInputType
   _min?: MarketSubmissionMinAggregateInputType
   _max?: MarketSubmissionMaxAggregateInputType
 }
@@ -177,7 +221,11 @@ export type MarketSubmissionGroupByOutputType = {
   tags: string[]
   submittedAt: Date
   status: string
+  dedupCheckedAt: Date | null
+  duplicateSimilarity: number | null
   _count: MarketSubmissionCountAggregateOutputType | null
+  _avg: MarketSubmissionAvgAggregateOutputType | null
+  _sum: MarketSubmissionSumAggregateOutputType | null
   _min: MarketSubmissionMinAggregateOutputType | null
   _max: MarketSubmissionMaxAggregateOutputType | null
 }
@@ -210,6 +258,8 @@ export type MarketSubmissionWhereInput = {
   tags?: Prisma.StringNullableListFilter<"MarketSubmission">
   submittedAt?: Prisma.DateTimeFilter<"MarketSubmission"> | Date | string
   status?: Prisma.StringFilter<"MarketSubmission"> | string
+  dedupCheckedAt?: Prisma.DateTimeNullableFilter<"MarketSubmission"> | Date | string | null
+  duplicateSimilarity?: Prisma.FloatNullableFilter<"MarketSubmission"> | number | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
@@ -223,6 +273,8 @@ export type MarketSubmissionOrderByWithRelationInput = {
   tags?: Prisma.SortOrder
   submittedAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  dedupCheckedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  duplicateSimilarity?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
 }
 
@@ -239,6 +291,8 @@ export type MarketSubmissionWhereUniqueInput = Prisma.AtLeast<{
   tags?: Prisma.StringNullableListFilter<"MarketSubmission">
   submittedAt?: Prisma.DateTimeFilter<"MarketSubmission"> | Date | string
   status?: Prisma.StringFilter<"MarketSubmission"> | string
+  dedupCheckedAt?: Prisma.DateTimeNullableFilter<"MarketSubmission"> | Date | string | null
+  duplicateSimilarity?: Prisma.FloatNullableFilter<"MarketSubmission"> | number | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
@@ -252,9 +306,13 @@ export type MarketSubmissionOrderByWithAggregationInput = {
   tags?: Prisma.SortOrder
   submittedAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  dedupCheckedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  duplicateSimilarity?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.MarketSubmissionCountOrderByAggregateInput
+  _avg?: Prisma.MarketSubmissionAvgOrderByAggregateInput
   _max?: Prisma.MarketSubmissionMaxOrderByAggregateInput
   _min?: Prisma.MarketSubmissionMinOrderByAggregateInput
+  _sum?: Prisma.MarketSubmissionSumOrderByAggregateInput
 }
 
 export type MarketSubmissionScalarWhereWithAggregatesInput = {
@@ -270,6 +328,8 @@ export type MarketSubmissionScalarWhereWithAggregatesInput = {
   tags?: Prisma.StringNullableListFilter<"MarketSubmission">
   submittedAt?: Prisma.DateTimeWithAggregatesFilter<"MarketSubmission"> | Date | string
   status?: Prisma.StringWithAggregatesFilter<"MarketSubmission"> | string
+  dedupCheckedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"MarketSubmission"> | Date | string | null
+  duplicateSimilarity?: Prisma.FloatNullableWithAggregatesFilter<"MarketSubmission"> | number | null
 }
 
 export type MarketSubmissionCreateInput = {
@@ -281,6 +341,8 @@ export type MarketSubmissionCreateInput = {
   tags?: Prisma.MarketSubmissionCreatetagsInput | string[]
   submittedAt?: Date | string
   status?: string
+  dedupCheckedAt?: Date | string | null
+  duplicateSimilarity?: number | null
   user: Prisma.UserCreateNestedOneWithoutMarketSubmissionsInput
 }
 
@@ -294,6 +356,8 @@ export type MarketSubmissionUncheckedCreateInput = {
   tags?: Prisma.MarketSubmissionCreatetagsInput | string[]
   submittedAt?: Date | string
   status?: string
+  dedupCheckedAt?: Date | string | null
+  duplicateSimilarity?: number | null
 }
 
 export type MarketSubmissionUpdateInput = {
@@ -305,6 +369,8 @@ export type MarketSubmissionUpdateInput = {
   tags?: Prisma.MarketSubmissionUpdatetagsInput | string[]
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dedupCheckedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  duplicateSimilarity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   user?: Prisma.UserUpdateOneRequiredWithoutMarketSubmissionsNestedInput
 }
 
@@ -318,6 +384,8 @@ export type MarketSubmissionUncheckedUpdateInput = {
   tags?: Prisma.MarketSubmissionUpdatetagsInput | string[]
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dedupCheckedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  duplicateSimilarity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
 }
 
 export type MarketSubmissionCreateManyInput = {
@@ -330,6 +398,8 @@ export type MarketSubmissionCreateManyInput = {
   tags?: Prisma.MarketSubmissionCreatetagsInput | string[]
   submittedAt?: Date | string
   status?: string
+  dedupCheckedAt?: Date | string | null
+  duplicateSimilarity?: number | null
 }
 
 export type MarketSubmissionUpdateManyMutationInput = {
@@ -341,6 +411,8 @@ export type MarketSubmissionUpdateManyMutationInput = {
   tags?: Prisma.MarketSubmissionUpdatetagsInput | string[]
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dedupCheckedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  duplicateSimilarity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
 }
 
 export type MarketSubmissionUncheckedUpdateManyInput = {
@@ -353,6 +425,8 @@ export type MarketSubmissionUncheckedUpdateManyInput = {
   tags?: Prisma.MarketSubmissionUpdatetagsInput | string[]
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dedupCheckedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  duplicateSimilarity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
 }
 
 export type MarketSubmissionListRelationFilter = {
@@ -375,6 +449,12 @@ export type MarketSubmissionCountOrderByAggregateInput = {
   tags?: Prisma.SortOrder
   submittedAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  dedupCheckedAt?: Prisma.SortOrder
+  duplicateSimilarity?: Prisma.SortOrder
+}
+
+export type MarketSubmissionAvgOrderByAggregateInput = {
+  duplicateSimilarity?: Prisma.SortOrder
 }
 
 export type MarketSubmissionMaxOrderByAggregateInput = {
@@ -386,6 +466,8 @@ export type MarketSubmissionMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   submittedAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  dedupCheckedAt?: Prisma.SortOrder
+  duplicateSimilarity?: Prisma.SortOrder
 }
 
 export type MarketSubmissionMinOrderByAggregateInput = {
@@ -397,6 +479,12 @@ export type MarketSubmissionMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   submittedAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  dedupCheckedAt?: Prisma.SortOrder
+  duplicateSimilarity?: Prisma.SortOrder
+}
+
+export type MarketSubmissionSumOrderByAggregateInput = {
+  duplicateSimilarity?: Prisma.SortOrder
 }
 
 export type MarketSubmissionCreateNestedManyWithoutUserInput = {
@@ -450,6 +538,14 @@ export type MarketSubmissionUpdatetagsInput = {
   push?: string | string[]
 }
 
+export type NullableFloatFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type MarketSubmissionCreateWithoutUserInput = {
   id?: string
   toolId?: string | null
@@ -459,6 +555,8 @@ export type MarketSubmissionCreateWithoutUserInput = {
   tags?: Prisma.MarketSubmissionCreatetagsInput | string[]
   submittedAt?: Date | string
   status?: string
+  dedupCheckedAt?: Date | string | null
+  duplicateSimilarity?: number | null
 }
 
 export type MarketSubmissionUncheckedCreateWithoutUserInput = {
@@ -470,6 +568,8 @@ export type MarketSubmissionUncheckedCreateWithoutUserInput = {
   tags?: Prisma.MarketSubmissionCreatetagsInput | string[]
   submittedAt?: Date | string
   status?: string
+  dedupCheckedAt?: Date | string | null
+  duplicateSimilarity?: number | null
 }
 
 export type MarketSubmissionCreateOrConnectWithoutUserInput = {
@@ -511,6 +611,8 @@ export type MarketSubmissionScalarWhereInput = {
   tags?: Prisma.StringNullableListFilter<"MarketSubmission">
   submittedAt?: Prisma.DateTimeFilter<"MarketSubmission"> | Date | string
   status?: Prisma.StringFilter<"MarketSubmission"> | string
+  dedupCheckedAt?: Prisma.DateTimeNullableFilter<"MarketSubmission"> | Date | string | null
+  duplicateSimilarity?: Prisma.FloatNullableFilter<"MarketSubmission"> | number | null
 }
 
 export type MarketSubmissionCreateManyUserInput = {
@@ -522,6 +624,8 @@ export type MarketSubmissionCreateManyUserInput = {
   tags?: Prisma.MarketSubmissionCreatetagsInput | string[]
   submittedAt?: Date | string
   status?: string
+  dedupCheckedAt?: Date | string | null
+  duplicateSimilarity?: number | null
 }
 
 export type MarketSubmissionUpdateWithoutUserInput = {
@@ -533,6 +637,8 @@ export type MarketSubmissionUpdateWithoutUserInput = {
   tags?: Prisma.MarketSubmissionUpdatetagsInput | string[]
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dedupCheckedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  duplicateSimilarity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
 }
 
 export type MarketSubmissionUncheckedUpdateWithoutUserInput = {
@@ -544,6 +650,8 @@ export type MarketSubmissionUncheckedUpdateWithoutUserInput = {
   tags?: Prisma.MarketSubmissionUpdatetagsInput | string[]
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dedupCheckedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  duplicateSimilarity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
 }
 
 export type MarketSubmissionUncheckedUpdateManyWithoutUserInput = {
@@ -555,6 +663,8 @@ export type MarketSubmissionUncheckedUpdateManyWithoutUserInput = {
   tags?: Prisma.MarketSubmissionUpdatetagsInput | string[]
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  dedupCheckedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  duplicateSimilarity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
 }
 
 
@@ -569,6 +679,8 @@ export type MarketSubmissionSelect<ExtArgs extends runtime.Types.Extensions.Inte
   tags?: boolean
   submittedAt?: boolean
   status?: boolean
+  dedupCheckedAt?: boolean
+  duplicateSimilarity?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["marketSubmission"]>
 
@@ -582,6 +694,8 @@ export type MarketSubmissionSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   tags?: boolean
   submittedAt?: boolean
   status?: boolean
+  dedupCheckedAt?: boolean
+  duplicateSimilarity?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["marketSubmission"]>
 
@@ -595,6 +709,8 @@ export type MarketSubmissionSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   tags?: boolean
   submittedAt?: boolean
   status?: boolean
+  dedupCheckedAt?: boolean
+  duplicateSimilarity?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["marketSubmission"]>
 
@@ -608,9 +724,11 @@ export type MarketSubmissionSelectScalar = {
   tags?: boolean
   submittedAt?: boolean
   status?: boolean
+  dedupCheckedAt?: boolean
+  duplicateSimilarity?: boolean
 }
 
-export type MarketSubmissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "toolId" | "name" | "url" | "description" | "tags" | "submittedAt" | "status", ExtArgs["result"]["marketSubmission"]>
+export type MarketSubmissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "toolId" | "name" | "url" | "description" | "tags" | "submittedAt" | "status" | "dedupCheckedAt" | "duplicateSimilarity", ExtArgs["result"]["marketSubmission"]>
 export type MarketSubmissionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -636,6 +754,8 @@ export type $MarketSubmissionPayload<ExtArgs extends runtime.Types.Extensions.In
     tags: string[]
     submittedAt: Date
     status: string
+    dedupCheckedAt: Date | null
+    duplicateSimilarity: number | null
   }, ExtArgs["result"]["marketSubmission"]>
   composites: {}
 }
@@ -1069,6 +1189,8 @@ export interface MarketSubmissionFieldRefs {
   readonly tags: Prisma.FieldRef<"MarketSubmission", 'String[]'>
   readonly submittedAt: Prisma.FieldRef<"MarketSubmission", 'DateTime'>
   readonly status: Prisma.FieldRef<"MarketSubmission", 'String'>
+  readonly dedupCheckedAt: Prisma.FieldRef<"MarketSubmission", 'DateTime'>
+  readonly duplicateSimilarity: Prisma.FieldRef<"MarketSubmission", 'Float'>
 }
     
 

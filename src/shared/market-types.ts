@@ -48,12 +48,14 @@ export type MarketFeedbackRecord = {
 
 export type MarketSubmission = {
   id: string
+  toolId?: string | null
   name: string
   url: string
   description: string
   tags: string[]
   submittedAt: number
-  status: 'review' | 'listed'
+  status: 'review' | 'listed' | 'duplicate'
+  duplicateSimilarity?: number | null
 }
 
 export type MarketSubscriptionRecord = {

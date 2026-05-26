@@ -31,11 +31,16 @@
   - 登录后 RealtimeSyncProvider 推送 → TanStack Query 刷新
   - localStorage bridge 已移除（保留 migrate-local 一次性迁移）
 
-- [ ] **Database Webhooks + Edge Functions（异步任务）**
-  - `Tool` 新增/更新 → 生成 embedding、抓取 favicon
-  - `MarketSubmission` 提交 → 去重检测、自动打标签
+- [x] **Cron 异步任务 — Phase 1（已完成）**
+  - Vercel Cron `/api/cron/process-jobs`：Tool embedding + favicon 批量同步
+  - MarketSubmission pgvector 语义去重（URL 硬关联 + 相似度 ≥ 0.88 标记 duplicate）
+  - API 路径已移除 `void syncToolEmbedding` / `void syncToolFavicon`
+  - ~~Database Webhook → Edge Function~~（后续可升级）
+  - ~~定时刷新工具评分聚合、清理过期 session~~（延后）
+
+- [ ] **Database Webhooks + Edge Functions（Phase 2）**
+  - 实时 Webhook 替代/补充 Cron 轮询
   - 定时 Cron → 刷新工具评分聚合、清理过期 session
-  - 评估：Database Webhook → Edge Function 比 API 内 `await` 更解耦；也可先用 Vercel Cron
 
 - [ ] **Auth 增强**
   - Auth Hook：用户创建时自动写 `User` 表，替代/简化 callback 里的 `upsertUserFromSupabaseUser`

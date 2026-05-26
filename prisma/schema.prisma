@@ -132,16 +132,18 @@ model MarketSubscription {
 }
 
 model MarketSubmission {
-  id          String   @id @default(cuid())
-  userId      String
-  toolId      String?
-  name        String
-  url         String
-  description String
-  tags        String[]
-  submittedAt DateTime @default(now())
-  status      String   @default("review")
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                  String    @id @default(cuid())
+  userId              String
+  toolId              String?
+  name                String
+  url                 String
+  description         String
+  tags                String[]
+  submittedAt         DateTime  @default(now())
+  status              String    @default("review")
+  dedupCheckedAt      DateTime?
+  duplicateSimilarity Float?
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ToolActivity {
