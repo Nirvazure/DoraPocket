@@ -61,19 +61,51 @@ export async function saveMarketFeedback(
 export async function getMarketReviewAggregates(
   userId: string,
 ): Promise<Record<string, MarketReviewAggregate>> {
-  const feedback = await listMarketFeedback(userId)
-  return Object.fromEntries(
-    feedback.map((item) => [
-      item.toolId,
-      {
-        toolId: item.toolId,
-        averageStar: item.starRating,
-        reviewCount: 1,
-        upvoteCount: item.vote === 'up' ? 1 : 0,
-        downvoteCount: item.vote === 'down' ? 1 : 0,
-        topTags: item.selectedTags.slice(0, 2),
-        currentUserReview: item,
-      },
-    ]),
+  const [allFeedback, currentUserFeedback] = await Promise.all([
+    prisma.marketFeedback.findMany(),
+    prisma.marketFeedback.findMany({ where: { userId } }),
+  ])
+
+  const currentUserMap = new Map(
+    currentUserFeedback.map((item) => [item.toolId, toFeedbackRecord(item)]),
   )
+
+  const feedbackByTool = new Map<string, typeof allFeedback>()
+  for (const item of allFeedback) {
+    const list = feedbackByTool.get(item.toolId) ?? []
+    list.push(item)
+    feedbackByTool.set(item.toolId, list)
+  }
+
+  const aggregates: Record<string, MarketReviewAggregate> = {}
+  for (const [toolId, items] of feedbackByTool) {
+    const starSum = items.reduce((sum, item) => sum + item.starRating, 0)
+    const tagCounter = new Map<MarketReviewTag, number>()
+    let upvoteCount = 0
+    let downvoteCount = 0
+
+    for (const item of items) {
+      if (item.vote === 'up') upvoteCount += 1
+      else downvoteCount += 1
+      for (const tag of item.selectedTags) {
+        const reviewTag = tag as MarketReviewTag
+        tagCounter.set(reviewTag, (tagCounter.get(reviewTag) ?? 0) + 1)
+      }
+    }
+
+    aggregates[toolId] = {
+      toolId,
+      averageStar: starSum / items.length,
+      reviewCount: items.length,
+      upvoteCount,
+      downvoteCount,
+      topTags: [...tagCounter.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 2)
+        .map(([tag]) => tag),
+      currentUserReview: currentUserMap.get(toolId) ?? null,
+    }
+  }
+
+  return aggregates
 }
