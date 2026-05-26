@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useSyncExternalStore } from 'react'
+import { useMemo, useState, useSyncExternalStore } from 'react'
 import { LogIn } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { ProfileEntryPill } from '@/components/common/profile-entry-pill'
@@ -8,12 +8,16 @@ import { PageShell } from '@/components/common/page-shell'
 import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
 import { MarketCategoryNav } from '@/components/market/market-category-nav'
-import { MarketPageSkeleton } from '@/components/market/market-page-skeleton'
+import {
+  MarketPageSkeleton,
+  MarketToolGridSkeleton,
+} from '@/components/market/market-page-skeleton'
 import { MarketReviewDrawer } from '@/components/market/market-review-drawer'
 import { MarketSubmitModal } from '@/components/market/market-submit-modal'
 import { MarketToolGrid } from '@/components/market/market-tool-grid'
 import { MarketToolbar } from '@/components/market/market-toolbar'
 import { buildActivePocketToolIds } from '@/hooks/market-scope'
+import { useDebouncedValue } from '@/hooks/use-debounced-value'
 import { useMarketPageModel } from '@/hooks/use-market-page-model'
 import { useToolCardActions } from '@/hooks/use-tool-card-actions'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -45,6 +49,8 @@ type MarketPageProps = {
 }
 
 export function MarketPage({ initialSection = null }: MarketPageProps) {
+  const [query, setQuery] = useState('')
+  const debouncedQuery = useDebouncedValue(query, 300)
   const { data: authSession } = useAuthSessionQuery()
   const { data: pocketInventory = [] } = usePocketInventoryQuery()
   const saveToolToPocketMutation = useSaveToolToPocketMutation()
@@ -52,7 +58,11 @@ export function MarketPage({ initialSection = null }: MarketPageProps) {
   const markToolUsedMutation = useMarkToolUsedMutation()
   const submitMarketToolMutation = useSubmitMarketToolMutation()
   const saveMarketFeedbackMutation = useSaveMarketFeedbackMutation()
-  const { data: marketTools = [], isPending: marketToolsPending } = useMarketToolsQuery()
+  const {
+    data: marketTools = [],
+    isPending: marketToolsPending,
+    isFetching: marketToolsFetching,
+  } = useMarketToolsQuery(debouncedQuery)
   const { data: reviewAggregates = {}, isPending: reviewAggregatesPending } =
     useMarketReviewAggregatesQuery()
   const hasMounted = useSyncExternalStore(
@@ -61,7 +71,8 @@ export function MarketPage({ initialSection = null }: MarketPageProps) {
     () => false,
   )
 
-  const showMarketShellSkeleton = !hasMounted || marketToolsPending || reviewAggregatesPending
+  const showInitialSkeleton = !hasMounted || (marketToolsPending && reviewAggregatesPending)
+  const showGridSkeleton = !showInitialSkeleton && marketToolsFetching
 
   const pocketToolIds = useMemo(() => buildActivePocketToolIds(pocketInventory), [pocketInventory])
 
@@ -82,7 +93,7 @@ export function MarketPage({ initialSection = null }: MarketPageProps) {
     marketTools,
     reviewAggregates,
     submitMarketToolMutation.mutate,
-    { pocketToolIds, initialSection },
+    { pocketToolIds, initialSection, query, onQueryChange: setQuery },
   )
 
   const showPocketLoginState = marketModel.marketScope === 'pocket' && !isAuthenticated
@@ -106,7 +117,7 @@ export function MarketPage({ initialSection = null }: MarketPageProps) {
         />
       }
     >
-      {showMarketShellSkeleton ? (
+      {showInitialSkeleton ? (
         <MarketPageSkeleton />
       ) : (
         <div className="grid min-h-0 gap-5 xl:grid-cols-[15rem_minmax(0,1fr)]">
@@ -129,7 +140,9 @@ export function MarketPage({ initialSection = null }: MarketPageProps) {
             />
 
             <ScrollArea className="min-h-0 px-1">
-              {showPocketLoginState ? (
+              {showGridSkeleton ? (
+                <MarketToolGridSkeleton />
+              ) : showPocketLoginState ? (
                 <DisplayPanel className="rounded-[1.8rem] border-dashed border-slate-200 bg-slate-50/80 shadow-none">
                   <DisplayPanelContent className="space-y-3 p-6 text-center">
                     <DisplayPanelTitle className="text-xl text-slate-950">

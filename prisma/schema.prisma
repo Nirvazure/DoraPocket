@@ -79,6 +79,7 @@ model Tool {
   embeddingModel         String?
   embeddingContentHash   String?
   embeddedAt             DateTime?
+  searchDocument         Unsupported("tsvector")?
   createdBy          User?    @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
   pocketItems        PocketItem[]
   marketFeedback     MarketFeedback[]
