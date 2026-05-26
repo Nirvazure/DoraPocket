@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useSyncExternalStore } from 'react'
 import { LogIn } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { ProfileEntryPill } from '@/components/common/profile-entry-pill'
@@ -55,7 +55,13 @@ export function MarketPage({ initialSection = null }: MarketPageProps) {
   const { data: marketTools = [], isPending: marketToolsPending } = useMarketToolsQuery()
   const { data: reviewAggregates = {}, isPending: reviewAggregatesPending } =
     useMarketReviewAggregatesQuery()
-  const showMarketShellSkeleton = marketToolsPending || reviewAggregatesPending
+  const hasMounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  )
+
+  const showMarketShellSkeleton = !hasMounted || marketToolsPending || reviewAggregatesPending
 
   const pocketToolIds = useMemo(() => buildActivePocketToolIds(pocketInventory), [pocketInventory])
 
@@ -81,7 +87,7 @@ export function MarketPage({ initialSection = null }: MarketPageProps) {
 
   const showPocketLoginState = marketModel.marketScope === 'pocket' && !isAuthenticated
   const showPocketEmptyState =
-    marketModel.marketScope === 'pocket' && isAuthenticated && marketModel.pocketCount === 0
+    marketModel.marketScope === 'pocket' && isAuthenticated && marketModel.totalPocketCount === 0
 
   return (
     <PageShell
@@ -103,21 +109,16 @@ export function MarketPage({ initialSection = null }: MarketPageProps) {
       {showMarketShellSkeleton ? (
         <MarketPageSkeleton />
       ) : (
-        <div
-          className={cn(
-            'grid min-h-0 gap-5',
-            marketModel.sidebarCollapsed
-              ? 'xl:grid-cols-[5rem_minmax(0,1fr)]'
-              : 'xl:grid-cols-[15rem_minmax(0,1fr)]',
-          )}
-        >
+        <div className="grid min-h-0 gap-5 xl:grid-cols-[15rem_minmax(0,1fr)]">
           <MarketCategoryNav
             categoryEntries={marketModel.categoryEntries}
             categoryCounts={marketModel.categoryCounts}
-            sidebarCollapsed={marketModel.sidebarCollapsed}
             selectedSection={marketModel.selectedSection}
+            marketScope={marketModel.marketScope}
+            discoverCount={marketModel.discoverCount}
+            pocketCount={marketModel.totalPocketCount}
+            onScopeChange={marketModel.setScope}
             onSelect={marketModel.selectSection}
-            onToggleCollapsed={() => marketModel.setSidebarCollapsed((value: boolean) => !value)}
           />
 
           <div className="grid min-h-0 gap-4 xl:grid-rows-[auto_minmax(0,1fr)]">
@@ -125,9 +126,6 @@ export function MarketPage({ initialSection = null }: MarketPageProps) {
               query={marketModel.query}
               onQueryChange={marketModel.setQuery}
               onOpenSubmit={() => marketModel.setSubmitOpen(true)}
-              marketScope={marketModel.marketScope}
-              pocketCount={marketModel.pocketCount}
-              onScopeChange={marketModel.setScope}
             />
 
             <ScrollArea className="min-h-0 px-1">
@@ -177,16 +175,13 @@ export function MarketPage({ initialSection = null }: MarketPageProps) {
                       没有找到匹配的工具
                     </DisplayPanelTitle>
                     <DisplayPanelDescription className="text-sm text-slate-600">
-                      {marketModel.marketScope === 'pocket'
-                        ? PAGE_COPY.pocket.noSearchResult
-                        : PAGE_COPY.market.searchPlaceholder}
+                      {PAGE_COPY.market.noSearchResult}
                     </DisplayPanelDescription>
                   </DisplayPanelContent>
                 </DisplayPanel>
               ) : (
                 <MarketToolGrid
                   tools={marketModel.currentCategoryTools}
-                  mode={marketModel.marketScope}
                   savedToolIds={pocketToolIds}
                   onSaveTool={toolCardActions.saveTool}
                   onRemoveTool={(toolId) => removeToolFromPocketMutation.mutate({ toolId })}

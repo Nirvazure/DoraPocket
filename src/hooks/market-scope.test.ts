@@ -80,16 +80,16 @@ test('pocket scope filters to saved tool ids only', () => {
   assert.equal(scoped[0]?.id, 'a')
 })
 
-test('pocket section shows all scoped tools; category section filters pocket pool', () => {
+test('category section filters scoped tools in both discover and pocket scope', () => {
   const tools = [baseTool('a', 'ai_assistant'), baseTool('b', 'developer')]
   const pocketToolIds = new Set(['a', 'b'])
   const scoped = resolveScopedTools({ scope: 'pocket', tools, pocketToolIds })
 
-  assert.equal(resolveCurrentTools({ selectedSection: 'pocket', scopedTools: scoped }).length, 2)
   assert.equal(
     resolveCurrentTools({ selectedSection: 'ai_assistant', scopedTools: scoped }).length,
     1,
   )
+  assert.equal(resolveCurrentTools({ selectedSection: 'developer', scopedTools: scoped }).length, 1)
 })
 
 test('resolveMarketSection falls back to first category when selected section invalid', () => {
@@ -98,20 +98,18 @@ test('resolveMarketSection falls back to first category when selected section in
     resolveMarketSection({
       selectedSection: 'developer',
       categoryEntries: entries,
-      marketScope: 'discover',
     }),
     'ai_assistant',
   )
 })
 
-test('resolveMarketSection keeps pocket when in pocket scope', () => {
+test('resolveMarketSection falls back when pocket section is selected', () => {
   const entries = [['ai_assistant', 'AI 助手']] as const
   assert.equal(
     resolveMarketSection({
       selectedSection: 'pocket',
       categoryEntries: entries,
-      marketScope: 'pocket',
     }),
-    'pocket',
+    'ai_assistant',
   )
 })

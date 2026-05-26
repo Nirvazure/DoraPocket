@@ -43,11 +43,11 @@ export function LoginEntryButton({ active = false, className }: LoginEntryButton
       </span>
       <span
         className={cn(
-          'text-xs font-bold',
+          'max-w-[7rem] truncate text-xs font-bold',
           active ? 'text-primary-foreground' : 'text-foreground/82',
         )}
       >
-        我的
+        {user?.nickname ?? '我的'}
       </span>
     </Link>
   )

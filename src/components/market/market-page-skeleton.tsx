@@ -15,9 +15,8 @@ export function MarketPageSkeleton() {
       aria-label="市场内容加载中"
     >
       <aside className="hidden w-full min-h-0 flex-col overflow-hidden rounded-[1.5rem] border border-border/60 bg-[linear-gradient(180deg,rgba(248,250,252,0.98),rgba(255,255,255,0.98))] p-3 shadow-sm xl:flex xl:self-start">
-        <div className="flex shrink-0 items-center justify-between border-b border-border/60 px-0.5 pb-3">
-          <Skeleton className="h-3 w-20 rounded-md" />
-          <Skeleton className="h-8 w-8 rounded-full" />
+        <div className="shrink-0 border-b border-border/60 pb-3">
+          <Skeleton className="h-8 w-full rounded-xl" />
         </div>
         <div className="mt-3 space-y-1.5 pb-2">
           {Array.from({ length: NAV_ROW_COUNT }).map((_, i) => (
@@ -35,19 +34,22 @@ export function MarketPageSkeleton() {
         </div>
       </aside>
 
-      <div className="relative xl:hidden">
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-6 bg-gradient-to-r from-white/95 to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-6 bg-gradient-to-l from-white/95 to-transparent" />
-        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {Array.from({ length: MOBILE_CHIP_COUNT }).map((_, i) => (
-            <div
-              key={i}
-              className="inline-flex h-9 w-[6.5rem] shrink-0 items-center gap-2 rounded-full border border-white/80 bg-white/88 px-3 shadow-sm"
-            >
-              <Skeleton className="h-3.5 w-3.5 rounded-full" />
-              <Skeleton className="h-3 w-8 rounded-md" />
-            </div>
-          ))}
+      <div className="space-y-2 xl:hidden">
+        <Skeleton className="h-8 w-full rounded-xl" />
+        <div className="relative">
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-6 bg-gradient-to-r from-white/95 to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-6 bg-gradient-to-l from-white/95 to-transparent" />
+          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {Array.from({ length: MOBILE_CHIP_COUNT }).map((_, i) => (
+              <div
+                key={i}
+                className="inline-flex h-9 w-[6.5rem] shrink-0 items-center gap-2 rounded-full border border-white/80 bg-white/88 px-3 shadow-sm"
+              >
+                <Skeleton className="h-3.5 w-3.5 rounded-full" />
+                <Skeleton className="h-3 w-8 rounded-md" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

@@ -7,6 +7,7 @@ import { UnifiedTopBar } from '@/components/common/unified-top-bar'
 import { DiscoveryWorkspace } from '@/components/discovery-workspace'
 import { ListeningHud } from '@/components/listening-hud'
 import { PocketGadgetModal } from '@/components/pocket-gadget-modal'
+import { PocketQuickSettingsModal } from '@/components/pocket/pocket-quick-settings-modal'
 import { useAnalysisPageController } from '@/hooks/use-analysis-page-controller'
 import { stopAudioPlayback } from '@/lib/client/audio'
 import { PAGE_COPY } from '@/shared/ui-copy'
@@ -18,7 +19,9 @@ export default function App() {
     botResponse,
     selectedGadgetKey,
     pocketModalOpen,
+    quickSettingsOpen,
     pocketGadget,
+    userSettings,
     currentPrompt,
     analysisFlow,
     autoSaveEnabled,
@@ -41,6 +44,8 @@ export default function App() {
     toggleToolDial,
     handleSelectDialGadget,
     setPocketModalOpen,
+    setQuickSettingsOpen,
+    saveUserSettings,
     setToolDialMode,
     setInputMode,
     setTextFallback,
@@ -81,6 +86,12 @@ export default function App() {
         onOpenTool={pocketGadgetModalActions.onOpenTool}
         onSaveToPocket={pocketGadgetModalActions.onSaveToPocket}
       />
+      <PocketQuickSettingsModal
+        open={quickSettingsOpen}
+        settings={userSettings}
+        onClose={() => setQuickSettingsOpen(false)}
+        onSave={saveUserSettings}
+      />
       {appState === 'listening' ? <ListeningHud /> : null}
       <div className="min-h-0 h-full">
         <DiscoveryWorkspace
@@ -120,6 +131,7 @@ export default function App() {
         }
         canSkipVoice={canSkipVoice}
         onRevealNow={revealNow}
+        onOpenQuickSettings={() => setQuickSettingsOpen(true)}
       >
         <AnalysisBottomBar
           analysisFlow={analysisFlow}

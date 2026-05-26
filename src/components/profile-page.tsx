@@ -1,14 +1,13 @@
 'use client'
 
 import Image from 'next/image'
-import { useState } from 'react'
-import { LogIn, Settings2, UserRound } from 'lucide-react'
+import { LogIn, UserRound } from 'lucide-react'
 import { ProfileEntryPill } from '@/components/common/profile-entry-pill'
 import { PageShell } from '@/components/common/page-shell'
 import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
-import { PocketSettingsModal } from '@/components/pocket/pocket-settings-modal'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { PocketSettingsPanel } from '@/components/pocket/pocket-settings-panel'
+import { buttonVariants } from '@/components/ui/button'
 import {
   DisplayPanel,
   DisplayPanelContent,
@@ -24,7 +23,6 @@ export function ProfilePage() {
   const { data: authSession } = useAuthSessionQuery()
   const { data: userSettings } = useUserSettingsQuery()
   const saveUserSettingsMutation = useSaveUserSettingsMutation()
-  const [settingsOpen, setSettingsOpen] = useState(false)
 
   const user =
     authSession && authSession.authenticated === true && 'user' in authSession
@@ -48,11 +46,15 @@ export function ProfilePage() {
         />
       }
     >
-      <div className="space-y-4">
-        <DisplayPanel className="rounded-[2.4rem] border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(240,249,255,0.92)_55%,rgba(248,250,252,0.96)_100%)] shadow-[0_28px_86px_rgba(14,165,233,0.10)]">
-          <DisplayPanelContent className="p-6 sm:p-7">
-            <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-              <div className="flex items-start gap-4">
+      <div className="grid gap-4 lg:grid-cols-[7fr_3fr] lg:items-start lg:gap-5">
+        <div className="min-w-0">
+          <PocketSettingsPanel settings={userSettings} onSave={saveUserSettingsMutation.mutate} />
+        </div>
+
+        <aside className="min-w-0 lg:sticky lg:top-6">
+          <DisplayPanel className="rounded-[2.4rem] border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(240,249,255,0.92)_55%,rgba(248,250,252,0.96)_100%)] shadow-[0_28px_86px_rgba(14,165,233,0.10)]">
+            <DisplayPanelContent className="p-5 sm:p-6">
+              <div className="flex flex-col items-center gap-4 text-center sm:items-start sm:text-left">
                 <span className="inline-flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-[1.6rem] border border-white bg-white shadow-sm">
                   {user?.avatarSrc ? (
                     <Image
@@ -74,33 +76,22 @@ export function ProfilePage() {
                   <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-sky-700">
                     My Profile
                   </p>
-                  <DisplayPanelTitle className="text-2xl text-slate-950 sm:text-3xl">
+                  <DisplayPanelTitle className="text-xl text-slate-950 sm:text-2xl">
                     {user?.nickname ?? '先登录，再同步你的设置'}
                   </DisplayPanelTitle>
-                  <DisplayPanelDescription className="max-w-2xl text-sm leading-7 text-slate-600">
+                  <DisplayPanelDescription className="text-sm leading-7 text-slate-600">
                     {user
                       ? (user.email ?? '你的账户信息和 DoraPocket 偏好都会在这里收好。')
                       : '登录后，DoraPocket 才能替你同步设置，把偏好真正带走。'}
                   </DisplayPanelDescription>
                 </div>
-              </div>
 
-              <div className="flex shrink-0 flex-wrap gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="h-10 rounded-full px-4 text-sm font-bold"
-                  onClick={() => setSettingsOpen(true)}
-                >
-                  <Settings2 className="h-4 w-4" />
-                  口袋设置
-                </Button>
                 {!isAuthenticated ? (
                   <a
                     href="/login"
                     className={cn(
                       buttonVariants({ variant: 'default' }),
-                      'h-10 rounded-full px-4 text-sm font-bold',
+                      'h-10 w-full rounded-full px-4 text-sm font-bold sm:w-auto',
                     )}
                   >
                     <LogIn className="h-4 w-4" />
@@ -108,37 +99,10 @@ export function ProfilePage() {
                   </a>
                 ) : null}
               </div>
-            </div>
-          </DisplayPanelContent>
-        </DisplayPanel>
-
-        <DisplayPanel className="rounded-[2.4rem] border-dashed border-sky-200 bg-sky-50/50 shadow-none">
-          <DisplayPanelContent className="flex flex-col gap-3 p-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <DisplayPanelTitle>{PAGE_COPY.profile.manageCollectionTitle}</DisplayPanelTitle>
-              <DisplayPanelDescription className="mt-2 text-sm text-slate-600">
-                {PAGE_COPY.profile.manageCollectionDescription}
-              </DisplayPanelDescription>
-            </div>
-            <a
-              href="/market?section=pocket"
-              className={cn(
-                buttonVariants({ variant: 'default' }),
-                'h-10 rounded-full px-4 text-sm font-bold',
-              )}
-            >
-              {PAGE_COPY.profile.manageCollectionAction}
-            </a>
-          </DisplayPanelContent>
-        </DisplayPanel>
+            </DisplayPanelContent>
+          </DisplayPanel>
+        </aside>
       </div>
-
-      <PocketSettingsModal
-        open={settingsOpen}
-        settings={userSettings}
-        onClose={() => setSettingsOpen(false)}
-        onSave={saveUserSettingsMutation.mutate}
-      />
     </PageShell>
   )
 }

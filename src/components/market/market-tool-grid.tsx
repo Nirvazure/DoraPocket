@@ -3,12 +3,11 @@
 import { ExternalLink, FolderOpenDot, HeartOff, PenLine, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { MarketToolIcon } from '@/components/market/market-tool-icon'
-import type { MarketScope, MarketToolCardItem } from '@/hooks/market-scope'
+import type { MarketToolCardItem } from '@/hooks/market-scope'
 import { MARKET_ACTIVITY_COPY, PAGE_COPY } from '@/shared/ui-copy'
 
 type MarketToolGridProps = {
   tools: MarketToolCardItem[]
-  mode: MarketScope
   savedToolIds: Set<string>
   onSaveTool: (toolId: string) => void
   onRemoveTool: (toolId: string) => void
@@ -18,7 +17,6 @@ type MarketToolGridProps = {
 
 export function MarketToolGrid({
   tools,
-  mode,
   savedToolIds,
   onSaveTool,
   onRemoveTool,
@@ -109,7 +107,7 @@ export function MarketToolGrid({
                 ) : null}
               </div>
               <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
-                {mode === 'pocket' ? (
+                {isSaved ? (
                   <Button
                     type="button"
                     variant="outline"
@@ -122,7 +120,7 @@ export function MarketToolGrid({
                 ) : (
                   <Button
                     type="button"
-                    variant={isSaved ? 'default' : 'outline'}
+                    variant="outline"
                     className="h-7 rounded-full px-2 text-[10px]"
                     onClick={() => onSaveTool(tool.id)}
                   >

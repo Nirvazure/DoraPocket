@@ -111,11 +111,7 @@ export function buildMarketNavigation(args: {
 export function resolveMarketSection(args: {
   selectedSection: MarketSectionKey
   categoryEntries: ReadonlyArray<MarketNavEntry>
-  marketScope: MarketScope
 }): MarketSectionKey {
-  if (args.marketScope === 'pocket' && args.selectedSection === 'pocket') {
-    return 'pocket'
-  }
   const validKeys = new Set(args.categoryEntries.map(([key]) => key))
   if (validKeys.has(args.selectedSection)) return args.selectedSection
   return args.categoryEntries[0]?.[0] ?? 'ai_assistant'

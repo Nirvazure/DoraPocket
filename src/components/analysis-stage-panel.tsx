@@ -1,7 +1,7 @@
 import type { AnalysisFlow } from '@/components/discovery/analysis-stage-content'
 import { AnalysisStageCanvas } from '@/components/analysis-stage-canvas'
+import { AnalysisStageStatusBar } from '@/components/analysis-stage-status-bar'
 import { DoraSpeechBubble } from '@/components/dora-speech-bubble'
-import { RightStatusShowcase } from '@/components/right-status-showcase'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { modeImageSrc, type AssistantModeCard } from '@/shared/mode-registry'
@@ -27,6 +27,7 @@ type AnalysisStagePanelProps = {
   onToggleToolDialMode: () => void
   canSkipVoice: boolean
   onRevealNow: () => void
+  onOpenQuickSettings: () => void
   children?: React.ReactNode
 }
 
@@ -105,6 +106,7 @@ export function AnalysisStagePanel({
   onToggleToolDialMode,
   canSkipVoice,
   onRevealNow,
+  onOpenQuickSettings,
   children,
 }: AnalysisStagePanelProps) {
   return (
@@ -117,9 +119,11 @@ export function AnalysisStagePanel({
         aria-hidden
       />
       <div className="relative z-10 shrink-0 border-b border-border/45 bg-white/90 px-4 py-2.5 backdrop-blur-md">
-        <div className="flex items-center justify-between gap-3">
-          <RightStatusShowcase appState={appState} analysisFlow={analysisFlow} />
-        </div>
+        <AnalysisStageStatusBar
+          appState={appState}
+          analysisFlow={analysisFlow}
+          onOpenQuickSettings={onOpenQuickSettings}
+        />
       </div>
 
       <div className="relative min-h-0 flex-1">

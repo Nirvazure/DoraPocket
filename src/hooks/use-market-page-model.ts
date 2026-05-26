@@ -55,11 +55,14 @@ export function useMarketPageModel(
   const [marketScope, setMarketScope] = useState<MarketScope>(
     initialSection === 'pocket' ? 'pocket' : 'discover',
   )
-  const [selectedSection, setSelectedSection] = useState<MarketSectionKey>(
-    initialSection === 'pocket' ? 'pocket' : 'ai_assistant',
-  )
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [selectedSection, setSelectedSection] = useState<MarketSectionKey>('ai_assistant')
   const [reviewToolId, setReviewToolId] = useState<string | null>(null)
+
+  const discoverCount = toolsSource.length
+  const totalPocketCount = useMemo(
+    () => toolsSource.filter((tool) => pocketToolIds.has(tool.id)).length,
+    [pocketToolIds, toolsSource],
+  )
 
   const tools = useMemo<MarketToolCardItem[]>(() => {
     const enriched = toolsSource.map((tool) => ({
@@ -84,9 +87,8 @@ export function useMarketPageModel(
       resolveMarketSection({
         selectedSection,
         categoryEntries: navigation.categoryEntries,
-        marketScope,
       }),
-    [marketScope, navigation.categoryEntries, selectedSection],
+    [navigation.categoryEntries, selectedSection],
   )
 
   const currentCategoryTools = useMemo(
@@ -101,15 +103,7 @@ export function useMarketPageModel(
 
   const setScope = (scope: MarketScope) => {
     if (scope === marketScope) return
-    if (scope === 'pocket') {
-      setMarketScope('pocket')
-      setSelectedSection('pocket')
-      return
-    }
-    setMarketScope('discover')
-    if (selectedSection === 'pocket') {
-      setSelectedSection(navigation.categoryEntries[0]?.[0] ?? 'ai_assistant')
-    }
+    setMarketScope(scope)
   }
 
   const selectSection = (key: DiscoverSectionKey) => {
@@ -142,15 +136,14 @@ export function useMarketPageModel(
     setSubmitOpen,
     draft,
     setDraft,
-    sidebarCollapsed,
-    setSidebarCollapsed,
     marketScope,
     setScope,
     selectedSection: resolvedSection,
     selectSection,
     categoryEntries: discoverCategoryEntries,
     categoryCounts: navigation.categoryCounts,
-    pocketCount: navigation.pocketCount,
+    discoverCount,
+    totalPocketCount,
     currentCategoryTools,
     reviewTool,
     reviewOpen: reviewTool != null,

@@ -1,12 +1,12 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
 import type { MarketScope } from '@/hooks/market-scope'
 import { cn } from '@/lib/utils'
 import { PAGE_COPY } from '@/shared/ui-copy'
 
 type MarketScopeSwitchProps = {
   scope: MarketScope
+  discoverCount: number
   pocketCount: number
   onScopeChange: (scope: MarketScope) => void
   className?: string
@@ -14,6 +14,7 @@ type MarketScopeSwitchProps = {
 
 export function MarketScopeSwitch({
   scope,
+  discoverCount,
   pocketCount,
   onScopeChange,
   className,
@@ -21,50 +22,53 @@ export function MarketScopeSwitch({
   return (
     <div
       className={cn(
-        'inline-flex shrink-0 items-center rounded-full border border-slate-200/80 bg-slate-100/90 p-1 shadow-sm',
+        'flex w-full min-w-0 items-stretch rounded-xl border border-border/50 bg-white/60 p-0.5 min-h-10',
         className,
       )}
+      role="tablist"
+      aria-label="道具库范围"
     >
-      <Button
-        type="button"
-        size="sm"
-        variant={scope === 'discover' ? 'default' : 'ghost'}
-        className={cn(
-          'rounded-full px-3 text-xs font-bold',
-          scope === 'discover'
-            ? 'shadow-sm'
-            : 'text-foreground/75 hover:bg-white hover:text-foreground',
-        )}
-        onClick={() => onScopeChange('discover')}
-      >
-        {PAGE_COPY.market.discoverScopeLabel}
-      </Button>
-      <Button
-        type="button"
-        size="sm"
-        variant={scope === 'pocket' ? 'default' : 'ghost'}
-        className={cn(
-          'rounded-full px-3 text-xs font-bold',
-          scope === 'pocket'
-            ? 'shadow-sm'
-            : 'text-foreground/75 hover:bg-white hover:text-foreground',
-        )}
-        onClick={() => onScopeChange('pocket')}
-      >
-        {PAGE_COPY.market.pocketSection}
-        {pocketCount > 0 ? (
-          <span
+      {(
+        [
+          {
+            value: 'discover' as const,
+            label: PAGE_COPY.market.discoverScopeLabel,
+            count: discoverCount,
+          },
+          { value: 'pocket' as const, label: PAGE_COPY.market.pocketSection, count: pocketCount },
+        ] as const
+      ).map(({ value, label, count }) => {
+        const active = scope === value
+        return (
+          <button
+            key={value}
+            type="button"
+            role="tab"
+            aria-selected={active}
             className={cn(
-              'ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-semibold',
-              scope === 'pocket'
-                ? 'bg-primary-foreground/15 text-primary-foreground'
-                : 'bg-slate-200/90 text-foreground/70',
+              'flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-1 self-stretch rounded-[9px] px-2 py-0 text-[11px] font-semibold leading-none transition-colors duration-200',
+              active
+                ? 'bg-primary text-primary-foreground shadow-[0_6px_16px_rgba(37,99,235,0.18)]'
+                : 'text-slate-600 hover:bg-white/90 hover:text-slate-950',
             )}
+            onClick={() => onScopeChange(value)}
           >
-            {pocketCount}
-          </span>
-        ) : null}
-      </Button>
+            <span className="truncate">{label}</span>
+            {count > 0 ? (
+              <span
+                className={cn(
+                  'shrink-0 rounded-full px-1 py-0.5 text-[9px] font-semibold leading-none',
+                  active
+                    ? 'bg-primary-foreground/15 text-primary-foreground'
+                    : 'bg-slate-100 text-slate-500',
+                )}
+              >
+                {count}
+              </span>
+            ) : null}
+          </button>
+        )
+      })}
     </div>
   )
 }

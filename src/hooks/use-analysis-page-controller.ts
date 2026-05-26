@@ -72,6 +72,7 @@ export function useAnalysisPageController() {
   const [inputModeOverride, setInputModeOverride] = useState<InputMode | null>(null)
   const [textFallback, setTextFallback] = useState('')
   const [pocketModalOpen, setPocketModalOpen] = useState(false)
+  const [quickSettingsOpen, setQuickSettingsOpen] = useState(false)
   const [pocketGadget, setPocketGadget] = useState<AssistantModeCard | null>(null)
   const [analysisFlow, setAnalysisFlow] = useState<AnalysisFlow>(IDLE_ANALYSIS_FLOW)
   const analysisFlowRef = useRef<AnalysisFlow>(IDLE_ANALYSIS_FLOW)
@@ -325,7 +326,9 @@ export function useAnalysisPageController() {
     systemNotice,
     selectedGadgetKey,
     pocketModalOpen,
+    quickSettingsOpen,
     pocketGadget,
+    userSettings,
     currentPrompt,
     analysisFlow,
     autoSaveEnabled,
@@ -350,6 +353,8 @@ export function useAnalysisPageController() {
     toggleToolDial,
     handleSelectDialGadget,
     setPocketModalOpen,
+    setQuickSettingsOpen,
+    saveUserSettings: saveUserSettingsMutation.mutate,
     setToolDialMode,
     setInputMode,
     setTextFallback,
