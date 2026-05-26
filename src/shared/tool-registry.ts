@@ -832,6 +832,9 @@ export function rankToolItems(
     preferredExecutionModes?: string[]
     avoidAuthWall?: boolean
     prefersSubscriptionTools?: boolean
+    includeToolIds?: Set<string>
+    vectorSimilarity?: Map<string, number>
+    vectorBoost?: number
   },
 ): ToolMatch[] {
   const saved = new Set(opts?.savedToolIds ?? [])
@@ -843,6 +846,9 @@ export function rankToolItems(
   const preferredPlatforms = new Set(opts?.preferredPlatforms ?? [])
   const preferredPricing = new Set(opts?.preferredPricing ?? [])
   const preferredExecutionModes = new Set(opts?.preferredExecutionModes ?? [])
+  const includeToolIds = opts?.includeToolIds
+  const vectorSimilarity = opts?.vectorSimilarity
+  const vectorBoost = opts?.vectorBoost ?? 0
   return filterToolsByBuiltinAvailability(tools, opts?.builtinToolsEnabled ?? true)
     .filter((tool) => tool.status === 'active')
     .map((tool) => {
@@ -863,6 +869,8 @@ export function rankToolItems(
       if (opts?.avoidAuthWall && !tool.requiresAuth) score += 6
       if (opts?.prefersSubscriptionTools && tool.subscriptionSupport) score += 6
       score += Math.max(0, tool.ratingSummary.score)
+      const similarity = vectorSimilarity?.get(tool.id)
+      if (similarity != null) score += similarity * vectorBoost
       return {
         tool,
         score,
@@ -870,6 +878,10 @@ export function rankToolItems(
         sourceLabel,
       }
     })
-    .filter((item) => item.score > 0)
+    .filter((item) => {
+      if (!includeToolIds) return item.score > 0
+      if (!includeToolIds.has(item.tool.id)) return false
+      return scoreToolMatch(query, item.tool) > 0 || vectorSimilarity?.has(item.tool.id) === true
+    })
     .sort((a, b) => b.score - a.score)
 }

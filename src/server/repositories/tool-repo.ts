@@ -3,6 +3,7 @@ import 'server-only'
 import { createHash } from 'node:crypto'
 import type * as Prisma from '../../generated/prisma/internal/prismaNamespace'
 import { prisma } from '@/server/db/prisma'
+import { syncToolEmbedding } from '@/server/retrieval/tool-embedding'
 import {
   TOOL_REGISTRY,
   type ToolCategory,
@@ -133,13 +134,15 @@ export async function upsertImportedTool(input: ImportedToolInput) {
     createdByUserId: input.createdByUserId ?? null,
   }
 
-  return prisma.tool.upsert({
+  const tool = await prisma.tool.upsert({
     where: { id },
     create: data,
     update: {
       ...data,
     },
   })
+  void syncToolEmbedding(tool.id)
+  return tool
 }
 
 export async function listActiveTools() {
@@ -161,5 +164,6 @@ export async function upsertSeedTools(ownerUserId?: string | null) {
       create: input,
       update: input,
     })
+    void syncToolEmbedding(tool.id)
   }
 }

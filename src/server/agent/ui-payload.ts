@@ -1,11 +1,12 @@
-import { listActiveToolItems } from '@/server/market/tool-catalog'
 import { judgeToolRecommendations } from '@/server/agent/tool-rerank'
-import { rankToolItems, type ToolItem, type ToolMatch } from '@/shared/tool-registry'
+import { recallToolMatchesFromCatalog } from '@/server/retrieval/tool-recall'
+import { type ToolItem, type ToolMatch } from '@/shared/tool-registry'
 import type {
   AgentCandidate,
   AgentTaskFrame,
   AgentUiPayload,
   MarketContext,
+  RecallSummary,
 } from '@/shared/market-types'
 
 export function marketSignalsFromContext(marketContext: MarketContext) {
@@ -231,8 +232,7 @@ export async function buildRankedCandidates(
   builtinToolsEnabled: boolean,
   taskFrame?: AgentTaskFrame,
 ) {
-  const toolItems = await listActiveToolItems(builtinToolsEnabled)
-  const initialMatches = rankToolItems(toolItems, userText, {
+  const { matches: initialMatches, recallSummary } = await recallToolMatchesFromCatalog(userText, {
     ...marketSignalsFromContext(marketContext),
     builtinToolsEnabled,
   })
@@ -273,6 +273,7 @@ export async function buildRankedCandidates(
     topTool,
     primaryCandidate,
     selectionReason: judgement.selectionReason,
+    recallSummary,
   }
 }
 
@@ -283,6 +284,7 @@ export function buildAgentUiPayload(
   selectionReason: string,
   marketContext: MarketContext,
   primaryCandidate?: AgentCandidate | null,
+  recallSummary?: RecallSummary | null,
 ): AgentUiPayload {
   return {
     stageLabel: stageLabelFor(taskFrame, topTool, primaryCandidate),
@@ -293,5 +295,6 @@ export function buildAgentUiPayload(
     selectionSignals: buildSelectionSignals(topTool, marketContext, primaryCandidate),
     preferenceSignals: buildPreferenceSignals(topTool, marketContext),
     recommendedActions: buildRecommendedActions(taskFrame, topTool, primaryCandidate),
+    recallSummary: recallSummary ?? null,
   }
 }

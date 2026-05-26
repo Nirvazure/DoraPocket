@@ -75,6 +75,10 @@ model Tool {
   createdByUserId    String?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+  embedding              Unsupported("vector(1024)")?
+  embeddingModel         String?
+  embeddingContentHash   String?
+  embeddedAt             DateTime?
   createdBy          User?    @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
   pocketItems        PocketItem[]
   marketFeedback     MarketFeedback[]

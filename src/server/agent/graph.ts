@@ -117,6 +117,7 @@ const classifierNode = async (state: PocketState): Promise<Partial<PocketState>>
     topTool,
     primaryCandidate,
     selectionReason: judgedSelectionReason,
+    recallSummary,
   } = await buildRankedCandidates(
     userText,
     state.market_context,
@@ -144,6 +145,7 @@ const classifierNode = async (state: PocketState): Promise<Partial<PocketState>>
     selectionReason,
     state.market_context,
     primaryCandidate,
+    recallSummary,
   )
 
   return {

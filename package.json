@@ -30,6 +30,7 @@
     "prisma:migrate": "prisma migrate dev --config prisma.config.ts",
     "seed:tools": "tsx scripts/seed-tools.ts",
     "seed:market-feedback": "tsx scripts/seed-market-feedback.ts",
+    "backfill:tool-embeddings": "tsx scripts/backfill-tool-embeddings.ts",
     "prepare": "husky"
   },
   "dependencies": {

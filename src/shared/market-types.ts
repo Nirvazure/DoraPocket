@@ -111,6 +111,14 @@ export type AgentCandidate = {
   externalBoundary?: string
 }
 
+export type RecallSummary = {
+  vectorEnabled: boolean
+  vectorCount: number
+  keywordCount: number
+  mergedCount: number
+  topVectorTools: Array<{ toolId: string; title: string }>
+}
+
 export type AgentUiPayload = {
   stageLabel: string
   stageTrail: string[]
@@ -120,4 +128,5 @@ export type AgentUiPayload = {
   selectionSignals: string[]
   preferenceSignals: string[]
   recommendedActions: string[]
+  recallSummary?: RecallSummary | null
 }
