@@ -29,19 +29,11 @@ export function PocketSettingsPanel({ settings, onSave }: PocketSettingsPanelPro
           </p>
           <DisplayPanelTitle className="mt-1 text-2xl">口袋设置</DisplayPanelTitle>
           <DisplayPanelDescription className="mt-2 text-sm text-slate-600">
-            管理自动收藏与内置道具。输入方式、解释风格和语音播报可在首页 Dora 面板右上角快捷设置。
+            管理内置道具。输入方式、解释风格和语音播报可在首页 Dora 面板右上角快捷设置。
           </DisplayPanelDescription>
         </DisplayPanelHeader>
 
         <div className="mt-5 space-y-2">
-          <SettingRow label="自动收进口袋" description="值得以后再用时，先替你收好。">
-            <Switch
-              checked={settings?.autoSaveToPocketEnabled !== false}
-              onCheckedChange={(checked) => update({ autoSaveToPocketEnabled: checked })}
-              aria-label="自动收进口袋"
-            />
-          </SettingRow>
-
           <SettingRow
             label="内置道具开关"
             description="关闭后，系统会把内置道具视为不存在，不展示、不推荐，也不允许使用。"

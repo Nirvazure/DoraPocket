@@ -110,10 +110,6 @@ export const SETTINGS_COPY = {
         { value: 'full', label: '完整播报' },
       ],
     },
-    autoSave: {
-      title: '自动收进口袋',
-      description: '当系统判断这次值得以后再用时，是否替你先收好。',
-    },
     memory: {
       title: '记录历史帮助推荐',
       description: '允许系统记住你怎么选，减少下一次重复判断。',
@@ -152,7 +148,6 @@ export const SETTINGS_COPY = {
 } as const
 
 export const SYSTEM_NOTICE_COPY = {
-  autoSaved: '已收进口袋',
   savedForLater: '已保存为以后可直接打开的工具',
   analysisFailed: '这次出手失败了，请稍后再试',
 } as const

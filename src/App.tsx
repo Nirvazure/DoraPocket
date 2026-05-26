@@ -24,8 +24,6 @@ export default function App() {
     userSettings,
     currentPrompt,
     analysisFlow,
-    autoSaveEnabled,
-    autoSaveNotice,
     selectedToolPayload,
     agentUiPayload,
     rootCursor,
@@ -100,14 +98,10 @@ export default function App() {
           analysisFlow={analysisFlow}
           agentPayload={agentUiPayload}
           selectedToolPayload={selectedToolPayload}
-          autoSaveEnabled={autoSaveEnabled}
-          autoSaveNotice={autoSaveNotice}
           onOpenPocket={workspaceActions.onOpenPocket}
           onSaveCandidate={workspaceActions.onSaveCandidate}
           onLaunchCandidate={workspaceActions.onLaunchCandidate}
           onOpenExternalCandidate={workspaceActions.onOpenExternalCandidate}
-          onUndoAutoSave={workspaceActions.onUndoAutoSave}
-          onEnableAutoSave={workspaceActions.onEnableAutoSave}
           onFeedback={workspaceActions.onFeedback}
           onDraftTask={handleDraftTask}
         />

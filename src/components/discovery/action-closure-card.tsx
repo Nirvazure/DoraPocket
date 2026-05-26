@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CheckCircle2, RotateCw } from 'lucide-react'
+import { CheckCircle2 } from 'lucide-react'
 import {
   isRecommendationCovered,
   isRecommendationRevealing,
@@ -17,11 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 type ActionClosureCardProps = {
   leaderToolId: string | null
   analysisFlow: AnalysisFlow
-  autoSaveNotice: { toolId: string; label: string } | null
-  autoSaveEnabled: boolean
   onOpenPocket: () => void
-  onUndoAutoSave: () => void
-  onEnableAutoSave: () => void
   onFeedback: (toolId: string, vote: 'up' | 'down') => void
 }
 
@@ -30,11 +26,7 @@ const FEEDBACK_OPTIONS = ['解决了', '不适合', '太复杂', '太贵', '想�
 export function ActionClosureCard({
   leaderToolId,
   analysisFlow,
-  autoSaveNotice,
-  autoSaveEnabled,
   onOpenPocket,
-  onUndoAutoSave,
-  onEnableAutoSave,
   onFeedback,
 }: ActionClosureCardProps) {
   const [selectedFeedback, setSelectedFeedback] = useState<string | null>(null)
@@ -92,9 +84,7 @@ export function ActionClosureCard({
       >
         <div className="rounded-3xl border border-border/60 bg-slate-50/90 p-4">
           <p className="text-sm font-semibold text-foreground">
-            {autoSaveNotice
-              ? `${autoSaveNotice.label} 已经收进口袋`
-              : '试用之后，如果你觉得这次真的有用，再把它留作下次的可复用入口。'}
+            试用之后，如果你觉得这次真的有用，再把它留作下次的可复用入口。
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Button
@@ -105,29 +95,6 @@ export function ActionClosureCard({
             >
               查看我的口袋
             </Button>
-            {autoSaveNotice ? (
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                className="h-8 rounded-full bg-white px-3 text-[11px]"
-                onClick={onUndoAutoSave}
-              >
-                撤销
-              </Button>
-            ) : null}
-            {!autoSaveEnabled ? (
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                className="h-8 rounded-full bg-white px-3 text-[11px]"
-                onClick={onEnableAutoSave}
-              >
-                <RotateCw className="mr-1 h-3 w-3" />
-                开启自动收进口袋
-              </Button>
-            ) : null}
           </div>
         </div>
         <DisplayPanel className="rounded-3xl border-border/60 bg-white p-3 shadow-none">

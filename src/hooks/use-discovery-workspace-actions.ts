@@ -3,45 +3,34 @@ import { useRouter } from 'next/navigation'
 import { openToolById, saveToolById } from '@/lib/tool-actions'
 import { SYSTEM_NOTICE_COPY } from '@/shared/ui-copy'
 
-type AutoSaveNotice = { toolId: string; label: string } | null
-
 type UseDiscoveryWorkspaceActionsOptions = {
-  autoSaveNotice: AutoSaveNotice
   getLatestUserPrompt: () => string
   saveToolToPocket: (input: {
     toolId: string
     sourceQuestion?: string
     presetArgs?: Record<string, unknown>
   }) => void
-  removeToolFromPocket: (input: { toolId: string }) => void
   markToolUsed: (input: { toolId: string }) => void
   saveMarketFeedback: (input: { toolId: string; vote: 'up' | 'down' }) => void
-  setAutoSaveNotice: (notice: AutoSaveNotice) => void
   setSystemNotice: (notice: {
     level: 'task' | 'ambient' | 'critical' | 'silent'
     message: string
     autoDismissMs?: number
   }) => void
-  enableAutoSave: () => void
 }
 
 export function useDiscoveryWorkspaceActions({
-  autoSaveNotice,
   getLatestUserPrompt,
   saveToolToPocket,
-  removeToolFromPocket,
   markToolUsed,
   saveMarketFeedback,
-  setAutoSaveNotice,
   setSystemNotice,
-  enableAutoSave,
 }: UseDiscoveryWorkspaceActionsOptions) {
   const router = useRouter()
 
   const onOpenPocket = useCallback(() => {
-    setAutoSaveNotice(null)
     router.push('/market?section=pocket')
-  }, [router, setAutoSaveNotice])
+  }, [router])
 
   const onSaveCandidate = useCallback(
     (toolId: string) => {
@@ -84,16 +73,6 @@ export function useDiscoveryWorkspaceActions({
     [setSystemNotice],
   )
 
-  const onUndoAutoSave = useCallback(() => {
-    if (!autoSaveNotice) return
-    removeToolFromPocket({ toolId: autoSaveNotice.toolId })
-    setAutoSaveNotice(null)
-  }, [autoSaveNotice, removeToolFromPocket, setAutoSaveNotice])
-
-  const onEnableAutoSave = useCallback(() => {
-    enableAutoSave()
-  }, [enableAutoSave])
-
   const onFeedback = useCallback(
     (toolId: string, vote: 'up' | 'down') => {
       saveMarketFeedback({ toolId, vote })
@@ -106,8 +85,6 @@ export function useDiscoveryWorkspaceActions({
     onSaveCandidate,
     onLaunchCandidate,
     onOpenExternalCandidate,
-    onUndoAutoSave,
-    onEnableAutoSave,
     onFeedback,
   }
 }

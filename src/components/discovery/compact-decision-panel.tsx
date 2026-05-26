@@ -12,14 +12,10 @@ type CompactDecisionPanelProps = {
   payload: AgentUiPayload | null
   selectedToolPayload: ChatToolPayload
   analysisFlow: AnalysisFlow
-  autoSaveNotice: { toolId: string; label: string } | null
-  autoSaveEnabled: boolean
   onSaveCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
   onOpenExternalCandidate: (url: string) => void
   onOpenPocket: () => void
-  onUndoAutoSave: () => void
-  onEnableAutoSave: () => void
   onFeedback: (toolId: string, vote: 'up' | 'down') => void
 }
 
@@ -27,14 +23,10 @@ export function CompactDecisionPanel({
   payload,
   selectedToolPayload,
   analysisFlow,
-  autoSaveNotice,
-  autoSaveEnabled,
   onSaveCandidate,
   onLaunchCandidate,
   onOpenExternalCandidate,
   onOpenPocket,
-  onUndoAutoSave,
-  onEnableAutoSave,
   onFeedback,
 }: CompactDecisionPanelProps) {
   const leader = resolveLeadingCandidate(payload, selectedToolPayload)
@@ -58,11 +50,7 @@ export function CompactDecisionPanel({
       <ActionClosureCard
         leaderToolId={leaderToolId}
         analysisFlow={analysisFlow}
-        autoSaveNotice={autoSaveNotice}
-        autoSaveEnabled={autoSaveEnabled}
         onOpenPocket={onOpenPocket}
-        onUndoAutoSave={onUndoAutoSave}
-        onEnableAutoSave={onEnableAutoSave}
         onFeedback={onFeedback}
       />
     </div>

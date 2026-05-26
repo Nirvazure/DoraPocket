@@ -69,7 +69,6 @@ export function createInitialState(
       selectionSignals: [],
       preferenceSignals: [],
       recommendedActions: [],
-      shouldAutoSave: false,
     },
     final_text: '',
     answerBookFromPocket,

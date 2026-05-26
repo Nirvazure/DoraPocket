@@ -35,7 +35,6 @@ model UserSettings {
   voicePlaybackMode       String   @default("key-result")
   soundEffectsEnabled     Boolean  @default(true)
   defaultInputMode        String   @default("text")
-  autoSaveToPocketEnabled Boolean  @default(true)
   memoryEnabled           Boolean  @default(true)
   builtinToolsEnabled     Boolean  @default(false)
   explanationMode         String   @default("standard")

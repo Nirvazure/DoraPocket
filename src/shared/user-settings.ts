@@ -8,7 +8,6 @@ export type UserSettings = {
   voicePlaybackMode: VoicePlaybackMode
   soundEffectsEnabled: boolean
   defaultInputMode: InputModePreference
-  autoSaveToPocketEnabled: boolean
   memoryEnabled: boolean
   builtinToolsEnabled: boolean
   explanationMode: ExplanationMode
@@ -21,7 +20,6 @@ export function getDefaultUserSettings(): UserSettings {
     voicePlaybackMode: 'key-result',
     soundEffectsEnabled: true,
     defaultInputMode: 'text',
-    autoSaveToPocketEnabled: true,
     memoryEnabled: true,
     builtinToolsEnabled: false,
     explanationMode: 'standard',
