@@ -50,7 +50,6 @@ export function mapDbToolToToolItem(tool: DbTool): ToolItem {
     iconType: (tool.iconType as ToolItem['iconType']) ?? undefined,
     iconText: tool.iconText ?? undefined,
     iconImageUrl: tool.iconImageUrl ?? null,
-    iconImageLocalPath: tool.iconImageLocalPath ?? null,
     url: tool.url ?? null,
     description: tool.description,
     category: tool.category as ToolItem['category'],

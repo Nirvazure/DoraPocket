@@ -1,8 +1,8 @@
 import { z } from 'zod'
 import type { MarketBookmarkSeed } from '@/shared/market-seed-types'
 import { MARKET_BOOKMARK_SEEDS } from '@/shared/market-bookmark-seeds'
-import { MARKET_FAVICON_MANIFEST } from '@/shared/market-favicon-manifest'
-import { MARKET_FAVICON_REMOTE_MANIFEST } from '@/shared/market-favicon-remote-manifest'
+import { buildMarketAssetPublicUrl } from '@/shared/market-asset-url'
+import { MARKET_ICON_OBJECT_KEYS } from '@/shared/market-icon-object-keys'
 
 export type ToolCategory =
   | 'ai_assistant'
@@ -46,7 +46,6 @@ export type ToolItem = {
   iconType?: 'emoji' | 'favicon'
   iconText?: string
   iconImageUrl?: string | null
-  iconImageLocalPath?: string | null
   url: string | null
   description: string
   category: ToolCategory
@@ -641,27 +640,15 @@ function fallbackBookmarkEmoji(seed: MarketBookmarkSeed): string {
 }
 
 export function convertBookmarkSeedToToolItem(seed: MarketBookmarkSeed): ToolItem {
-  const remoteFavicon = MARKET_FAVICON_REMOTE_MANIFEST[seed.seedId]
-  const favicon = (
-    MARKET_FAVICON_MANIFEST as Record<
-      string,
-      {
-        faviconMode: 'site_icon' | 'root_favicon' | 'fallback'
-        faviconUrl: string | null
-        faviconLocalPath: string
-      }
-    >
-  )[seed.seedId]
+  const iconObjectKey = MARKET_ICON_OBJECT_KEYS[seed.seedId]
+  const iconImageUrl = iconObjectKey ? buildMarketAssetPublicUrl(iconObjectKey) : null
   return {
     id: `bookmark_${seed.seedId}`,
     name: seed.name,
     icon: fallbackBookmarkEmoji(seed),
-    iconType: 'favicon',
+    iconType: iconImageUrl ? 'favicon' : 'emoji',
     iconText: fallbackBookmarkEmoji(seed),
-    iconImageUrl: remoteFavicon?.faviconUrl ?? favicon?.faviconUrl ?? seed.faviconUrl ?? null,
-    iconImageLocalPath: remoteFavicon
-      ? null
-      : (favicon?.faviconLocalPath ?? seed.faviconLocalPath ?? null),
+    iconImageUrl,
     url: seed.displayUrl,
     description: seed.description,
     category: seed.category,

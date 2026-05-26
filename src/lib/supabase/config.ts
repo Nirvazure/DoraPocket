@@ -33,3 +33,11 @@ export function getAvatarBucket() {
   }
   return value
 }
+
+export function getMarketAssetsBucket() {
+  const value = process.env.SUPABASE_STORAGE_BUCKET_MARKET?.trim()
+  if (!value) {
+    throw new Error('SUPABASE_STORAGE_BUCKET_MARKET is required')
+  }
+  return value
+}

@@ -19,6 +19,16 @@ function toJsonValue(value: unknown): Prisma.InputJsonValue | undefined {
   return value as Prisma.InputJsonValue
 }
 
+function withoutIconFields<T extends Record<string, unknown>>(input: T) {
+  const copy = { ...input }
+  delete copy.icon
+  delete copy.iconType
+  delete copy.iconText
+  delete copy.iconImageUrl
+  delete copy.iconImageLocalPath
+  return copy
+}
+
 async function main() {
   for (const tool of TOOL_REGISTRY) {
     const input = {
@@ -28,7 +38,7 @@ async function main() {
       iconType: tool.iconType ?? null,
       iconText: tool.iconText ?? null,
       iconImageUrl: tool.iconImageUrl ?? null,
-      iconImageLocalPath: tool.iconImageLocalPath ?? null,
+      iconImageLocalPath: null,
       url: tool.url ?? null,
       description: tool.description,
       category: tool.category,
@@ -54,7 +64,7 @@ async function main() {
     await prisma.tool.upsert({
       where: { id: tool.id },
       create: input,
-      update: input,
+      update: withoutIconFields(input),
     })
   }
 }
