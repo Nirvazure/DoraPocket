@@ -53,13 +53,20 @@ export function PocketQuickSettingsFields({ settings, onSave }: PocketQuickSetti
 
       <SettingRow
         label="语音播报"
-        description="结果出来后，是否用语音补一句。"
+        description="结果出来后朗读关键结论；长回答不会整段播报。"
         className={rowClassName}
       >
         <Switch
           size="lg"
           checked={settings?.voicePlaybackEnabled !== false}
-          onCheckedChange={(checked) => update({ voicePlaybackEnabled: checked })}
+          onCheckedChange={(checked) =>
+            update({
+              voicePlaybackEnabled: checked,
+              ...(checked && settings?.voicePlaybackMode === 'off'
+                ? { voicePlaybackMode: 'key-result' }
+                : {}),
+            })
+          }
           aria-label="语音播报"
         />
       </SettingRow>

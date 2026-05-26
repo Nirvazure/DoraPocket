@@ -21,7 +21,6 @@ import { usePocketGadgetModalActions } from '@/hooks/use-pocket-gadget-modal-act
 import { useToolDial } from '@/hooks/use-tool-dial'
 import { useVoiceInput } from '@/hooks/use-voice-input'
 import { useSaveChatHistoryMutation, useChatHistoryQuery } from '@/lib/query/chat-history'
-import { useSaveMarketFeedbackMutation } from '@/lib/query/market'
 import { useMarkToolUsedMutation, useSaveToolToPocketMutation } from '@/lib/query/pocket'
 import { useSaveUserSettingsMutation, useUserSettingsQuery } from '@/lib/query/user-settings'
 import { MODE_KEY_ANYWHERE_DOOR, type AssistantModeCard } from '@/shared/mode-registry'
@@ -56,7 +55,6 @@ export function useAnalysisPageController() {
 
   const saveToolToPocketMutation = useSaveToolToPocketMutation()
   const markToolUsedMutation = useMarkToolUsedMutation()
-  const saveMarketFeedbackMutation = useSaveMarketFeedbackMutation()
   const saveChatHistoryMutation = useSaveChatHistoryMutation()
   const { data: chatHistory = [] } = useChatHistoryQuery()
   const { data: userSettings } = useUserSettingsQuery()
@@ -186,7 +184,6 @@ export function useAnalysisPageController() {
     getLatestUserPrompt: () => latestUserPromptRef.current,
     saveToolToPocket: saveToolToPocketMutation.mutate,
     markToolUsed: markToolUsedMutation.mutate,
-    saveMarketFeedback: saveMarketFeedbackMutation.mutate,
     setSystemNotice,
   })
 

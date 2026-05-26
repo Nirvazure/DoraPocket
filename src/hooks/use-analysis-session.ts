@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { playAudioStream, playDoraPocketSfx, stopAudioPlayback } from '@/lib/client/audio'
 import { askQwen, type ChatToolPayload } from '@/lib/client/llm'
 import { buildTTSAudioUrl } from '@/lib/client/tts'
-import type { UserSettings } from '@/shared/user-settings'
+import type { UserSettings, VoicePlaybackMode } from '@/shared/user-settings'
 import { pickModeCardAfterTurn, type AssistantModeCard } from '@/shared/mode-registry'
 import type { AgentUiPayload } from '@/shared/market-types'
 import { SYSTEM_NOTICE_COPY } from '@/shared/ui-copy'
@@ -41,6 +41,31 @@ type AgentTurnReply = {
   text: string
   selectedTool: ChatToolPayload
   uiPayload: AgentUiPayload | null
+}
+
+const KEY_RESULT_MAX_CHARS = 120
+
+function resolveVoicePlaybackText(reply: AgentTurnReply, mode: VoicePlaybackMode): string {
+  if (mode === 'full') {
+    return reply.text.trim()
+  }
+
+  const selectionReason = reply.uiPayload?.selectionReason?.trim()
+  if (selectionReason) {
+    return selectionReason.length <= KEY_RESULT_MAX_CHARS
+      ? selectionReason
+      : `${selectionReason.slice(0, KEY_RESULT_MAX_CHARS)}…`
+  }
+
+  const text = reply.text.trim()
+  if (!text) return ''
+
+  const firstSentence = text.match(/^[^。！？\n]+[。！？]?/u)?.[0]?.trim() ?? text
+  if (firstSentence.length <= KEY_RESULT_MAX_CHARS) {
+    return firstSentence
+  }
+
+  return `${firstSentence.slice(0, KEY_RESULT_MAX_CHARS)}…`
 }
 
 export function useAnalysisSession({
@@ -152,13 +177,14 @@ export function useAnalysisSession({
         return
       }
 
-      if (voicePlaybackMode === 'key-result' && reply.text.trim().length > 120) {
+      const speechText = resolveVoicePlaybackText(reply, voicePlaybackMode)
+      if (!speechText) {
         onRevealRecommendation()
         finishSpeakingTurn()
         return
       }
 
-      const audioUrl = await buildTTSAudioUrl(reply.text)
+      const audioUrl = await buildTTSAudioUrl(speechText)
 
       if (audioUrl) {
         setAppState('speaking')

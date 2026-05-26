@@ -3,11 +3,11 @@ import 'server-only'
 import { prisma } from '@/server/db/prisma'
 import { getDefaultUserSettings, type UserSettings } from '@/shared/user-settings'
 
-function isMissingBuiltinToolsColumnError(error: unknown): boolean {
+function isMissingUserSettingsColumnError(error: unknown): boolean {
   return (
     error instanceof Error &&
-    error.message.includes('UserSettings.builtinToolsEnabled') &&
-    error.message.includes('does not exist')
+    error.message.includes('UserSettings.') &&
+    error.message.includes('does not exist in the current database')
   )
 }
 
@@ -16,7 +16,7 @@ export async function getUserSettings(userId: string): Promise<UserSettings> {
   try {
     settings = await prisma.userSettings.findUnique({ where: { userId } })
   } catch (error) {
-    if (isMissingBuiltinToolsColumnError(error)) {
+    if (isMissingUserSettingsColumnError(error)) {
       return getDefaultUserSettings()
     }
     throw error
@@ -48,7 +48,7 @@ export async function upsertUserSettings(userId: string, input: UserSettings) {
       update: { ...input },
     })
   } catch (error) {
-    if (!isMissingBuiltinToolsColumnError(error)) {
+    if (!isMissingUserSettingsColumnError(error)) {
       throw error
     }
 

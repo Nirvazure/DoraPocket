@@ -1,3 +1,5 @@
+'use client'
+
 import { AnalysisBottomBar } from '@/components/analysis-bottom-bar'
 import { AnalysisStagePanel } from '@/components/analysis-stage-panel'
 import { PageShell } from '@/components/common/page-shell'
@@ -98,11 +100,9 @@ export default function App() {
           analysisFlow={analysisFlow}
           agentPayload={agentUiPayload}
           selectedToolPayload={selectedToolPayload}
-          onOpenPocket={workspaceActions.onOpenPocket}
           onSaveCandidate={workspaceActions.onSaveCandidate}
           onLaunchCandidate={workspaceActions.onLaunchCandidate}
           onOpenExternalCandidate={workspaceActions.onOpenExternalCandidate}
-          onFeedback={workspaceActions.onFeedback}
           onDraftTask={handleDraftTask}
         />
       </div>
@@ -115,21 +115,18 @@ export default function App() {
         toolDialMode={toolDialMode}
         selectedGadgetKey={selectedGadgetKey}
         dialGadgets={dialGadgets}
-        currentPrompt={currentPrompt}
-        botResponse={botResponse}
-        hasResult={Boolean(agentUiPayload || selectedToolPayload?.toolId)}
         onToggleToolDial={toggleToolDial}
         onSelectDialGadget={handleSelectDialGadget}
         onToggleToolDialMode={() =>
           setToolDialMode((value) => (value === 'quick' ? 'all' : 'quick'))
         }
-        canSkipVoice={canSkipVoice}
-        onRevealNow={revealNow}
         onOpenQuickSettings={() => setQuickSettingsOpen(true)}
       >
         <AnalysisBottomBar
           analysisFlow={analysisFlow}
           appState={appState}
+          botResponse={botResponse}
+          canSkipVoice={canSkipVoice}
           inputMode={inputMode}
           textFallback={textFallback}
           canSendText={canSendText}
@@ -144,6 +141,7 @@ export default function App() {
           onHoldToTalkStart={holdToTalkStart}
           onHoldToTalkEnd={holdToTalkEnd}
           onStopVoicePlayback={stopAudioPlayback}
+          onRevealNow={revealNow}
         />
       </AnalysisStagePanel>
     </PageShell>

@@ -1,7 +1,7 @@
 import { ExternalLink, FolderOpenDot, Sparkles } from 'lucide-react'
-import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { MarketToolIcon } from '@/components/market/market-tool-icon'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   DisplayPanel,
@@ -18,6 +18,7 @@ import {
 } from '@/components/discovery/analysis-stage-content'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
+import { getToolById } from '@/shared/tool-registry'
 
 type PrimaryRecommendationCardProps = {
   payload: AgentUiPayload | null
@@ -39,6 +40,7 @@ export function PrimaryRecommendationCard({
   const content = buildPrimaryRecommendation(payload, selectedToolPayload)
   const leader = content.leader
   const leaderToolId = leader?.toolId ?? null
+  const leaderTool = leaderToolId ? getToolById(leaderToolId) : null
   const leaderExternalUrl =
     leader?.candidateType === 'external_suggestion' ? (leader.url ?? null) : null
   const revealing = isRecommendationRevealing(analysisFlow)
@@ -56,21 +58,10 @@ export function PrimaryRecommendationCard({
             <Sparkles className="h-3.5 w-3.5" />
             步骤 3 / 快掏出来了
           </Badge>
-          <div className="flex items-center gap-4">
-            <span className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-white bg-white/80 shadow-sm">
-              <Image
-                src="/images/pocket.png"
-                alt=""
-                width={56}
-                height={56}
-                className="h-14 w-14 object-contain"
-              />
-            </span>
-            <div className="min-w-0 flex-1 space-y-3">
-              <Skeleton className="h-4 w-32 bg-sky-100" />
-              <Skeleton className="h-9 w-full max-w-md bg-sky-100" />
-              <Skeleton className="h-4 w-4/5 bg-slate-200" />
-            </div>
+          <div className="space-y-3">
+            <Skeleton className="h-4 w-32 bg-sky-100" />
+            <Skeleton className="h-9 w-full max-w-md bg-sky-100" />
+            <Skeleton className="h-4 w-4/5 bg-slate-200" />
           </div>
         </DisplayPanelHeader>
         <DisplayPanelContent className="relative z-10 grid gap-3 px-5 pb-6 pt-0 sm:px-6">
@@ -96,14 +87,23 @@ export function PrimaryRecommendationCard({
           <Sparkles className="h-3.5 w-3.5" />
           步骤 3 / 正式出手
         </Badge>
-        <div className={revealing ? 'animate-in fade-in duration-300' : undefined}>
-          <p className="text-sm font-semibold text-white/65">这次先用</p>
-          <DisplayPanelTitle className="mt-2 text-4xl leading-tight text-white sm:text-5xl">
-            {content.title}
-          </DisplayPanelTitle>
-          <DisplayPanelDescription className="mt-4 max-w-3xl text-sm leading-7 text-white/76">
-            {content.description}
-          </DisplayPanelDescription>
+        <div
+          className={
+            revealing
+              ? 'animate-in fade-in flex items-start justify-between gap-4 duration-300'
+              : 'flex items-start justify-between gap-4'
+          }
+        >
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-white/65">这次先用</p>
+            <DisplayPanelTitle className="mt-2 text-4xl leading-tight text-white sm:text-5xl">
+              {content.title}
+            </DisplayPanelTitle>
+            <DisplayPanelDescription className="mt-4 max-w-3xl text-sm leading-7 text-white/76">
+              {content.description}
+            </DisplayPanelDescription>
+          </div>
+          {leaderTool ? <MarketToolIcon tool={leaderTool} size="lg" /> : null}
         </div>
       </DisplayPanelHeader>
       <DisplayPanelContent className="relative z-10 flex flex-wrap gap-2 px-5 pb-6 pt-0 sm:px-6">

@@ -5,8 +5,8 @@ import { useStore } from '../store'
 import type { Group } from 'three'
 import { getAudioFrequency } from '@/lib/client/audio'
 
-/** 略下移整模，但向上回收一些空间，让右侧舞台重心更平衡 */
-const AVATAR_FLOOR_Y_OFFSET = -0.87
+/** 略下移整模，让右侧舞台重心更靠中下 */
+const AVATAR_FLOOR_Y_OFFSET = -1.05
 
 export function Avatar() {
   const group = useRef<Group>(null)
