@@ -1382,7 +1382,6 @@ export const UserSettingsScalarFieldEnum = {
   voicePlaybackMode: 'voicePlaybackMode',
   soundEffectsEnabled: 'soundEffectsEnabled',
   defaultInputMode: 'defaultInputMode',
-  autoSaveToPocketEnabled: 'autoSaveToPocketEnabled',
   memoryEnabled: 'memoryEnabled',
   builtinToolsEnabled: 'builtinToolsEnabled',
   explanationMode: 'explanationMode',

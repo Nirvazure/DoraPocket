@@ -29,6 +29,7 @@
     "prisma:generate": "prisma generate --config prisma.config.ts",
     "prisma:migrate": "prisma migrate dev --config prisma.config.ts",
     "seed:tools": "tsx scripts/seed-tools.ts",
+    "seed:market-feedback": "tsx scripts/seed-market-feedback.ts",
     "prepare": "husky"
   },
   "dependencies": {

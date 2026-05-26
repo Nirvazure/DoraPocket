@@ -11,17 +11,7 @@ import {
 
 export const USER_SETTINGS_STORAGE_KEY = 'dp-user-settings-v1'
 export const USER_SETTINGS_UPDATED_EVENT = 'dp-user-settings-updated'
-export const LEGACY_AUTO_SAVE_STORAGE_KEY = 'dp-pocket-autosave-enabled-v1'
 export const LEGACY_FONT_PRESET_STORAGE_KEY = 'dorapocket-font-preset'
-
-function resolveLegacyAutoSaveValue(): boolean {
-  if (typeof window === 'undefined') return true
-  try {
-    return window.localStorage.getItem(LEGACY_AUTO_SAVE_STORAGE_KEY) !== '0'
-  } catch {
-    return true
-  }
-}
 
 function resolveLegacyFontPreset(): FontPreset {
   if (typeof window === 'undefined') return 'c'
@@ -59,7 +49,6 @@ export function loadUserSettings(): UserSettings {
   if (!parsed || typeof parsed !== 'object') {
     return {
       ...defaults,
-      autoSaveToPocketEnabled: resolveLegacyAutoSaveValue(),
       fontPreset: resolveLegacyFontPreset(),
     }
   }
@@ -70,10 +59,6 @@ export function loadUserSettings(): UserSettings {
     voicePlaybackMode: normalizeVoicePlaybackMode(raw.voicePlaybackMode),
     soundEffectsEnabled: normalizeBoolean(raw.soundEffectsEnabled, defaults.soundEffectsEnabled),
     defaultInputMode: normalizeInputMode(raw.defaultInputMode),
-    autoSaveToPocketEnabled: normalizeBoolean(
-      raw.autoSaveToPocketEnabled,
-      resolveLegacyAutoSaveValue(),
-    ),
     memoryEnabled: normalizeBoolean(raw.memoryEnabled, defaults.memoryEnabled),
     builtinToolsEnabled: normalizeBoolean(raw.builtinToolsEnabled, defaults.builtinToolsEnabled),
     explanationMode: normalizeExplanationMode(raw.explanationMode),
@@ -92,7 +77,6 @@ export function saveUserSettings(settings: UserSettings): UserSettings {
     voicePlaybackMode: normalizeVoicePlaybackMode(settings.voicePlaybackMode),
     soundEffectsEnabled: Boolean(settings.soundEffectsEnabled),
     defaultInputMode: normalizeInputMode(settings.defaultInputMode),
-    autoSaveToPocketEnabled: Boolean(settings.autoSaveToPocketEnabled),
     memoryEnabled: Boolean(settings.memoryEnabled),
     builtinToolsEnabled: Boolean(settings.builtinToolsEnabled),
     explanationMode: normalizeExplanationMode(settings.explanationMode),
@@ -104,10 +88,6 @@ export function saveUserSettings(settings: UserSettings): UserSettings {
 
   if (typeof window !== 'undefined') {
     try {
-      window.localStorage.setItem(
-        LEGACY_AUTO_SAVE_STORAGE_KEY,
-        next.autoSaveToPocketEnabled ? '1' : '0',
-      )
       window.localStorage.setItem(LEGACY_FONT_PRESET_STORAGE_KEY, next.fontPreset)
     } catch {
       /* ignore */
@@ -138,11 +118,7 @@ export function subscribeUserSettings(listener: (settings: UserSettings) => void
   }
 
   const handleStorage = (event: StorageEvent) => {
-    if (
-      event.key !== USER_SETTINGS_STORAGE_KEY &&
-      event.key !== LEGACY_AUTO_SAVE_STORAGE_KEY &&
-      event.key !== LEGACY_FONT_PRESET_STORAGE_KEY
-    ) {
+    if (event.key !== USER_SETTINGS_STORAGE_KEY && event.key !== LEGACY_FONT_PRESET_STORAGE_KEY) {
       return
     }
 

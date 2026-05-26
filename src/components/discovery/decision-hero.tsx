@@ -1,6 +1,7 @@
-﻿import { ExternalLink, FolderOpenDot, Sparkles } from 'lucide-react'
+import { ExternalLink, FolderOpenDot, Sparkles } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { MarketToolIcon } from '@/components/market/market-tool-icon'
 import {
   DisplayPanel,
   DisplayPanelContent,
@@ -60,14 +61,19 @@ export function DecisionHero({
         </Badge>
         <div className="mt-5 grid gap-5 xl:grid-cols-[1fr_auto] xl:items-end">
           <DisplayPanelHeader className="p-0">
-            <p className="text-sm font-semibold text-white/65">现在先用</p>
-            <DisplayPanelTitle className="mt-2 text-4xl leading-none text-white sm:text-5xl">
-              {title}
-            </DisplayPanelTitle>
-            <p className="mt-4 max-w-3xl text-sm leading-7 text-white/76">{reason}</p>
-            <DisplayPanel className="mt-3 max-w-3xl rounded-2xl border-white/12 bg-white/8 px-4 py-3 text-xs leading-relaxed text-white/72 shadow-none">
-              {reverseReason}
-            </DisplayPanel>
+            <div className="flex items-start gap-4">
+              {leadingTool ? <MarketToolIcon tool={leadingTool} size="md" /> : null}
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-white/65">现在先用</p>
+                <DisplayPanelTitle className="mt-2 text-4xl leading-none text-white sm:text-5xl">
+                  {title}
+                </DisplayPanelTitle>
+                <p className="mt-4 max-w-3xl text-sm leading-7 text-white/76">{reason}</p>
+                <DisplayPanel className="mt-3 max-w-3xl rounded-2xl border-white/12 bg-white/8 px-4 py-3 text-xs leading-relaxed text-white/72 shadow-none">
+                  {reverseReason}
+                </DisplayPanel>
+              </div>
+            </div>
           </DisplayPanelHeader>
           <DisplayPanelContent className="flex flex-wrap gap-2 p-0 xl:w-52 xl:flex-col">
             {leadingExternalUrl ? (

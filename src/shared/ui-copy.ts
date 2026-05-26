@@ -4,6 +4,11 @@ export const PAGE_COPY = {
     subtitle: '像哆啦A梦一样，在你开口时先替你挑出这次最该用的工具。',
     promptSuggestion: '帮我找一个最好用的 PDF 压缩工具',
     promptPlaceholder: '试试：帮我找一个最好用的 PDF 压缩工具',
+    decisionSteps: [
+      { step: 1, title: '从哪里开始' },
+      { step: 2, title: '分析过程' },
+      { step: 3, title: '推荐结果' },
+    ],
   },
   market: {
     title: '道具库',
@@ -110,10 +115,6 @@ export const SETTINGS_COPY = {
         { value: 'full', label: '完整播报' },
       ],
     },
-    autoSave: {
-      title: '自动收进口袋',
-      description: '当系统判断这次值得以后再用时，是否替你先收好。',
-    },
     memory: {
       title: '记录历史帮助推荐',
       description: '允许系统记住你怎么选，减少下一次重复判断。',
@@ -152,7 +153,6 @@ export const SETTINGS_COPY = {
 } as const
 
 export const SYSTEM_NOTICE_COPY = {
-  autoSaved: '已收进口袋',
   savedForLater: '已保存为以后可直接打开的工具',
   analysisFailed: '这次出手失败了，请稍后再试',
 } as const

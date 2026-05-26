@@ -1,12 +1,11 @@
 import type { AnalysisFlow } from '@/components/discovery/analysis-stage-content'
 import { AnalysisStageCanvas } from '@/components/analysis-stage-canvas'
 import { AnalysisStageStatusBar } from '@/components/analysis-stage-status-bar'
-import { DoraSpeechBubble } from '@/components/dora-speech-bubble'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { modeImageSrc, type AssistantModeCard } from '@/shared/mode-registry'
 import type { AppState } from '@/store'
-import { Sparkles, VolumeX } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
 import Image from 'next/image'
 
 type ToolDialMode = 'quick' | 'all'
@@ -19,14 +18,9 @@ type AnalysisStagePanelProps = {
   toolDialMode: ToolDialMode
   selectedGadgetKey: string | null
   dialGadgets: AssistantModeCard[]
-  currentPrompt: string | null
-  botResponse: string
-  hasResult: boolean
   onToggleToolDial: () => void
   onSelectDialGadget: (gadget: AssistantModeCard) => void
   onToggleToolDialMode: () => void
-  canSkipVoice: boolean
-  onRevealNow: () => void
   onOpenQuickSettings: () => void
   children?: React.ReactNode
 }
@@ -98,14 +92,9 @@ export function AnalysisStagePanel({
   toolDialMode,
   selectedGadgetKey,
   dialGadgets,
-  currentPrompt,
-  botResponse,
-  hasResult,
   onToggleToolDial,
   onSelectDialGadget,
   onToggleToolDialMode,
-  canSkipVoice,
-  onRevealNow,
   onOpenQuickSettings,
   children,
 }: AnalysisStagePanelProps) {
@@ -132,25 +121,7 @@ export function AnalysisStagePanel({
           className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-white/64 via-white/34 to-white/72"
           aria-hidden
         />
-        <DoraSpeechBubble
-          appState={appState}
-          currentPrompt={currentPrompt}
-          botResponse={botResponse}
-          hasResult={hasResult}
-        />
         <div className="pointer-events-none relative z-10 min-h-0 flex-1" />
-        {canSkipVoice ? (
-          <Button
-            type="button"
-            variant="outline"
-            className="pointer-events-auto absolute right-3 top-3 z-30 h-10 w-10 rounded-full border-white/85 bg-white/94 p-0 text-slate-700 shadow-lg shadow-slate-900/10 backdrop-blur-md hover:bg-white"
-            onClick={onRevealNow}
-            aria-label="停止语音并直接揭晓"
-            title="停止语音并直接揭晓"
-          >
-            <VolumeX className="h-4 w-4" />
-          </Button>
-        ) : null}
         <div className="pointer-events-auto absolute bottom-3 right-3 z-20">
           <div className="relative">
             <Button

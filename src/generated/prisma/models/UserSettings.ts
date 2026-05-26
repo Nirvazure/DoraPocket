@@ -30,7 +30,6 @@ export type UserSettingsMinAggregateOutputType = {
   voicePlaybackMode: string | null
   soundEffectsEnabled: boolean | null
   defaultInputMode: string | null
-  autoSaveToPocketEnabled: boolean | null
   memoryEnabled: boolean | null
   builtinToolsEnabled: boolean | null
   explanationMode: string | null
@@ -46,7 +45,6 @@ export type UserSettingsMaxAggregateOutputType = {
   voicePlaybackMode: string | null
   soundEffectsEnabled: boolean | null
   defaultInputMode: string | null
-  autoSaveToPocketEnabled: boolean | null
   memoryEnabled: boolean | null
   builtinToolsEnabled: boolean | null
   explanationMode: string | null
@@ -62,7 +60,6 @@ export type UserSettingsCountAggregateOutputType = {
   voicePlaybackMode: number
   soundEffectsEnabled: number
   defaultInputMode: number
-  autoSaveToPocketEnabled: number
   memoryEnabled: number
   builtinToolsEnabled: number
   explanationMode: number
@@ -79,7 +76,6 @@ export type UserSettingsMinAggregateInputType = {
   voicePlaybackMode?: true
   soundEffectsEnabled?: true
   defaultInputMode?: true
-  autoSaveToPocketEnabled?: true
   memoryEnabled?: true
   builtinToolsEnabled?: true
   explanationMode?: true
@@ -95,7 +91,6 @@ export type UserSettingsMaxAggregateInputType = {
   voicePlaybackMode?: true
   soundEffectsEnabled?: true
   defaultInputMode?: true
-  autoSaveToPocketEnabled?: true
   memoryEnabled?: true
   builtinToolsEnabled?: true
   explanationMode?: true
@@ -111,7 +106,6 @@ export type UserSettingsCountAggregateInputType = {
   voicePlaybackMode?: true
   soundEffectsEnabled?: true
   defaultInputMode?: true
-  autoSaveToPocketEnabled?: true
   memoryEnabled?: true
   builtinToolsEnabled?: true
   explanationMode?: true
@@ -205,7 +199,6 @@ export type UserSettingsGroupByOutputType = {
   voicePlaybackMode: string
   soundEffectsEnabled: boolean
   defaultInputMode: string
-  autoSaveToPocketEnabled: boolean
   memoryEnabled: boolean
   builtinToolsEnabled: boolean
   explanationMode: string
@@ -239,7 +232,6 @@ export type UserSettingsWhereInput = {
   voicePlaybackMode?: Prisma.StringFilter<'UserSettings'> | string
   soundEffectsEnabled?: Prisma.BoolFilter<'UserSettings'> | boolean
   defaultInputMode?: Prisma.StringFilter<'UserSettings'> | string
-  autoSaveToPocketEnabled?: Prisma.BoolFilter<'UserSettings'> | boolean
   memoryEnabled?: Prisma.BoolFilter<'UserSettings'> | boolean
   builtinToolsEnabled?: Prisma.BoolFilter<'UserSettings'> | boolean
   explanationMode?: Prisma.StringFilter<'UserSettings'> | string
@@ -256,7 +248,6 @@ export type UserSettingsOrderByWithRelationInput = {
   voicePlaybackMode?: Prisma.SortOrder
   soundEffectsEnabled?: Prisma.SortOrder
   defaultInputMode?: Prisma.SortOrder
-  autoSaveToPocketEnabled?: Prisma.SortOrder
   memoryEnabled?: Prisma.SortOrder
   builtinToolsEnabled?: Prisma.SortOrder
   explanationMode?: Prisma.SortOrder
@@ -277,7 +268,6 @@ export type UserSettingsWhereUniqueInput = Prisma.AtLeast<
     voicePlaybackMode?: Prisma.StringFilter<'UserSettings'> | string
     soundEffectsEnabled?: Prisma.BoolFilter<'UserSettings'> | boolean
     defaultInputMode?: Prisma.StringFilter<'UserSettings'> | string
-    autoSaveToPocketEnabled?: Prisma.BoolFilter<'UserSettings'> | boolean
     memoryEnabled?: Prisma.BoolFilter<'UserSettings'> | boolean
     builtinToolsEnabled?: Prisma.BoolFilter<'UserSettings'> | boolean
     explanationMode?: Prisma.StringFilter<'UserSettings'> | string
@@ -296,7 +286,6 @@ export type UserSettingsOrderByWithAggregationInput = {
   voicePlaybackMode?: Prisma.SortOrder
   soundEffectsEnabled?: Prisma.SortOrder
   defaultInputMode?: Prisma.SortOrder
-  autoSaveToPocketEnabled?: Prisma.SortOrder
   memoryEnabled?: Prisma.SortOrder
   builtinToolsEnabled?: Prisma.SortOrder
   explanationMode?: Prisma.SortOrder
@@ -322,7 +311,6 @@ export type UserSettingsScalarWhereWithAggregatesInput = {
   voicePlaybackMode?: Prisma.StringWithAggregatesFilter<'UserSettings'> | string
   soundEffectsEnabled?: Prisma.BoolWithAggregatesFilter<'UserSettings'> | boolean
   defaultInputMode?: Prisma.StringWithAggregatesFilter<'UserSettings'> | string
-  autoSaveToPocketEnabled?: Prisma.BoolWithAggregatesFilter<'UserSettings'> | boolean
   memoryEnabled?: Prisma.BoolWithAggregatesFilter<'UserSettings'> | boolean
   builtinToolsEnabled?: Prisma.BoolWithAggregatesFilter<'UserSettings'> | boolean
   explanationMode?: Prisma.StringWithAggregatesFilter<'UserSettings'> | string
@@ -337,7 +325,6 @@ export type UserSettingsCreateInput = {
   voicePlaybackMode?: string
   soundEffectsEnabled?: boolean
   defaultInputMode?: string
-  autoSaveToPocketEnabled?: boolean
   memoryEnabled?: boolean
   builtinToolsEnabled?: boolean
   explanationMode?: string
@@ -354,7 +341,6 @@ export type UserSettingsUncheckedCreateInput = {
   voicePlaybackMode?: string
   soundEffectsEnabled?: boolean
   defaultInputMode?: string
-  autoSaveToPocketEnabled?: boolean
   memoryEnabled?: boolean
   builtinToolsEnabled?: boolean
   explanationMode?: string
@@ -369,7 +355,6 @@ export type UserSettingsUpdateInput = {
   voicePlaybackMode?: Prisma.StringFieldUpdateOperationsInput | string
   soundEffectsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultInputMode?: Prisma.StringFieldUpdateOperationsInput | string
-  autoSaveToPocketEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   memoryEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   builtinToolsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   explanationMode?: Prisma.StringFieldUpdateOperationsInput | string
@@ -386,7 +371,6 @@ export type UserSettingsUncheckedUpdateInput = {
   voicePlaybackMode?: Prisma.StringFieldUpdateOperationsInput | string
   soundEffectsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultInputMode?: Prisma.StringFieldUpdateOperationsInput | string
-  autoSaveToPocketEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   memoryEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   builtinToolsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   explanationMode?: Prisma.StringFieldUpdateOperationsInput | string
@@ -402,7 +386,6 @@ export type UserSettingsCreateManyInput = {
   voicePlaybackMode?: string
   soundEffectsEnabled?: boolean
   defaultInputMode?: string
-  autoSaveToPocketEnabled?: boolean
   memoryEnabled?: boolean
   builtinToolsEnabled?: boolean
   explanationMode?: string
@@ -417,7 +400,6 @@ export type UserSettingsUpdateManyMutationInput = {
   voicePlaybackMode?: Prisma.StringFieldUpdateOperationsInput | string
   soundEffectsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultInputMode?: Prisma.StringFieldUpdateOperationsInput | string
-  autoSaveToPocketEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   memoryEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   builtinToolsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   explanationMode?: Prisma.StringFieldUpdateOperationsInput | string
@@ -433,7 +415,6 @@ export type UserSettingsUncheckedUpdateManyInput = {
   voicePlaybackMode?: Prisma.StringFieldUpdateOperationsInput | string
   soundEffectsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultInputMode?: Prisma.StringFieldUpdateOperationsInput | string
-  autoSaveToPocketEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   memoryEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   builtinToolsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   explanationMode?: Prisma.StringFieldUpdateOperationsInput | string
@@ -454,7 +435,6 @@ export type UserSettingsCountOrderByAggregateInput = {
   voicePlaybackMode?: Prisma.SortOrder
   soundEffectsEnabled?: Prisma.SortOrder
   defaultInputMode?: Prisma.SortOrder
-  autoSaveToPocketEnabled?: Prisma.SortOrder
   memoryEnabled?: Prisma.SortOrder
   builtinToolsEnabled?: Prisma.SortOrder
   explanationMode?: Prisma.SortOrder
@@ -470,7 +450,6 @@ export type UserSettingsMaxOrderByAggregateInput = {
   voicePlaybackMode?: Prisma.SortOrder
   soundEffectsEnabled?: Prisma.SortOrder
   defaultInputMode?: Prisma.SortOrder
-  autoSaveToPocketEnabled?: Prisma.SortOrder
   memoryEnabled?: Prisma.SortOrder
   builtinToolsEnabled?: Prisma.SortOrder
   explanationMode?: Prisma.SortOrder
@@ -486,7 +465,6 @@ export type UserSettingsMinOrderByAggregateInput = {
   voicePlaybackMode?: Prisma.SortOrder
   soundEffectsEnabled?: Prisma.SortOrder
   defaultInputMode?: Prisma.SortOrder
-  autoSaveToPocketEnabled?: Prisma.SortOrder
   memoryEnabled?: Prisma.SortOrder
   builtinToolsEnabled?: Prisma.SortOrder
   explanationMode?: Prisma.SortOrder
@@ -561,7 +539,6 @@ export type UserSettingsCreateWithoutUserInput = {
   voicePlaybackMode?: string
   soundEffectsEnabled?: boolean
   defaultInputMode?: string
-  autoSaveToPocketEnabled?: boolean
   memoryEnabled?: boolean
   builtinToolsEnabled?: boolean
   explanationMode?: string
@@ -576,7 +553,6 @@ export type UserSettingsUncheckedCreateWithoutUserInput = {
   voicePlaybackMode?: string
   soundEffectsEnabled?: boolean
   defaultInputMode?: string
-  autoSaveToPocketEnabled?: boolean
   memoryEnabled?: boolean
   builtinToolsEnabled?: boolean
   explanationMode?: string
@@ -619,7 +595,6 @@ export type UserSettingsUpdateWithoutUserInput = {
   voicePlaybackMode?: Prisma.StringFieldUpdateOperationsInput | string
   soundEffectsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultInputMode?: Prisma.StringFieldUpdateOperationsInput | string
-  autoSaveToPocketEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   memoryEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   builtinToolsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   explanationMode?: Prisma.StringFieldUpdateOperationsInput | string
@@ -634,7 +609,6 @@ export type UserSettingsUncheckedUpdateWithoutUserInput = {
   voicePlaybackMode?: Prisma.StringFieldUpdateOperationsInput | string
   soundEffectsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultInputMode?: Prisma.StringFieldUpdateOperationsInput | string
-  autoSaveToPocketEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   memoryEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   builtinToolsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   explanationMode?: Prisma.StringFieldUpdateOperationsInput | string
@@ -653,7 +627,6 @@ export type UserSettingsSelect<
     voicePlaybackMode?: boolean
     soundEffectsEnabled?: boolean
     defaultInputMode?: boolean
-    autoSaveToPocketEnabled?: boolean
     memoryEnabled?: boolean
     builtinToolsEnabled?: boolean
     explanationMode?: boolean
@@ -675,7 +648,6 @@ export type UserSettingsSelectCreateManyAndReturn<
     voicePlaybackMode?: boolean
     soundEffectsEnabled?: boolean
     defaultInputMode?: boolean
-    autoSaveToPocketEnabled?: boolean
     memoryEnabled?: boolean
     builtinToolsEnabled?: boolean
     explanationMode?: boolean
@@ -697,7 +669,6 @@ export type UserSettingsSelectUpdateManyAndReturn<
     voicePlaybackMode?: boolean
     soundEffectsEnabled?: boolean
     defaultInputMode?: boolean
-    autoSaveToPocketEnabled?: boolean
     memoryEnabled?: boolean
     builtinToolsEnabled?: boolean
     explanationMode?: boolean
@@ -716,7 +687,6 @@ export type UserSettingsSelectScalar = {
   voicePlaybackMode?: boolean
   soundEffectsEnabled?: boolean
   defaultInputMode?: boolean
-  autoSaveToPocketEnabled?: boolean
   memoryEnabled?: boolean
   builtinToolsEnabled?: boolean
   explanationMode?: boolean
@@ -734,7 +704,6 @@ export type UserSettingsOmit<
   | 'voicePlaybackMode'
   | 'soundEffectsEnabled'
   | 'defaultInputMode'
-  | 'autoSaveToPocketEnabled'
   | 'memoryEnabled'
   | 'builtinToolsEnabled'
   | 'explanationMode'
@@ -774,7 +743,6 @@ export type $UserSettingsPayload<
       voicePlaybackMode: string
       soundEffectsEnabled: boolean
       defaultInputMode: string
-      autoSaveToPocketEnabled: boolean
       memoryEnabled: boolean
       builtinToolsEnabled: boolean
       explanationMode: string
@@ -1370,7 +1338,6 @@ export interface UserSettingsFieldRefs {
   readonly voicePlaybackMode: Prisma.FieldRef<'UserSettings', 'String'>
   readonly soundEffectsEnabled: Prisma.FieldRef<'UserSettings', 'Boolean'>
   readonly defaultInputMode: Prisma.FieldRef<'UserSettings', 'String'>
-  readonly autoSaveToPocketEnabled: Prisma.FieldRef<'UserSettings', 'Boolean'>
   readonly memoryEnabled: Prisma.FieldRef<'UserSettings', 'Boolean'>
   readonly builtinToolsEnabled: Prisma.FieldRef<'UserSettings', 'Boolean'>
   readonly explanationMode: Prisma.FieldRef<'UserSettings', 'String'>

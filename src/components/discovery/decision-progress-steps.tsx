@@ -1,4 +1,7 @@
+'use client'
+
 import { cn } from '@/lib/utils'
+import { PAGE_COPY } from '@/shared/ui-copy'
 
 type DecisionProgressStepsProps = {
   currentStep: number
@@ -7,11 +10,7 @@ type DecisionProgressStepsProps = {
   onStepClick: (step: number) => void
 }
 
-const STEPS = [
-  { step: 1, title: '从哪里开始' },
-  { step: 2, title: '分析过程' },
-  { step: 3, title: '推荐结果和反馈' },
-] as const
+const STEPS = PAGE_COPY.analysis.decisionSteps
 
 export function DecisionProgressSteps({
   currentStep,

@@ -7,7 +7,7 @@ import type { ToolItem } from '@/shared/tool-registry'
 
 type MarketToolIconProps = {
   tool: ToolItem
-  size?: 'sm' | 'md'
+  size?: 'sm' | 'md' | 'lg'
 }
 
 export function MarketToolIcon({ tool, size = 'md' }: MarketToolIconProps) {
@@ -18,7 +18,13 @@ export function MarketToolIcon({ tool, size = 'md' }: MarketToolIconProps) {
   }, [imageFailed, tool.iconImageLocalPath, tool.iconImageUrl])
 
   const boxClassName =
-    size === 'sm' ? 'h-10 w-10 rounded-2xl text-lg' : 'h-12 w-12 rounded-2xl text-xl'
+    size === 'sm'
+      ? 'h-10 w-10 rounded-2xl text-lg'
+      : size === 'lg'
+        ? 'h-16 w-16 rounded-[1.25rem] text-2xl'
+        : 'h-12 w-12 rounded-2xl text-xl'
+
+  const imageSize = size === 'lg' ? 64 : size === 'sm' ? 40 : 48
 
   return (
     <div
@@ -31,8 +37,8 @@ export function MarketToolIcon({ tool, size = 'md' }: MarketToolIconProps) {
         <Image
           src={imageSrc}
           alt={`${tool.name} icon`}
-          width={48}
-          height={48}
+          width={imageSize}
+          height={imageSize}
           unoptimized
           className="h-full w-full object-cover"
           onError={() => setImageFailed(true)}

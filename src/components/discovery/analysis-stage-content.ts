@@ -251,7 +251,7 @@ export function buildLiveAnalysisTrack({
         candidates.length > 0
           ? `已把候选收束到 ${candidates.length} 个方向，先保留最适合当前任务节奏的选择。`
           : '正在从工具、口袋和可行路径里排除不适合当前任务的选项。',
-      meta: candidates.length > 1 ? '最终行动会在 Step 3 展示' : undefined,
+      meta: candidates.length > 1 ? '主推荐会在 Step 3 展示' : undefined,
       status: resolveTrackStatus(2, activeIndex),
     },
   ]

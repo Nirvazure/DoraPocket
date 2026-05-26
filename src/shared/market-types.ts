@@ -120,5 +120,4 @@ export type AgentUiPayload = {
   selectionSignals: string[]
   preferenceSignals: string[]
   recommendedActions: string[]
-  shouldAutoSave: boolean
 }

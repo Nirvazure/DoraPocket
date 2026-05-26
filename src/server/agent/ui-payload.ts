@@ -293,10 +293,5 @@ export function buildAgentUiPayload(
     selectionSignals: buildSelectionSignals(topTool, marketContext, primaryCandidate),
     preferenceSignals: buildPreferenceSignals(topTool, marketContext),
     recommendedActions: buildRecommendedActions(taskFrame, topTool, primaryCandidate),
-    shouldAutoSave: Boolean(
-      topTool &&
-      primaryCandidate?.candidateType !== 'external_suggestion' &&
-      (topTool.executionMode === 'native_card' || taskFrame.mode === 'discover'),
-    ),
   }
 }

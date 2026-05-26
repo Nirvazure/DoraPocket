@@ -21,13 +21,7 @@ import { usePocketGadgetModalActions } from '@/hooks/use-pocket-gadget-modal-act
 import { useToolDial } from '@/hooks/use-tool-dial'
 import { useVoiceInput } from '@/hooks/use-voice-input'
 import { useSaveChatHistoryMutation, useChatHistoryQuery } from '@/lib/query/chat-history'
-import { useSaveMarketFeedbackMutation } from '@/lib/query/market'
-import {
-  useMarkToolUsedMutation,
-  usePocketInventoryQuery,
-  useRemoveToolFromPocketMutation,
-  useSaveToolToPocketMutation,
-} from '@/lib/query/pocket'
+import { useMarkToolUsedMutation, useSaveToolToPocketMutation } from '@/lib/query/pocket'
 import { useSaveUserSettingsMutation, useUserSettingsQuery } from '@/lib/query/user-settings'
 import { MODE_KEY_ANYWHERE_DOOR, type AssistantModeCard } from '@/shared/mode-registry'
 import { PAGE_COPY } from '@/shared/ui-copy'
@@ -59,11 +53,8 @@ export function useAnalysisPageController() {
   const clearSystemNotice = useStore((state) => state.clearSystemNotice)
   const setSelectedGadgetKey = useStore((state) => state.setSelectedGadgetKey)
 
-  const { data: pocketInventory = [] } = usePocketInventoryQuery()
   const saveToolToPocketMutation = useSaveToolToPocketMutation()
-  const removeToolFromPocketMutation = useRemoveToolFromPocketMutation()
   const markToolUsedMutation = useMarkToolUsedMutation()
-  const saveMarketFeedbackMutation = useSaveMarketFeedbackMutation()
   const saveChatHistoryMutation = useSaveChatHistoryMutation()
   const { data: chatHistory = [] } = useChatHistoryQuery()
   const { data: userSettings } = useUserSettingsQuery()
@@ -80,7 +71,6 @@ export function useAnalysisPageController() {
   const stageImmediateTimerRef = useRef<number | null>(null)
   const revealTimerRef = useRef<number | null>(null)
   const coveredRevealTimerRef = useRef<number | null>(null)
-  const autoSaveEnabled = userSettings?.autoSaveToPocketEnabled ?? true
   const {
     toolDialOpen,
     toolDialMode,
@@ -113,18 +103,13 @@ export function useAnalysisPageController() {
     selectedToolPayload,
     agentUiPayload,
     currentPrompt,
-    autoSaveNotice,
     latestUserPromptRef,
-    setAutoSaveNotice,
     clearResponseState,
     runAgentTurn,
     revealNow,
   } = useAnalysisSession({
-    autoSaveEnabled,
     userSettings,
-    pocketInventory,
     saveChatHistory: saveChatHistoryMutation.mutate,
-    saveToolToPocket: saveToolToPocketMutation.mutateAsync,
     setAppState,
     setTranscript,
     setBotResponse,
@@ -196,19 +181,10 @@ export function useAnalysisPageController() {
   })
 
   const workspaceActions = useDiscoveryWorkspaceActions({
-    autoSaveNotice,
     getLatestUserPrompt: () => latestUserPromptRef.current,
     saveToolToPocket: saveToolToPocketMutation.mutate,
-    removeToolFromPocket: removeToolFromPocketMutation.mutate,
     markToolUsed: markToolUsedMutation.mutate,
-    saveMarketFeedback: saveMarketFeedbackMutation.mutate,
-    setAutoSaveNotice,
     setSystemNotice,
-    enableAutoSave: () => {
-      const current = userSettings
-      if (!current) return
-      saveUserSettingsMutation.mutate({ ...current, autoSaveToPocketEnabled: true })
-    },
   })
 
   const pocketGadgetModalActions = usePocketGadgetModalActions({
@@ -331,8 +307,6 @@ export function useAnalysisPageController() {
     userSettings,
     currentPrompt,
     analysisFlow,
-    autoSaveEnabled,
-    autoSaveNotice,
     selectedToolPayload,
     agentUiPayload,
     rootCursor,

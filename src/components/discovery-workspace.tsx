@@ -1,3 +1,5 @@
+'use client'
+
 import { useMemo, useState } from 'react'
 import { CompactDecisionPanel } from '@/components/discovery/compact-decision-panel'
 import {
@@ -21,15 +23,9 @@ type DiscoveryWorkspaceProps = {
   analysisFlow: AnalysisFlow
   agentPayload: AgentUiPayload | null
   selectedToolPayload: ChatToolPayload
-  autoSaveEnabled: boolean
-  autoSaveNotice: { toolId: string; label: string } | null
-  onOpenPocket: () => void
   onSaveCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
   onOpenExternalCandidate: (url: string) => void
-  onUndoAutoSave: () => void
-  onEnableAutoSave: () => void
-  onFeedback: (toolId: string, vote: 'up' | 'down') => void
   onDraftTask?: (draft: string) => void
 }
 
@@ -39,15 +35,9 @@ export function DiscoveryWorkspace({
   analysisFlow,
   agentPayload,
   selectedToolPayload,
-  autoSaveEnabled,
-  autoSaveNotice,
-  onOpenPocket,
   onSaveCandidate,
   onLaunchCandidate,
   onOpenExternalCandidate,
-  onUndoAutoSave,
-  onEnableAutoSave,
-  onFeedback,
   onDraftTask,
 }: DiscoveryWorkspaceProps) {
   const hasPrompt = Boolean(currentPrompt?.trim())
@@ -114,15 +104,9 @@ export function DiscoveryWorkspace({
                   payload={agentPayload}
                   selectedToolPayload={selectedToolPayload}
                   analysisFlow={analysisFlow}
-                  autoSaveNotice={autoSaveNotice}
-                  autoSaveEnabled={autoSaveEnabled}
                   onSaveCandidate={onSaveCandidate}
                   onLaunchCandidate={onLaunchCandidate}
                   onOpenExternalCandidate={onOpenExternalCandidate}
-                  onOpenPocket={onOpenPocket}
-                  onUndoAutoSave={onUndoAutoSave}
-                  onEnableAutoSave={onEnableAutoSave}
-                  onFeedback={onFeedback}
                 />
               ) : null}
             </section>
