@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { LogIn, UserRound } from 'lucide-react'
+import { LogIn, LogOut, UserRound } from 'lucide-react'
 import { ProfileEntryPill } from '@/components/common/profile-entry-pill'
 import { PageShell } from '@/components/common/page-shell'
 import { TopNavSwitch } from '@/components/common/top-nav-switch'
@@ -97,7 +97,18 @@ export function ProfilePage() {
                     <LogIn className="h-4 w-4" />
                     去登录
                   </a>
-                ) : null}
+                ) : (
+                  <a
+                    href="/api/auth/logout"
+                    className={cn(
+                      buttonVariants({ variant: 'outline' }),
+                      'h-10 w-full rounded-full px-4 text-sm font-bold sm:w-auto',
+                    )}
+                  >
+                    <LogOut className="h-4 w-4" />
+                    退出登录
+                  </a>
+                )}
               </div>
             </DisplayPanelContent>
           </DisplayPanel>
