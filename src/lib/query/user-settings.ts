@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiFetch } from '@/lib/query/api-client'
 import { queryKeys } from '@/lib/query/query-keys'
-import { applyUserSettingsToDocument } from '@/lib/client/user-settings'
+import { applyUserSettingsToDocument } from '@/lib/client/user-settings-document'
 import { getDefaultUserSettings, type UserSettings } from '@/shared/user-settings'
 
 export function useUserSettingsQuery() {
@@ -16,10 +16,6 @@ export function useUserSettingsQuery() {
     },
     staleTime: Infinity,
   })
-}
-
-export function useUserSettingsSubscription() {
-  return
 }
 
 export function useSaveUserSettingsMutation() {

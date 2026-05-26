@@ -1,5 +1,5 @@
 import type { ToolCategory } from '@/shared/tool-registry'
-import type { PocketInventoryItem } from '@/lib/client/pocket-inventory'
+import type { PocketInventoryItem } from '@/shared/pocket-types'
 import { getToolById } from '@/shared/tool-registry'
 import { TOOL_CATEGORY_LABELS, TOOL_CATEGORY_ORDER } from '@/shared/tool-labels'
 

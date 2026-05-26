@@ -1,4 +1,4 @@
-import type { PocketInventoryItem } from '@/lib/client/pocket-inventory'
+import type { PocketInventoryItem } from '@/shared/pocket-types'
 import type { MarketReviewAggregate } from '@/shared/market-types'
 import { TOOL_CATEGORY_LABELS, TOOL_CATEGORY_ORDER } from '@/shared/tool-labels'
 import type { ToolCategory, ToolItem } from '@/shared/tool-registry'

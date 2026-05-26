@@ -4,13 +4,16 @@ import { createClient } from '@supabase/supabase-js'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '../src/generated/prisma/client'
 import { MARKET_FAVICON_REMOTE_MANIFEST } from './legacy-favicon-oss-manifest'
-import { buildMarketAssetPublicUrl } from '../src/shared/market-asset-url'
+import {
+  buildMarketAssetPublicUrl,
+  getMarketAssetsBucketName,
+} from '../src/shared/market-asset-url'
 import { syncToolFavicon } from '../src/server/market/tool-favicon'
 
 const connectionString = process.env.DATABASE_URL
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()
 const supabaseSecret = process.env.SUPABASE_SECRET_KEY?.trim()
-const bucket = process.env.SUPABASE_STORAGE_BUCKET_MARKET?.trim() || 'market-assets'
+const bucket = getMarketAssetsBucketName()
 
 if (!connectionString) throw new Error('DATABASE_URL is required')
 if (!supabaseUrl || !supabaseSecret) {

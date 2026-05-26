@@ -64,6 +64,8 @@ Core required (local minimum)：
 
 Optional (defaults available)：
 
+- `SUPABASE_STORAGE_BUCKET_MARKET`（默认 `market-assets`，客户端拼公开图标 URL 时亦使用该默认值）
+
 - `NEXT_PUBLIC_SITE_URL`（默认 `http://localhost:3000`）
 - `QWEN_MODEL`（默认 `qwen-plus`）
 - `QWEN_BASE_URL`（默认 `https://dashscope.aliyuncs.com/compatible-mode/v1`）
@@ -73,9 +75,8 @@ Optional voice features：
 - `ALIYUN_AK_ID`
 - `ALIYUN_AK_SECRET`
 - `ALIYUN_NLS_APPKEY`
-- `ALIYUN_TTS_VOICE`
+- `ALIYUN_TTS_VOICE`（默认 `zhitian_emo`，TTS 服务端使用）
 - `ALIYUN_NLS_STT_WS_URL`（默认 `wss://nls-gateway-cn-shanghai.aliyuncs.com/ws/v1`）
-- `NEXT_PUBLIC_ALIYUN_TTS_VOICE`
 
 `.env.example` 提供了占位模板。
 

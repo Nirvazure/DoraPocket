@@ -6,7 +6,7 @@ import { MarketCategoryIcon } from '@/components/market/market-category-icons'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { DisplayPanel, DisplayPanelContent } from '@/components/ui/display-shell'
 import { cn } from '@/lib/utils'
-import type { PocketInventoryItem } from '@/lib/client/pocket-inventory'
+import type { PocketInventoryItem } from '@/shared/pocket-types'
 import { getToolById } from '@/shared/tool-registry'
 import { getPocketCategoryLabel } from '@/components/pocket/pocket-utils'
 

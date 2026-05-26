@@ -1,52 +1,22 @@
 'use client'
 
-import { loadChatHistory, CHAT_HISTORY_STORAGE_KEY } from '@/lib/client/chat-history'
 import {
-  loadMarketFeedback,
-  loadMarketSubmissions,
-  loadMarketSubscriptions,
-  loadPreferenceProfileOverride,
-} from '@/lib/client/market-storage'
-import { loadPocketInventory, POCKET_INVENTORY_STORAGE_KEY } from '@/lib/client/pocket-inventory'
-import { loadUserProfile, USER_PROFILE_STORAGE_KEY } from '@/lib/client/user-profile'
-import { loadUserSettings, USER_SETTINGS_STORAGE_KEY } from '@/lib/client/user-settings'
+  CHAT_HISTORY_STORAGE_KEY,
+  collectLegacyLocalSnapshotForMigration,
+  FEEDBACK_STORAGE_KEY,
+  POCKET_INVENTORY_STORAGE_KEY,
+  PREFERENCE_OVERRIDE_STORAGE_KEY,
+  SUBMISSION_STORAGE_KEY,
+  SUBSCRIPTION_STORAGE_KEY,
+  TOOL_ACTIVITY_STORAGE_KEY,
+  USER_SETTINGS_STORAGE_KEY,
+} from '@/lib/client/legacy-snapshot-read'
+import { USER_PROFILE_STORAGE_KEY } from '@/lib/client/user-profile'
 
-export type LegacyLocalSnapshot = {
-  userProfile: ReturnType<typeof loadUserProfile>
-  userSettings: ReturnType<typeof loadUserSettings>
-  pocketInventory: ReturnType<typeof loadPocketInventory>
-  marketFeedback: ReturnType<typeof loadMarketFeedback>
-  marketSubscriptions: ReturnType<typeof loadMarketSubscriptions>
-  marketSubmissions: ReturnType<typeof loadMarketSubmissions>
-  chatHistory: ReturnType<typeof loadChatHistory>
-  preferenceProfileOverride: ReturnType<typeof loadPreferenceProfileOverride>
-  toolActivityMap: Record<string, { saves: number; opens: number; subscriptions: number }>
-}
-
-const TOOL_ACTIVITY_STORAGE_KEY = 'dp-market-tool-activity-v1'
+export type LegacyLocalSnapshot = ReturnType<typeof collectLegacyLocalSnapshotForMigration>
 
 export function collectLegacyLocalSnapshot(): LegacyLocalSnapshot {
-  let toolActivityMap: LegacyLocalSnapshot['toolActivityMap'] = {}
-  try {
-    if (typeof window !== 'undefined') {
-      const raw = window.localStorage.getItem(TOOL_ACTIVITY_STORAGE_KEY)
-      toolActivityMap = raw ? (JSON.parse(raw) as LegacyLocalSnapshot['toolActivityMap']) : {}
-    }
-  } catch {
-    toolActivityMap = {}
-  }
-
-  return {
-    userProfile: loadUserProfile(),
-    userSettings: loadUserSettings(),
-    pocketInventory: loadPocketInventory(),
-    marketFeedback: loadMarketFeedback(),
-    marketSubscriptions: loadMarketSubscriptions(),
-    marketSubmissions: loadMarketSubmissions(),
-    chatHistory: loadChatHistory(),
-    preferenceProfileOverride: loadPreferenceProfileOverride(),
-    toolActivityMap,
-  }
+  return collectLegacyLocalSnapshotForMigration()
 }
 
 export function clearLegacyLocalSnapshot() {
@@ -56,10 +26,10 @@ export function clearLegacyLocalSnapshot() {
     USER_SETTINGS_STORAGE_KEY,
     POCKET_INVENTORY_STORAGE_KEY,
     CHAT_HISTORY_STORAGE_KEY,
-    'dp-market-feedback-v1',
-    'dp-market-submissions-v1',
-    'dp-market-subscriptions-v1',
-    'dp-market-preference-override-v1',
+    FEEDBACK_STORAGE_KEY,
+    SUBMISSION_STORAGE_KEY,
+    SUBSCRIPTION_STORAGE_KEY,
+    PREFERENCE_OVERRIDE_STORAGE_KEY,
     TOOL_ACTIVITY_STORAGE_KEY,
   ]) {
     window.localStorage.removeItem(key)

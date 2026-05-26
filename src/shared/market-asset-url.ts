@@ -1,11 +1,7 @@
 const DEFAULT_MARKET_BUCKET = 'market-assets'
 
 export function getMarketAssetsBucketName(): string {
-  return (
-    process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET_MARKET?.trim() ||
-    process.env.SUPABASE_STORAGE_BUCKET_MARKET?.trim() ||
-    DEFAULT_MARKET_BUCKET
-  )
+  return process.env.SUPABASE_STORAGE_BUCKET_MARKET?.trim() || DEFAULT_MARKET_BUCKET
 }
 
 export function getSupabaseProjectUrl(): string | null {

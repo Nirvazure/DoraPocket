@@ -26,11 +26,10 @@
 
 ### 中等优先级（体验与架构增强）
 
-- [ ] **Realtime 多端同步**
-  - 「我的口袋」收藏变更实时同步
-  - 市场新工具 / 审核状态推送
-  - 设置变更跨 Tab 即时生效
-  - 逐步替代 localStorage bridge（`chat-history.ts`、`pocket-inventory.ts` 等），减少本地与云端不一致
+- [x] **Realtime 多端同步（已完成）**
+  - PocketItem / UserSettings / ChatHistoryEntry / MarketSubmission Realtime 订阅
+  - 登录后 RealtimeSyncProvider 推送 → TanStack Query 刷新
+  - localStorage bridge 已移除（保留 migrate-local 一次性迁移）
 
 - [ ] **Database Webhooks + Edge Functions（异步任务）**
   - `Tool` 新增/更新 → 生成 embedding、抓取 favicon
