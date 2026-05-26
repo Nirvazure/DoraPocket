@@ -3,6 +3,7 @@ import {
   Bot,
   Briefcase,
   Code2,
+  FolderHeart,
   GraduationCap,
   Image as ImageIcon,
   Palette,
@@ -13,9 +14,10 @@ import {
 import { cn } from '@/lib/utils'
 import type { ToolCategory } from '@/shared/tool-registry'
 
-export type MarketCategoryKey = 'builtin' | ToolCategory
+export type MarketCategoryKey = 'pocket' | 'builtin' | ToolCategory
 
 const CATEGORY_ICON_MAP: Record<MarketCategoryKey, LucideIcon> = {
+  pocket: FolderHeart,
   builtin: Sparkles,
   ai_assistant: Bot,
   search: Search,

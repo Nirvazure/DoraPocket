@@ -4,11 +4,10 @@ import {
   isStepDone,
   resolveCurrentStep,
   resolveMaxVisibleStep,
-  type AnalysisStage,
+  type AnalysisFlow,
 } from '@/components/discovery/analysis-stage-content'
 import { DecisionProgressSteps } from '@/components/discovery/decision-progress-steps'
 import { LiveAnalysisTrackCard } from '@/components/discovery/live-analysis-track-card'
-import { NextActionBar } from '@/components/discovery/next-action-bar'
 import { WhereToStartSection } from '@/components/discovery/where-to-start-section'
 import { DisplayPanel } from '@/components/ui/display-shell'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -19,7 +18,7 @@ import type { AppState } from '@/store'
 type DiscoveryWorkspaceProps = {
   currentPrompt: string | null
   appState: AppState
-  analysisStage: AnalysisStage
+  analysisFlow: AnalysisFlow
   agentPayload: AgentUiPayload | null
   selectedToolPayload: ChatToolPayload
   autoSaveEnabled: boolean
@@ -37,7 +36,7 @@ type DiscoveryWorkspaceProps = {
 export function DiscoveryWorkspace({
   currentPrompt,
   appState,
-  analysisStage,
+  analysisFlow,
   agentPayload,
   selectedToolPayload,
   autoSaveEnabled,
@@ -54,12 +53,12 @@ export function DiscoveryWorkspace({
   const hasPrompt = Boolean(currentPrompt?.trim())
   const hasResult = Boolean(agentPayload || selectedToolPayload?.toolId)
   const currentStep = useMemo(
-    () => resolveCurrentStep(analysisStage, hasPrompt, hasResult),
-    [analysisStage, hasPrompt, hasResult],
+    () => resolveCurrentStep(analysisFlow, hasPrompt, hasResult),
+    [analysisFlow, hasPrompt, hasResult],
   )
   const maxVisibleStep = useMemo(
-    () => resolveMaxVisibleStep(analysisStage, hasPrompt, hasResult),
-    [analysisStage, hasPrompt, hasResult],
+    () => resolveMaxVisibleStep(analysisFlow, hasPrompt, hasResult),
+    [analysisFlow, hasPrompt, hasResult],
   )
   const [manualExpandedStep, setManualExpandedStep] = useState<number | null>(null)
   const expandedStep =
@@ -93,7 +92,7 @@ export function DiscoveryWorkspace({
         />
       </div>
 
-      <ScrollArea className="min-h-0 flex-1 px-3 py-2 sm:px-4">
+      <ScrollArea className="min-h-0 flex-1 px-3 pt-2 pb-4 sm:px-4 sm:pb-4">
         <div className="mx-auto flex max-w-6xl flex-col gap-3">
           {activePanelStep != null ? (
             <section className="overflow-hidden rounded-[1.8rem] border border-border/65 bg-white/86 p-3 shadow-sm sm:p-4">
@@ -106,16 +105,15 @@ export function DiscoveryWorkspace({
                 <LiveAnalysisTrackCard
                   currentPrompt={currentPrompt}
                   payload={agentPayload}
-                  selectedToolPayload={selectedToolPayload}
                   appState={appState}
-                  analysisStage={analysisStage}
+                  analysisFlow={analysisFlow}
                 />
               ) : null}
               {activePanelStep === 3 ? (
                 <CompactDecisionPanel
                   payload={agentPayload}
                   selectedToolPayload={selectedToolPayload}
-                  analysisStage={analysisStage}
+                  analysisFlow={analysisFlow}
                   autoSaveNotice={autoSaveNotice}
                   autoSaveEnabled={autoSaveEnabled}
                   onSaveCandidate={onSaveCandidate}
@@ -131,10 +129,6 @@ export function DiscoveryWorkspace({
           ) : null}
         </div>
       </ScrollArea>
-
-      <div className="shrink-0 px-3 pb-3 sm:px-4">
-        <NextActionBar panelStep={activePanelStep ?? 1} onOpenPocket={onOpenPocket} />
-      </div>
     </DisplayPanel>
   )
 }

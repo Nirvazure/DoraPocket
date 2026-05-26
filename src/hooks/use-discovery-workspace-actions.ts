@@ -40,7 +40,7 @@ export function useDiscoveryWorkspaceActions({
 
   const onOpenPocket = useCallback(() => {
     setAutoSaveNotice(null)
-    router.push('/pocket')
+    router.push('/market?section=pocket')
   }, [router, setAutoSaveNotice])
 
   const onSaveCandidate = useCallback(

@@ -50,6 +50,7 @@ type UseAnalysisSessionOptions = {
   onPocketGadgetChange: (gadget: AssistantModeCard) => void
   onCoverRecommendation: () => void
   onRevealRecommendation: () => void
+  onAnalysisError?: () => void
 }
 
 type AgentTurnReply = {
@@ -73,6 +74,7 @@ export function useAnalysisSession({
   onPocketGadgetChange,
   onCoverRecommendation,
   onRevealRecommendation,
+  onAnalysisError,
 }: UseAnalysisSessionOptions) {
   const pocketReachTimerRef = useRef(0)
   const latestUserPromptRef = useRef('')
@@ -245,11 +247,12 @@ export function useAnalysisSession({
       setAgentUiPayload(null)
       setBotResponse('')
       setAppState('idle')
+      onAnalysisError?.()
       const message = error instanceof Error ? error.message : SYSTEM_NOTICE_COPY.analysisFailed
       setLastSpeechError(message)
       setSystemNotice({ level: 'critical', message, autoDismissMs: 2800 })
     },
-    [setAppState, setBotResponse, setLastSpeechError, setSystemNotice],
+    [onAnalysisError, setAppState, setBotResponse, setLastSpeechError, setSystemNotice],
   )
 
   const runAgentTurn = useCallback(

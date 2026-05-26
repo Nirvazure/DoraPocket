@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 type TopNavPage = 'intro' | 'analysis' | 'market' | 'pocket'
 
 type TopNavSwitchProps = {
-  current: TopNavPage
+  current?: TopNavPage | 'profile'
   className?: string
 }
 

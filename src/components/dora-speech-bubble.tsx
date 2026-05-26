@@ -1,9 +1,7 @@
-import type { AnalysisStage } from '@/components/discovery/analysis-stage-content'
 import type { AppState } from '@/store'
 
 type DoraSpeechBubbleProps = {
   appState: AppState
-  analysisStage: AnalysisStage
   currentPrompt: string | null
   botResponse: string
   hasResult: boolean

@@ -1,10 +1,14 @@
-import type { AnalysisStage } from '@/components/discovery/analysis-stage-content'
+import type { AnalysisFlow } from '@/components/discovery/analysis-stage-content'
 import { cn } from '@/lib/utils'
 import type { AppState } from '@/store'
+import {
+  resolveAnalysisStatusDetail,
+  shouldShowAnalysisLoadingDots,
+} from '@/components/discovery/analysis-stage-content'
 
 type RightStatusShowcaseProps = {
   appState: AppState
-  analysisStage: AnalysisStage
+  analysisFlow: AnalysisFlow
 }
 
 type StatusCopy = {
@@ -31,26 +35,13 @@ const STATUS_COPY: Record<AppState, StatusCopy> = {
   },
 }
 
-const ANALYSIS_STAGE_LABEL: Record<AnalysisStage, string | null> = {
-  idle: null,
-  understanding: '正在理解任务',
-  judging: '正在做出判断',
-  covered: '正在翻口袋',
-  revealing: '准备正式出手',
-  ready: '本次出手已到位',
-}
-
-export function RightStatusShowcase({ appState, analysisStage }: RightStatusShowcaseProps) {
+export function RightStatusShowcase({ appState, analysisFlow }: RightStatusShowcaseProps) {
   const current = STATUS_COPY[appState]
-  const detail = ANALYSIS_STAGE_LABEL[analysisStage]
-  const showLoadingDots =
-    appState === 'thinking' ||
-    analysisStage === 'understanding' ||
-    analysisStage === 'judging' ||
-    analysisStage === 'covered'
+  const detail = resolveAnalysisStatusDetail(analysisFlow)
+  const showLoadingDots = shouldShowAnalysisLoadingDots(analysisFlow, appState)
 
   return (
-    <div className="pointer-events-none inline-flex max-w-full items-center justify-end gap-2 text-right">
+    <div className="inline-flex max-w-full items-center justify-end gap-2 text-right">
       <span className={cn('h-2 w-2 shrink-0 rounded-full', current.toneClassName)} aria-hidden />
       <span className="truncate text-[11px] font-bold tracking-[0.18em] text-foreground/86">
         {detail ?? current.label}

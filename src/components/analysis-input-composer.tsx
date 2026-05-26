@@ -17,6 +17,7 @@ type AnalysisInputComposerProps = {
   onSubmit: () => void
   onHoldToTalkStart: () => void
   onHoldToTalkEnd: () => void
+  onInteractionStart?: () => void
 }
 
 export function AnalysisInputComposer({
@@ -31,6 +32,7 @@ export function AnalysisInputComposer({
   onSubmit,
   onHoldToTalkStart,
   onHoldToTalkEnd,
+  onInteractionStart,
 }: AnalysisInputComposerProps) {
   return (
     <div
@@ -42,7 +44,10 @@ export function AnalysisInputComposer({
         <button
           type="button"
           className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/80 bg-white/92 text-foreground shadow-sm transition-colors hover:bg-white"
-          onClick={onToggleInputMode}
+          onClick={() => {
+            onInteractionStart?.()
+            onToggleInputMode()
+          }}
           aria-label={inputMode === 'text' ? '切换到语音输入' : '切换到文字输入'}
           title={inputMode === 'text' ? '切换到语音输入' : '切换到文字输入'}
         >
@@ -54,7 +59,11 @@ export function AnalysisInputComposer({
             <input
               type="text"
               value={textFallback}
-              onChange={(event) => onTextChange(event.target.value)}
+              onChange={(event) => {
+                onInteractionStart?.()
+                onTextChange(event.target.value)
+              }}
+              onFocus={() => onInteractionStart?.()}
               placeholder={placeholder}
               disabled={locked}
               className="min-w-0 flex-1 rounded-full border border-border/70 bg-transparent px-3 py-2 font-sans text-sm text-foreground outline-none ring-primary/30 placeholder:text-muted-foreground focus-visible:ring-2"
@@ -82,7 +91,10 @@ export function AnalysisInputComposer({
                 : 'border-white/70 bg-white/90 text-foreground hover:bg-white',
               locked && 'cursor-not-allowed opacity-55',
             )}
-            onPointerDown={onHoldToTalkStart}
+            onPointerDown={() => {
+              onInteractionStart?.()
+              onHoldToTalkStart()
+            }}
             onPointerUp={onHoldToTalkEnd}
             onPointerLeave={onHoldToTalkEnd}
             onPointerCancel={onHoldToTalkEnd}
