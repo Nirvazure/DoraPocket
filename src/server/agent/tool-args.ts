@@ -27,8 +27,7 @@ export function normalizeToolArgs(
   if (toolId === 'exchange_rate') {
     const from =
       typeof args.from === 'string' && args.from.trim() ? args.from.trim().toUpperCase() : 'USD'
-    const to =
-      typeof args.to === 'string' && args.to.trim() ? args.to.trim().toUpperCase() : 'CNY'
+    const to = typeof args.to === 'string' && args.to.trim() ? args.to.trim().toUpperCase() : 'CNY'
     const amount =
       typeof args.amount === 'number' && Number.isFinite(args.amount) && args.amount > 0
         ? args.amount

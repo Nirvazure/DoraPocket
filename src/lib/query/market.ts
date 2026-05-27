@@ -1,4 +1,5 @@
 import {
+  keepPreviousData,
   queryOptions,
   useMutation,
   useQuery,
@@ -20,6 +21,7 @@ import type {
   UserPreferenceProfile,
 } from '@/shared/market-types'
 import type { ToolItem } from '@/shared/tool-registry'
+import { normalizeMarketSearchQuery } from '@/shared/market-search-query'
 
 type SaveFeedbackInput = {
   toolId: string
@@ -70,10 +72,19 @@ function invalidateMarketDependents(queryClient: QueryClient) {
   syncMarketActivitySnapshot(queryClient)
 }
 
-export function useMarketToolsQuery() {
+export function useMarketToolsQuery(searchQuery = '') {
+  const normalizedQuery = normalizeMarketSearchQuery(searchQuery) ?? ''
+
   return useQuery({
-    queryKey: ['marketTools'],
-    queryFn: async () => apiFetch<ToolItem[]>('/api/market/tools').catch(() => []),
+    queryKey: ['marketTools', normalizedQuery],
+    queryFn: async () => {
+      const url =
+        normalizedQuery.length > 0
+          ? `/api/market/tools?q=${encodeURIComponent(normalizedQuery)}`
+          : '/api/market/tools'
+      return apiFetch<ToolItem[]>(url).catch(() => [])
+    },
+    placeholderData: keepPreviousData,
   })
 }
 

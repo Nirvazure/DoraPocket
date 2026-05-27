@@ -7,7 +7,7 @@ import {
 } from '@tanstack/react-query'
 import { apiFetch } from '@/lib/query/api-client'
 import { queryKeys } from '@/lib/query/query-keys'
-import type { PocketInventoryItem } from '@/lib/client/pocket-inventory'
+import type { PocketInventoryItem } from '@/shared/pocket-types'
 
 type PocketMutationContext = {
   previousPocketInventory: PocketInventoryItem[]

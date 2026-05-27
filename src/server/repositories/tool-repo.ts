@@ -3,6 +3,7 @@ import 'server-only'
 import { createHash } from 'node:crypto'
 import type * as Prisma from '../../generated/prisma/internal/prismaNamespace'
 import { prisma } from '@/server/db/prisma'
+import { isSupabaseMarketAssetUrl } from '@/shared/market-asset-url'
 import {
   TOOL_REGISTRY,
   type ToolCategory,
@@ -25,7 +26,7 @@ function toToolCreateInput(tool: ToolItem, ownerUserId?: string | null) {
     iconType: tool.iconType ?? null,
     iconText: tool.iconText ?? null,
     iconImageUrl: tool.iconImageUrl ?? null,
-    iconImageLocalPath: tool.iconImageLocalPath ?? null,
+    iconImageLocalPath: null,
     url: tool.url ?? null,
     description: tool.description,
     category: tool.category,
@@ -67,6 +68,16 @@ export type ImportedToolInput = {
   createdByUserId?: string | null
 }
 
+function withoutIconFields<T extends Record<string, unknown>>(input: T) {
+  const copy = { ...input }
+  delete copy.icon
+  delete copy.iconType
+  delete copy.iconText
+  delete copy.iconImageUrl
+  delete copy.iconImageLocalPath
+  return copy
+}
+
 function normalizeHostname(url: string): string | null {
   try {
     return new URL(url).hostname.replace(/^www\./, '')
@@ -90,7 +101,7 @@ export async function upsertImportedTool(input: ImportedToolInput) {
     icon: '🌐',
     iconType: 'emoji',
     iconText: '🌐',
-    iconImageUrl: null,
+    iconImageUrl: null as string | null,
     iconImageLocalPath: null,
     url,
     description: input.description.trim(),
@@ -133,13 +144,26 @@ export async function upsertImportedTool(input: ImportedToolInput) {
     createdByUserId: input.createdByUserId ?? null,
   }
 
-  return prisma.tool.upsert({
+  const existing = await prisma.tool.findUnique({
+    where: { id },
+    select: { iconImageUrl: true, iconType: true, iconText: true, icon: true },
+  })
+
+  const updateData = { ...data }
+  if (existing && isSupabaseMarketAssetUrl(existing.iconImageUrl)) {
+    updateData.icon = existing.icon ?? updateData.icon
+    updateData.iconType = existing.iconType ?? updateData.iconType
+    updateData.iconText = existing.iconText ?? updateData.iconText
+    updateData.iconImageUrl = existing.iconImageUrl
+    updateData.iconImageLocalPath = null
+  }
+
+  const tool = await prisma.tool.upsert({
     where: { id },
     create: data,
-    update: {
-      ...data,
-    },
+    update: updateData,
   })
+  return tool
 }
 
 export async function listActiveTools() {
@@ -159,7 +183,7 @@ export async function upsertSeedTools(ownerUserId?: string | null) {
     await prisma.tool.upsert({
       where: { id: tool.id },
       create: input,
-      update: input,
+      update: withoutIconFields(input),
     })
   }
 }

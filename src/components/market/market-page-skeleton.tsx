@@ -7,6 +7,49 @@ const NAV_ROW_COUNT = 9
 const MOBILE_CHIP_COUNT = 4
 const CARD_PLACEHOLDER_COUNT = 6
 
+export function MarketToolGridSkeleton() {
+  return (
+    <div
+      className="grid gap-3 md:grid-cols-2 xl:grid-cols-3"
+      aria-busy="true"
+      aria-label="工具列表加载中"
+    >
+      {Array.from({ length: CARD_PLACEHOLDER_COUNT }).map((_, i) => (
+        <div
+          key={i}
+          className="flex min-h-40 flex-col rounded-[1.5rem] border border-border/60 bg-[linear-gradient(180deg,rgba(248,250,252,0.98),rgba(255,255,255,0.98))] p-3 shadow-sm"
+        >
+          <div className="flex items-start gap-2.5">
+            <Skeleton className="h-11 w-11 shrink-0 rounded-xl" />
+            <div className="min-w-0 flex-1 space-y-2">
+              <Skeleton className="h-5 w-[80%]" />
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-4/5" />
+            </div>
+          </div>
+          <div className="mt-2 flex gap-1.5">
+            <Skeleton className="h-5 w-12 rounded-full" />
+            <Skeleton className="h-5 w-14 rounded-full" />
+          </div>
+          <div className="mt-auto flex items-end justify-between gap-2 pt-4">
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <Skeleton className="h-3 w-[10rem] max-w-[85%] rounded-md" />
+              <div className="flex gap-1">
+                <Skeleton className="h-5 w-14 rounded-full" />
+                <Skeleton className="h-5 w-12 rounded-full" />
+              </div>
+            </div>
+            <div className="flex shrink-0 gap-1.5">
+              <Skeleton className="h-8 w-[5.25rem] shrink-0 rounded-full" />
+              <Skeleton className="h-8 w-14 shrink-0 rounded-full" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export function MarketPageSkeleton() {
   return (
     <div
@@ -62,40 +105,7 @@ export function MarketPageSkeleton() {
         </section>
 
         <ScrollArea className="min-h-0 px-1">
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            {Array.from({ length: CARD_PLACEHOLDER_COUNT }).map((_, i) => (
-              <div
-                key={i}
-                className="flex min-h-40 flex-col rounded-[1.5rem] border border-border/60 bg-[linear-gradient(180deg,rgba(248,250,252,0.98),rgba(255,255,255,0.98))] p-3 shadow-sm"
-              >
-                <div className="flex items-start gap-2.5">
-                  <Skeleton className="h-11 w-11 shrink-0 rounded-xl" />
-                  <div className="min-w-0 flex-1 space-y-2">
-                    <Skeleton className="h-5 w-[80%]" />
-                    <Skeleton className="h-3 w-full" />
-                    <Skeleton className="h-3 w-4/5" />
-                  </div>
-                </div>
-                <div className="mt-2 flex gap-1.5">
-                  <Skeleton className="h-5 w-12 rounded-full" />
-                  <Skeleton className="h-5 w-14 rounded-full" />
-                </div>
-                <div className="mt-auto flex items-end justify-between gap-2 pt-4">
-                  <div className="min-w-0 flex-1 space-y-1.5">
-                    <Skeleton className="h-3 w-[10rem] max-w-[85%] rounded-md" />
-                    <div className="flex gap-1">
-                      <Skeleton className="h-5 w-14 rounded-full" />
-                      <Skeleton className="h-5 w-12 rounded-full" />
-                    </div>
-                  </div>
-                  <div className="flex shrink-0 gap-1.5">
-                    <Skeleton className="h-8 w-[5.25rem] shrink-0 rounded-full" />
-                    <Skeleton className="h-8 w-14 shrink-0 rounded-full" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <MarketToolGridSkeleton />
         </ScrollArea>
       </div>
     </div>

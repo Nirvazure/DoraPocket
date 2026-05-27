@@ -1,3 +1,5 @@
+import { getMarketAssetsBucketName } from '@/shared/market-asset-url'
+
 export function getSupabaseUrl() {
   const value = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()
   if (!value) {
@@ -32,4 +34,8 @@ export function getAvatarBucket() {
     throw new Error('SUPABASE_STORAGE_BUCKET_AVATARS is required')
   }
   return value
+}
+
+export function getMarketAssetsBucket() {
+  return getMarketAssetsBucketName()
 }

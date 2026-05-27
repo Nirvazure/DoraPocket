@@ -5,7 +5,6 @@ import type { MarketReviewAggregate } from '@/shared/market-types'
 import { type ToolItem } from '@/shared/tool-registry'
 import {
   buildMarketNavigation,
-  filterToolsByKeyword,
   resolveCurrentTools,
   resolveMarketSection,
   resolveScopedTools,
@@ -35,6 +34,8 @@ type DiscoverSectionKey = Exclude<MarketSectionKey, 'pocket'>
 type UseMarketPageModelOptions = {
   pocketToolIds: Set<string>
   initialSection?: MarketSectionKey | null
+  query: string
+  onQueryChange: (value: string) => void
 }
 
 export function useMarketPageModel(
@@ -48,8 +49,7 @@ export function useMarketPageModel(
   }) => void,
   options: UseMarketPageModelOptions,
 ) {
-  const { pocketToolIds, initialSection = null } = options
-  const [query, setQuery] = useState('')
+  const { pocketToolIds, initialSection = null, query, onQueryChange } = options
   const [submitOpen, setSubmitOpen] = useState(false)
   const [draft, setDraft] = useState<Draft>(EMPTY_MARKET_DRAFT)
   const [marketScope, setMarketScope] = useState<MarketScope>(
@@ -59,18 +59,16 @@ export function useMarketPageModel(
   const [reviewToolId, setReviewToolId] = useState<string | null>(null)
 
   const discoverCount = toolsSource.length
-  const totalPocketCount = useMemo(
-    () => toolsSource.filter((tool) => pocketToolIds.has(tool.id)).length,
-    [pocketToolIds, toolsSource],
-  )
+  const totalPocketCount = pocketToolIds.size
 
-  const tools = useMemo<MarketToolCardItem[]>(() => {
-    const enriched = toolsSource.map((tool) => ({
-      ...tool,
-      reviewAggregate: reviewAggregates[tool.id] ?? null,
-    }))
-    return filterToolsByKeyword(enriched, query)
-  }, [query, reviewAggregates, toolsSource])
+  const tools = useMemo<MarketToolCardItem[]>(
+    () =>
+      toolsSource.map((tool) => ({
+        ...tool,
+        reviewAggregate: reviewAggregates[tool.id] ?? null,
+      })),
+    [reviewAggregates, toolsSource],
+  )
 
   const scopedTools = useMemo(
     () => resolveScopedTools({ scope: marketScope, tools, pocketToolIds }),
@@ -131,7 +129,7 @@ export function useMarketPageModel(
 
   return {
     query,
-    setQuery,
+    setQuery: onQueryChange,
     submitOpen,
     setSubmitOpen,
     draft,

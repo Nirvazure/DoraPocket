@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { AuthBootstrap } from '@/components/providers/auth-bootstrap'
 import { QueryProvider } from '@/components/providers/query-provider'
-import { UserSettingsSync } from '@/components/providers/user-settings-sync'
+import { RealtimeSyncProvider } from '@/components/providers/realtime-sync'
 import './globals.css'
 import { cn } from '@/lib/utils'
 
@@ -24,7 +24,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <QueryProvider>
           <AuthBootstrap />
-          <UserSettingsSync />
+          <RealtimeSyncProvider />
           {children}
         </QueryProvider>
       </body>

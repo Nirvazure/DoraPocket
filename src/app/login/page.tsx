@@ -1,4 +1,5 @@
-import { MagicLinkLoginForm } from '@/components/auth/magic-link-login-form'
+import { Suspense } from 'react'
+import { OAuthLoginForm } from '@/components/auth/oauth-login-form'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
 import { PageShell } from '@/components/common/page-shell'
 
@@ -29,7 +30,9 @@ export default function LoginPage() {
             </div>
           ))}
         </div>
-        <MagicLinkLoginForm />
+        <Suspense fallback={null}>
+          <OAuthLoginForm />
+        </Suspense>
       </section>
     </PageShell>
   )

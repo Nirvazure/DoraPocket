@@ -3,10 +3,7 @@
  */
 export function ListeningHud() {
   return (
-    <div
-      className="pointer-events-none absolute bottom-28 right-5 z-[5] md:bottom-32"
-      aria-hidden
-    >
+    <div className="pointer-events-none absolute bottom-28 right-5 z-[5] md:bottom-32" aria-hidden>
       <div className="flex items-center gap-2 rounded-full border border-white/70 bg-white/88 px-3 py-2 shadow-lg backdrop-blur-md">
         <div className="relative flex h-6 w-6 items-center justify-center">
           <span className="absolute inline-flex h-full w-full rounded-full border border-primary/45 motion-safe:animate-dp-listen-ring" />

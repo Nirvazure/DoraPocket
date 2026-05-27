@@ -14,8 +14,8 @@ export function MarketToolIcon({ tool, size = 'md' }: MarketToolIconProps) {
   const [imageFailed, setImageFailed] = useState(false)
   const imageSrc = useMemo(() => {
     if (imageFailed) return null
-    return tool.iconImageLocalPath ?? tool.iconImageUrl ?? null
-  }, [imageFailed, tool.iconImageLocalPath, tool.iconImageUrl])
+    return tool.iconImageUrl ?? null
+  }, [imageFailed, tool.iconImageUrl])
 
   const boxClassName =
     size === 'sm'

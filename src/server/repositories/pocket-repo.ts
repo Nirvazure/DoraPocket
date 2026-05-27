@@ -2,7 +2,7 @@ import 'server-only'
 
 import type * as Prisma from '../../generated/prisma/internal/prismaNamespace'
 import { prisma } from '@/server/db/prisma'
-import type { PocketInventoryItem } from '@/lib/client/pocket-inventory'
+import type { PocketInventoryItem } from '@/shared/pocket-types'
 import { recordToolOpened, recordToolSaved } from '@/server/repositories/tool-activity-repo'
 
 function toJsonValue(value: unknown): Prisma.InputJsonValue | undefined {

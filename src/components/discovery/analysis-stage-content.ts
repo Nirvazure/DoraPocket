@@ -34,6 +34,7 @@ export type LiveAnalysisTrackItem = {
   title: string
   detail: string
   meta?: string
+  tags?: string[]
   status: LiveAnalysisTrackStatus
 }
 
@@ -224,6 +225,19 @@ export function buildLiveAnalysisTrack({
   const candidates = payload?.candidates ?? []
   const missingInputs = payload?.taskFrame.missingInputs ?? []
   const preferenceHint = payload?.preferenceSignals[0]
+  const recall = payload?.recallSummary
+
+  const recallMeta =
+    recall?.vectorEnabled === true
+      ? recall.vectorCount > 0
+        ? `语义召回 ${recall.vectorCount} · 关键词 ${recall.keywordCount} · 合并 ${recall.mergedCount}`
+        : `语义召回暂未命中 · 关键词 ${recall.keywordCount}`
+      : undefined
+
+  const recallTags =
+    recall?.vectorEnabled === true && recall.topVectorTools.length > 0
+      ? recall.topVectorTools.map((tool) => tool.title)
+      : undefined
 
   return [
     {
@@ -251,7 +265,8 @@ export function buildLiveAnalysisTrack({
         candidates.length > 0
           ? `已把候选收束到 ${candidates.length} 个方向，先保留最适合当前任务节奏的选择。`
           : '正在从工具、口袋和可行路径里排除不适合当前任务的选项。',
-      meta: candidates.length > 1 ? '主推荐会在 Step 3 展示' : undefined,
+      meta: recallMeta ?? (candidates.length > 1 ? '主推荐会在 Step 3 展示' : undefined),
+      tags: recallTags,
       status: resolveTrackStatus(2, activeIndex),
     },
   ]

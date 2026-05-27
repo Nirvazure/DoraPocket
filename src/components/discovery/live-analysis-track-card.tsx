@@ -76,6 +76,18 @@ export function LiveAnalysisTrackCard({
                   {item.meta}
                 </p>
               ) : null}
+              {item.tags && item.tags.length > 0 ? (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {item.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full border border-primary/15 bg-primary/[0.06] px-2.5 py-1 text-[11px] font-semibold text-primary"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

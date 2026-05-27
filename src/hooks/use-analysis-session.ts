@@ -85,6 +85,7 @@ export function useAnalysisSession({
   const pocketReachTimerRef = useRef(0)
   const latestUserPromptRef = useRef('')
   const responseBufferRef = useRef('')
+  const recommendationCoverStartedRef = useRef(false)
   const [selectedToolPayload, setSelectedToolPayload] = useState<ChatToolPayload>(null)
   const [agentUiPayload, setAgentUiPayload] = useState<AgentUiPayload | null>(null)
   const [currentPrompt, setCurrentPrompt] = useState<string | null>(null)
@@ -129,7 +130,8 @@ export function useAnalysisSession({
     }) => {
       setSelectedToolPayload(selectedTool)
       setAgentUiPayload(uiPayload)
-      if (selectedTool?.toolId || uiPayload) {
+      if ((selectedTool?.toolId || uiPayload) && !recommendationCoverStartedRef.current) {
+        recommendationCoverStartedRef.current = true
         onCoverRecommendation()
       }
     },
@@ -148,7 +150,11 @@ export function useAnalysisSession({
     async (safeText: string, reply: AgentTurnReply) => {
       setSelectedToolPayload(reply.selectedTool)
       setAgentUiPayload(reply.uiPayload)
-      if (reply.selectedTool?.toolId || reply.uiPayload) {
+      if (
+        (reply.selectedTool?.toolId || reply.uiPayload) &&
+        !recommendationCoverStartedRef.current
+      ) {
+        recommendationCoverStartedRef.current = true
         onCoverRecommendation()
       }
       if (memoryEnabled) {
@@ -238,6 +244,7 @@ export function useAnalysisSession({
       try {
         stopAudioPlayback()
         responseBufferRef.current = ''
+        recommendationCoverStartedRef.current = false
         setLastSpeechError('')
         setBotResponse('')
         setAppState('thinking')

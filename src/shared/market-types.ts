@@ -48,12 +48,14 @@ export type MarketFeedbackRecord = {
 
 export type MarketSubmission = {
   id: string
+  toolId?: string | null
   name: string
   url: string
   description: string
   tags: string[]
   submittedAt: number
-  status: 'review' | 'listed'
+  status: 'review' | 'listed' | 'duplicate'
+  duplicateSimilarity?: number | null
 }
 
 export type MarketSubscriptionRecord = {
@@ -111,6 +113,14 @@ export type AgentCandidate = {
   externalBoundary?: string
 }
 
+export type RecallSummary = {
+  vectorEnabled: boolean
+  vectorCount: number
+  keywordCount: number
+  mergedCount: number
+  topVectorTools: Array<{ toolId: string; title: string }>
+}
+
 export type AgentUiPayload = {
   stageLabel: string
   stageTrail: string[]
@@ -120,4 +130,5 @@ export type AgentUiPayload = {
   selectionSignals: string[]
   preferenceSignals: string[]
   recommendedActions: string[]
+  recallSummary?: RecallSummary | null
 }

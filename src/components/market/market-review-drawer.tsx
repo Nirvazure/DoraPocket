@@ -14,7 +14,7 @@ import type { MarketToolCardItem } from '@/hooks/use-market-page-model'
 import {
   NEGATIVE_MARKET_REVIEW_TAGS,
   POSITIVE_MARKET_REVIEW_TAGS,
-} from '@/lib/client/market-storage'
+} from '@/shared/market-review-tags'
 import type { MarketReviewTag, ToolVote } from '@/shared/market-types'
 import { cn } from '@/lib/utils'
 import { MARKET_ACTIVITY_COPY, PAGE_COPY } from '@/shared/ui-copy'

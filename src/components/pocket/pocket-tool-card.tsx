@@ -6,7 +6,7 @@ import { MarketCategoryIcon } from '@/components/market/market-category-icons'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { DisplayPanel, DisplayPanelContent } from '@/components/ui/display-shell'
 import { cn } from '@/lib/utils'
-import type { PocketInventoryItem } from '@/lib/client/pocket-inventory'
+import type { PocketInventoryItem } from '@/shared/pocket-types'
 import { getToolById } from '@/shared/tool-registry'
 import { getPocketCategoryLabel } from '@/components/pocket/pocket-utils'
 
@@ -40,9 +40,9 @@ export function PocketToolCard({ item, onOpen, onRemove }: PocketToolCardProps) 
       <DisplayPanelContent className="space-y-4 p-5">
         <div className="flex items-start gap-4">
           <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[1.2rem] border border-slate-200 bg-slate-50">
-            {tool.iconImageUrl || tool.iconImageLocalPath ? (
+            {tool.iconImageUrl ? (
               <Image
-                src={tool.iconImageUrl ?? tool.iconImageLocalPath ?? ''}
+                src={tool.iconImageUrl}
                 alt=""
                 width={56}
                 height={56}

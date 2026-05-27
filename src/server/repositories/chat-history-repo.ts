@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { prisma } from '@/server/db/prisma'
-import type { ChatHistoryEntry } from '@/lib/client/chat-history'
+import type { ChatHistoryEntry } from '@/shared/chat-history-types'
 
 function toChatHistoryEntry(item: {
   id: string
