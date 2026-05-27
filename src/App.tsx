@@ -25,6 +25,7 @@ export default function App() {
     pocketGadget,
     userSettings,
     currentPrompt,
+    progressStage,
     analysisFlow,
     selectedToolPayload,
     agentUiPayload,
@@ -53,6 +54,10 @@ export default function App() {
     holdToTalkStart,
     holdToTalkEnd,
     revealNow,
+    step2Session,
+    skipToRecommendation,
+    toggleDialogueExpanded,
+    handleQuickReply,
   } = useAnalysisPageController()
 
   return (
@@ -98,6 +103,7 @@ export default function App() {
           currentPrompt={currentPrompt}
           appState={appState}
           analysisFlow={analysisFlow}
+          progressStage={progressStage}
           agentPayload={agentUiPayload}
           selectedToolPayload={selectedToolPayload}
           onSaveCandidate={workspaceActions.onSaveCandidate}
@@ -126,6 +132,8 @@ export default function App() {
           analysisFlow={analysisFlow}
           appState={appState}
           botResponse={botResponse}
+          step2Session={step2Session}
+          showSkip={step2Session != null && step2Session.turn < 3}
           canSkipVoice={canSkipVoice}
           inputMode={inputMode}
           textFallback={textFallback}
@@ -142,6 +150,9 @@ export default function App() {
           onHoldToTalkEnd={holdToTalkEnd}
           onStopVoicePlayback={stopAudioPlayback}
           onRevealNow={revealNow}
+          onQuickReply={handleQuickReply}
+          onSkipRecommendation={skipToRecommendation}
+          onToggleDialogueExpanded={toggleDialogueExpanded}
         />
       </AnalysisStagePanel>
     </PageShell>

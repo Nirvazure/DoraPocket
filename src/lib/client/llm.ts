@@ -1,10 +1,21 @@
 import type { AgentUiPayload } from '@/shared/market-types'
+import type { ProgressStage, Step2DoneStatus, Step2Message } from '@/shared/step2-session-types'
 import type { ExplanationMode } from '@/shared/user-settings'
 
 export type AskQwenOptions = {
   answerBookFromPocket?: boolean
   explanationMode?: ExplanationMode
   builtinToolsEnabled?: boolean
+  sessionTurn?: 1 | 2 | 3
+  anchorPrompt?: string
+  priorMessages?: Step2Message[]
+  skipClarify?: boolean
+  onProgress?: (stage: ProgressStage) => void
+  onClarify?: (payload: {
+    question: string
+    missingInputs: string[]
+    quickReplies: string[]
+  }) => void
   onMeta?: (payload: { selectedTool: ChatToolPayload; uiPayload: AgentUiPayload | null }) => void
   onDelta?: (text: string) => void
 }
@@ -18,6 +29,19 @@ export type ChatReply = {
   text: string
   selectedTool: ChatToolPayload
   uiPayload: AgentUiPayload | null
+  step2Status: Step2DoneStatus
+}
+
+type StreamProgressEvent = {
+  type: 'progress'
+  stage?: ProgressStage
+}
+
+type StreamClarifyEvent = {
+  type: 'clarify'
+  question?: string
+  missingInputs?: string[]
+  quickReplies?: string[]
 }
 
 type StreamMetaEvent = {
@@ -34,6 +58,7 @@ type StreamDeltaEvent = {
 type StreamDoneEvent = {
   type: 'done'
   text?: string
+  step2Status?: Step2DoneStatus
   selected_tool?: ChatToolPayload
   ui_payload?: AgentUiPayload
 }
@@ -43,7 +68,13 @@ type StreamErrorEvent = {
   error?: string
 }
 
-type StreamEvent = StreamMetaEvent | StreamDeltaEvent | StreamDoneEvent | StreamErrorEvent
+type StreamEvent =
+  | StreamProgressEvent
+  | StreamClarifyEvent
+  | StreamMetaEvent
+  | StreamDeltaEvent
+  | StreamDoneEvent
+  | StreamErrorEvent
 
 function parseStreamLine(line: string): StreamEvent | null {
   if (!line.trim()) return null
@@ -63,6 +94,10 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
       answerBookFromPocket: opts?.answerBookFromPocket === true,
       explanationMode: opts?.explanationMode ?? 'standard',
       builtinToolsEnabled: opts?.builtinToolsEnabled === true,
+      sessionTurn: opts?.sessionTurn ?? 1,
+      anchorPrompt: opts?.anchorPrompt,
+      priorMessages: opts?.priorMessages ?? [],
+      skipClarify: opts?.skipClarify === true,
     }),
   })
 
@@ -79,6 +114,7 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
   let selectedTool: ChatToolPayload = null
   let uiPayload: AgentUiPayload | null = null
   let fullText = ''
+  let step2Status: Step2DoneStatus = 'ready'
   let buffer = ''
 
   while (true) {
@@ -91,6 +127,18 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
     for (const line of lines) {
       const event = parseStreamLine(line)
       if (!event) continue
+      if (event.type === 'progress') {
+        if (event.stage) opts?.onProgress?.(event.stage)
+        continue
+      }
+      if (event.type === 'clarify') {
+        opts?.onClarify?.({
+          question: event.question ?? '',
+          missingInputs: event.missingInputs ?? [],
+          quickReplies: event.quickReplies ?? [],
+        })
+        continue
+      }
       if (event.type === 'meta') {
         selectedTool = event.selected_tool ?? null
         uiPayload = event.ui_payload ?? null
@@ -107,6 +155,7 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
         if (typeof event.text === 'string' && event.text.length > 0) {
           fullText = event.text
         }
+        step2Status = event.step2Status ?? 'ready'
         if (event.selected_tool !== undefined) {
           selectedTool = event.selected_tool
         }
@@ -125,5 +174,6 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
     text: fullText,
     selectedTool,
     uiPayload,
+    step2Status,
   }
 }

@@ -131,4 +131,5 @@ export type AgentUiPayload = {
   preferenceSignals: string[]
   recommendedActions: string[]
   recallSummary?: RecallSummary | null
+  confidenceLevel?: 'normal' | 'low'
 }

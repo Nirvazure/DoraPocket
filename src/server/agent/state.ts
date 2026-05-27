@@ -37,18 +37,31 @@ export type PocketState = {
   explanation_mode: ExplanationMode
 }
 
+export type CreateInitialStateOptions = {
+  anchorPrompt?: string
+  priorMessages?: Array<{ role: 'user' | 'assistant'; content: string }>
+}
+
 export function createInitialState(
   input: string,
   answerBookFromPocket: boolean,
   marketContext: MarketContext,
   builtinToolsEnabled: boolean,
   explanationMode: ExplanationMode,
+  options?: CreateInitialStateOptions,
 ): PocketState {
+  const goal = options?.anchorPrompt ?? input
+  const priorMessages = options?.priorMessages ?? []
+  const messages = [
+    ...priorMessages.map((m) => ({ role: m.role, content: m.content })),
+    { role: 'user' as const, content: input },
+  ]
+
   return {
-    messages: [{ role: 'user', content: input }],
+    messages,
     intent: 'chat',
     task_frame: {
-      goal: input,
+      goal,
       mode: answerBookFromPocket ? 'answer_book' : 'chat',
       missingInputs: [],
     },
@@ -60,7 +73,7 @@ export function createInitialState(
       stageLabel: answerBookFromPocket ? '答案之书' : '任务分析',
       stageTrail: answerBookFromPocket ? ['识别任务', '短答模式'] : ['识别任务', '任务分析'],
       taskFrame: {
-        goal: input,
+        goal,
         mode: answerBookFromPocket ? 'answer_book' : 'chat',
         missingInputs: [],
       },

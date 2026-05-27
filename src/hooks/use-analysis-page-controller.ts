@@ -4,10 +4,12 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
   type SetStateAction,
 } from 'react'
+import type { Step2Session } from '@/shared/step2-session-types'
 import {
   IDLE_ANALYSIS_FLOW,
   resolveAnalysisFlowAfterError,
@@ -37,6 +39,12 @@ function formatHistoryTime(value: number) {
     hour: '2-digit',
     minute: '2-digit',
   })
+}
+
+function mergeStep2IntoAnalysisFlow(flow: AnalysisFlow, step2: Step2Session | null): AnalysisFlow {
+  if (step2) return { ...flow, step2 }
+  if (!flow.step2) return flow
+  return { phase: flow.phase, beat: flow.beat }
 }
 
 export function useAnalysisPageController() {
@@ -103,10 +111,14 @@ export function useAnalysisPageController() {
     selectedToolPayload,
     agentUiPayload,
     currentPrompt,
+    step2Session,
+    progressStage,
     latestUserPromptRef,
     clearResponseState,
     runAgentTurn,
     revealNow,
+    skipToRecommendation,
+    toggleDialogueExpanded,
   } = useAnalysisSession({
     userSettings,
     saveChatHistory: saveChatHistoryMutation.mutate,
@@ -221,9 +233,14 @@ export function useAnalysisPageController() {
     return () => window.clearTimeout(id)
   }, [clearSystemNotice, systemNotice])
 
+  const resolvedAnalysisFlow = useMemo(
+    () => mergeStep2IntoAnalysisFlow(analysisFlow, step2Session),
+    [analysisFlow, step2Session],
+  )
+
   useEffect(() => {
-    analysisFlowRef.current = analysisFlow
-  }, [analysisFlow])
+    analysisFlowRef.current = resolvedAnalysisFlow
+  }, [resolvedAnalysisFlow])
 
   useEffect(() => {
     const clearTimers = () => {
@@ -259,6 +276,7 @@ export function useAnalysisPageController() {
       previousPrompt,
       nextPrompt: normalizedPrompt,
       currentFlow,
+      anchorPrompt: step2Session?.anchorPrompt,
     })
     if (!restartingForNewPrompt && shouldPreserveTurnFlow(currentFlow)) {
       return clearTimers
@@ -275,14 +293,21 @@ export function useAnalysisPageController() {
     }
 
     return clearTimers
-  }, [appState, clearRevealTimers, currentPrompt])
+  }, [appState, clearRevealTimers, currentPrompt, step2Session])
 
   const handleDraftTask = useCallback((draft: string) => {
     setTextFallback(draft)
   }, [])
 
+  const handleQuickReply = useCallback(
+    (text: string) => {
+      void runAgentTurn(text, { isContinuation: true })
+    },
+    [runAgentTurn],
+  )
+
   const canSendText = textFallback.trim().length > 0
-  const canSkipVoice = appState === 'speaking' && analysisFlow.beat === 'cover'
+  const canSkipVoice = appState === 'speaking' && resolvedAnalysisFlow.beat === 'cover'
   const promptPlaceholder = PAGE_COPY.analysis.promptPlaceholder
   const conversationHistory = chatHistory.slice(0, 6)
   const setInputMode = useCallback(
@@ -306,7 +331,9 @@ export function useAnalysisPageController() {
     pocketGadget,
     userSettings,
     currentPrompt,
-    analysisFlow,
+    step2Session,
+    progressStage,
+    analysisFlow: resolvedAnalysisFlow,
     selectedToolPayload,
     agentUiPayload,
     rootCursor,
@@ -336,5 +363,8 @@ export function useAnalysisPageController() {
     holdToTalkStart,
     holdToTalkEnd,
     revealNow,
+    skipToRecommendation,
+    toggleDialogueExpanded,
+    handleQuickReply,
   }
 }

@@ -152,6 +152,12 @@ export const SETTINGS_COPY = {
   },
 } as const
 
+export const STEP2_COPY = {
+  skipLabel: '跳过，先看推荐',
+  expandEarlier: '展开 earlier ▾',
+  lowConfidenceHint: '部分条件未确认，推荐置信度偏低。你可以返回 Step 2 补充。',
+} as const
+
 export const SYSTEM_NOTICE_COPY = {
   savedForLater: '已保存为以后可直接打开的工具',
   analysisFailed: '这次出手失败了，请稍后再试',

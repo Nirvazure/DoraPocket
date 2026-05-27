@@ -20,7 +20,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="zh-CN" className={cn('h-full antialiased', 'font-sans')}>
+    <html
+      lang="zh-CN"
+      className={cn('h-full antialiased', 'font-sans')}
+      data-font-preset="c"
+      suppressHydrationWarning
+    >
       <body className="min-h-full flex flex-col">
         <QueryProvider>
           <AuthBootstrap />

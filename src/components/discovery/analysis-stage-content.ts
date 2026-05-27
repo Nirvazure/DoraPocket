@@ -1,6 +1,7 @@
 import { getToolById } from '@/shared/tool-registry'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentCandidate, AgentUiPayload } from '@/shared/market-types'
+import type { ProgressStage, Step2Session } from '@/shared/step2-session-types'
 import type { AppState } from '@/store'
 
 export type AnalysisPhase = 'idle' | 'analyzing' | 'revealed'
@@ -9,6 +10,7 @@ export type AnalysisBeat = 'working' | 'cover' | 'reveal'
 export type AnalysisFlow = {
   phase: AnalysisPhase
   beat: AnalysisBeat
+  step2?: Step2Session
 }
 
 export const IDLE_ANALYSIS_FLOW: AnalysisFlow = { phase: 'idle', beat: 'working' }
@@ -21,8 +23,21 @@ export function resolveAnalysisFlowAfterError(): AnalysisFlow {
   return { phase: 'idle', beat: 'working' }
 }
 
-export function isInputLockedFlow(flow: AnalysisFlow) {
+export function isStep2Clarifying(flow: AnalysisFlow): boolean {
+  return flow.step2?.status === 'clarifying'
+}
+
+export function isInputLockedFlow(flow: AnalysisFlow): boolean {
+  if (isStep2Clarifying(flow)) return false
   return flow.phase === 'analyzing'
+}
+
+export function resolveActiveTrackIndexFromProgress(stage: ProgressStage | null): number {
+  if (!stage) return 0
+  if (stage === 'understanding') return 0
+  if (stage === 'constraining' || stage === 'clarifying') return 1
+  if (stage === 'recalling' || stage === 'ranking' || stage === 'ready') return 2
+  return 0
 }
 
 export function shouldPreserveTurnFlow(flow: AnalysisFlow) {
@@ -213,15 +228,20 @@ export function buildLiveAnalysisTrack({
   payload,
   appState,
   analysisFlow,
+  progressStage = null,
 }: {
   currentPrompt: string | null
   payload: AgentUiPayload | null
   appState: AppState
   analysisFlow: AnalysisFlow
+  progressStage?: ProgressStage | null
 }): LiveAnalysisTrackItem[] {
   const prompt = currentPrompt?.trim()
   const goal = payload?.taskFrame.goal?.trim() || prompt || '等待任务输入'
-  const activeIndex = resolveActiveTrackIndex(analysisFlow, appState, Boolean(payload))
+  const activeIndex =
+    progressStage != null
+      ? resolveActiveTrackIndexFromProgress(progressStage)
+      : resolveActiveTrackIndex(analysisFlow, appState, Boolean(payload))
   const candidates = payload?.candidates ?? []
   const missingInputs = payload?.taskFrame.missingInputs ?? []
   const preferenceHint = payload?.preferenceSignals[0]

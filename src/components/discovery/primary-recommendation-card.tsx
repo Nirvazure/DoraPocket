@@ -18,6 +18,7 @@ import {
 } from '@/components/discovery/analysis-stage-content'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
+import { STEP2_COPY } from '@/shared/ui-copy'
 import { getToolById } from '@/shared/tool-registry'
 
 type PrimaryRecommendationCardProps = {
@@ -107,6 +108,11 @@ export function PrimaryRecommendationCard({
         </div>
       </DisplayPanelHeader>
       <DisplayPanelContent className="relative z-10 flex flex-wrap gap-2 px-5 pb-6 pt-0 sm:px-6">
+        {payload?.confidenceLevel === 'low' ? (
+          <p className="w-full rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+            {STEP2_COPY.lowConfidenceHint}
+          </p>
+        ) : null}
         {leaderExternalUrl ? (
           <Button
             type="button"

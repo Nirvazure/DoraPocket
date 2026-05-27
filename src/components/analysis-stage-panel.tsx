@@ -1,6 +1,16 @@
+'use client'
+
+import dynamic from 'next/dynamic'
 import type { AnalysisFlow } from '@/components/discovery/analysis-stage-content'
-import { AnalysisStageCanvas } from '@/components/analysis-stage-canvas'
 import { AnalysisStageStatusBar } from '@/components/analysis-stage-status-bar'
+
+const AnalysisStageCanvas = dynamic(
+  () => import('@/components/analysis-stage-canvas').then((module) => module.AnalysisStageCanvas),
+  {
+    ssr: false,
+    loading: () => <div className="absolute inset-0 z-0 bg-transparent" aria-hidden />,
+  },
+)
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { modeImageSrc, type AssistantModeCard } from '@/shared/mode-registry'
@@ -115,7 +125,7 @@ export function AnalysisStagePanel({
         />
       </div>
 
-      <div className="relative min-h-0 flex-1">
+      <div className="relative flex-1 min-h-[18rem]">
         <AnalysisStageCanvas />
         <div
           className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-white/64 via-white/34 to-white/72"

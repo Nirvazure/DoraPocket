@@ -24,3 +24,26 @@ test('does not restart analysis flow when prompt is unchanged', () => {
     false,
   )
 })
+
+test('does not restart analysis flow for step2 clarifying continuation', () => {
+  assert.equal(
+    shouldRestartAnalysisFlow({
+      previousPrompt: '查天气',
+      nextPrompt: '北京',
+      anchorPrompt: '查天气',
+      currentFlow: {
+        phase: 'revealed',
+        beat: 'working',
+        step2: {
+          turn: 1,
+          anchorPrompt: '查天气',
+          messages: [],
+          status: 'clarifying',
+          dialogueExpanded: false,
+          quickReplies: ['北京'],
+        },
+      },
+    }),
+    false,
+  )
+})
