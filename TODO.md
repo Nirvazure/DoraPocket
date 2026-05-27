@@ -42,10 +42,12 @@
   - 实时 Webhook 替代/补充 Cron 轮询
   - 定时 Cron → 刷新工具评分聚合、清理过期 session
 
-- [ ] **Auth 增强**
-  - Auth Hook：用户创建时自动写 `User` 表，替代/简化 callback 里的 `upsertUserFromSupabaseUser`
-  - MFA：若未来有付费或敏感数据
-  - 更多 Provider（微信/Apple 等）：需评估与现有直连 OAuth 架构的兼容性
+- [x] **Auth 增强 — Phase 1（已完成）**
+  - 会话层 lazy provisioning：`ensureAppUserFromSupabaseUser` 于 `verifySession` 首次访问时写 `User` 表 + seed tools
+  - OAuth / magic link callback 仅建立 session 并跳转，不再重复 upsert
+  - ~~Supabase Dashboard Auth Hook（HTTP）~~（Supabase 暂无稳定 After User Created；可后续接 Custom Access Token Hook）
+  - ~~MFA~~（延后）
+  - ~~更多 Provider（微信/Apple 等）~~（延后）
 
 ### 较低优先级（视架构选择而定）
 

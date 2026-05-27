@@ -2,25 +2,14 @@ import 'server-only'
 
 import { cache } from 'react'
 import { redirect } from 'next/navigation'
-import { prisma } from '@/server/db/prisma'
+import { ensureAppUserFromSupabaseUser } from '@/server/auth/user-sync'
 import { getSupabaseCurrentUser, getSupabaseSessionPayload } from '@/server/auth/session'
 
 export const getCurrentUserOrNull = cache(async () => {
   const authUser = await getSupabaseCurrentUser()
   if (!authUser) return null
 
-  return prisma.user.findUnique({
-    where: { supabaseUserId: authUser.id },
-    select: {
-      id: true,
-      supabaseUserId: true,
-      email: true,
-      nickname: true,
-      avatarSrc: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-  })
+  return ensureAppUserFromSupabaseUser(authUser)
 })
 
 export const verifySession = cache(async () => {
