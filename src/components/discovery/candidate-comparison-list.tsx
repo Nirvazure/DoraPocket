@@ -7,30 +7,32 @@ import {
   DisplayPanelHeader,
   DisplayPanelTitle,
 } from '@/components/ui/display-shell'
+import { CandidateOriginBadge } from '@/components/discovery/candidate-origin-badge'
+import {
+  formatCandidateScore,
+  shouldShowCandidateScore,
+} from '@/components/discovery/candidate-score'
 import { getToolById } from '@/shared/tool-registry'
 import type { AgentUiPayload } from '@/shared/market-types'
+import type { UserSettings } from '@/shared/user-settings'
 
 type CandidateComparisonListProps = {
   payload: AgentUiPayload | null
+  explanationMode?: UserSettings['explanationMode']
   onOpenCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
   onOpenExternalCandidate: (url: string) => void
 }
 
-function sourceLabel(value: 'builtin' | 'pocket' | 'market' | 'external') {
-  if (value === 'builtin') return '原生'
-  if (value === 'pocket') return '口袋'
-  if (value === 'external') return '外部'
-  return '市场'
-}
-
 export function CandidateComparisonList({
   payload,
+  explanationMode = 'standard',
   onOpenCandidate,
   onLaunchCandidate,
   onOpenExternalCandidate,
 }: CandidateComparisonListProps) {
   const candidates = payload?.candidates.slice(0, 3) ?? []
+  const showScore = shouldShowCandidateScore(explanationMode)
 
   return (
     <DisplayPanel className="rounded-3xl border-border/55 bg-white p-4 shadow-sm">
@@ -79,12 +81,17 @@ export function CandidateComparisonList({
                         : `暂不首选：当前轮次里，TOP 1 的综合信号更强。`}
                     </DisplayPanel>
                   </div>
-                  <Badge
-                    variant="outline"
-                    className="border-border/55 bg-white px-2.5 py-1 text-[10px] font-semibold text-muted-foreground"
-                  >
-                    {sourceLabel(candidate.sourceLabel)}
-                  </Badge>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {showScore ? (
+                      <Badge
+                        variant="outline"
+                        className="border-border/55 bg-white px-2.5 py-1 text-[10px] font-semibold text-muted-foreground"
+                      >
+                        {formatCandidateScore(candidate)}
+                      </Badge>
+                    ) : null}
+                    <CandidateOriginBadge candidate={candidate} />
+                  </div>
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {candidate.candidateType === 'external_suggestion' && candidate.url ? (

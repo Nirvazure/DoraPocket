@@ -17,6 +17,7 @@ import type { UserSettings } from '@/shared/user-settings'
 type PocketQuickSettingsModalProps = {
   open: boolean
   settings: UserSettings | undefined
+  readOnly?: boolean
   onClose: () => void
   onSave: (next: UserSettings) => void
 }
@@ -24,6 +25,7 @@ type PocketQuickSettingsModalProps = {
 export function PocketQuickSettingsModal({
   open,
   settings,
+  readOnly = false,
   onClose,
   onSave,
 }: PocketQuickSettingsModalProps) {
@@ -67,7 +69,9 @@ export function PocketQuickSettingsModal({
               快捷设置
             </DisplayPanelTitle>
             <DisplayPanelDescription className="mt-1 text-sm text-slate-600">
-              调整输入方式、解释风格和语音播报，立刻应用到当前对话。
+              {readOnly
+                ? '登录后才会同步到你的账号。当前只能预览设置。'
+                : '调整输入方式、解释风格和语音播报，立刻应用到当前对话。'}
             </DisplayPanelDescription>
           </DisplayPanelHeader>
           <Button
@@ -83,7 +87,7 @@ export function PocketQuickSettingsModal({
         </div>
 
         <DisplayPanelContent className="mt-4 p-0">
-          <PocketQuickSettingsFields settings={settings} onSave={onSave} />
+          <PocketQuickSettingsFields settings={settings} onSave={onSave} readOnly={readOnly} />
         </DisplayPanelContent>
       </DisplayPanel>
     </div>,

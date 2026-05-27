@@ -33,6 +33,7 @@ export type DoraBottomInteractionZoneProps = {
   onSubmit: () => void
   onHoldToTalkStart: () => void
   onHoldToTalkEnd: () => void
+  onCancelVoiceInput: () => void
   onStopVoicePlayback: () => void
   onRevealNow: () => void
   onQuickReply: (text: string) => void
@@ -81,6 +82,7 @@ export function DoraBottomInteractionZone({
   onSubmit,
   onHoldToTalkStart,
   onHoldToTalkEnd,
+  onCancelVoiceInput,
   onStopVoicePlayback,
   onRevealNow,
   onQuickReply,
@@ -142,6 +144,7 @@ export function DoraBottomInteractionZone({
           onSubmit={onSubmit}
           onHoldToTalkStart={onHoldToTalkStart}
           onHoldToTalkEnd={onHoldToTalkEnd}
+          onCancelVoiceInput={onCancelVoiceInput}
           onInteractionStart={onStopVoicePlayback}
         />
       )}

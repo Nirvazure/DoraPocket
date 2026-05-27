@@ -18,3 +18,11 @@ export function useAuthSessionQuery() {
     staleTime: 30_000,
   })
 }
+
+export function resolveSettingsReadOnly(
+  authPending: boolean,
+  authenticated: boolean | undefined,
+): boolean {
+  if (authPending) return false
+  return authenticated !== true
+}

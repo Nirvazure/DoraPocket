@@ -25,6 +25,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
 import type { ProgressStage } from '@/shared/step2-session-types'
+import type { UserSettings } from '@/shared/user-settings'
 import type { AppState } from '@/store'
 
 type DiscoveryWorkspaceProps = {
@@ -34,6 +35,7 @@ type DiscoveryWorkspaceProps = {
   progressStage?: ProgressStage | null
   agentPayload: AgentUiPayload | null
   selectedToolPayload: ChatToolPayload
+  explanationMode?: UserSettings['explanationMode']
   onSaveCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
   onOpenExternalCandidate: (url: string) => void
@@ -47,6 +49,7 @@ export function DiscoveryWorkspace({
   progressStage = null,
   agentPayload,
   selectedToolPayload,
+  explanationMode = 'standard',
   onSaveCandidate,
   onLaunchCandidate,
   onOpenExternalCandidate,
@@ -117,6 +120,7 @@ export function DiscoveryWorkspace({
                   payload={agentPayload}
                   selectedToolPayload={selectedToolPayload}
                   analysisFlow={analysisFlow}
+                  explanationMode={explanationMode}
                   onSaveCandidate={onSaveCandidate}
                   onLaunchCandidate={onLaunchCandidate}
                   onOpenExternalCandidate={onOpenExternalCandidate}

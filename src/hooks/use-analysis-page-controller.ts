@@ -22,6 +22,7 @@ import { useDiscoveryWorkspaceActions } from '@/hooks/use-discovery-workspace-ac
 import { usePocketGadgetModalActions } from '@/hooks/use-pocket-gadget-modal-actions'
 import { useToolDial } from '@/hooks/use-tool-dial'
 import { useVoiceInput } from '@/hooks/use-voice-input'
+import { useAuthSessionQuery, resolveSettingsReadOnly } from '@/lib/query/auth-session'
 import { useSaveChatHistoryMutation, useChatHistoryQuery } from '@/lib/query/chat-history'
 import { useMarkToolUsedMutation, useSaveToolToPocketMutation } from '@/lib/query/pocket'
 import { useSaveUserSettingsMutation, useUserSettingsQuery } from '@/lib/query/user-settings'
@@ -66,7 +67,10 @@ export function useAnalysisPageController() {
   const saveChatHistoryMutation = useSaveChatHistoryMutation()
   const { data: chatHistory = [] } = useChatHistoryQuery()
   const { data: userSettings } = useUserSettingsQuery()
+  const { data: authSession, isPending: authPending } = useAuthSessionQuery()
   const saveUserSettingsMutation = useSaveUserSettingsMutation()
+  const isAuthenticated = authSession?.authenticated === true
+  const settingsReadOnly = resolveSettingsReadOnly(authPending, authSession?.authenticated)
 
   const [inputModeOverride, setInputModeOverride] = useState<InputMode | null>(null)
   const [textFallback, setTextFallback] = useState('')
@@ -181,7 +185,7 @@ export function useAnalysisPageController() {
     },
   })
 
-  const { holdToTalkStart, holdToTalkEnd, submitTextMessage } = useVoiceInput({
+  const { holdToTalkStart, holdToTalkEnd, cancelVoiceInput, submitTextMessage } = useVoiceInput({
     appState,
     runAgentTurn,
     setAppState,
@@ -320,6 +324,14 @@ export function useAnalysisPageController() {
     [userSettings?.defaultInputMode],
   )
 
+  const saveUserSettings = useCallback(
+    (next: Parameters<typeof saveUserSettingsMutation.mutate>[0]) => {
+      if (authPending || !isAuthenticated) return
+      saveUserSettingsMutation.mutate(next)
+    },
+    [authPending, isAuthenticated, saveUserSettingsMutation],
+  )
+
   return {
     appState,
     transcript,
@@ -330,6 +342,8 @@ export function useAnalysisPageController() {
     quickSettingsOpen,
     pocketGadget,
     userSettings,
+    isAuthenticated,
+    settingsReadOnly,
     currentPrompt,
     step2Session,
     progressStage,
@@ -355,13 +369,14 @@ export function useAnalysisPageController() {
     handleSelectDialGadget,
     setPocketModalOpen,
     setQuickSettingsOpen,
-    saveUserSettings: saveUserSettingsMutation.mutate,
+    saveUserSettings,
     setToolDialMode,
     setInputMode,
     setTextFallback,
     submitTextMessage,
     holdToTalkStart,
     holdToTalkEnd,
+    cancelVoiceInput,
     revealNow,
     skipToRecommendation,
     toggleDialogueExpanded,

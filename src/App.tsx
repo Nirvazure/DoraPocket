@@ -24,6 +24,7 @@ export default function App() {
     quickSettingsOpen,
     pocketGadget,
     userSettings,
+    settingsReadOnly,
     currentPrompt,
     progressStage,
     analysisFlow,
@@ -53,6 +54,7 @@ export default function App() {
     submitTextMessage,
     holdToTalkStart,
     holdToTalkEnd,
+    cancelVoiceInput,
     revealNow,
     step2Session,
     skipToRecommendation,
@@ -94,6 +96,7 @@ export default function App() {
       <PocketQuickSettingsModal
         open={quickSettingsOpen}
         settings={userSettings}
+        readOnly={settingsReadOnly}
         onClose={() => setQuickSettingsOpen(false)}
         onSave={saveUserSettings}
       />
@@ -106,6 +109,7 @@ export default function App() {
           progressStage={progressStage}
           agentPayload={agentUiPayload}
           selectedToolPayload={selectedToolPayload}
+          explanationMode={userSettings?.explanationMode ?? 'standard'}
           onSaveCandidate={workspaceActions.onSaveCandidate}
           onLaunchCandidate={workspaceActions.onLaunchCandidate}
           onOpenExternalCandidate={workspaceActions.onOpenExternalCandidate}
@@ -148,6 +152,7 @@ export default function App() {
           }}
           onHoldToTalkStart={holdToTalkStart}
           onHoldToTalkEnd={holdToTalkEnd}
+          onCancelVoiceInput={cancelVoiceInput}
           onStopVoicePlayback={stopAudioPlayback}
           onRevealNow={revealNow}
           onQuickReply={handleQuickReply}

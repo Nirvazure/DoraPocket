@@ -14,11 +14,17 @@ import type { UserSettings } from '@/shared/user-settings'
 
 type PocketSettingsPanelProps = {
   settings: UserSettings | undefined
+  readOnly?: boolean
   onSave: (next: UserSettings) => void
 }
 
-export function PocketSettingsPanel({ settings, onSave }: PocketSettingsPanelProps) {
-  const update = (patch: Partial<UserSettings>) => patchUserSettings(settings, patch, onSave)
+export function PocketSettingsPanel({
+  settings,
+  readOnly = false,
+  onSave,
+}: PocketSettingsPanelProps) {
+  const update = (patch: Partial<UserSettings>) =>
+    patchUserSettings(settings, patch, onSave, readOnly)
 
   return (
     <DisplayPanel className="rounded-[2.4rem] border-white/90 bg-white shadow-[0_28px_86px_rgba(14,165,233,0.08)]">
@@ -34,11 +40,17 @@ export function PocketSettingsPanel({ settings, onSave }: PocketSettingsPanelPro
         </DisplayPanelHeader>
 
         <div className="mt-5 space-y-2">
+          {readOnly ? (
+            <p className="rounded-2xl border border-amber-200/80 bg-amber-50 px-3 py-2 text-xs leading-relaxed text-amber-900">
+              登录后才会同步到你的账号。当前只能预览设置。
+            </p>
+          ) : null}
           <SettingRow
             label="内置道具开关"
             description="关闭后，系统会把内置道具视为不存在，不展示、不推荐，也不允许使用。"
           >
             <Switch
+              disabled={readOnly}
               checked={settings?.builtinToolsEnabled === true}
               onCheckedChange={(checked) => update({ builtinToolsEnabled: checked })}
               aria-label="内置道具开关"

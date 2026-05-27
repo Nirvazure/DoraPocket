@@ -10,23 +10,38 @@ import {
   resolveAlternativeCandidates,
   type AnalysisFlow,
 } from '@/components/discovery/analysis-stage-content'
-import { Skeleton } from '@/components/ui/skeleton'
+import { CandidateOriginBadge } from '@/components/discovery/candidate-origin-badge'
+import {
+  formatCandidateScore,
+  shouldShowCandidateScore,
+} from '@/components/discovery/candidate-score'
+import { ExternalLink } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { getToolById } from '@/shared/tool-registry'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
+
+import { Skeleton } from '@/components/ui/skeleton'
+import type { UserSettings } from '@/shared/user-settings'
 
 type CandidateAlternativesCardProps = {
   payload: AgentUiPayload | null
   selectedToolPayload: ChatToolPayload
   analysisFlow: AnalysisFlow
+  explanationMode?: UserSettings['explanationMode']
+  onOpenExternalCandidate?: (url: string) => void
 }
 
 export function CandidateAlternativesCard({
   payload,
   selectedToolPayload,
   analysisFlow,
+  explanationMode = 'standard',
+  onOpenExternalCandidate,
 }: CandidateAlternativesCardProps) {
   const alternatives = resolveAlternativeCandidates(payload, selectedToolPayload)
+  const showScore = shouldShowCandidateScore(explanationMode)
   const covered = isRecommendationCovered(analysisFlow)
   const revealing = isRecommendationRevealing(analysisFlow)
 
@@ -70,17 +85,47 @@ export function CandidateAlternativesCard({
           <div className="grid gap-3 md:grid-cols-3">
             {alternatives.map((candidate, index) => {
               const tool = candidate.toolId ? getToolById(candidate.toolId) : null
+              const isExternal = candidate.candidateType === 'external_suggestion'
               return (
                 <DisplayPanel
                   key={candidate.toolId ?? `${candidate.title}-${index}`}
                   className="rounded-2xl border-border/60 bg-slate-50 p-3 shadow-none"
                 >
-                  <p className="text-xs font-black text-foreground">
-                    备选 {index + 1} · {tool?.name ?? candidate.title}
-                  </p>
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <p className="text-xs font-black text-foreground">
+                      备选 {index + 1} · {tool?.name ?? candidate.title}
+                    </p>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {showScore ? (
+                        <Badge
+                          variant="outline"
+                          className="border-border/55 bg-white px-2 py-0.5 text-[10px] font-semibold text-muted-foreground"
+                        >
+                          {formatCandidateScore(candidate)}
+                        </Badge>
+                      ) : null}
+                      <CandidateOriginBadge candidate={candidate} />
+                    </div>
+                  </div>
                   <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
                     {candidate.reason}
                   </p>
+                  {isExternal && candidate.externalBoundary ? (
+                    <p className="mt-2 text-[10px] leading-relaxed text-amber-800/80">
+                      {candidate.externalBoundary}
+                    </p>
+                  ) : null}
+                  {isExternal && candidate.url && onOpenExternalCandidate ? (
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="mt-3 h-8 rounded-full px-3 text-[11px]"
+                      onClick={() => onOpenExternalCandidate(candidate.url ?? '')}
+                    >
+                      <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
+                      打开外部工具
+                    </Button>
+                  ) : null}
                 </DisplayPanel>
               )
             })}
