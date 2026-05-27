@@ -1,17 +1,9 @@
 import 'server-only'
 
+import { SUBMISSION_DEDUP_SIMILARITY_THRESHOLD } from '@/constant'
 import { prisma } from '@/server/db/prisma'
 import { createImportedToolId } from '@/server/repositories/tool-repo'
 import { embedQuery, searchToolsByEmbedding } from '@/server/retrieval/tool-embedding'
-
-const DEFAULT_THRESHOLD = 0.88
-
-function readSimilarityThreshold(): number {
-  const raw = process.env.SUBMISSION_DEDUP_SIMILARITY_THRESHOLD?.trim()
-  if (!raw) return DEFAULT_THRESHOLD
-  const parsed = Number(raw)
-  return Number.isFinite(parsed) ? parsed : DEFAULT_THRESHOLD
-}
 
 export function buildSubmissionEmbeddingText(input: {
   name: string
@@ -47,7 +39,7 @@ export async function dedupMarketSubmission(
   }
 
   const matches = await searchToolsByEmbedding(embedding, 1, true)
-  const threshold = readSimilarityThreshold()
+  const threshold = SUBMISSION_DEDUP_SIMILARITY_THRESHOLD
   const topMatch = [...matches.entries()][0]
 
   if (!topMatch || topMatch[1] < threshold || topMatch[0] === (submission.toolId ?? urlToolId)) {

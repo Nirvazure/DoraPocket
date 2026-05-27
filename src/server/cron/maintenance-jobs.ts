@@ -1,17 +1,11 @@
 import 'server-only'
 
+import { SESSION_RETENTION_DAYS } from '@/constant'
 import { prisma } from '@/server/db/prisma'
 import type { ToolRatingSummary } from '@/shared/tool-registry'
 
 export type RefreshToolRatingsResult = {
   updated: number
-}
-
-function readRetentionDays(): number {
-  const raw = process.env.SESSION_RETENTION_DAYS?.trim()
-  if (!raw) return 90
-  const parsed = Number(raw)
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : 90
 }
 
 function buildRatingSummary(
@@ -88,7 +82,7 @@ export type CleanupRecommendationSessionsResult = {
 }
 
 export async function cleanupExpiredRecommendationSessions(): Promise<CleanupRecommendationSessionsResult> {
-  const retentionDays = readRetentionDays()
+  const retentionDays = SESSION_RETENTION_DAYS
   const cutoff = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000)
   const deleted = await prisma.recommendationSession.deleteMany({
     where: { createdAt: { lt: cutoff } },
