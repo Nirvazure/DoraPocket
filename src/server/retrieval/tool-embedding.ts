@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto'
 
+import { QWEN_BASE_URL } from '@/constant'
 import { prisma } from '@/server/db/prisma'
 
 const EMBEDDING_MODEL = 'text-embedding-v3'
@@ -33,10 +34,7 @@ async function embedText(text: string): Promise<number[] | null> {
   const apiKey = process.env.QWEN_API_KEY?.trim()
   if (!apiKey) return null
 
-  const baseUrl =
-    process.env.QWEN_BASE_URL?.trim() || 'https://dashscope.aliyuncs.com/compatible-mode/v1'
-
-  const response = await fetch(`${baseUrl}/embeddings`, {
+  const response = await fetch(`${QWEN_BASE_URL}/embeddings`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,

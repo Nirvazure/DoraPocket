@@ -1,3 +1,4 @@
+import { getSiteUrl as getSiteUrlFromConstant, SUPABASE_STORAGE_BUCKET_AVATARS } from '@/constant'
 import { getMarketAssetsBucketName } from '@/shared/market-asset-url'
 
 export function getSupabaseUrl() {
@@ -25,15 +26,11 @@ export function getSupabaseSecretKey() {
 }
 
 export function getSiteUrl() {
-  return process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'http://localhost:3000'
+  return getSiteUrlFromConstant()
 }
 
 export function getAvatarBucket() {
-  const value = process.env.SUPABASE_STORAGE_BUCKET_AVATARS?.trim()
-  if (!value) {
-    throw new Error('SUPABASE_STORAGE_BUCKET_AVATARS is required')
-  }
-  return value
+  return SUPABASE_STORAGE_BUCKET_AVATARS
 }
 
 export function getMarketAssetsBucket() {

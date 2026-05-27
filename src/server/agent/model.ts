@@ -1,5 +1,7 @@
 import { ChatOpenAI } from '@langchain/openai'
 
+import { QWEN_BASE_URL, QWEN_MODEL } from '@/constant'
+
 export const DORA_PROMPT = [
   '你是 DoraPocket，一个哆啦A梦风格但极其务实的工具发现 Agent。',
   '你优先帮用户找到最合适的工具，而不是空泛聊天。',
@@ -15,12 +17,10 @@ export function createModel(temperature = 0.4) {
   if (!apiKey) throw new Error('QWEN_API_KEY missing')
   return new ChatOpenAI({
     apiKey,
-    model: process.env.QWEN_MODEL?.trim() || 'qwen-plus',
+    model: QWEN_MODEL,
     temperature,
     configuration: {
-      baseURL:
-        process.env.QWEN_BASE_URL?.trim() ||
-        'https://dashscope.aliyuncs.com/compatible-mode/v1',
+      baseURL: QWEN_BASE_URL,
     },
   })
 }

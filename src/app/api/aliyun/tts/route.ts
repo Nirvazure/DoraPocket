@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { ALIYUN_TTS_VOICE } from '@/constant'
 import { fetchNlsToken } from '@/server/aliyun/token'
 
 async function createUpstream(text: string, voice?: string): Promise<Response> {
@@ -20,7 +21,7 @@ async function createUpstream(text: string, voice?: string): Promise<Response> {
       volume: 50,
       speech_rate: 0,
       pitch_rate: 0,
-      voice: voice?.trim() || process.env.ALIYUN_TTS_VOICE?.trim() || undefined,
+      voice: voice?.trim() || ALIYUN_TTS_VOICE,
     }),
   })
 }

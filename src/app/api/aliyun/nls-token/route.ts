@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { ALIYUN_NLS_STT_WS_URL } from '@/constant'
 import { fetchNlsToken } from '@/server/aliyun/token'
 
 export async function GET() {
@@ -13,9 +14,7 @@ export async function GET() {
     return NextResponse.json({
       token,
       appkey,
-      wsUrl:
-        process.env.ALIYUN_NLS_STT_WS_URL?.trim() ||
-        'wss://nls-gateway-cn-shanghai.aliyuncs.com/ws/v1',
+      wsUrl: ALIYUN_NLS_STT_WS_URL,
     })
   } catch (error) {
     return NextResponse.json({ error: String(error) }, { status: 500 })

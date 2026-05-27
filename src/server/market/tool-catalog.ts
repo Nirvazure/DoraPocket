@@ -36,6 +36,20 @@ function toToolTrustSignals(value: unknown): ToolTrustSignals {
   }
 }
 
+function readRatingSummary(value: unknown): ToolRatingSummary {
+  const raw = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
+  const summary = raw.ratingSummary
+  if (summary && typeof summary === 'object' && !Array.isArray(summary)) {
+    const parsed = summary as Partial<ToolRatingSummary>
+    return {
+      upvotes: typeof parsed.upvotes === 'number' ? parsed.upvotes : 0,
+      downvotes: typeof parsed.downvotes === 'number' ? parsed.downvotes : 0,
+      score: typeof parsed.score === 'number' ? parsed.score : 0,
+    }
+  }
+  return defaultRatingSummary()
+}
+
 function toDefaultArgs(value: unknown): Record<string, unknown> | undefined {
   return value && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
@@ -64,7 +78,7 @@ export function mapDbToolToToolItem(tool: DbTool): ToolItem {
     recommendedFor: tool.recommendedFor,
     sourceNote: tool.sourceNote ?? undefined,
     trustSignals: toToolTrustSignals(tool.trustSignals),
-    ratingSummary: defaultRatingSummary(),
+    ratingSummary: readRatingSummary(tool.trustSignals),
     usageStats: defaultUsageStats(),
     subscriptionSupport: tool.subscriptionSupport,
     defaultArgs: toDefaultArgs(tool.defaultArgs),

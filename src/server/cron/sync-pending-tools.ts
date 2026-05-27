@@ -1,8 +1,7 @@
 import 'server-only'
 
-import { syncToolFavicon } from '@/server/market/tool-favicon'
+import { syncToolArtifacts } from '@/server/cron/sync-tool-artifacts'
 import { prisma } from '@/server/db/prisma'
-import { syncToolEmbedding } from '@/server/retrieval/tool-embedding'
 import { isSupabaseMarketAssetUrl } from '@/shared/market-asset-url'
 
 export type SyncPendingToolsResult = {
@@ -47,26 +46,9 @@ export async function syncPendingTools(batchSize: number): Promise<SyncPendingTo
     result.scanned += 1
 
     try {
-      const beforeEmbeddedAt = tool.embeddedAt
-      await syncToolEmbedding(tool.id)
-      const after = await prisma.tool.findUnique({
-        where: { id: tool.id },
-        select: { embeddedAt: true, iconImageUrl: true },
-      })
-      if (after?.embeddedAt && after.embeddedAt !== beforeEmbeddedAt) {
-        result.embeddingSynced += 1
-      }
-
-      if (needsFaviconSync(tool.url, after?.iconImageUrl ?? tool.iconImageUrl)) {
-        await syncToolFavicon(tool.id, tool.url)
-        const iconAfter = await prisma.tool.findUnique({
-          where: { id: tool.id },
-          select: { iconImageUrl: true },
-        })
-        if (isSupabaseMarketAssetUrl(iconAfter?.iconImageUrl)) {
-          result.faviconSynced += 1
-        }
-      }
+      const sync = await syncToolArtifacts(tool.id)
+      if (sync.embeddingSynced) result.embeddingSynced += 1
+      if (sync.faviconSynced) result.faviconSynced += 1
     } catch (error) {
       result.errors += 1
       console.error('[syncPendingTools]', tool.id, error)

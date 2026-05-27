@@ -1,7 +1,7 @@
-const DEFAULT_MARKET_BUCKET = 'market-assets'
+import { SUPABASE_STORAGE_BUCKET_MARKET } from '@/constant'
 
 export function getMarketAssetsBucketName(): string {
-  return process.env.SUPABASE_STORAGE_BUCKET_MARKET?.trim() || DEFAULT_MARKET_BUCKET
+  return SUPABASE_STORAGE_BUCKET_MARKET
 }
 
 export function getSupabaseProjectUrl(): string | null {

@@ -36,11 +36,12 @@
   - MarketSubmission pgvector 语义去重（URL 硬关联 + 相似度 ≥ 0.88 标记 duplicate）
   - API 路径已移除 `void syncToolEmbedding` / `void syncToolFavicon`
   - ~~Database Webhook → Edge Function~~（后续可升级）
-  - ~~定时刷新工具评分聚合、清理过期 session~~（延后）
+  - ~~定时刷新工具评分聚合、清理过期 session~~（已移至 Phase 2）
 
-- [ ] **Database Webhooks + Edge Functions（Phase 2）**
-  - 实时 Webhook 替代/补充 Cron 轮询
-  - 定时 Cron → 刷新工具评分聚合、清理过期 session
+- [x] **Database Webhooks + Edge Functions（Phase 2 — 已完成）**
+  - Supabase Database Webhook → `/api/webhooks/supabase`：Tool INSERT/UPDATE 实时 embedding/favicon；MarketSubmission INSERT 实时去重
+  - Vercel daily Cron 兜底：批量 sync、去重、工具评分聚合写入 `Tool.trustSignals.ratingSummary`、清理过期 `RecommendationSession`
+  - ~~Supabase Edge Function 替代 Next.js 路由~~（当前 Prisma 路径更简单，可后续迁移）
 
 - [x] **Auth 增强 — Phase 1（已完成）**
   - 会话层 lazy provisioning：`ensureAppUserFromSupabaseUser` 于 `verifySession` 首次访问时写 `User` 表 + seed tools
