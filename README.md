@@ -95,5 +95,12 @@ Aliyun 命名规范统一为 `ALIYUN_AK_ID` / `ALIYUN_AK_SECRET`，若旧环境�
 - 生产数据库需要执行 migration
 - 首次部署后按需执行 `npm run seed:tools`
 - 配置 `CRON_SECRET`（Vercel Cron 会用它作为 `Authorization: Bearer` 调用 `/api/cron/process-jobs`）
-- Cron 默认每天 03:00 UTC 批量同步 Tool embedding/favicon，并对 MarketSubmission 做语义去重（Hobby 计划 Cron 最多每天一次；Pro 可改为更短间隔如 `*/5 * * * *`）
+- Cron 默认每天 03:00 UTC 批量同步 Tool embedding/favicon、MarketSubmission 去重、工具评分聚合、清理过期 RecommendationSession（Hobby 计划 Cron 最多每天一次；Pro 可改为更短间隔如 `*/5 * * * *`）
 - 本地测试 Cron：`curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/process-jobs`
+- 配置 Supabase Database Webhook（实时触发，Cron 作兜底）：
+  - 在 Supabase Dashboard → Database → Webhooks 创建 HTTP Webhook
+  - URL：`https://<your-domain>/api/webhooks/supabase`
+  - Header：`Authorization: Bearer <SUPABASE_WEBHOOK_SECRET>`
+  - 表 `Tool`：事件 INSERT、UPDATE
+  - 表 `MarketSubmission`：事件 INSERT
+- 本地测试 Webhook：`curl -X POST -H "Authorization: Bearer $SUPABASE_WEBHOOK_SECRET" -H "Content-Type: application/json" -d "{\"type\":\"INSERT\",\"table\":\"Tool\",\"schema\":\"public\",\"record\":{\"id\":\"<toolId>\",\"status\":\"active\",\"url\":\"https://example.com\",\"iconImageUrl\":null,\"embeddedAt\":null},\"old_record\":null}" http://localhost:3000/api/webhooks/supabase`
