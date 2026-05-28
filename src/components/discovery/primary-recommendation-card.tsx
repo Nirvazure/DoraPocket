@@ -10,6 +10,11 @@ import {
   DisplayPanelHeader,
   DisplayPanelTitle,
 } from '@/components/ui/display-shell'
+import { CandidateOriginBadge } from '@/components/discovery/candidate-origin-badge'
+import {
+  formatCandidateScore,
+  shouldShowCandidateScore,
+} from '@/components/discovery/candidate-score'
 import {
   buildPrimaryRecommendation,
   isRecommendationCovered,
@@ -18,12 +23,15 @@ import {
 } from '@/components/discovery/analysis-stage-content'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
+import { STEP2_COPY } from '@/shared/ui-copy'
 import { getToolById } from '@/shared/tool-registry'
+import type { UserSettings } from '@/shared/user-settings'
 
 type PrimaryRecommendationCardProps = {
   payload: AgentUiPayload | null
   selectedToolPayload: ChatToolPayload
   analysisFlow: AnalysisFlow
+  explanationMode?: UserSettings['explanationMode']
   onSaveCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
   onOpenExternalCandidate: (url: string) => void
@@ -33,12 +41,14 @@ export function PrimaryRecommendationCard({
   payload,
   selectedToolPayload,
   analysisFlow,
+  explanationMode = 'standard',
   onSaveCandidate,
   onLaunchCandidate,
   onOpenExternalCandidate,
 }: PrimaryRecommendationCardProps) {
   const content = buildPrimaryRecommendation(payload, selectedToolPayload)
   const leader = content.leader
+  const showScore = shouldShowCandidateScore(explanationMode) && leader != null
   const leaderToolId = leader?.toolId ?? null
   const leaderTool = leaderToolId ? getToolById(leaderToolId) : null
   const leaderExternalUrl =
@@ -95,18 +105,36 @@ export function PrimaryRecommendationCard({
           }
         >
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-white/65">这次先用</p>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-sm font-semibold text-white/65">这次先用</p>
+              {leader ? <CandidateOriginBadge candidate={leader} variant="on-dark" /> : null}
+              {showScore ? (
+                <Badge className="border-white/15 bg-white/10 px-2.5 py-0.5 text-[10px] font-semibold text-white/76">
+                  {formatCandidateScore(leader!)}
+                </Badge>
+              ) : null}
+            </div>
             <DisplayPanelTitle className="mt-2 text-4xl leading-tight text-white sm:text-5xl">
               {content.title}
             </DisplayPanelTitle>
             <DisplayPanelDescription className="mt-4 max-w-3xl text-sm leading-7 text-white/76">
               {content.description}
             </DisplayPanelDescription>
+            {leader?.candidateType === 'external_suggestion' && leader.externalBoundary ? (
+              <p className="mt-3 max-w-3xl rounded-2xl border border-amber-200/30 bg-amber-500/10 px-3 py-2 text-xs leading-relaxed text-amber-100/90">
+                {leader.externalBoundary}
+              </p>
+            ) : null}
           </div>
           {leaderTool ? <MarketToolIcon tool={leaderTool} size="lg" /> : null}
         </div>
       </DisplayPanelHeader>
       <DisplayPanelContent className="relative z-10 flex flex-wrap gap-2 px-5 pb-6 pt-0 sm:px-6">
+        {payload?.confidenceLevel === 'low' ? (
+          <p className="w-full rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+            {STEP2_COPY.lowConfidenceHint}
+          </p>
+        ) : null}
         {leaderExternalUrl ? (
           <Button
             type="button"

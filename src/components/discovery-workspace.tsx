@@ -1,5 +1,6 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useMemo, useState } from 'react'
 import { CompactDecisionPanel } from '@/components/discovery/compact-decision-panel'
 import {
@@ -10,19 +11,31 @@ import {
 } from '@/components/discovery/analysis-stage-content'
 import { DecisionProgressSteps } from '@/components/discovery/decision-progress-steps'
 import { LiveAnalysisTrackCard } from '@/components/discovery/live-analysis-track-card'
-import { WhereToStartSection } from '@/components/discovery/where-to-start-section'
+import { WhereToStartSectionSkeleton } from '@/components/discovery/where-to-start-section-skeleton'
+
+const WhereToStartSection = dynamic(
+  () =>
+    import('@/components/discovery/where-to-start-section').then(
+      (module) => module.WhereToStartSection,
+    ),
+  { ssr: false, loading: () => <WhereToStartSectionSkeleton /> },
+)
 import { DisplayPanel } from '@/components/ui/display-shell'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
+import type { ProgressStage } from '@/shared/step2-session-types'
+import type { UserSettings } from '@/shared/user-settings'
 import type { AppState } from '@/store'
 
 type DiscoveryWorkspaceProps = {
   currentPrompt: string | null
   appState: AppState
   analysisFlow: AnalysisFlow
+  progressStage?: ProgressStage | null
   agentPayload: AgentUiPayload | null
   selectedToolPayload: ChatToolPayload
+  explanationMode?: UserSettings['explanationMode']
   onSaveCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
   onOpenExternalCandidate: (url: string) => void
@@ -33,8 +46,10 @@ export function DiscoveryWorkspace({
   currentPrompt,
   appState,
   analysisFlow,
+  progressStage = null,
   agentPayload,
   selectedToolPayload,
+  explanationMode = 'standard',
   onSaveCandidate,
   onLaunchCandidate,
   onOpenExternalCandidate,
@@ -97,6 +112,7 @@ export function DiscoveryWorkspace({
                   payload={agentPayload}
                   appState={appState}
                   analysisFlow={analysisFlow}
+                  progressStage={progressStage}
                 />
               ) : null}
               {activePanelStep === 3 ? (
@@ -104,6 +120,7 @@ export function DiscoveryWorkspace({
                   payload={agentPayload}
                   selectedToolPayload={selectedToolPayload}
                   analysisFlow={analysisFlow}
+                  explanationMode={explanationMode}
                   onSaveCandidate={onSaveCandidate}
                   onLaunchCandidate={onLaunchCandidate}
                   onOpenExternalCandidate={onOpenExternalCandidate}

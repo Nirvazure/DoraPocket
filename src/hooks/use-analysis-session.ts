@@ -8,10 +8,14 @@ import type { UserSettings, VoicePlaybackMode } from '@/shared/user-settings'
 import { pickModeCardAfterTurn, type AssistantModeCard } from '@/shared/mode-registry'
 import type { AgentUiPayload } from '@/shared/market-types'
 import { SYSTEM_NOTICE_COPY } from '@/shared/ui-copy'
+import type { ProgressStage, Step2Session } from '@/shared/step2-session-types'
+import { appendStep2Turn, createStep2Session } from '@/shared/step2-session'
 import type { AppState } from '@/store'
 
 type RunTurnOptions = {
   answerBookFromPocket?: boolean
+  skipClarify?: boolean
+  isContinuation?: boolean
 }
 
 type UseAnalysisSessionOptions = {
@@ -86,9 +90,13 @@ export function useAnalysisSession({
   const latestUserPromptRef = useRef('')
   const responseBufferRef = useRef('')
   const recommendationCoverStartedRef = useRef(false)
+  const skipCoverRef = useRef(false)
+  const clarifyQuickRepliesRef = useRef<string[]>([])
   const [selectedToolPayload, setSelectedToolPayload] = useState<ChatToolPayload>(null)
   const [agentUiPayload, setAgentUiPayload] = useState<AgentUiPayload | null>(null)
   const [currentPrompt, setCurrentPrompt] = useState<string | null>(null)
+  const [step2Session, setStep2Session] = useState<Step2Session | null>(null)
+  const [progressStage, setProgressStage] = useState<ProgressStage | null>(null)
   const voicePlaybackMode = userSettings?.voicePlaybackMode ?? 'key-result'
   const voicePlaybackEnabled =
     userSettings?.voicePlaybackEnabled !== false && voicePlaybackMode !== 'off'
@@ -130,10 +138,14 @@ export function useAnalysisSession({
     }) => {
       setSelectedToolPayload(selectedTool)
       setAgentUiPayload(uiPayload)
-      if ((selectedTool?.toolId || uiPayload) && !recommendationCoverStartedRef.current) {
-        recommendationCoverStartedRef.current = true
-        onCoverRecommendation()
+      if (
+        skipCoverRef.current ||
+        !((selectedTool?.toolId || uiPayload) && !recommendationCoverStartedRef.current)
+      ) {
+        return
       }
+      recommendationCoverStartedRef.current = true
+      onCoverRecommendation()
     },
     [onCoverRecommendation],
   )
@@ -227,6 +239,8 @@ export function useAnalysisSession({
       setSelectedToolPayload(null)
       setAgentUiPayload(null)
       setBotResponse('')
+      setStep2Session(null)
+      setProgressStage(null)
       setAppState('idle')
       onAnalysisError?.()
       const message = error instanceof Error ? error.message : SYSTEM_NOTICE_COPY.analysisFailed
@@ -239,27 +253,72 @@ export function useAnalysisSession({
   const runAgentTurn = useCallback(
     async (text: string, options?: RunTurnOptions) => {
       const safeText = text.trim()
-      if (!safeText) return
+      if (!safeText && !options?.skipClarify) return
+
+      const isContinuation =
+        step2Session?.status === 'clarifying' || options?.isContinuation === true
+      const session =
+        isContinuation && step2Session
+          ? step2Session
+          : createStep2Session(safeText || step2Session?.anchorPrompt || '')
+
+      const requestMessage = isContinuation ? safeText || '跳过' : session.anchorPrompt
 
       try {
         stopAudioPlayback()
         responseBufferRef.current = ''
         recommendationCoverStartedRef.current = false
+        clarifyQuickRepliesRef.current = []
+        skipCoverRef.current =
+          isContinuation && step2Session?.status === 'clarifying' && !options?.skipClarify
         setLastSpeechError('')
         setBotResponse('')
         setAppState('thinking')
-        latestUserPromptRef.current = safeText
-        setCurrentPrompt(safeText)
+        setProgressStage(null)
 
-        const reply = await askQwen(safeText, {
+        if (!isContinuation) {
+          latestUserPromptRef.current = session.anchorPrompt
+          setCurrentPrompt(session.anchorPrompt)
+          setStep2Session(session)
+        }
+
+        const reply = await askQwen(requestMessage, {
+          sessionTurn: session.turn,
+          anchorPrompt: session.anchorPrompt,
+          priorMessages: session.messages,
+          skipClarify: options?.skipClarify,
           answerBookFromPocket: options?.answerBookFromPocket === true,
           explanationMode,
           builtinToolsEnabled,
+          onProgress: setProgressStage,
+          onClarify: (payload) => {
+            skipCoverRef.current = true
+            clarifyQuickRepliesRef.current = payload.quickReplies
+          },
           onMeta: handleReplyMeta,
           onDelta: handleReplyDelta,
         })
 
-        await handleReplySuccess(safeText, reply)
+        if (reply.step2Status === 'clarifying') {
+          const updated: Step2Session = {
+            ...appendStep2Turn(session, {
+              user: safeText || session.anchorPrompt,
+              assistant: reply.text,
+            }),
+            status: 'clarifying',
+            quickReplies: clarifyQuickRepliesRef.current,
+          }
+          setStep2Session(updated)
+          setProgressStage(null)
+          setAppState('idle')
+          setBotResponse(reply.text)
+          return
+        }
+
+        setStep2Session(null)
+        setProgressStage(null)
+        skipCoverRef.current = false
+        await handleReplySuccess(session.anchorPrompt, reply)
       } catch (error) {
         handleReplyError(error)
       }
@@ -274,8 +333,23 @@ export function useAnalysisSession({
       setAppState,
       setBotResponse,
       setLastSpeechError,
+      step2Session,
     ],
   )
+
+  const skipToRecommendation = useCallback(() => {
+    if (!step2Session) return
+    void runAgentTurn(step2Session.anchorPrompt, {
+      skipClarify: true,
+      isContinuation: true,
+    })
+  }, [runAgentTurn, step2Session])
+
+  const toggleDialogueExpanded = useCallback(() => {
+    setStep2Session((session) =>
+      session ? { ...session, dialogueExpanded: !session.dialogueExpanded } : null,
+    )
+  }, [])
 
   const revealNow = useCallback(() => {
     stopAudioPlayback()
@@ -294,9 +368,13 @@ export function useAnalysisSession({
     selectedToolPayload,
     agentUiPayload,
     currentPrompt,
+    step2Session,
+    progressStage,
     latestUserPromptRef,
     clearResponseState,
     runAgentTurn,
     revealNow,
+    skipToRecommendation,
+    toggleDialogueExpanded,
   }
 }

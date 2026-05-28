@@ -1,4 +1,4 @@
-import { Keyboard, Mic } from 'lucide-react'
+import { Keyboard, Mic, Square } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { AppState } from '@/store'
@@ -17,6 +17,7 @@ type AnalysisInputComposerProps = {
   onSubmit: () => void
   onHoldToTalkStart: () => void
   onHoldToTalkEnd: () => void
+  onCancelVoiceInput?: () => void
   onInteractionStart?: () => void
 }
 
@@ -32,6 +33,7 @@ export function AnalysisInputComposer({
   onSubmit,
   onHoldToTalkStart,
   onHoldToTalkEnd,
+  onCancelVoiceInput,
   onInteractionStart,
 }: AnalysisInputComposerProps) {
   return (
@@ -81,26 +83,44 @@ export function AnalysisInputComposer({
             </Button>
           </div>
         ) : (
-          <button
-            type="button"
-            disabled={locked}
-            className={cn(
-              'flex h-11 min-w-0 flex-1 items-center justify-center rounded-2xl border px-4 font-sans text-sm font-semibold backdrop-blur-md transition-colors',
-              appState === 'listening'
-                ? 'border-primary bg-primary text-primary-foreground'
-                : 'border-white/70 bg-white/90 text-foreground hover:bg-white',
-              locked && 'cursor-not-allowed opacity-55',
-            )}
-            onPointerDown={() => {
-              onInteractionStart?.()
-              onHoldToTalkStart()
-            }}
-            onPointerUp={onHoldToTalkEnd}
-            onPointerLeave={onHoldToTalkEnd}
-            onPointerCancel={onHoldToTalkEnd}
-          >
-            {appState === 'listening' ? '松开结束' : '按住说话'}
-          </button>
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            <button
+              type="button"
+              disabled={locked}
+              className={cn(
+                'flex h-11 min-w-0 flex-1 items-center justify-center rounded-2xl border px-4 font-sans text-sm font-semibold backdrop-blur-md transition-colors',
+                appState === 'listening'
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'border-white/70 bg-white/90 text-foreground hover:bg-white',
+                locked && 'cursor-not-allowed opacity-55',
+              )}
+              onPointerDown={() => {
+                onInteractionStart?.()
+                onHoldToTalkStart()
+              }}
+              onPointerUp={onHoldToTalkEnd}
+              onPointerLeave={onHoldToTalkEnd}
+              onPointerCancel={onHoldToTalkEnd}
+            >
+              {appState === 'listening' ? '松开结束' : '按住说话'}
+            </button>
+            {appState === 'listening' ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="h-11 w-11 shrink-0 rounded-full border-border/70 bg-white"
+                onClick={() => {
+                  onInteractionStart?.()
+                  onCancelVoiceInput?.()
+                }}
+                aria-label="停止录音"
+                title="停止录音"
+              >
+                <Square className="h-4 w-4" />
+              </Button>
+            ) : null}
+          </div>
         )}
       </div>
     </div>

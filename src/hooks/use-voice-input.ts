@@ -47,10 +47,11 @@ export function useVoiceInput({
   const handleSpeechEndRef = useRef<() => Promise<void>>(async () => {})
   const speechBusyRef = useRef(false)
   const holdToTalkActiveRef = useRef(false)
+  const voiceCancelledRef = useRef(false)
 
   // 语音会话结束后统一走这里：空文本兜底，有文本则直接进入主回合提交。
   const handleSpeechEnd = useCallback(async () => {
-    if (speechBusyRef.current) return
+    if (speechBusyRef.current || voiceCancelledRef.current) return
     speechBusyRef.current = true
     try {
       const text = useStore.getState().transcript.trim()
@@ -105,6 +106,7 @@ export function useVoiceInput({
     setTranscript('')
     setBotResponse('')
     clearResponseState()
+    voiceCancelledRef.current = false
     setAppState('listening')
     const ok = await startSpeechSession({
       onResult: (text) => useStore.getState().setTranscript(text),
@@ -159,9 +161,19 @@ export function useVoiceInput({
     [clearResponseState, setAppState, setTranscript],
   )
 
+  const cancelVoiceInput = useCallback(() => {
+    voiceCancelledRef.current = true
+    holdToTalkActiveRef.current = false
+    setAppState('idle')
+    disposeSpeechSession()
+    setTranscript('')
+    setLastSpeechError('')
+  }, [setAppState, setLastSpeechError, setTranscript])
+
   return {
     holdToTalkStart,
     holdToTalkEnd,
+    cancelVoiceInput,
     submitTextMessage,
   }
 }

@@ -5,11 +5,17 @@ import { createRecommendationSession } from '@/server/repositories/recommendatio
 import type { ExplanationMode } from '@/shared/user-settings'
 import { createEmptyMarketContext } from '@/shared/market-defaults'
 import type { AgentUiPayload, MarketContext } from '@/shared/market-types'
+import type { Step2DoneStatus } from '@/shared/step2-session-types'
 
 type ChatRequestBody = {
   message?: string
+  sessionTurn?: 1 | 2 | 3
+  anchorPrompt?: string
+  priorMessages?: Array<{ role: 'user' | 'assistant'; content: string }>
+  skipClarify?: boolean
   answerBookFromPocket?: boolean
   explanationMode?: ExplanationMode
+  builtinToolsEnabled?: boolean
 }
 
 function normalizeExplanationMode(value: unknown): ExplanationMode {
@@ -37,19 +43,30 @@ export async function POST(request: Request) {
       ? await buildMarketContextForUser(session.user.id, 'applied')
       : createEmptyMarketContext()
 
+    const step2Input = {
+      sessionTurn: (body.sessionTurn ?? 1) as 1 | 2 | 3,
+      anchorPrompt: body.anchorPrompt?.trim() || message,
+      priorMessages: body.priorMessages ?? [],
+      skipClarify: body.skipClarify === true,
+    }
+    const builtinToolsEnabled =
+      body.builtinToolsEnabled === true || marketContext.builtinToolsEnabled
+
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
         try {
           let finalText = ''
           let selectedToolId: string | null = null
           let finalUiPayload: AgentUiPayload | null = null
+          let step2Status: Step2DoneStatus | undefined
 
           for await (const event of streamPocketGraph(
             message,
             body.answerBookFromPocket === true,
             marketContext,
-            marketContext.builtinToolsEnabled,
+            builtinToolsEnabled,
             explanationMode,
+            step2Input,
           )) {
             if (event.type === 'meta') {
               selectedToolId = event.selected_tool?.toolId ?? null
@@ -57,15 +74,18 @@ export async function POST(request: Request) {
             }
             if (event.type === 'done') {
               finalText = event.text
+              step2Status = event.step2Status
               selectedToolId = event.selected_tool?.toolId ?? selectedToolId
               finalUiPayload = event.ui_payload ?? finalUiPayload
             }
             controller.enqueue(jsonLine(event))
           }
 
-          if (session?.user && finalText && finalUiPayload) {
+          const shouldPersistSession = step2Status === 'ready' || step2Status === 'exhausted'
+          if (session?.user && finalText && finalUiPayload && shouldPersistSession) {
+            const userText = body.anchorPrompt?.trim() || message
             await createRecommendationSession(session.user.id, {
-              userText: message,
+              userText,
               finalText,
               selectedToolId,
               uiPayload: finalUiPayload,

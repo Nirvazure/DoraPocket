@@ -6,6 +6,7 @@ import {
 } from '@/components/discovery/analysis-stage-content'
 import { cn } from '@/lib/utils'
 import type { AgentUiPayload } from '@/shared/market-types'
+import type { ProgressStage } from '@/shared/step2-session-types'
 import type { AppState } from '@/store'
 
 type LiveAnalysisTrackCardProps = {
@@ -13,6 +14,7 @@ type LiveAnalysisTrackCardProps = {
   payload: AgentUiPayload | null
   appState: AppState
   analysisFlow: AnalysisFlow
+  progressStage?: ProgressStage | null
 }
 
 function TrackIcon({ item }: { item: LiveAnalysisTrackItem }) {
@@ -30,12 +32,14 @@ export function LiveAnalysisTrackCard({
   payload,
   appState,
   analysisFlow,
+  progressStage = null,
 }: LiveAnalysisTrackCardProps) {
   const items = buildLiveAnalysisTrack({
     currentPrompt,
     payload,
     appState,
     analysisFlow,
+    progressStage,
   })
 
   return (

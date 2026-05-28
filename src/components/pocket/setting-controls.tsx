@@ -43,18 +43,21 @@ export function SegmentedSettingControl<T extends string>({
   onChange,
   className,
   size = 'default',
+  disabled = false,
 }: {
   value: T
   options: readonly SegmentedOption<T>[]
   onChange: (value: T) => void
   className?: string
   size?: 'default' | 'lg'
+  disabled?: boolean
 }) {
   return (
     <div
       className={cn(
         'flex items-stretch rounded-xl border border-border/50 bg-white/60',
         size === 'lg' ? 'p-1' : 'p-0.5',
+        disabled && 'pointer-events-none opacity-55',
         className,
       )}
       role="group"

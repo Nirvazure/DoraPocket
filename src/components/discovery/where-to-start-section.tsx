@@ -1,3 +1,5 @@
+'use client'
+
 import { BookOpenCheck, FileText, GitBranch, Wand2 } from 'lucide-react'
 import { DisplayPanel, DisplayPanelContent } from '@/components/ui/display-shell'
 
@@ -82,14 +84,7 @@ export function WhereToStartSection({ onDraftTask }: WhereToStartSectionProps) {
                 type="button"
                 data-starter-scene={scene.id}
                 className="group rounded-[1.35rem] border border-border/60 bg-white p-4 text-left shadow-sm transition-colors hover:border-primary/25 hover:bg-primary/[0.03]"
-                onClickCapture={() => handleDraftScene(scene.prompt)}
-                onMouseDown={() => handleDraftScene(scene.prompt)}
-                onPointerUp={() => handleDraftScene(scene.prompt)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' || event.key === ' ') {
-                    handleDraftScene(scene.prompt)
-                  }
-                }}
+                onClick={() => handleDraftScene(scene.prompt)}
               >
                 <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/[0.08] text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                   <Icon className="h-4 w-4" />

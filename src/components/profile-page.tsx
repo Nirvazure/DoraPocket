@@ -14,13 +14,13 @@ import {
   DisplayPanelDescription,
   DisplayPanelTitle,
 } from '@/components/ui/display-shell'
-import { useAuthSessionQuery } from '@/lib/query/auth-session'
+import { useAuthSessionQuery, resolveSettingsReadOnly } from '@/lib/query/auth-session'
 import { useSaveUserSettingsMutation, useUserSettingsQuery } from '@/lib/query/user-settings'
 import { cn } from '@/lib/utils'
 import { PAGE_COPY } from '@/shared/ui-copy'
 
 export function ProfilePage() {
-  const { data: authSession } = useAuthSessionQuery()
+  const { data: authSession, isPending: authPending } = useAuthSessionQuery()
   const { data: userSettings } = useUserSettingsQuery()
   const saveUserSettingsMutation = useSaveUserSettingsMutation()
 
@@ -29,6 +29,12 @@ export function ProfilePage() {
       ? (authSession.user ?? null)
       : null
   const isAuthenticated = user != null
+  const settingsReadOnly = resolveSettingsReadOnly(authPending, authSession?.authenticated)
+
+  const saveUserSettings = (next: Parameters<typeof saveUserSettingsMutation.mutate>[0]) => {
+    if (authPending || !isAuthenticated) return
+    saveUserSettingsMutation.mutate(next)
+  }
 
   return (
     <PageShell
@@ -48,7 +54,11 @@ export function ProfilePage() {
     >
       <div className="grid gap-4 lg:grid-cols-[7fr_3fr] lg:items-start lg:gap-5">
         <div className="min-w-0">
-          <PocketSettingsPanel settings={userSettings} onSave={saveUserSettingsMutation.mutate} />
+          <PocketSettingsPanel
+            settings={userSettings}
+            readOnly={settingsReadOnly}
+            onSave={saveUserSettings}
+          />
         </div>
 
         <aside className="min-w-0 lg:sticky lg:top-6">

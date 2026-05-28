@@ -1,7 +1,10 @@
 ﻿import { Annotation, END, START, StateGraph } from '@langchain/langgraph'
 import { tool } from '@langchain/core/tools'
 import type { AgentUiPayload, MarketContext } from '@/shared/market-types'
+import type { ProgressStage, Step2DoneStatus } from '@/shared/step2-session-types'
 import type { ExplanationMode } from '@/shared/user-settings'
+import { buildClarifyQuestion, resolveClarifyOutcome } from '@/server/agent/clarify'
+import { resolveQuickReplies } from '@/server/agent/quick-replies'
 import {
   createInitialState,
   type PocketIntent,
@@ -210,6 +213,22 @@ function createGraph() {
 
 const pocketGraph = createGraph()
 
+export type Step2GraphInput = {
+  sessionTurn: 1 | 2 | 3
+  anchorPrompt: string
+  priorMessages: Array<{ role: 'user' | 'assistant'; content: string }>
+  skipClarify?: boolean
+}
+
+function resolveStep2Input(message: string, step2Input?: Step2GraphInput): Step2GraphInput {
+  return {
+    sessionTurn: step2Input?.sessionTurn ?? 1,
+    anchorPrompt: step2Input?.anchorPrompt ?? message,
+    priorMessages: step2Input?.priorMessages ?? [],
+    skipClarify: step2Input?.skipClarify ?? false,
+  }
+}
+
 export type PocketGraphResult = {
   text: string
   selected_tool: PocketSelectedTool
@@ -223,13 +242,19 @@ export async function runPocketGraph(
   marketContext: MarketContext,
   builtinToolsEnabled: boolean,
   explanationMode: ExplanationMode = 'standard',
+  step2Input?: Step2GraphInput,
 ): Promise<PocketGraphResult> {
+  const step2 = resolveStep2Input(message, step2Input)
   const initialState = createInitialState(
     message,
     answerBookFromPocket,
     marketContext,
     builtinToolsEnabled,
     explanationMode,
+    {
+      anchorPrompt: step2.anchorPrompt,
+      priorMessages: step2.priorMessages,
+    },
   )
   const result = await pocketGraph.invoke(initialState)
   return {
@@ -240,9 +265,22 @@ export async function runPocketGraph(
 }
 
 export type PocketStreamEvent =
+  | { type: 'progress'; stage: ProgressStage }
+  | {
+      type: 'clarify'
+      question: string
+      missingInputs: string[]
+      quickReplies: string[]
+    }
   | { type: 'meta'; selected_tool: PocketSelectedTool; ui_payload: AgentUiPayload }
   | { type: 'delta'; text: string }
-  | { type: 'done'; text: string; selected_tool: PocketSelectedTool; ui_payload: AgentUiPayload }
+  | {
+      type: 'done'
+      text: string
+      step2Status: Step2DoneStatus
+      selected_tool: PocketSelectedTool
+      ui_payload: AgentUiPayload
+    }
 
 // 流式路径为了边算边吐 chunk，改为手动串联 node，而不是直接走 compile graph。
 export async function* streamPocketGraph(
@@ -251,34 +289,87 @@ export async function* streamPocketGraph(
   marketContext: MarketContext,
   builtinToolsEnabled: boolean,
   explanationMode: ExplanationMode = 'standard',
+  step2Input?: Step2GraphInput,
 ): AsyncGenerator<PocketStreamEvent> {
+  const step2 = resolveStep2Input(message, step2Input)
   const initialState = createInitialState(
     message,
     answerBookFromPocket,
     marketContext,
     builtinToolsEnabled,
     explanationMode,
+    {
+      anchorPrompt: step2.anchorPrompt,
+      priorMessages: step2.priorMessages,
+    },
   )
+
+  yield { type: 'progress', stage: 'understanding' }
+
   const classifiedState = {
     ...initialState,
     ...(await classifierNode(initialState)),
   } as PocketState
 
+  yield { type: 'progress', stage: 'constraining' }
+  yield { type: 'progress', stage: 'recalling' }
+  yield { type: 'progress', stage: 'ranking' }
+
+  const outcome = resolveClarifyOutcome({
+    missingInputs: classifiedState.task_frame.missingInputs,
+    sessionTurn: step2.sessionTurn,
+    skipClarify: step2.skipClarify === true,
+  })
+
+  if (outcome === 'clarifying') {
+    const question = buildClarifyQuestion(classifiedState.task_frame.missingInputs)
+    const quickReplies = resolveQuickReplies(classifiedState.task_frame.missingInputs)
+    yield { type: 'progress', stage: 'clarifying' }
+    yield {
+      type: 'clarify',
+      question,
+      missingInputs: classifiedState.task_frame.missingInputs,
+      quickReplies,
+    }
+    yield {
+      type: 'meta',
+      selected_tool: classifiedState.selected_tool,
+      ui_payload: classifiedState.ui_payload,
+    }
+    yield {
+      type: 'done',
+      text: question,
+      step2Status: 'clarifying',
+      selected_tool: classifiedState.selected_tool,
+      ui_payload: classifiedState.ui_payload,
+    }
+    return
+  }
+
+  const lowConfidence = outcome === 'exhausted' || step2.skipClarify === true
+  const uiPayload: AgentUiPayload = {
+    ...classifiedState.ui_payload,
+    confidenceLevel: lowConfidence ? 'low' : 'normal',
+  }
+  const stateWithUi = { ...classifiedState, ui_payload: uiPayload }
+
   yield {
     type: 'meta',
-    selected_tool: classifiedState.selected_tool,
-    ui_payload: classifiedState.ui_payload,
+    selected_tool: stateWithUi.selected_tool,
+    ui_payload: uiPayload,
   }
 
   const toolState = {
-    ...classifiedState,
-    ...(await toolNode(classifiedState)),
+    ...stateWithUi,
+    ...(await toolNode(stateWithUi)),
   } as PocketState
 
   const responseState = {
     ...toolState,
     ...(await responseNode(toolState)),
   } as PocketState
+
+  yield { type: 'progress', stage: 'ready' }
 
   const text = responseState.final_text
   for (const chunk of chunkResponseText(text)) {
@@ -287,7 +378,8 @@ export async function* streamPocketGraph(
   yield {
     type: 'done',
     text,
+    step2Status: outcome,
     selected_tool: responseState.selected_tool,
-    ui_payload: responseState.ui_payload,
+    ui_payload: uiPayload,
   }
 }

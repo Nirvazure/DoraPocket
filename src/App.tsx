@@ -24,7 +24,9 @@ export default function App() {
     quickSettingsOpen,
     pocketGadget,
     userSettings,
+    settingsReadOnly,
     currentPrompt,
+    progressStage,
     analysisFlow,
     selectedToolPayload,
     agentUiPayload,
@@ -52,7 +54,12 @@ export default function App() {
     submitTextMessage,
     holdToTalkStart,
     holdToTalkEnd,
+    cancelVoiceInput,
     revealNow,
+    step2Session,
+    skipToRecommendation,
+    toggleDialogueExpanded,
+    handleQuickReply,
   } = useAnalysisPageController()
 
   return (
@@ -89,6 +96,7 @@ export default function App() {
       <PocketQuickSettingsModal
         open={quickSettingsOpen}
         settings={userSettings}
+        readOnly={settingsReadOnly}
         onClose={() => setQuickSettingsOpen(false)}
         onSave={saveUserSettings}
       />
@@ -98,8 +106,10 @@ export default function App() {
           currentPrompt={currentPrompt}
           appState={appState}
           analysisFlow={analysisFlow}
+          progressStage={progressStage}
           agentPayload={agentUiPayload}
           selectedToolPayload={selectedToolPayload}
+          explanationMode={userSettings?.explanationMode ?? 'standard'}
           onSaveCandidate={workspaceActions.onSaveCandidate}
           onLaunchCandidate={workspaceActions.onLaunchCandidate}
           onOpenExternalCandidate={workspaceActions.onOpenExternalCandidate}
@@ -126,6 +136,8 @@ export default function App() {
           analysisFlow={analysisFlow}
           appState={appState}
           botResponse={botResponse}
+          step2Session={step2Session}
+          showSkip={step2Session != null && step2Session.turn < 3}
           canSkipVoice={canSkipVoice}
           inputMode={inputMode}
           textFallback={textFallback}
@@ -140,8 +152,12 @@ export default function App() {
           }}
           onHoldToTalkStart={holdToTalkStart}
           onHoldToTalkEnd={holdToTalkEnd}
+          onCancelVoiceInput={cancelVoiceInput}
           onStopVoicePlayback={stopAudioPlayback}
           onRevealNow={revealNow}
+          onQuickReply={handleQuickReply}
+          onSkipRecommendation={skipToRecommendation}
+          onToggleDialogueExpanded={toggleDialogueExpanded}
         />
       </AnalysisStagePanel>
     </PageShell>

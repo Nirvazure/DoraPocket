@@ -1,5 +1,6 @@
 import { judgeToolRecommendations } from '@/server/agent/tool-rerank'
 import { recallToolMatchesFromCatalog } from '@/server/retrieval/tool-recall'
+import { mergeCandidatePool } from '@/shared/candidate-pool'
 import { type ToolItem, type ToolMatch } from '@/shared/tool-registry'
 import type {
   AgentCandidate,
@@ -241,27 +242,28 @@ export async function buildRankedCandidates(
     taskFrame?.mode === 'discover'
       ? await judgeToolRecommendations(userText, initialMatches).catch(() => ({
           matches: initialMatches,
-          externalSuggestion: null,
+          externalSuggestions: [],
           preferExternal: false,
+          hubInsufficient: false,
           selectionReason: undefined,
         }))
       : {
           matches: initialMatches,
-          externalSuggestion: null,
+          externalSuggestions: [],
           preferExternal: false,
+          hubInsufficient: false,
           selectionReason: undefined,
         }
   const hubCandidates = toCandidates(judgement.matches)
   const submissionCandidates = rankSubmissionCandidates(userText, marketContext)
-  const externalCandidates = judgement.externalSuggestion ? [judgement.externalSuggestion] : []
-  const candidates = (
-    judgement.preferExternal
-      ? [...externalCandidates, ...hubCandidates, ...submissionCandidates]
-      : [
-          ...[...hubCandidates, ...submissionCandidates].sort((a, b) => b.score - a.score),
-          ...externalCandidates,
-        ]
-  ).slice(0, 5)
+  const externalCandidates = judgement.externalSuggestions ?? []
+  const candidates = mergeCandidatePool(
+    hubCandidates,
+    submissionCandidates,
+    externalCandidates,
+    judgement.preferExternal,
+    judgement.hubInsufficient,
+  )
   const primaryCandidate = candidates[0] ?? null
   const topTool =
     primaryCandidate?.candidateType === 'tool' && primaryCandidate.toolId
