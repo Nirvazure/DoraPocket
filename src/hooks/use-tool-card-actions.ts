@@ -1,7 +1,10 @@
 import { useCallback } from 'react'
 import { openToolById, saveToolById } from '@/lib/tool-actions'
+import { redirectToLoginUnlessAuthenticated } from '@/lib/query/auth-session'
 
 type UseToolCardActionsOptions = {
+  authPending: boolean
+  isAuthenticated: boolean
   markToolUsed: (input: { toolId: string }) => void
   saveToolToPocket?: (input: {
     toolId: string
@@ -12,6 +15,8 @@ type UseToolCardActionsOptions = {
 }
 
 export function useToolCardActions({
+  authPending,
+  isAuthenticated,
   markToolUsed,
   saveToolToPocket,
   getSourceQuestion,
@@ -25,9 +30,10 @@ export function useToolCardActions({
 
   const saveTool = useCallback(
     (toolId: string) => {
+      if (!redirectToLoginUnlessAuthenticated(authPending, isAuthenticated)) return
       saveToolById(toolId, saveToolToPocket, getSourceQuestion?.())
     },
-    [getSourceQuestion, saveToolToPocket],
+    [getSourceQuestion, authPending, isAuthenticated, saveToolToPocket],
   )
 
   return { openTool, saveTool }

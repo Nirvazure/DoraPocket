@@ -99,33 +99,27 @@ export function DiscoveryWorkspace({
 
       <ScrollArea className="min-h-0 flex-1 px-3 pt-2 pb-4 sm:px-4 sm:pb-4">
         <div className="mx-auto flex max-w-6xl flex-col gap-3">
-          {activePanelStep != null ? (
+          {activePanelStep === 3 ? (
+            <CompactDecisionPanel
+              payload={agentPayload}
+              selectedToolPayload={selectedToolPayload}
+              analysisFlow={analysisFlow}
+              explanationMode={explanationMode}
+              onSaveCandidate={onSaveCandidate}
+              onLaunchCandidate={onLaunchCandidate}
+              onOpenExternalCandidate={onOpenExternalCandidate}
+            />
+          ) : activePanelStep === 1 ? (
+            <WhereToStartSection onDraftTask={onDraftTask} />
+          ) : activePanelStep === 2 ? (
             <section className="overflow-hidden rounded-[1.8rem] border border-border/65 bg-white/86 p-3 shadow-sm sm:p-4">
-              {activePanelStep === 1 ? (
-                <div className="space-y-3">
-                  <WhereToStartSection onDraftTask={onDraftTask} />
-                </div>
-              ) : null}
-              {activePanelStep === 2 ? (
-                <LiveAnalysisTrackCard
-                  currentPrompt={currentPrompt}
-                  payload={agentPayload}
-                  appState={appState}
-                  analysisFlow={analysisFlow}
-                  progressStage={progressStage}
-                />
-              ) : null}
-              {activePanelStep === 3 ? (
-                <CompactDecisionPanel
-                  payload={agentPayload}
-                  selectedToolPayload={selectedToolPayload}
-                  analysisFlow={analysisFlow}
-                  explanationMode={explanationMode}
-                  onSaveCandidate={onSaveCandidate}
-                  onLaunchCandidate={onLaunchCandidate}
-                  onOpenExternalCandidate={onOpenExternalCandidate}
-                />
-              ) : null}
+              <LiveAnalysisTrackCard
+                currentPrompt={currentPrompt}
+                payload={agentPayload}
+                appState={appState}
+                analysisFlow={analysisFlow}
+                progressStage={progressStage}
+              />
             </section>
           ) : null}
         </div>

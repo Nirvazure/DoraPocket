@@ -5,6 +5,7 @@ import {
   useQueryClient,
   type QueryClient,
 } from '@tanstack/react-query'
+import { useAuthenticatedQueryEnabled } from '@/lib/query/auth-session'
 import { apiFetch } from '@/lib/query/api-client'
 import { queryKeys } from '@/lib/query/query-keys'
 import type { PocketInventoryItem } from '@/shared/pocket-types'
@@ -51,12 +52,22 @@ function commitPocketInventory(queryClient: QueryClient, next: PocketInventoryIt
 export function getPocketInventoryQueryOptions() {
   return queryOptions({
     queryKey: queryKeys.pocket.list(),
-    queryFn: async () => apiFetch<PocketInventoryItem[]>('/api/me/pocket').catch(() => []),
+    queryFn: async () => apiFetch<PocketInventoryItem[]>('/api/me/pocket'),
   })
 }
 
 export function usePocketInventoryQuery() {
-  return useQuery(getPocketInventoryQueryOptions())
+  const { enabled } = useAuthenticatedQueryEnabled()
+
+  const query = useQuery({
+    ...getPocketInventoryQueryOptions(),
+    enabled,
+  })
+
+  return {
+    ...query,
+    data: query.data ?? [],
+  }
 }
 
 export function useSaveToolToPocketMutation() {

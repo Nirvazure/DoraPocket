@@ -23,24 +23,14 @@ import { usePocketGadgetModalActions } from '@/hooks/use-pocket-gadget-modal-act
 import { useToolDial } from '@/hooks/use-tool-dial'
 import { useVoiceInput } from '@/hooks/use-voice-input'
 import { useAuthSessionQuery, resolveSettingsReadOnly } from '@/lib/query/auth-session'
-import { useSaveChatHistoryMutation, useChatHistoryQuery } from '@/lib/query/chat-history'
 import { useMarkToolUsedMutation, useSaveToolToPocketMutation } from '@/lib/query/pocket'
 import { useSaveUserSettingsMutation, useUserSettingsQuery } from '@/lib/query/user-settings'
 import { MODE_KEY_ANYWHERE_DOOR, type AssistantModeCard } from '@/shared/mode-registry'
-import { PAGE_COPY } from '@/shared/ui-copy'
+import { PAGE_COPY, SYSTEM_NOTICE_COPY } from '@/shared/ui-copy'
 import { useStore } from '@/store'
 import { shouldRestartAnalysisFlow } from '@/hooks/analysis-stage-restart'
 
 type InputMode = 'text' | 'voice'
-
-function formatHistoryTime(value: number) {
-  return new Date(value).toLocaleString('zh-CN', {
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
 
 function mergeStep2IntoAnalysisFlow(flow: AnalysisFlow, step2: Step2Session | null): AnalysisFlow {
   if (step2) return { ...flow, step2 }
@@ -64,8 +54,6 @@ export function useAnalysisPageController() {
 
   const saveToolToPocketMutation = useSaveToolToPocketMutation()
   const markToolUsedMutation = useMarkToolUsedMutation()
-  const saveChatHistoryMutation = useSaveChatHistoryMutation()
-  const { data: chatHistory = [] } = useChatHistoryQuery()
   const { data: userSettings } = useUserSettingsQuery()
   const { data: authSession, isPending: authPending } = useAuthSessionQuery()
   const saveUserSettingsMutation = useSaveUserSettingsMutation()
@@ -125,7 +113,6 @@ export function useAnalysisPageController() {
     toggleDialogueExpanded,
   } = useAnalysisSession({
     userSettings,
-    saveChatHistory: saveChatHistoryMutation.mutate,
     setAppState,
     setTranscript,
     setBotResponse,
@@ -196,17 +183,43 @@ export function useAnalysisPageController() {
     clearResponseState,
   })
 
+  const saveToolToPocket = useCallback(
+    (input: { toolId: string; sourceQuestion?: string; presetArgs?: Record<string, unknown> }) => {
+      saveToolToPocketMutation.mutate(input, {
+        onSuccess: () => {
+          setSystemNotice({
+            level: 'task',
+            message: SYSTEM_NOTICE_COPY.savedForLater,
+            autoDismissMs: 2200,
+          })
+        },
+        onError: () => {
+          setSystemNotice({
+            level: 'critical',
+            message: '收藏失败，请稍后再试。',
+            autoDismissMs: 2200,
+          })
+        },
+      })
+    },
+    [saveToolToPocketMutation, setSystemNotice],
+  )
+
   const workspaceActions = useDiscoveryWorkspaceActions({
+    authPending,
+    isAuthenticated,
     getLatestUserPrompt: () => latestUserPromptRef.current,
-    saveToolToPocket: saveToolToPocketMutation.mutate,
+    saveToolToPocket,
     markToolUsed: markToolUsedMutation.mutate,
     setSystemNotice,
   })
 
   const pocketGadgetModalActions = usePocketGadgetModalActions({
+    authPending,
+    isAuthenticated,
     selectedToolPayload,
     getLatestUserPrompt: () => latestUserPromptRef.current,
-    saveToolToPocket: saveToolToPocketMutation.mutate,
+    saveToolToPocket,
     markToolUsed: markToolUsedMutation.mutate,
   })
 
@@ -313,7 +326,6 @@ export function useAnalysisPageController() {
   const canSendText = textFallback.trim().length > 0
   const canSkipVoice = appState === 'speaking' && resolvedAnalysisFlow.beat === 'cover'
   const promptPlaceholder = PAGE_COPY.analysis.promptPlaceholder
-  const conversationHistory = chatHistory.slice(0, 6)
   const setInputMode = useCallback(
     (next: SetStateAction<InputMode>) => {
       setInputModeOverride((current) => {
@@ -360,8 +372,6 @@ export function useAnalysisPageController() {
     canSendText,
     canSkipVoice,
     promptPlaceholder,
-    conversationHistory,
-    formatHistoryTime,
     workspaceActions,
     pocketGadgetModalActions,
     handleDraftTask,

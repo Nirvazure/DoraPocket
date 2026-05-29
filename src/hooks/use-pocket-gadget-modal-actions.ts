@@ -1,8 +1,11 @@
 import type { AssistantModeCard } from '@/shared/mode-registry'
 import type { ChatToolPayload } from '@/lib/client/llm'
+import { redirectToLoginUnlessAuthenticated } from '@/lib/query/auth-session'
 import { openToolById, saveToolById } from '@/lib/tool-actions'
 
 type UsePocketGadgetModalActionsOptions = {
+  authPending: boolean
+  isAuthenticated: boolean
   selectedToolPayload: ChatToolPayload
   getLatestUserPrompt: () => string
   saveToolToPocket: (input: {
@@ -14,6 +17,8 @@ type UsePocketGadgetModalActionsOptions = {
 }
 
 export function usePocketGadgetModalActions({
+  authPending,
+  isAuthenticated,
   selectedToolPayload,
   getLatestUserPrompt,
   saveToolToPocket,
@@ -25,6 +30,8 @@ export function usePocketGadgetModalActions({
     },
     onSaveToPocket: (gadget: AssistantModeCard) => {
       if (!gadget.toolId) return
+      if (!redirectToLoginUnlessAuthenticated(authPending, isAuthenticated)) return
+
       const presetArgs =
         selectedToolPayload?.toolId === gadget.toolId && selectedToolPayload.args
           ? selectedToolPayload.args
