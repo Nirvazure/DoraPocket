@@ -7,6 +7,8 @@ type PageShellProps = {
   children: ReactNode
   className?: string
   contentClassName?: string
+  /** 主内容区与顶栏共用最大宽度，默认 1440px */
+  contentMaxWidthClassName?: string
 }
 
 export function PageShell({
@@ -14,13 +16,27 @@ export function PageShell({
   children,
   className,
   contentClassName,
+  contentMaxWidthClassName = 'max-w-[1440px]',
 }: PageShellProps) {
   return (
-    <div className={cn('h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(187,224,255,0.45),transparent_35%),linear-gradient(180deg,#f8fbff_0%,#edf4ff_46%,#eef2f7_100%)]', className)}>
+    <div
+      className={cn(
+        'h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(187,224,255,0.45),transparent_35%),linear-gradient(180deg,#f8fbff_0%,#edf4ff_46%,#eef2f7_100%)]',
+        className,
+      )}
+    >
       <div className="sticky top-0 z-30 bg-white/76 backdrop-blur-xl">
-        <div className="mx-auto w-full max-w-[1440px] px-4 py-3 sm:px-6">{header}</div>
+        <div className={cn('mx-auto w-full px-4 py-3 sm:px-6', contentMaxWidthClassName)}>
+          {header}
+        </div>
       </div>
-      <ScrollArea className={cn('mx-auto flex h-[calc(100vh-5.25rem)] w-full max-w-[1440px] flex-col gap-5 px-4 pb-24 pt-3 sm:h-[calc(100vh-5.75rem)] sm:px-6 sm:pt-4 lg:h-[calc(100vh-6.25rem)] lg:pt-5', contentClassName)}>
+      <ScrollArea
+        className={cn(
+          'mx-auto flex h-[calc(100vh-5.25rem)] w-full flex-col gap-5 px-4 pb-24 pt-3 sm:h-[calc(100vh-5.75rem)] sm:px-6 sm:pt-4 lg:h-[calc(100vh-6.25rem)] lg:pt-5',
+          contentMaxWidthClassName,
+          contentClassName,
+        )}
+      >
         {children}
       </ScrollArea>
     </div>

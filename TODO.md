@@ -30,17 +30,22 @@
   - 评估与 `RecommendationSession` 合并或分工
   - 前置：DB 表与 legacy 迁移路径已保留；`memoryEnabled` 字段待复用
 
-- [ ] **移动端推荐区优先**
-  - 现状：小屏上下堆叠，3D 舞台占大量垂直空间，推荐结果易被挤到下方
-  - 目标：分析完成后 scroll 至 Step 3；`lg` 以下考虑折叠/最小化 3D 舞台
+- [x] **移动端推荐区优先**
+  - Step 3 到达时，`< lg` 平滑 scroll 至推荐区（桌面双栏不滚）
+  - 推荐揭晓后折叠 3D 舞台至 ~7rem，左上角可「展开/收起舞台」
+  - 折叠态卸载 WebGL，展开时重新挂载（省 GPU，展开有短暂重载）
 
-- [ ] **3D 舞台加载占位**
-  - 现状：`AnalysisStageCanvas` dynamic import 的 loading 为透明 div
-  - 目标：Dora 静态图 + skeleton/pulse，减少首屏「空一块」
+- [x] **3D 舞台加载占位**
+  - `AnalysisStageCanvas` dynamic import：`Sparkles` + 缓转圆环 pulse（Lucide，非道具图）
+  - 三态占位：`loading`（天蓝 + 旋转 +「舞台加载中…」）/ `idle`（天蓝 Sparkles 静态，折叠）/ `unavailable`（琥珀 + 警告 + 刷新）
+  - context lost：`webglcontextlost` → 卸载 Canvas、切 `unavailable` 占位
+  - 审阅 2026-06-02：`loading`/`unavailable` 需 `z-[2]` 才能浮于舞台白色渐变层之上；`idle` 保持 `z-0`（折叠态无渐变）
+  - 已知局限：无 `webglcontextrestored`；WebGL 初始化失败 / `useGLTF` 抛错仍走 Error Boundary（P2）；移动端「展开舞台」会 remount 并重试 3D；「刷新页面」会丢失当前会话进度
 
-- [ ] **澄清流程减负**
-  - 现状：多轮 `clarifying` 易让用户焦躁；`skipToRecommendation` 入口不够显眼
-  - 目标：澄清卡片旁突出「直接推荐」；`brief` 解释风格减少澄清轮次（prompt 策略）
+- [x] **澄清流程减负**
+  - 「跳过，先看推荐」改为全宽主色按钮，置于快捷回复上方
+  - `brief` 解释风格：最多 1 轮澄清（`sessionTurn >= 2` 即 exhausted）；澄清文案更短
+  - `showSkip` 与 brief / standard 轮次对齐
 
 - [ ] **登录个性化可感知**
   - 现状：已登录用户的口袋/反馈影响推荐，但 Step 3 无体现
@@ -76,6 +81,7 @@
 
 - [ ] **舞台区局部 Error Boundary**
   - 目标：3D/语音崩溃不拖垮整页
+  - context lost 已降级占位；本项仍覆盖：WebGL 初始化失败、`useGLTF` 抛错、R3F 运行时异常
 
 - [ ] **登录后字体闪烁**
   - 现状：`fontPreset` 经 `useLayoutEffect` 同步，登录切换可能闪一下
