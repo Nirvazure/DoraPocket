@@ -42,10 +42,12 @@ export function OAuthLoginForm() {
   const searchParams = useSearchParams()
   const [pendingProvider, setPendingProvider] = useState<OAuthProvider | null>(null)
   const errorFromQuery = searchParams.get('error')
+  const nextPath = searchParams.get('next')?.trim() || '/analyse'
+  const safeNext = nextPath.startsWith('/') ? nextPath : '/analyse'
 
   const handleOAuthSignIn = (provider: OAuthProvider) => {
     setPendingProvider(provider)
-    window.location.href = `/api/auth/oauth/${provider}?next=${encodeURIComponent('/analyse')}`
+    window.location.href = `/api/auth/oauth/${provider}?next=${encodeURIComponent(safeNext)}`
   }
 
   return (

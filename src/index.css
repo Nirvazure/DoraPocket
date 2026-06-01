@@ -209,6 +209,21 @@
   .dp-secondary-surface {
     @apply rounded-3xl border border-white/70 bg-white/74 shadow-sm backdrop-blur-md;
   }
+
+  /* 分析页左栏（图1）：桌面端略放大字号/间距；右栏舞台不套用 */
+  @media (min-width: 1024px) {
+    .discovery-panel-lg-type {
+      zoom: 1.1;
+    }
+  }
+
+  @supports not (zoom: 1) {
+    @media (min-width: 1024px) {
+      .discovery-panel-lg-type {
+        font-size: 1.0625rem;
+      }
+    }
+  }
 }
 
 @layer utilities {

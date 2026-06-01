@@ -1,7 +1,7 @@
 import type { QueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query/query-keys'
 
-export type RealtimeTable = 'PocketItem' | 'UserSettings' | 'ChatHistoryEntry' | 'MarketSubmission'
+export type RealtimeTable = 'PocketItem' | 'UserSettings' | 'MarketSubmission'
 
 export function handleRealtimeTableChange(queryClient: QueryClient, table: RealtimeTable) {
   switch (table) {
@@ -12,9 +12,6 @@ export function handleRealtimeTableChange(queryClient: QueryClient, table: Realt
       return
     case 'UserSettings':
       void queryClient.invalidateQueries({ queryKey: queryKeys.userSettings.all })
-      return
-    case 'ChatHistoryEntry':
-      void queryClient.invalidateQueries({ queryKey: queryKeys.chatHistory.all })
       return
     case 'MarketSubmission':
       void queryClient.invalidateQueries({ queryKey: queryKeys.marketSubmissions.all })

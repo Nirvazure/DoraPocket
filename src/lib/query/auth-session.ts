@@ -19,10 +19,31 @@ export function useAuthSessionQuery() {
   })
 }
 
+export function useAuthenticatedQueryEnabled() {
+  const { data: authSession, isPending: authPending } = useAuthSessionQuery()
+  return {
+    authPending,
+    authenticated: authSession?.authenticated === true,
+    enabled: !authPending && authSession?.authenticated === true,
+  }
+}
+
 export function resolveSettingsReadOnly(
   authPending: boolean,
   authenticated: boolean | undefined,
 ): boolean {
   if (authPending) return false
   return authenticated !== true
+}
+
+export function redirectToLoginUnlessAuthenticated(
+  authPending: boolean,
+  authenticated: boolean,
+): boolean {
+  if (authPending) return false
+  if (authenticated) return true
+  if (typeof window === 'undefined') return false
+  const next = `${window.location.pathname}${window.location.search}`
+  window.location.href = `/login?next=${encodeURIComponent(next)}`
+  return false
 }

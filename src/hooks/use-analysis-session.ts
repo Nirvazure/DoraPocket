@@ -20,11 +20,6 @@ type RunTurnOptions = {
 
 type UseAnalysisSessionOptions = {
   userSettings?: UserSettings
-  saveChatHistory: (input: {
-    userText: string
-    assistantText: string
-    selectedToolId?: string
-  }) => void
   setAppState: (state: AppState) => void
   setTranscript: (text: string) => void
   setBotResponse: (text: string) => void
@@ -74,7 +69,6 @@ function resolveVoicePlaybackText(reply: AgentTurnReply, mode: VoicePlaybackMode
 
 export function useAnalysisSession({
   userSettings,
-  saveChatHistory,
   setAppState,
   setTranscript,
   setBotResponse,
@@ -101,7 +95,6 @@ export function useAnalysisSession({
   const voicePlaybackEnabled =
     userSettings?.voicePlaybackEnabled !== false && voicePlaybackMode !== 'off'
   const soundEffectsEnabled = userSettings?.soundEffectsEnabled !== false
-  const memoryEnabled = userSettings?.memoryEnabled !== false
   const builtinToolsEnabled = userSettings?.builtinToolsEnabled === true
   const explanationMode = userSettings?.explanationMode ?? 'standard'
 
@@ -169,13 +162,6 @@ export function useAnalysisSession({
         recommendationCoverStartedRef.current = true
         onCoverRecommendation()
       }
-      if (memoryEnabled) {
-        saveChatHistory({
-          userText: safeText,
-          assistantText: reply.text,
-          selectedToolId: reply.selectedTool?.toolId,
-        })
-      }
 
       const pocketKey = getSelectedGadgetKey()
       const nextPocketGadget = pickModeCardAfterTurn(pocketKey, reply.selectedTool?.toolId)
@@ -219,11 +205,9 @@ export function useAnalysisSession({
     [
       finishSpeakingTurn,
       getSelectedGadgetKey,
-      memoryEnabled,
       onCoverRecommendation,
       onPocketGadgetChange,
       onRevealRecommendation,
-      saveChatHistory,
       setAppState,
       setBotResponse,
       soundEffectsEnabled,

@@ -1,8 +1,10 @@
 import { useCallback } from 'react'
 import { openToolById, saveToolById } from '@/lib/tool-actions'
-import { SYSTEM_NOTICE_COPY } from '@/shared/ui-copy'
+import { redirectToLoginUnlessAuthenticated } from '@/lib/query/auth-session'
 
 type UseDiscoveryWorkspaceActionsOptions = {
+  authPending: boolean
+  isAuthenticated: boolean
   getLatestUserPrompt: () => string
   saveToolToPocket: (input: {
     toolId: string
@@ -18,6 +20,8 @@ type UseDiscoveryWorkspaceActionsOptions = {
 }
 
 export function useDiscoveryWorkspaceActions({
+  authPending,
+  isAuthenticated,
   getLatestUserPrompt,
   saveToolToPocket,
   markToolUsed,
@@ -25,14 +29,18 @@ export function useDiscoveryWorkspaceActions({
 }: UseDiscoveryWorkspaceActionsOptions) {
   const onSaveCandidate = useCallback(
     (toolId: string) => {
-      saveToolById(toolId, saveToolToPocket, getLatestUserPrompt() || undefined)
-      setSystemNotice({
-        level: 'task',
-        message: SYSTEM_NOTICE_COPY.savedForLater,
-        autoDismissMs: 2200,
-      })
+      if (!redirectToLoginUnlessAuthenticated(authPending, isAuthenticated)) return
+
+      const saved = saveToolById(toolId, saveToolToPocket, getLatestUserPrompt() || undefined)
+      if (!saved) {
+        setSystemNotice({
+          level: 'critical',
+          message: '暂时无法收进口袋，请稍后再试。',
+          autoDismissMs: 2200,
+        })
+      }
     },
-    [getLatestUserPrompt, saveToolToPocket, setSystemNotice],
+    [getLatestUserPrompt, authPending, isAuthenticated, saveToolToPocket, setSystemNotice],
   )
 
   const onLaunchCandidate = useCallback(

@@ -319,10 +319,11 @@ export async function* streamPocketGraph(
     missingInputs: classifiedState.task_frame.missingInputs,
     sessionTurn: step2.sessionTurn,
     skipClarify: step2.skipClarify === true,
+    explanationMode,
   })
 
   if (outcome === 'clarifying') {
-    const question = buildClarifyQuestion(classifiedState.task_frame.missingInputs)
+    const question = buildClarifyQuestion(classifiedState.task_frame.missingInputs, explanationMode)
     const quickReplies = resolveQuickReplies(classifiedState.task_frame.missingInputs)
     yield { type: 'progress', stage: 'clarifying' }
     yield {

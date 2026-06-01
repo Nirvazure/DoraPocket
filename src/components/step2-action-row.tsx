@@ -1,4 +1,5 @@
 import { STEP2_COPY } from '@/shared/ui-copy'
+import { Sparkles } from 'lucide-react'
 
 export type Step2ActionRowProps = {
   quickReplies: string[]
@@ -16,25 +17,30 @@ export function Step2ActionRow({
   if (quickReplies.length === 0 && !showSkip) return null
 
   return (
-    <div className="flex flex-wrap items-center gap-2 px-3 pb-2">
-      {quickReplies.map((reply) => (
-        <button
-          key={reply}
-          type="button"
-          onClick={() => onQuickReply(reply)}
-          className="rounded-full border border-primary/15 bg-primary/[0.06] px-3 py-1.5 text-[11px] font-semibold text-primary transition-colors hover:bg-primary/10"
-        >
-          {reply}
-        </button>
-      ))}
+    <div className="space-y-2 px-3 pb-2">
       {showSkip ? (
         <button
           type="button"
           onClick={onSkipRecommendation}
-          className="text-[11px] font-semibold text-foreground/55 underline-offset-2 transition-colors hover:text-foreground/80 hover:underline"
+          className="flex w-full items-center justify-center gap-1.5 rounded-full border border-primary/25 bg-primary/[0.08] px-3 py-2 text-[11px] font-semibold text-primary shadow-sm transition-colors hover:bg-primary/12"
         >
+          <Sparkles className="h-3.5 w-3.5" aria-hidden />
           {STEP2_COPY.skipLabel}
         </button>
+      ) : null}
+      {quickReplies.length > 0 ? (
+        <div className="flex flex-wrap items-center gap-2">
+          {quickReplies.map((reply) => (
+            <button
+              key={reply}
+              type="button"
+              onClick={() => onQuickReply(reply)}
+              className="rounded-full border border-border/60 bg-white px-3 py-1.5 text-[11px] font-semibold text-foreground/80 transition-colors hover:bg-slate-50"
+            >
+              {reply}
+            </button>
+          ))}
+        </div>
       ) : null}
     </div>
   )

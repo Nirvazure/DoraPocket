@@ -11,8 +11,14 @@ import { ListeningHud } from '@/components/listening-hud'
 import { PocketGadgetModal } from '@/components/pocket-gadget-modal'
 import { PocketQuickSettingsModal } from '@/components/pocket/pocket-quick-settings-modal'
 import { useAnalysisPageController } from '@/hooks/use-analysis-page-controller'
+import { usePrefersCompactStage } from '@/hooks/use-prefers-compact-stage'
 import { stopAudioPlayback } from '@/lib/client/audio'
 import { PAGE_COPY } from '@/shared/ui-copy'
+import { useCallback, useMemo, useRef, useState } from 'react'
+import {
+  resolveCurrentStep,
+  resolveMaxVisibleStep,
+} from '@/components/discovery/analysis-stage-content'
 
 export default function App() {
   const {
@@ -62,10 +68,34 @@ export default function App() {
     handleQuickReply,
   } = useAnalysisPageController()
 
+  const workspaceRef = useRef<HTMLElement>(null)
+  const prefersCompactStage = usePrefersCompactStage()
+  const [mobileStageExpanded, setMobileStageExpanded] = useState(false)
+
+  const hasPrompt = Boolean(currentPrompt?.trim())
+  const hasResult = Boolean(agentUiPayload || selectedToolPayload?.toolId)
+  const recommendationStep = useMemo(
+    () => resolveCurrentStep(analysisFlow, hasPrompt, hasResult),
+    [analysisFlow, hasPrompt, hasResult],
+  )
+  const maxVisibleStep = useMemo(
+    () => resolveMaxVisibleStep(analysisFlow, hasPrompt, hasResult),
+    [analysisFlow, hasPrompt, hasResult],
+  )
+  const showMobileCompactStage =
+    prefersCompactStage && recommendationStep === 3 && maxVisibleStep >= 3
+
+  const handleReachRecommendationStep = useCallback(() => {
+    if (prefersCompactStage) {
+      setMobileStageExpanded(false)
+    }
+  }, [prefersCompactStage])
+
   return (
     <PageShell
       className={rootCursor}
-      contentClassName="grid min-h-0 grid-cols-1 gap-3 px-3 pb-4 pt-2 sm:px-4 sm:pt-3 lg:h-[calc(100dvh-6.9rem)] lg:grid-cols-[minmax(0,1.45fr)_minmax(21rem,0.72fr)] lg:items-stretch lg:gap-3 lg:overflow-hidden lg:px-4 lg:pb-2 lg:pt-4"
+      contentMaxWidthClassName="max-w-[min(100%,120rem)]"
+      contentClassName="flex min-h-0 flex-col gap-3 px-3 pb-4 pt-2 sm:px-4 sm:pt-3 lg:h-[calc(100dvh-6.9rem)] lg:overflow-hidden lg:px-4 lg:pb-2 lg:pt-4"
       header={
         <UnifiedTopBar
           title={PAGE_COPY.analysis.title}
@@ -101,65 +131,78 @@ export default function App() {
         onSave={saveUserSettings}
       />
       {appState === 'listening' ? <ListeningHud /> : null}
-      <div className="min-h-0 h-full">
-        <DiscoveryWorkspace
-          currentPrompt={currentPrompt}
-          appState={appState}
-          analysisFlow={analysisFlow}
-          progressStage={progressStage}
-          agentPayload={agentUiPayload}
-          selectedToolPayload={selectedToolPayload}
-          explanationMode={userSettings?.explanationMode ?? 'standard'}
-          onSaveCandidate={workspaceActions.onSaveCandidate}
-          onLaunchCandidate={workspaceActions.onLaunchCandidate}
-          onOpenExternalCandidate={workspaceActions.onOpenExternalCandidate}
-          onDraftTask={handleDraftTask}
-        />
-      </div>
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.45fr)_minmax(21rem,0.72fr)] lg:items-stretch">
+        <div className="discovery-panel-lg-type flex h-full min-h-0 flex-col">
+          <DiscoveryWorkspace
+            ref={workspaceRef}
+            currentPrompt={currentPrompt}
+            appState={appState}
+            analysisFlow={analysisFlow}
+            progressStage={progressStage}
+            agentPayload={agentUiPayload}
+            selectedToolPayload={selectedToolPayload}
+            explanationMode={userSettings?.explanationMode ?? 'standard'}
+            onSaveCandidate={workspaceActions.onSaveCandidate}
+            onLaunchCandidate={workspaceActions.onLaunchCandidate}
+            onOpenExternalCandidate={workspaceActions.onOpenExternalCandidate}
+            onDraftTask={handleDraftTask}
+            onReachRecommendationStep={handleReachRecommendationStep}
+            scrollOnReachRecommendation={prefersCompactStage}
+          />
+        </div>
 
-      <AnalysisStagePanel
-        appState={appState}
-        analysisFlow={analysisFlow}
-        toolDialRef={toolDialRef}
-        toolDialOpen={toolDialOpen}
-        toolDialMode={toolDialMode}
-        selectedGadgetKey={selectedGadgetKey}
-        dialGadgets={dialGadgets}
-        onToggleToolDial={toggleToolDial}
-        onSelectDialGadget={handleSelectDialGadget}
-        onToggleToolDialMode={() =>
-          setToolDialMode((value) => (value === 'quick' ? 'all' : 'quick'))
-        }
-        onOpenQuickSettings={() => setQuickSettingsOpen(true)}
-      >
-        <AnalysisBottomBar
-          analysisFlow={analysisFlow}
-          appState={appState}
-          botResponse={botResponse}
-          step2Session={step2Session}
-          showSkip={step2Session != null && step2Session.turn < 3}
-          canSkipVoice={canSkipVoice}
-          inputMode={inputMode}
-          textFallback={textFallback}
-          canSendText={canSendText}
-          placeholder={promptPlaceholder}
-          onToggleInputMode={() => setInputMode((mode) => (mode === 'text' ? 'voice' : 'text'))}
-          onTextChange={setTextFallback}
-          onSubmit={() => {
-            submitTextMessage(textFallback, () => {
-              setTextFallback('')
-            })
-          }}
-          onHoldToTalkStart={holdToTalkStart}
-          onHoldToTalkEnd={holdToTalkEnd}
-          onCancelVoiceInput={cancelVoiceInput}
-          onStopVoicePlayback={stopAudioPlayback}
-          onRevealNow={revealNow}
-          onQuickReply={handleQuickReply}
-          onSkipRecommendation={skipToRecommendation}
-          onToggleDialogueExpanded={toggleDialogueExpanded}
-        />
-      </AnalysisStagePanel>
+        <div className="flex h-full min-h-0 flex-col">
+          <AnalysisStagePanel
+            appState={appState}
+            analysisFlow={analysisFlow}
+            toolDialRef={toolDialRef}
+            toolDialOpen={toolDialOpen}
+            toolDialMode={toolDialMode}
+            selectedGadgetKey={selectedGadgetKey}
+            dialGadgets={dialGadgets}
+            onToggleToolDial={toggleToolDial}
+            onSelectDialGadget={handleSelectDialGadget}
+            onToggleToolDialMode={() =>
+              setToolDialMode((value) => (value === 'quick' ? 'all' : 'quick'))
+            }
+            onOpenQuickSettings={() => setQuickSettingsOpen(true)}
+            mobileCompact={showMobileCompactStage}
+            mobileCompactExpanded={mobileStageExpanded}
+            onToggleMobileCompact={() => setMobileStageExpanded((value) => !value)}
+          >
+            <AnalysisBottomBar
+              analysisFlow={analysisFlow}
+              appState={appState}
+              botResponse={botResponse}
+              step2Session={step2Session}
+              showSkip={
+                step2Session != null &&
+                step2Session.turn < (userSettings?.explanationMode === 'brief' ? 2 : 3)
+              }
+              canSkipVoice={canSkipVoice}
+              inputMode={inputMode}
+              textFallback={textFallback}
+              canSendText={canSendText}
+              placeholder={promptPlaceholder}
+              onToggleInputMode={() => setInputMode((mode) => (mode === 'text' ? 'voice' : 'text'))}
+              onTextChange={setTextFallback}
+              onSubmit={() => {
+                submitTextMessage(textFallback, () => {
+                  setTextFallback('')
+                })
+              }}
+              onHoldToTalkStart={holdToTalkStart}
+              onHoldToTalkEnd={holdToTalkEnd}
+              onCancelVoiceInput={cancelVoiceInput}
+              onStopVoicePlayback={stopAudioPlayback}
+              onRevealNow={revealNow}
+              onQuickReply={handleQuickReply}
+              onSkipRecommendation={skipToRecommendation}
+              onToggleDialogueExpanded={toggleDialogueExpanded}
+            />
+          </AnalysisStagePanel>
+        </div>
+      </div>
     </PageShell>
   )
 }

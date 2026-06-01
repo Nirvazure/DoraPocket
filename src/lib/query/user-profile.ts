@@ -1,15 +1,23 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useAuthenticatedQueryEnabled } from '@/lib/query/auth-session'
 import { apiFetch } from '@/lib/query/api-client'
 import { queryKeys } from '@/lib/query/query-keys'
 import { getDefaultUserProfile, type UserProfile } from '@/lib/client/user-profile'
 
 export function useUserProfileQuery() {
-  return useQuery({
+  const { enabled } = useAuthenticatedQueryEnabled()
+
+  const query = useQuery({
     queryKey: queryKeys.userProfile.current(),
-    queryFn: async () =>
-      apiFetch<UserProfile>('/api/me/profile').catch(() => getDefaultUserProfile()),
+    enabled,
+    queryFn: async () => apiFetch<UserProfile>('/api/me/profile'),
     staleTime: Infinity,
   })
+
+  return {
+    ...query,
+    data: query.data ?? getDefaultUserProfile(),
+  }
 }
 
 export function useUserProfileSubscription() {

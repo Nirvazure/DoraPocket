@@ -7,6 +7,7 @@ import {
   type QueryClient,
 } from '@tanstack/react-query'
 import { apiFetch } from '@/lib/query/api-client'
+import { useAuthenticatedQueryEnabled } from '@/lib/query/auth-session'
 import { getMarketActivityQueryOptions } from '@/lib/query/market-activity'
 import { queryKeys } from '@/lib/query/query-keys'
 import type {
@@ -43,6 +44,26 @@ type SubmitMarketToolInput = {
 }
 
 type PreferenceMode = 'applied' | 'inferred'
+
+const EMPTY_PREFERENCE_PROFILE: UserPreferenceProfile = {
+  preferredCategories: [],
+  preferredTags: [],
+  preferredPlatforms: [],
+  preferredPricing: [],
+  preferredExecutionModes: [],
+  avoidAuthWall: true,
+  prefersSubscriptionTools: false,
+  summary: [],
+}
+
+const EMPTY_MARKET_CONTEXT: MarketContext = {
+  builtinToolsEnabled: false,
+  savedItems: [],
+  feedback: [],
+  subscriptions: [],
+  submissions: [],
+  preferenceProfile: EMPTY_PREFERENCE_PROFILE,
+}
 
 async function syncMarketDerivedSnapshots(queryClient: QueryClient) {
   const [applied, inferred, override] = await Promise.all([
@@ -82,75 +103,92 @@ export function useMarketToolsQuery(searchQuery = '') {
         normalizedQuery.length > 0
           ? `/api/market/tools?q=${encodeURIComponent(normalizedQuery)}`
           : '/api/market/tools'
-      return apiFetch<ToolItem[]>(url).catch(() => [])
+      return apiFetch<ToolItem[]>(url)
     },
     placeholderData: keepPreviousData,
   })
 }
 
 export function useMarketFeedbackQuery() {
-  return useQuery({
+  const { enabled } = useAuthenticatedQueryEnabled()
+
+  const query = useQuery({
     queryKey: queryKeys.marketFeedback.list(),
+    enabled,
     queryFn: async () =>
-      (
-        await apiFetch<{ feedback: MarketFeedbackRecord[] }>('/api/me/market/feedback').catch(
-          () => ({ feedback: [] }),
-        )
-      ).feedback,
+      (await apiFetch<{ feedback: MarketFeedbackRecord[] }>('/api/me/market/feedback')).feedback,
   })
+
+  return {
+    ...query,
+    data: query.data ?? [],
+  }
 }
 
 export function useMarketSubscriptionsQuery() {
-  return useQuery({
+  const { enabled } = useAuthenticatedQueryEnabled()
+
+  const query = useQuery({
     queryKey: queryKeys.marketSubscriptions.list(),
-    queryFn: async () =>
-      apiFetch<MarketSubscriptionRecord[]>('/api/me/market/subscriptions').catch(() => []),
+    enabled,
+    queryFn: async () => apiFetch<MarketSubscriptionRecord[]>('/api/me/market/subscriptions'),
   })
+
+  return {
+    ...query,
+    data: query.data ?? [],
+  }
 }
 
 export function useMarketReviewAggregatesQuery() {
-  return useQuery<Record<string, MarketReviewAggregate>>({
+  const { enabled } = useAuthenticatedQueryEnabled()
+
+  const query = useQuery<Record<string, MarketReviewAggregate>>({
     queryKey: queryKeys.marketReviewAggregates.list(),
+    enabled,
     queryFn: async () =>
       (
         await apiFetch<{ aggregates: Record<string, MarketReviewAggregate> }>(
           '/api/me/market/feedback',
-        ).catch(() => ({ aggregates: {} }))
+        )
       ).aggregates,
   })
+
+  return {
+    ...query,
+    data: query.data ?? {},
+  }
 }
 
 export function useMarketSubmissionsQuery() {
-  return useQuery({
+  const { enabled } = useAuthenticatedQueryEnabled()
+
+  const query = useQuery({
     queryKey: queryKeys.marketSubmissions.list(),
-    queryFn: async () => apiFetch<MarketSubmission[]>('/api/me/market/submissions').catch(() => []),
+    enabled,
+    queryFn: async () => apiFetch<MarketSubmission[]>('/api/me/market/submissions'),
   })
+
+  return {
+    ...query,
+    data: query.data ?? [],
+  }
 }
 
 export function usePreferenceProfileQuery(mode: PreferenceMode = 'applied') {
-  return useQuery<UserPreferenceProfile>({
+  const { enabled } = useAuthenticatedQueryEnabled()
+
+  const query = useQuery<UserPreferenceProfile>({
     queryKey: queryKeys.preferenceProfile.current(mode),
+    enabled,
     queryFn: async () =>
-      (
-        await apiFetch<MarketContext>(`/api/me/market/context?mode=${mode}`).catch(() => ({
-          builtinToolsEnabled: false,
-          savedItems: [],
-          feedback: [],
-          subscriptions: [],
-          submissions: [],
-          preferenceProfile: {
-            preferredCategories: [],
-            preferredTags: [],
-            preferredPlatforms: [],
-            preferredPricing: [],
-            preferredExecutionModes: [],
-            avoidAuthWall: true,
-            prefersSubscriptionTools: false,
-            summary: [],
-          },
-        }))
-      ).preferenceProfile,
+      (await apiFetch<MarketContext>(`/api/me/market/context?mode=${mode}`)).preferenceProfile,
   })
+
+  return {
+    ...query,
+    data: query.data ?? EMPTY_PREFERENCE_PROFILE,
+  }
 }
 
 export function getMarketContextQueryOptions(mode: PreferenceMode = 'applied') {
@@ -161,15 +199,32 @@ export function getMarketContextQueryOptions(mode: PreferenceMode = 'applied') {
 }
 
 export function useMarketContextQuery(mode: PreferenceMode = 'applied') {
-  return useQuery(getMarketContextQueryOptions(mode))
+  const { enabled } = useAuthenticatedQueryEnabled()
+
+  const query = useQuery({
+    ...getMarketContextQueryOptions(mode),
+    enabled,
+  })
+
+  return {
+    ...query,
+    data: query.data ?? EMPTY_MARKET_CONTEXT,
+  }
 }
 
 export function usePreferenceProfileOverrideQuery() {
-  return useQuery<PreferenceProfileOverride>({
+  const { enabled } = useAuthenticatedQueryEnabled()
+
+  const query = useQuery<PreferenceProfileOverride>({
     queryKey: queryKeys.preferenceProfileOverride.current(),
-    queryFn: async () =>
-      apiFetch<PreferenceProfileOverride>('/api/me/preferences/override').catch(() => ({})),
+    enabled,
+    queryFn: async () => apiFetch<PreferenceProfileOverride>('/api/me/preferences/override'),
   })
+
+  return {
+    ...query,
+    data: query.data ?? {},
+  }
 }
 
 export function useSaveMarketFeedbackMutation() {

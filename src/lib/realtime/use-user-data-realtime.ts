@@ -5,12 +5,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { handleRealtimeTableChange, type RealtimeTable } from '@/lib/realtime/table-sync-handlers'
 
-const REALTIME_TABLES: RealtimeTable[] = [
-  'PocketItem',
-  'UserSettings',
-  'ChatHistoryEntry',
-  'MarketSubmission',
-]
+const REALTIME_TABLES: RealtimeTable[] = ['PocketItem', 'UserSettings', 'MarketSubmission']
 
 const DEBOUNCE_MS = 300
 

@@ -18,6 +18,27 @@ test('resolveClarifyOutcome returns exhausted at turn 3 with missing inputs', ()
   )
 })
 
+test('resolveClarifyOutcome limits brief mode to one clarify turn', () => {
+  assert.equal(
+    resolveClarifyOutcome({
+      missingInputs: ['城市'],
+      sessionTurn: 1,
+      skipClarify: false,
+      explanationMode: 'brief',
+    }),
+    'clarifying',
+  )
+  assert.equal(
+    resolveClarifyOutcome({
+      missingInputs: ['城市'],
+      sessionTurn: 2,
+      skipClarify: false,
+      explanationMode: 'brief',
+    }),
+    'exhausted',
+  )
+})
+
 test('resolveClarifyOutcome returns ready when no missing inputs', () => {
   assert.equal(
     resolveClarifyOutcome({ missingInputs: [], sessionTurn: 1, skipClarify: false }),

@@ -64,8 +64,8 @@ export function WhereToStartSection({ onDraftTask }: WhereToStartSectionProps) {
   }
 
   return (
-    <div className="space-y-3">
-      <section className="rounded-[1.8rem] border border-primary/15 bg-primary/[0.04] p-4">
+    <div className="flex min-h-full flex-col gap-3">
+      <section className="shrink-0 rounded-[1.8rem] border border-primary/15 bg-primary/[0.04] p-4">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
             从一个具体场景开始
@@ -109,7 +109,7 @@ export function WhereToStartSection({ onDraftTask }: WhereToStartSectionProps) {
         </div>
       </section>
 
-      <DisplayPanel className="rounded-[1.8rem] border-border/70 bg-white shadow-sm">
+      <DisplayPanel className="flex min-h-0 flex-1 flex-col rounded-[1.8rem] border-border/70 bg-white shadow-sm">
         <DisplayPanelContent className="p-4 sm:p-4">
           <div className="flex items-center gap-2">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-primary">

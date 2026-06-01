@@ -39,10 +39,6 @@ export const queryKeys = {
     all: ['marketActivity'] as const,
     list: (limit: number) => ['marketActivity', 'list', limit] as const,
   },
-  chatHistory: {
-    all: ['chatHistory'] as const,
-    list: () => ['chatHistory', 'list'] as const,
-  },
   preferenceProfileOverride: {
     all: ['preferenceProfileOverride'] as const,
     current: () => ['preferenceProfileOverride', 'current'] as const,

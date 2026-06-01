@@ -51,7 +51,7 @@ type MarketPageProps = {
 export function MarketPage({ initialSection = null }: MarketPageProps) {
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebouncedValue(query, 300)
-  const { data: authSession } = useAuthSessionQuery()
+  const { data: authSession, isPending: authPending } = useAuthSessionQuery()
   const { data: pocketInventory = [] } = usePocketInventoryQuery()
   const saveToolToPocketMutation = useSaveToolToPocketMutation()
   const removeToolFromPocketMutation = useRemoveToolFromPocketMutation()
@@ -83,6 +83,8 @@ export function MarketPage({ initialSection = null }: MarketPageProps) {
     authSession.user != null
 
   const toolCardActions = useToolCardActions({
+    authPending,
+    isAuthenticated,
     markToolUsed: markToolUsedMutation.mutate,
     saveToolToPocket: saveToolToPocketMutation.mutate,
     getSourceQuestion: () =>
