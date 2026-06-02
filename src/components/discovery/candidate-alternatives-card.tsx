@@ -18,7 +18,7 @@ import {
 import { ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { getToolById } from '@/shared/tool-registry'
+import type { ToolLookupFn } from '@/shared/tool-lookup'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
 
@@ -29,6 +29,7 @@ type CandidateAlternativesCardProps = {
   payload: AgentUiPayload | null
   selectedToolPayload: ChatToolPayload
   analysisFlow: AnalysisFlow
+  getTool: ToolLookupFn
   explanationMode?: UserSettings['explanationMode']
   onOpenExternalCandidate?: (url: string) => void
 }
@@ -37,6 +38,7 @@ export function CandidateAlternativesCard({
   payload,
   selectedToolPayload,
   analysisFlow,
+  getTool,
   explanationMode = 'standard',
   onOpenExternalCandidate,
 }: CandidateAlternativesCardProps) {
@@ -84,7 +86,7 @@ export function CandidateAlternativesCard({
         {alternatives.length > 0 ? (
           <div className="grid gap-3 md:grid-cols-3">
             {alternatives.map((candidate, index) => {
-              const tool = candidate.toolId ? getToolById(candidate.toolId) : null
+              const tool = candidate.toolId ? getTool(candidate.toolId) : null
               const isExternal = candidate.candidateType === 'external_suggestion'
               return (
                 <DisplayPanel

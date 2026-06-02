@@ -7,11 +7,12 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { DisplayPanel, DisplayPanelContent } from '@/components/ui/display-shell'
 import { cn } from '@/lib/utils'
 import type { PocketInventoryItem } from '@/shared/pocket-types'
-import { getToolById } from '@/shared/tool-registry'
+import type { ToolItem } from '@/shared/tool-registry'
 import { getPocketCategoryLabel } from '@/components/pocket/pocket-utils'
 
 type PocketToolCardProps = {
   item: PocketInventoryItem
+  tool: ToolItem
   onOpen: (toolId: string) => void
   onRemove: (toolId: string) => void
 }
@@ -23,17 +24,8 @@ function formatSavedAt(value: number) {
   })
 }
 
-function resolveToolHref(toolId: string) {
-  const tool = getToolById(toolId)
-  if (!tool) return '/analyse'
-  return tool.url ?? '/analyse'
-}
-
-export function PocketToolCard({ item, onOpen, onRemove }: PocketToolCardProps) {
-  const tool = getToolById(item.toolId)
-  const href = resolveToolHref(item.toolId)
-
-  if (!tool) return null
+export function PocketToolCard({ item, tool, onOpen, onRemove }: PocketToolCardProps) {
+  const href = tool.url ?? '/analyse'
 
   return (
     <DisplayPanel className="overflow-hidden rounded-[1.7rem] border-white/90 bg-white shadow-[0_16px_42px_rgba(15,23,42,0.07)]">

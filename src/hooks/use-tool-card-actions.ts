@@ -22,8 +22,8 @@ export function useToolCardActions({
   getSourceQuestion,
 }: UseToolCardActionsOptions) {
   const openTool = useCallback(
-    (toolId: string) => {
-      openToolById(toolId, markToolUsed)
+    (toolId: string, url?: string | null) => {
+      openToolById(toolId, markToolUsed, { url })
     },
     [markToolUsed],
   )

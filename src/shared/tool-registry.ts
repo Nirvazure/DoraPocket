@@ -1,8 +1,4 @@
 import { z } from 'zod'
-import type { MarketBookmarkSeed } from '@/shared/market-seed-types'
-import { MARKET_BOOKMARK_SEEDS } from '@/shared/market-bookmark-seeds'
-import { buildMarketAssetPublicUrl } from '@/shared/market-asset-url'
-import { MARKET_ICON_OBJECT_KEYS } from '@/shared/market-icon-object-keys'
 
 export type ToolCategory =
   | 'ai_assistant'
@@ -356,358 +352,24 @@ const STATIC_TOOL_REGISTRY: ToolItem[] = [
     subscriptionSupport: false,
     isBuiltin: true,
   },
-  {
-    id: TOOL_ID_PERPLEXITY,
-    name: 'Perplexity',
-    icon: ICONS.search,
-    url: 'https://www.perplexity.ai',
-    description: '偏实时检索和溯源的 AI 搜索工具，适合先找资料再行动。',
-    category: 'search',
-    tags: ['search', 'research', 'citations', 'ai'],
-    source: 'market',
-    status: 'active',
-    executionMode: 'external_link',
-    pricingModel: 'freemium',
-    requiresAuth: true,
-    platform: 'web',
-    capabilities: ['research', 'search', 'answer-with-sources'],
-    recommendedFor: ['查资料', '找信息源'],
-    sourceNote: '市场精选',
-    trustSignals: { curated: true, official: true, communityVerified: true },
-    ratingSummary: rating(96, 11),
-    usageStats: usage(88, 142, 17),
-    subscriptionSupport: true,
-  },
-  {
-    id: TOOL_ID_KIMI,
-    name: 'Kimi',
-    icon: ICONS.agent,
-    url: 'https://kimi.moonshot.cn',
-    description: '长上下文与中文体验较强，适合读长文、整合资料和写总结。',
-    category: 'ai_assistant',
-    tags: ['long-context', 'china', 'summary', 'ai'],
-    source: 'market',
-    status: 'active',
-    executionMode: 'external_link',
-    pricingModel: 'freemium',
-    requiresAuth: true,
-    platform: 'web',
-    capabilities: ['long-context', 'summary', 'writing'],
-    recommendedFor: ['长文整理', '中文资料汇总'],
-    sourceNote: '市场精选',
-    trustSignals: { curated: true, official: true, communityVerified: true },
-    ratingSummary: rating(84, 8),
-    usageStats: usage(67, 111, 13),
-    subscriptionSupport: true,
-  },
-  {
-    id: TOOL_ID_GEMINI,
-    name: 'Gemini',
-    icon: ICONS.agent,
-    url: 'https://gemini.google.com',
-    description: '偏通用问答与多模态，适合日常辅助与网页联动。',
-    category: 'ai_assistant',
-    tags: ['ai', 'multimodal', 'general'],
-    source: 'market',
-    status: 'active',
-    executionMode: 'external_link',
-    pricingModel: 'freemium',
-    requiresAuth: true,
-    platform: 'web',
-    capabilities: ['chat', 'multimodal'],
-    recommendedFor: ['通用问答', '跨模态辅助'],
-    sourceNote: '市场精选',
-    trustSignals: { curated: true, official: true, communityVerified: true },
-    ratingSummary: rating(65, 10),
-    usageStats: usage(48, 79, 9),
-    subscriptionSupport: true,
-  },
-  {
-    id: TOOL_ID_FANYI,
-    name: '百度翻译',
-    icon: ICONS.write,
-    url: 'https://fanyi.baidu.com',
-    description: '老牌在线翻译工具，适合快速中英互译与短文本处理。',
-    category: 'writing',
-    tags: ['translate', 'language', 'cn-en'],
-    source: 'market',
-    status: 'active',
-    executionMode: 'external_link',
-    pricingModel: 'free',
-    requiresAuth: false,
-    platform: 'web',
-    capabilities: ['translation'],
-    recommendedFor: ['短文本翻译', '快速校对'],
-    sourceNote: '市场精选',
-    trustSignals: { curated: true, official: true, communityVerified: true },
-    ratingSummary: rating(44, 5),
-    usageStats: usage(39, 63, 3),
-    subscriptionSupport: false,
-  },
-  {
-    id: TOOL_ID_PDF24,
-    name: 'PDF24 Tools',
-    icon: ICONS.developer,
-    url: 'https://tools.pdf24.org/zh/',
-    description: 'PDF 合并、压缩、拆分的全家桶，适合办公室高频杂活。',
-    category: 'productivity',
-    tags: ['pdf', 'merge', 'compress', 'office'],
-    source: 'market',
-    status: 'active',
-    executionMode: 'external_link',
-    pricingModel: 'free',
-    requiresAuth: false,
-    platform: 'web',
-    capabilities: ['pdf'],
-    recommendedFor: ['处理 PDF', '办公转换'],
-    sourceNote: '市场精选',
-    trustSignals: { curated: true, official: true, communityVerified: true },
-    ratingSummary: rating(58, 4),
-    usageStats: usage(46, 74, 6),
-    subscriptionSupport: false,
-  },
-  {
-    id: TOOL_ID_REGEX101,
-    name: 'Regex101',
-    icon: ICONS.developer,
-    url: 'https://regex101.com',
-    description: '正则测试与解释工具，适合开发者调试表达式。',
-    category: 'developer',
-    tags: ['regex', 'debug', 'developer'],
-    source: 'market',
-    status: 'active',
-    executionMode: 'external_link',
-    pricingModel: 'free',
-    requiresAuth: false,
-    platform: 'web',
-    capabilities: ['regex-debug'],
-    recommendedFor: ['调试正则', '解释表达式'],
-    sourceNote: '市场精选',
-    trustSignals: { curated: true, official: true, communityVerified: true },
-    ratingSummary: rating(71, 2),
-    usageStats: usage(54, 83, 5),
-    subscriptionSupport: false,
-  },
-  {
-    id: TOOL_ID_REMOVE_BG,
-    name: 'remove.bg',
-    icon: ICONS.design,
-    url: 'https://www.remove.bg',
-    description: '快速抠图工具，适合处理人物或商品主图。',
-    category: 'design',
-    tags: ['image', 'background', 'design'],
-    source: 'market',
-    status: 'active',
-    executionMode: 'external_link',
-    pricingModel: 'freemium',
-    requiresAuth: false,
-    platform: 'web',
-    capabilities: ['image-edit'],
-    recommendedFor: ['抠图', '快速处理图片'],
-    sourceNote: '市场精选',
-    trustSignals: { curated: true, official: true, communityVerified: true },
-    ratingSummary: rating(62, 7),
-    usageStats: usage(45, 80, 5),
-    subscriptionSupport: false,
-  },
-  {
-    id: TOOL_ID_MESHY,
-    name: 'Meshy',
-    icon: ICONS.design,
-    url: 'https://www.meshy.ai',
-    description: 'AI 3D 生成工具，适合快速做概念模型与贴图。',
-    category: 'design',
-    tags: ['3d', 'ai', 'model'],
-    source: 'market',
-    status: 'active',
-    executionMode: 'external_link',
-    pricingModel: 'subscription',
-    requiresAuth: true,
-    platform: 'web',
-    capabilities: ['3d-generation'],
-    recommendedFor: ['3D 概念生成', '素材探索'],
-    sourceNote: '市场精选',
-    trustSignals: {
-      curated: true,
-      official: true,
-      communityVerified: false,
-      riskNote: '生成质量波动较大',
-    },
-    ratingSummary: rating(33, 6),
-    usageStats: usage(21, 34, 2),
-    subscriptionSupport: true,
-  },
-  {
-    id: TOOL_ID_CARBON,
-    name: 'Carbon',
-    icon: ICONS.developer,
-    url: 'https://carbon.now.sh',
-    description: '代码截图美化工具，适合分享代码片段。',
-    category: 'developer',
-    tags: ['code', 'screenshot', 'share'],
-    source: 'market',
-    status: 'active',
-    executionMode: 'external_link',
-    pricingModel: 'free',
-    requiresAuth: false,
-    platform: 'web',
-    capabilities: ['code-share'],
-    recommendedFor: ['发推', '做文档插图'],
-    sourceNote: '市场精选',
-    trustSignals: { curated: true, official: true, communityVerified: true },
-    ratingSummary: rating(49, 2),
-    usageStats: usage(38, 61, 4),
-    subscriptionSupport: false,
-  },
-  {
-    id: TOOL_ID_FLATICON,
-    name: 'Flaticon',
-    icon: ICONS.design,
-    url: 'https://www.flaticon.com',
-    description: '图标与素材站，适合快速找界面图标。',
-    category: 'design',
-    tags: ['icons', 'assets', 'design'],
-    source: 'market',
-    status: 'active',
-    executionMode: 'external_link',
-    pricingModel: 'freemium',
-    requiresAuth: false,
-    platform: 'web',
-    capabilities: ['icon-search'],
-    recommendedFor: ['找 UI 图标', '视觉素材'],
-    sourceNote: '市场精选',
-    trustSignals: { curated: true, official: true, communityVerified: true },
-    ratingSummary: rating(37, 3),
-    usageStats: usage(26, 44, 3),
-    subscriptionSupport: false,
-  },
-  {
-    id: TOOL_ID_LANGGRAPH_CN,
-    name: 'LangGraph 中文资料',
-    icon: ICONS.developer,
-    url: 'https://github.com/langchain-ai/langgraph',
-    description: 'LangGraph 官方代码库，适合查概念与实现模式。',
-    category: 'learning',
-    tags: ['langgraph', 'agent', 'docs'],
-    source: 'external_resource',
-    status: 'active',
-    executionMode: 'reference_only',
-    pricingModel: 'free',
-    requiresAuth: false,
-    platform: 'web',
-    capabilities: ['documentation'],
-    recommendedFor: ['查 Agent 编排', '看源码'],
-    sourceNote: '资源条目',
-    trustSignals: { curated: true, official: true, communityVerified: true },
-    ratingSummary: rating(28, 1),
-    usageStats: usage(12, 29, 1),
-    subscriptionSupport: false,
-  },
-  {
-    id: TOOL_ID_PROFILE_README,
-    name: 'GitHub Profile README Generator',
-    icon: ICONS.write,
-    url: 'https://rahuldkjain.github.io/gh-profile-readme-generator/',
-    description: '快速生成 GitHub 个人主页 README。',
-    category: 'developer',
-    tags: ['github', 'readme', 'profile'],
-    source: 'market',
-    status: 'active',
-    executionMode: 'external_link',
-    pricingModel: 'free',
-    requiresAuth: false,
-    platform: 'web',
-    capabilities: ['readme-generator'],
-    recommendedFor: ['个人主页优化', '快速生成 README'],
-    sourceNote: '市场精选',
-    trustSignals: { curated: true, official: false, communityVerified: true },
-    ratingSummary: rating(31, 2),
-    usageStats: usage(18, 27, 2),
-    subscriptionSupport: false,
-  },
 ]
 
-function fallbackBookmarkEmoji(seed: MarketBookmarkSeed): string {
-  if (seed.sourceType === 'resource') return '📘'
-  if (seed.sourceType === 'inspiration') return '✨'
-  if (seed.category === 'design') return '🎨'
-  if (seed.category === 'developer') return '🧰'
-  if (seed.category === 'search') return '🔎'
-  if (seed.category === 'media') return '🎬'
-  if (seed.category === 'learning') return '📚'
-  if (seed.category === 'writing') return '✍️'
-  return '🌐'
-}
+export const BUILTIN_TOOL_REGISTRY: ToolItem[] = STATIC_TOOL_REGISTRY
 
-export function convertBookmarkSeedToToolItem(seed: MarketBookmarkSeed): ToolItem {
-  const iconObjectKey = MARKET_ICON_OBJECT_KEYS[seed.seedId]
-  const iconImageUrl = iconObjectKey ? buildMarketAssetPublicUrl(iconObjectKey) : null
-  return {
-    id: `bookmark_${seed.seedId}`,
-    name: seed.name,
-    icon: fallbackBookmarkEmoji(seed),
-    iconType: iconImageUrl ? 'favicon' : 'emoji',
-    iconText: fallbackBookmarkEmoji(seed),
-    iconImageUrl,
-    url: seed.displayUrl,
-    description: seed.description,
-    category: seed.category,
-    tags: seed.tags,
-    source: seed.source,
-    status: seed.status,
-    executionMode: seed.executionMode,
-    pricingModel: seed.pricingModel,
-    requiresAuth: seed.requiresAuth,
-    platform: seed.platform,
-    capabilities: seed.capabilities,
-    recommendedFor: seed.recommendedFor,
-    sourceNote: seed.sourceNote,
-    trustSignals: seed.trustSignals,
-    ratingSummary: rating(0, 0),
-    usageStats: usage(0, 0, 0),
-    subscriptionSupport: seed.subscriptionSupport,
-    isBuiltin: false,
-    siteHostname: seed.siteHostname,
-    marketAssetOrigin: 'bookmark_seed',
-  }
-}
-
-export const BOOKMARK_SEED_TOOL_REGISTRY: ToolItem[] = MARKET_BOOKMARK_SEEDS.map(
-  convertBookmarkSeedToToolItem,
-)
-
-export const BUILTIN_TOOL_REGISTRY: ToolItem[] = STATIC_TOOL_REGISTRY.filter(
-  (item) => item.source === 'builtin',
-)
-
-export const CURATED_MARKET_TOOL_REGISTRY: ToolItem[] = STATIC_TOOL_REGISTRY.filter(
-  (item) => item.source !== 'builtin',
-)
-
-export const TOOL_REGISTRY: ToolItem[] = [...STATIC_TOOL_REGISTRY, ...BOOKMARK_SEED_TOOL_REGISTRY]
-
-export function getToolById(id: string | null | undefined): ToolItem | null {
+export function getBuiltinToolById(id: string | null | undefined): ToolItem | null {
   if (!id) return null
-  for (const item of TOOL_REGISTRY) {
+  for (const item of BUILTIN_TOOL_REGISTRY) {
     if (item.id === id) return item
   }
   return null
 }
 
-export function getActiveTools(): ToolItem[] {
-  return TOOL_REGISTRY.filter((item) => item.status === 'active')
+export function isBuiltinToolId(id: string | null | undefined): boolean {
+  return getBuiltinToolById(id) != null
 }
 
 export function getBuiltinTools(): ToolItem[] {
   return BUILTIN_TOOL_REGISTRY
-}
-
-export function getMarketTools(): ToolItem[] {
-  return TOOL_REGISTRY.filter((item) => item.source !== 'builtin' && item.status === 'active')
-}
-
-export function getBookmarkSeedTools(): ToolItem[] {
-  return BOOKMARK_SEED_TOOL_REGISTRY.filter((item) => item.status === 'active')
 }
 
 export function isBuiltinTool(tool: ToolItem | null | undefined): boolean {
@@ -723,8 +385,8 @@ export function filterToolsByBuiltinAvailability(
   return tools.filter((tool) => !isBuiltinTool(tool))
 }
 
-export function resolveToolUrlById(id: string | null | undefined): string | null {
-  const tool = getToolById(id)
+export function resolveBuiltinToolUrlById(id: string | null | undefined): string | null {
+  const tool = getBuiltinToolById(id)
   if (!tool || tool.status !== 'active') return null
   return tool.url
 }
@@ -781,26 +443,6 @@ export function scoreToolMatch(query: string, tool: ToolItem): number {
   if (tool.source === 'builtin') score += 6
   if (tool.executionMode === 'native_card') score += 8
   return score
-}
-
-export function rankTools(
-  query: string,
-  opts?: {
-    builtinToolsEnabled?: boolean
-    savedToolIds?: string[]
-    subscribedToolIds?: string[]
-    upvotedToolIds?: string[]
-    downvotedToolIds?: string[]
-    preferredCategories?: string[]
-    preferredTags?: string[]
-    preferredPlatforms?: string[]
-    preferredPricing?: string[]
-    preferredExecutionModes?: string[]
-    avoidAuthWall?: boolean
-    prefersSubscriptionTools?: boolean
-  },
-): ToolMatch[] {
-  return rankToolItems(getActiveTools(), query, opts)
 }
 
 export function rankToolItems(

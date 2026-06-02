@@ -3,12 +3,14 @@ import { CandidateAlternativesCard } from '@/components/discovery/candidate-alte
 import { PrimaryRecommendationCard } from '@/components/discovery/primary-recommendation-card'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
+import type { ToolLookupFn } from '@/shared/tool-lookup'
 import type { UserSettings } from '@/shared/user-settings'
 
 type CompactDecisionPanelProps = {
   payload: AgentUiPayload | null
   selectedToolPayload: ChatToolPayload
   analysisFlow: AnalysisFlow
+  getTool: ToolLookupFn
   explanationMode?: UserSettings['explanationMode']
   onSaveCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
@@ -19,6 +21,7 @@ export function CompactDecisionPanel({
   payload,
   selectedToolPayload,
   analysisFlow,
+  getTool,
   explanationMode = 'standard',
   onSaveCandidate,
   onLaunchCandidate,
@@ -30,6 +33,7 @@ export function CompactDecisionPanel({
         payload={payload}
         selectedToolPayload={selectedToolPayload}
         analysisFlow={analysisFlow}
+        getTool={getTool}
         explanationMode={explanationMode}
         onSaveCandidate={onSaveCandidate}
         onLaunchCandidate={onLaunchCandidate}
@@ -39,6 +43,7 @@ export function CompactDecisionPanel({
         payload={payload}
         selectedToolPayload={selectedToolPayload}
         analysisFlow={analysisFlow}
+        getTool={getTool}
         explanationMode={explanationMode}
         onOpenExternalCandidate={onOpenExternalCandidate}
       />

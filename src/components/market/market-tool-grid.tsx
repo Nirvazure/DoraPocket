@@ -12,7 +12,7 @@ type MarketToolGridProps = {
   savedToolIds: Set<string>
   onSaveTool: (toolId: string) => void
   onRemoveTool: (toolId: string) => void
-  onOpenTool: (toolId: string) => void
+  onOpenTool: (toolId: string, url?: string | null) => void
   onReviewTool: (toolId: string) => void
 }
 
@@ -120,7 +120,7 @@ export function MarketToolGrid({
                 <Button
                   type="button"
                   className="h-7 rounded-full px-2 text-[10px]"
-                  onClick={() => onOpenTool(tool.id)}
+                  onClick={() => onOpenTool(tool.id, tool.url)}
                 >
                   {PAGE_COPY.market.openAction}
                   <ExternalLink className="ml-1 h-3 w-3" />

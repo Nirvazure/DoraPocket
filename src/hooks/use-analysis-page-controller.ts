@@ -15,6 +15,7 @@ import {
   type AnalysisFlow,
 } from '@/components/discovery/analysis-stage-content'
 import { useAnalysisFlowReveal } from '@/hooks/analysis-flow-reveal'
+import { useAnalysisToolLookup } from '@/hooks/use-analysis-tool-lookup'
 import { useAnalysisSession } from '@/hooks/use-analysis-session'
 import { useAppShellState } from '@/hooks/use-app-shell-state'
 import { useDiscoveryWorkspaceActions } from '@/hooks/use-discovery-workspace-actions'
@@ -115,6 +116,8 @@ export function useAnalysisPageController() {
     clearResponseState,
   })
 
+  const getTool = useAnalysisToolLookup(agentUiPayload, selectedToolPayload)
+
   const saveToolToPocket = useCallback(
     (input: { toolId: string; sourceQuestion?: string; presetArgs?: Record<string, unknown> }) => {
       saveToolToPocketMutation.mutate(input, {
@@ -140,6 +143,7 @@ export function useAnalysisPageController() {
   const workspaceActions = useDiscoveryWorkspaceActions({
     authPending,
     isAuthenticated,
+    getTool,
     getLatestUserPrompt: () => latestUserPromptRef.current,
     saveToolToPocket,
     markToolUsed: markToolUsedMutation.mutate,
@@ -149,6 +153,7 @@ export function useAnalysisPageController() {
   const pocketGadgetModalActions = usePocketGadgetModalActions({
     authPending,
     isAuthenticated,
+    getTool,
     selectedToolPayload,
     getLatestUserPrompt: () => latestUserPromptRef.current,
     saveToolToPocket,
@@ -307,6 +312,7 @@ export function useAnalysisPageController() {
     analysisFlow: resolvedAnalysisFlow,
     selectedToolPayload,
     agentUiPayload,
+    getTool,
     rootCursor,
     toolDialRef,
     toolDialOpen,
