@@ -93,11 +93,11 @@ function invalidateMarketDependents(queryClient: QueryClient) {
   syncMarketActivitySnapshot(queryClient)
 }
 
-export function useMarketToolsQuery(searchQuery = '') {
+export function getMarketToolsQueryOptions(searchQuery = '') {
   const normalizedQuery = normalizeMarketSearchQuery(searchQuery) ?? ''
 
-  return useQuery({
-    queryKey: ['marketTools', normalizedQuery],
+  return {
+    queryKey: queryKeys.marketTools.search(normalizedQuery),
     queryFn: async () => {
       const url =
         normalizedQuery.length > 0
@@ -105,8 +105,34 @@ export function useMarketToolsQuery(searchQuery = '') {
           : '/api/market/tools'
       return apiFetch<ToolItem[]>(url)
     },
+  }
+}
+
+export function useMarketToolsQuery(searchQuery = '') {
+  return useQuery({
+    ...getMarketToolsQueryOptions(searchQuery),
     placeholderData: keepPreviousData,
   })
+}
+
+export function getMarketToolsByIdsQueryOptions(ids: string[]) {
+  const uniqueIds = [...new Set(ids.filter(Boolean))].sort()
+
+  return {
+    queryKey: queryKeys.marketTools.byIds(uniqueIds),
+    queryFn: async () => {
+      if (uniqueIds.length === 0) return [] as ToolItem[]
+      return apiFetch<ToolItem[]>(
+        `/api/market/tools/batch?ids=${encodeURIComponent(uniqueIds.join(','))}`,
+      )
+    },
+    enabled: uniqueIds.length > 0,
+    staleTime: 60_000,
+  }
+}
+
+export function useMarketToolsByIdsQuery(ids: string[]) {
+  return useQuery(getMarketToolsByIdsQueryOptions(ids))
 }
 
 export function useMarketFeedbackQuery() {
@@ -280,7 +306,7 @@ export function useSubmitMarketToolMutation() {
       }),
     onSuccess: (next) => {
       queryClient.setQueryData(queryKeys.marketSubmissions.list(), next)
-      void queryClient.invalidateQueries({ queryKey: ['marketTools'] })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.marketTools.all })
       invalidateMarketDependents(queryClient)
     },
   })

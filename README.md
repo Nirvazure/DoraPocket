@@ -48,7 +48,15 @@ cp .env.example .env.local
 npm run prisma:generate
 npm run prisma:migrate
 npm run seed:tools
+npm run seed:market-catalog
 npm run dev
+```
+
+首次导入市场工具目录（或更新 `scripts/data/market-catalog-snapshot.json` 后）：
+
+```bash
+npm run seed:market-catalog
+npm run verify:tool-parity
 ```
 
 ## 环境变量

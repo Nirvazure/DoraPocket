@@ -4,11 +4,10 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { AssistantModeCard } from '@/shared/mode-registry'
 import { modeImageSrc } from '@/shared/mode-registry'
-import { resolveToolUrlById } from '@/shared/tool-registry'
-
 type PocketGadgetModalProps = {
   open: boolean
   gadget: AssistantModeCard | null
+  canOpenExternal?: boolean
   onClose: () => void
   onSaveToPocket?: (gadget: AssistantModeCard) => void
   onOpenTool?: (toolId: string) => void
@@ -17,6 +16,7 @@ type PocketGadgetModalProps = {
 export function PocketGadgetModal({
   open,
   gadget,
+  canOpenExternal = false,
   onClose,
   onSaveToPocket,
   onOpenTool,
@@ -38,8 +38,6 @@ export function PocketGadgetModal({
   }
 
   const imageSrc = modeImageSrc(gadget)
-  const canOpenExternal = resolveToolUrlById(gadget.toolId) != null
-
   return (
     <div
       className="fixed inset-0 z-[75] flex items-center justify-center p-4"

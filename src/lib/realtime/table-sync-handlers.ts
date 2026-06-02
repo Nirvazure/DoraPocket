@@ -17,6 +17,7 @@ export function handleRealtimeTableChange(queryClient: QueryClient, table: Realt
       void queryClient.invalidateQueries({ queryKey: queryKeys.marketSubmissions.all })
       void queryClient.invalidateQueries({ queryKey: queryKeys.marketActivity.all })
       void queryClient.invalidateQueries({ queryKey: ['marketTools'] })
+      void queryClient.invalidateQueries({ queryKey: ['marketTools', 'byIds'] })
       return
   }
 }

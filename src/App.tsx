@@ -36,6 +36,7 @@ export default function App() {
     analysisFlow,
     selectedToolPayload,
     agentUiPayload,
+    getTool,
     rootCursor,
     toolDialRef,
     toolDialOpen,
@@ -119,6 +120,7 @@ export default function App() {
       <PocketGadgetModal
         open={pocketModalOpen}
         gadget={pocketGadget}
+        canOpenExternal={pocketGadget?.toolId != null && getTool(pocketGadget.toolId)?.url != null}
         onClose={() => setPocketModalOpen(false)}
         onOpenTool={pocketGadgetModalActions.onOpenTool}
         onSaveToPocket={pocketGadgetModalActions.onSaveToPocket}
@@ -141,6 +143,7 @@ export default function App() {
             progressStage={progressStage}
             agentPayload={agentUiPayload}
             selectedToolPayload={selectedToolPayload}
+            getTool={getTool}
             explanationMode={userSettings?.explanationMode ?? 'standard'}
             onSaveCandidate={workspaceActions.onSaveCandidate}
             onLaunchCandidate={workspaceActions.onLaunchCandidate}

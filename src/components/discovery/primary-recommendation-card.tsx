@@ -24,13 +24,14 @@ import {
 import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
 import { STEP2_COPY } from '@/shared/ui-copy'
-import { getToolById } from '@/shared/tool-registry'
+import type { ToolLookupFn } from '@/shared/tool-lookup'
 import type { UserSettings } from '@/shared/user-settings'
 
 type PrimaryRecommendationCardProps = {
   payload: AgentUiPayload | null
   selectedToolPayload: ChatToolPayload
   analysisFlow: AnalysisFlow
+  getTool: ToolLookupFn
   explanationMode?: UserSettings['explanationMode']
   onSaveCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
@@ -41,16 +42,17 @@ export function PrimaryRecommendationCard({
   payload,
   selectedToolPayload,
   analysisFlow,
+  getTool,
   explanationMode = 'standard',
   onSaveCandidate,
   onLaunchCandidate,
   onOpenExternalCandidate,
 }: PrimaryRecommendationCardProps) {
-  const content = buildPrimaryRecommendation(payload, selectedToolPayload)
+  const content = buildPrimaryRecommendation(payload, selectedToolPayload, getTool)
   const leader = content.leader
   const showScore = shouldShowCandidateScore(explanationMode) && leader != null
   const leaderToolId = leader?.toolId ?? null
-  const leaderTool = leaderToolId ? getToolById(leaderToolId) : null
+  const leaderTool = getTool(leaderToolId)
   const leaderExternalUrl =
     leader?.candidateType === 'external_suggestion' ? (leader.url ?? null) : null
   const revealing = isRecommendationRevealing(analysisFlow)

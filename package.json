@@ -29,6 +29,8 @@
     "prisma:generate": "prisma generate --config prisma.config.ts",
     "prisma:migrate": "prisma migrate dev --config prisma.config.ts",
     "seed:tools": "tsx scripts/seed-tools.ts",
+    "seed:market-catalog": "tsx scripts/seed-market-catalog.ts",
+    "verify:tool-parity": "tsx scripts/verify-tool-registry-parity.ts",
     "seed:market-feedback": "tsx scripts/seed-market-feedback.ts",
     "backfill:tool-embeddings": "tsx scripts/backfill-tool-embeddings.ts",
     "migrate:favicons": "tsx scripts/migrate-favicons-to-supabase.ts",

@@ -39,6 +39,11 @@ export const queryKeys = {
     all: ['marketActivity'] as const,
     list: (limit: number) => ['marketActivity', 'list', limit] as const,
   },
+  marketTools: {
+    all: ['marketTools'] as const,
+    search: (query: string) => ['marketTools', query] as const,
+    byIds: (ids: string[]) => ['marketTools', 'byIds', [...ids].sort().join(',')] as const,
+  },
   preferenceProfileOverride: {
     all: ['preferenceProfileOverride'] as const,
     current: () => ['preferenceProfileOverride', 'current'] as const,

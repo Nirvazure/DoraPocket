@@ -1,6 +1,7 @@
 import type { ToolCategory } from '@/shared/tool-registry'
 import type { PocketInventoryItem } from '@/shared/pocket-types'
-import { getToolById } from '@/shared/tool-registry'
+import { getBuiltinToolById } from '@/shared/tool-registry'
+import type { ToolItem } from '@/shared/tool-registry'
 import { TOOL_CATEGORY_LABELS, TOOL_CATEGORY_ORDER } from '@/shared/tool-labels'
 
 export type PocketCategoryFilter = 'all' | ToolCategory
@@ -10,11 +11,14 @@ export function getPocketCategoryLabel(category: PocketCategoryFilter) {
   return TOOL_CATEGORY_LABELS[category]
 }
 
-export function getPocketAvailableCategories(items: PocketInventoryItem[]) {
+export function getPocketAvailableCategories(
+  items: PocketInventoryItem[],
+  getTool: (toolId: string) => ToolItem | null = getBuiltinToolById,
+) {
   const categories = new Set<ToolCategory>()
 
   for (const item of items) {
-    const tool = getToolById(item.toolId)
+    const tool = getTool(item.toolId)
     if (tool) categories.add(tool.category)
   }
 
@@ -25,11 +29,12 @@ export function filterPocketItems(
   items: PocketInventoryItem[],
   query: string,
   category: PocketCategoryFilter,
+  getTool: (toolId: string) => ToolItem | null = getBuiltinToolById,
 ) {
   const keyword = query.trim().toLowerCase()
 
   return items.filter((item) => {
-    const tool = getToolById(item.toolId)
+    const tool = getTool(item.toolId)
     if (!tool) return false
     if (item.archived) return false
     if (category !== 'all' && tool.category !== category) return false
@@ -41,11 +46,14 @@ export function filterPocketItems(
   })
 }
 
-export function getPocketStats(items: PocketInventoryItem[]) {
+export function getPocketStats(
+  items: PocketInventoryItem[],
+  getTool: (toolId: string) => ToolItem | null = getBuiltinToolById,
+) {
   const activeItems = items.filter((item) => !item.archived)
 
   return {
     total: activeItems.length,
-    categories: getPocketAvailableCategories(activeItems).length,
+    categories: getPocketAvailableCategories(activeItems, getTool).length,
   }
 }

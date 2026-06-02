@@ -1,4 +1,4 @@
-import { resolveToolUrlById } from '@/shared/tool-registry'
+import { resolveBuiltinToolUrlById } from '@/shared/tool-registry'
 
 type MarkToolUsed = (input: { toolId: string }) => void
 type SaveToolToPocket = (input: {
@@ -7,8 +7,12 @@ type SaveToolToPocket = (input: {
   presetArgs?: Record<string, unknown>
 }) => void
 
-export function openToolById(toolId: string, markToolUsed: MarkToolUsed): boolean {
-  const url = resolveToolUrlById(toolId)
+export function openToolById(
+  toolId: string,
+  markToolUsed: MarkToolUsed,
+  options?: { url?: string | null },
+): boolean {
+  const url = options?.url ?? resolveBuiltinToolUrlById(toolId)
   if (!url) return false
   markToolUsed({ toolId })
   window.open(url, '_blank', 'noopener,noreferrer')

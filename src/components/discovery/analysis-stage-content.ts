@@ -1,4 +1,6 @@
-import { getToolById } from '@/shared/tool-registry'
+import { getBuiltinToolById } from '@/shared/tool-registry'
+import type { ToolLookupFn } from '@/shared/tool-lookup'
+import type { ToolItem } from '@/shared/tool-registry'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentCandidate, AgentUiPayload } from '@/shared/market-types'
 import type { ProgressStage, Step2Session } from '@/shared/step2-session-types'
@@ -158,16 +160,26 @@ export function shouldShowAnalysisLoadingDots(flow: AnalysisFlow, appState: AppS
   )
 }
 
+function resolveTool(
+  getTool: ToolLookupFn | undefined,
+  id: string | null | undefined,
+): ToolItem | null {
+  if (!id) return null
+  return getTool?.(id) ?? getBuiltinToolById(id)
+}
+
 export function resolveLeadingCandidate(
   payload: AgentUiPayload | null,
   selectedToolPayload: ChatToolPayload,
+  getTool?: ToolLookupFn,
 ) {
   return (
     payload?.candidates[0] ??
     (selectedToolPayload?.toolId
       ? ({
           toolId: selectedToolPayload.toolId,
-          title: getToolById(selectedToolPayload.toolId)?.name ?? selectedToolPayload.toolId,
+          title:
+            resolveTool(getTool, selectedToolPayload.toolId)?.name ?? selectedToolPayload.toolId,
           candidateType: 'tool',
           score: 0,
           sourceLabel: 'builtin',
@@ -228,10 +240,13 @@ export function buildDecisionRationale(
   payload: AgentUiPayload | null,
   selectedToolPayload: ChatToolPayload,
   appState: AppState,
+  getTool?: ToolLookupFn,
 ) {
-  const runnerUp = payload?.candidates[1]?.toolId ? getToolById(payload.candidates[1].toolId) : null
+  const runnerUp = payload?.candidates[1]?.toolId
+    ? resolveTool(getTool, payload.candidates[1].toolId)
+    : null
   const leaderToolId = payload?.candidates[0]?.toolId ?? selectedToolPayload?.toolId ?? null
-  const leaderTool = leaderToolId ? getToolById(leaderToolId) : null
+  const leaderTool = resolveTool(getTool, leaderToolId)
 
   const heading =
     payload?.selectionReason?.trim() ??
@@ -333,9 +348,10 @@ export function buildLiveAnalysisTrack({
 export function buildPrimaryRecommendation(
   payload: AgentUiPayload | null,
   selectedToolPayload: ChatToolPayload,
+  getTool?: ToolLookupFn,
 ) {
-  const leader = resolveLeadingCandidate(payload, selectedToolPayload)
-  const leaderTool = leader?.toolId ? getToolById(leader.toolId) : null
+  const leader = resolveLeadingCandidate(payload, selectedToolPayload, getTool)
+  const leaderTool = leader?.toolId ? resolveTool(getTool, leader.toolId) : null
   return {
     leader,
     title: leaderTool?.name ?? leader?.title ?? '等待 DoraPocket 正式出手',

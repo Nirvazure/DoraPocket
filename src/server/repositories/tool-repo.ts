@@ -5,7 +5,7 @@ import type * as Prisma from '../../generated/prisma/internal/prismaNamespace'
 import { prisma } from '@/server/db/prisma'
 import { isSupabaseMarketAssetUrl } from '@/shared/market-asset-url'
 import {
-  TOOL_REGISTRY,
+  BUILTIN_TOOL_REGISTRY,
   type ToolCategory,
   type ToolExecutionMode,
   type ToolItem,
@@ -178,7 +178,7 @@ export async function findToolById(toolId: string) {
 }
 
 export async function upsertSeedTools(ownerUserId?: string | null) {
-  for (const tool of TOOL_REGISTRY) {
+  for (const tool of BUILTIN_TOOL_REGISTRY) {
     const input = toToolCreateInput(tool, ownerUserId)
     await prisma.tool.upsert({
       where: { id: tool.id },

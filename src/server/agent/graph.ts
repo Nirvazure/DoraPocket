@@ -22,7 +22,7 @@ import { chunkResponseText } from '@/server/agent/stream'
 import { buildBuiltinResponsePrompt, buildDiscoveryResponsePrompt } from '@/server/agent/prompts'
 import { buildTaskFrame, intentFromToolId, type Classified } from '@/server/agent/task-frame'
 import { normalizeArgs, normalizeToolArgs } from '@/server/agent/tool-args'
-import { getToolById, isBuiltinTool } from '@/shared/tool-registry'
+import { isBuiltinToolId } from '@/shared/tool-registry'
 
 type ModelToolCall = {
   name?: string
@@ -87,7 +87,7 @@ function canUseBuiltinTool(
 ): boolean {
   if (!toolId) return false
   if (builtinToolsEnabled) return true
-  return !isBuiltinTool(getToolById(toolId))
+  return !isBuiltinToolId(toolId)
 }
 
 const PocketStateAnnotation = Annotation.Root({

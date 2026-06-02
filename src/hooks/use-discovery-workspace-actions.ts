@@ -1,10 +1,12 @@
 import { useCallback } from 'react'
 import { openToolById, saveToolById } from '@/lib/tool-actions'
 import { redirectToLoginUnlessAuthenticated } from '@/lib/query/auth-session'
+import type { ToolLookupFn } from '@/shared/tool-lookup'
 
 type UseDiscoveryWorkspaceActionsOptions = {
   authPending: boolean
   isAuthenticated: boolean
+  getTool: ToolLookupFn
   getLatestUserPrompt: () => string
   saveToolToPocket: (input: {
     toolId: string
@@ -22,6 +24,7 @@ type UseDiscoveryWorkspaceActionsOptions = {
 export function useDiscoveryWorkspaceActions({
   authPending,
   isAuthenticated,
+  getTool,
   getLatestUserPrompt,
   saveToolToPocket,
   markToolUsed,
@@ -45,9 +48,9 @@ export function useDiscoveryWorkspaceActions({
 
   const onLaunchCandidate = useCallback(
     (toolId: string) => {
-      openToolById(toolId, markToolUsed)
+      openToolById(toolId, markToolUsed, { url: getTool(toolId)?.url })
     },
-    [markToolUsed],
+    [getTool, markToolUsed],
   )
 
   const onOpenExternalCandidate = useCallback(

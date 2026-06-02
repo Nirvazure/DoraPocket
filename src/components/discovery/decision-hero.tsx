@@ -8,13 +8,14 @@ import {
   DisplayPanelHeader,
   DisplayPanelTitle,
 } from '@/components/ui/display-shell'
-import { getToolById } from '@/shared/tool-registry'
+import type { ToolLookupFn } from '@/shared/tool-lookup'
 import type { AgentUiPayload } from '@/shared/market-types'
 import type { ChatToolPayload } from '@/lib/client/llm'
 
 type DecisionHeroProps = {
   payload: AgentUiPayload | null
   selectedToolPayload: ChatToolPayload
+  getTool: ToolLookupFn
   currentPrompt: string | null
   onLaunchCandidate: (toolId: string) => void
   onOpenExternalCandidate: (url: string) => void
@@ -30,6 +31,7 @@ function fallbackTitle(currentPrompt: string | null) {
 export function DecisionHero({
   payload,
   selectedToolPayload,
+  getTool,
   currentPrompt,
   onLaunchCandidate,
   onOpenExternalCandidate,
@@ -42,8 +44,8 @@ export function DecisionHero({
     leadingCandidate?.candidateType === 'external_suggestion'
       ? (leadingCandidate.url ?? null)
       : null
-  const leadingTool = getToolById(leadingToolId)
-  const runnerUp = payload?.candidates[1]?.toolId ? getToolById(payload.candidates[1].toolId) : null
+  const leadingTool = getTool(leadingToolId)
+  const runnerUp = payload?.candidates[1]?.toolId ? getTool(payload.candidates[1].toolId) : null
   const title = leadingTool?.name ?? leadingCandidate?.title ?? fallbackTitle(currentPrompt)
   const reason =
     payload?.selectionReason ?? '输入任务后，DoraPocket 会先比较候选，再给出当前最值得用的工具。'

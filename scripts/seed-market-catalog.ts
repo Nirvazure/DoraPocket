@@ -1,18 +1,26 @@
 import 'dotenv/config'
 
+import { readFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { PrismaPg } from '@prisma/adapter-pg'
 import type * as Prisma from '../src/generated/prisma/internal/prismaNamespace'
 import { PrismaClient } from '../src/generated/prisma/client'
-import { BUILTIN_TOOL_REGISTRY } from '../src/shared/tool-registry'
+import type { ToolItem } from '../src/shared/tool-registry'
 
 const connectionString = process.env.DATABASE_URL
 
 if (!connectionString) {
-  throw new Error('DATABASE_URL is required to seed tools')
+  throw new Error('DATABASE_URL is required to seed market catalog')
 }
 
 const adapter = new PrismaPg({ connectionString })
 const prisma = new PrismaClient({ adapter })
+
+const snapshotPath = join(
+  dirname(fileURLToPath(import.meta.url)),
+  'data/market-catalog-snapshot.json',
+)
 
 function toJsonValue(value: unknown): Prisma.InputJsonValue | undefined {
   if (value == null) return undefined
@@ -29,8 +37,14 @@ function withoutIconFields<T extends Record<string, unknown>>(input: T) {
   return copy
 }
 
+function loadMarketCatalog(): ToolItem[] {
+  const raw = readFileSync(snapshotPath, 'utf8')
+  return JSON.parse(raw) as ToolItem[]
+}
+
 async function main() {
-  for (const tool of BUILTIN_TOOL_REGISTRY) {
+  const tools = loadMarketCatalog()
+  for (const tool of tools) {
     const input = {
       id: tool.id,
       name: tool.name,
@@ -67,6 +81,7 @@ async function main() {
       update: withoutIconFields(input),
     })
   }
+  console.log(`Seeded ${tools.length} market catalog tools`)
 }
 
 await main()

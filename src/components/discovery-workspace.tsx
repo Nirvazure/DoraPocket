@@ -26,6 +26,7 @@ import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
 import type { ProgressStage } from '@/shared/step2-session-types'
 import type { UserSettings } from '@/shared/user-settings'
+import type { ToolLookupFn } from '@/shared/tool-lookup'
 import type { AppState } from '@/store'
 
 type DiscoveryWorkspaceProps = {
@@ -35,6 +36,7 @@ type DiscoveryWorkspaceProps = {
   progressStage?: ProgressStage | null
   agentPayload: AgentUiPayload | null
   selectedToolPayload: ChatToolPayload
+  getTool: ToolLookupFn
   explanationMode?: UserSettings['explanationMode']
   onSaveCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
@@ -53,6 +55,7 @@ export const DiscoveryWorkspace = forwardRef<HTMLElement, DiscoveryWorkspaceProp
       progressStage = null,
       agentPayload,
       selectedToolPayload,
+      getTool,
       explanationMode = 'standard',
       onSaveCandidate,
       onLaunchCandidate,
@@ -124,6 +127,7 @@ export const DiscoveryWorkspace = forwardRef<HTMLElement, DiscoveryWorkspaceProp
                   payload={agentPayload}
                   selectedToolPayload={selectedToolPayload}
                   analysisFlow={analysisFlow}
+                  getTool={getTool}
                   explanationMode={explanationMode}
                   onSaveCandidate={onSaveCandidate}
                   onLaunchCandidate={onLaunchCandidate}

@@ -12,12 +12,13 @@ import {
   formatCandidateScore,
   shouldShowCandidateScore,
 } from '@/components/discovery/candidate-score'
-import { getToolById } from '@/shared/tool-registry'
+import type { ToolLookupFn } from '@/shared/tool-lookup'
 import type { AgentUiPayload } from '@/shared/market-types'
 import type { UserSettings } from '@/shared/user-settings'
 
 type CandidateComparisonListProps = {
   payload: AgentUiPayload | null
+  getTool: ToolLookupFn
   explanationMode?: UserSettings['explanationMode']
   onOpenCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
@@ -26,6 +27,7 @@ type CandidateComparisonListProps = {
 
 export function CandidateComparisonList({
   payload,
+  getTool,
   explanationMode = 'standard',
   onOpenCandidate,
   onLaunchCandidate,
@@ -55,7 +57,7 @@ export function CandidateComparisonList({
       ) : (
         <DisplayPanelContent className="mt-4 grid gap-3 p-0">
           {candidates.map((candidate, index) => {
-            const tool = candidate.toolId ? getToolById(candidate.toolId) : null
+            const tool = candidate.toolId ? getTool(candidate.toolId) : null
             const title = candidate.title ?? tool?.name ?? '外部建议'
             const isLeader = index === 0
             return (
