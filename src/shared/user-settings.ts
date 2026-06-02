@@ -9,7 +9,6 @@ export type UserSettings = {
   soundEffectsEnabled: boolean
   defaultInputMode: InputModePreference
   memoryEnabled: boolean
-  builtinToolsEnabled: boolean
   explanationMode: ExplanationMode
   fontPreset: FontPreset
 }
@@ -21,7 +20,6 @@ export function getDefaultUserSettings(): UserSettings {
     soundEffectsEnabled: true,
     defaultInputMode: 'text',
     memoryEnabled: true,
-    builtinToolsEnabled: false,
     explanationMode: 'standard',
     fontPreset: 'c',
   }

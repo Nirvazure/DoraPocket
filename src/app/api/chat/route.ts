@@ -13,9 +13,7 @@ type ChatRequestBody = {
   anchorPrompt?: string
   priorMessages?: Array<{ role: 'user' | 'assistant'; content: string }>
   skipClarify?: boolean
-  answerBookFromPocket?: boolean
   explanationMode?: ExplanationMode
-  builtinToolsEnabled?: boolean
 }
 
 function normalizeExplanationMode(value: unknown): ExplanationMode {
@@ -49,8 +47,6 @@ export async function POST(request: Request) {
       priorMessages: body.priorMessages ?? [],
       skipClarify: body.skipClarify === true,
     }
-    const builtinToolsEnabled =
-      body.builtinToolsEnabled === true || marketContext.builtinToolsEnabled
 
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
@@ -62,9 +58,7 @@ export async function POST(request: Request) {
 
           for await (const event of streamPocketGraph(
             message,
-            body.answerBookFromPocket === true,
             marketContext,
-            builtinToolsEnabled,
             explanationMode,
             step2Input,
           )) {

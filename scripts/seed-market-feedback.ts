@@ -8,7 +8,6 @@ import {
   TOOL_ID_KIMI,
   TOOL_ID_PDF24,
   TOOL_ID_PERPLEXITY,
-  TOOL_ID_WEB_SUMMARY,
 } from '../src/shared/tool-registry'
 
 const connectionString = process.env.DATABASE_URL
@@ -54,7 +53,7 @@ const SEED_REVIEWS: Record<string, SeedReview[]> = {
     { vote: 'up', starRating: 4, selectedTags: ['fast_to_start'] },
     { vote: 'up', starRating: 3, selectedTags: ['average_result'] },
   ],
-  [TOOL_ID_WEB_SUMMARY]: [
+  web_summary: [
     { vote: 'up', starRating: 4, selectedTags: ['time_saving', 'no_login'] },
     { vote: 'up', starRating: 5, selectedTags: ['fast_to_start', 'worth_saving'] },
   ],

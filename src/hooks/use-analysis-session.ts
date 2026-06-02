@@ -13,7 +13,6 @@ import { appendStep2Turn, createStep2Session } from '@/shared/step2-session'
 import { useStore } from '@/store'
 
 type RunTurnOptions = {
-  answerBookFromPocket?: boolean
   skipClarify?: boolean
   isContinuation?: boolean
 }
@@ -101,7 +100,6 @@ export function useAnalysisSession({
   const voicePlaybackEnabled =
     userSettings?.voicePlaybackEnabled !== false && voicePlaybackMode !== 'off'
   const soundEffectsEnabled = userSettings?.soundEffectsEnabled !== false
-  const builtinToolsEnabled = userSettings?.builtinToolsEnabled === true
   const explanationMode = userSettings?.explanationMode ?? 'standard'
 
   const finishSpeakingTurn = useCallback(() => {
@@ -222,8 +220,7 @@ export function useAnalysisSession({
           onCoverRecommendation()
         }
 
-        const pocketKey = useStore.getState().selectedGadgetKey
-        const nextPocketGadget = pickModeCardAfterTurn(pocketKey, reply.selectedTool?.toolId)
+        const nextPocketGadget = pickModeCardAfterTurn(null, reply.selectedTool?.toolId)
         onPocketGadgetChange(nextPocketGadget)
         if (reply.selectedTool?.toolId) {
           triggerPocketReveal(nextPocketGadget)
@@ -294,9 +291,7 @@ export function useAnalysisSession({
           anchorPrompt: session.anchorPrompt,
           priorMessages: session.messages,
           skipClarify: options?.skipClarify,
-          answerBookFromPocket: options?.answerBookFromPocket === true,
           explanationMode,
-          builtinToolsEnabled,
           onProgress: (stage) => {
             if (!isActive()) return
             setProgressStage(stage)
@@ -345,7 +340,6 @@ export function useAnalysisSession({
     },
     [
       beginAgentTurn,
-      builtinToolsEnabled,
       explanationMode,
       finishSpeakingTurn,
       handleReplyError,

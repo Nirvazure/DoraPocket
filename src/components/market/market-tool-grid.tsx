@@ -5,11 +5,13 @@ import { Button } from '@/components/ui/button'
 import { MarketToolIcon } from '@/components/market/market-tool-icon'
 import { MarketToolTags } from '@/components/market/market-tool-tags'
 import type { MarketToolCardItem } from '@/hooks/market-scope'
+import { MarketUnavailableToolCard } from '@/components/market/market-unavailable-tool-card'
 import { MARKET_ACTIVITY_COPY, PAGE_COPY } from '@/shared/ui-copy'
 
 type MarketToolGridProps = {
   tools: MarketToolCardItem[]
   savedToolIds: Set<string>
+  unavailableToolIds?: string[]
   onSaveTool: (toolId: string) => void
   onRemoveTool: (toolId: string) => void
   onOpenTool: (toolId: string, url?: string | null) => void
@@ -19,6 +21,7 @@ type MarketToolGridProps = {
 export function MarketToolGrid({
   tools,
   savedToolIds,
+  unavailableToolIds = [],
   onSaveTool,
   onRemoveTool,
   onOpenTool,
@@ -132,6 +135,9 @@ export function MarketToolGrid({
           </article>
         )
       })}
+      {unavailableToolIds.map((toolId) => (
+        <MarketUnavailableToolCard key={toolId} toolId={toolId} onRemove={onRemoveTool} />
+      ))}
     </div>
   )
 }

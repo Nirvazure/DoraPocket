@@ -6,15 +6,7 @@ import type {
 } from '@/shared/market-types'
 import type { ExplanationMode } from '@/shared/user-settings'
 
-export type PocketIntent =
-  | 'chat'
-  | 'discover'
-  | 'weather'
-  | 'time'
-  | 'exchange'
-  | 'air_quality'
-  | 'web_summary'
-  | 'answer_book'
+export type PocketIntent = 'chat' | 'discover'
 
 export type PocketSelectedTool = {
   toolId: string
@@ -28,12 +20,9 @@ export type PocketState = {
   candidate_tools: AgentCandidate[]
   selected_tool: PocketSelectedTool
   selection_reason: string
-  tool_result: string
   ui_payload: AgentUiPayload
   final_text: string
-  answerBookFromPocket: boolean
   market_context: MarketContext
-  builtin_tools_enabled: boolean
   explanation_mode: ExplanationMode
 }
 
@@ -44,9 +33,7 @@ export type CreateInitialStateOptions = {
 
 export function createInitialState(
   input: string,
-  answerBookFromPocket: boolean,
   marketContext: MarketContext,
-  builtinToolsEnabled: boolean,
   explanationMode: ExplanationMode,
   options?: CreateInitialStateOptions,
 ): PocketState {
@@ -59,22 +46,21 @@ export function createInitialState(
 
   return {
     messages,
-    intent: 'chat',
+    intent: 'discover',
     task_frame: {
       goal,
-      mode: answerBookFromPocket ? 'answer_book' : 'chat',
+      mode: 'discover',
       missingInputs: [],
     },
     candidate_tools: [],
     selected_tool: null,
     selection_reason: '',
-    tool_result: '',
     ui_payload: {
-      stageLabel: answerBookFromPocket ? '答案之书' : '任务分析',
-      stageTrail: answerBookFromPocket ? ['识别任务', '短答模式'] : ['识别任务', '任务分析'],
+      stageLabel: '任务分析',
+      stageTrail: ['识别任务', '任务分析'],
       taskFrame: {
         goal,
-        mode: answerBookFromPocket ? 'answer_book' : 'chat',
+        mode: 'discover',
         missingInputs: [],
       },
       candidates: [],
@@ -84,9 +70,7 @@ export function createInitialState(
       recommendedActions: [],
     },
     final_text: '',
-    answerBookFromPocket,
     market_context: marketContext,
-    builtin_tools_enabled: builtinToolsEnabled,
     explanation_mode: explanationMode,
   }
 }

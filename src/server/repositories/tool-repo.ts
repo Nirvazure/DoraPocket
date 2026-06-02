@@ -5,7 +5,6 @@ import type * as Prisma from '../../generated/prisma/internal/prismaNamespace'
 import { prisma } from '@/server/db/prisma'
 import { isSupabaseMarketAssetUrl } from '@/shared/market-asset-url'
 import {
-  BUILTIN_TOOL_REGISTRY,
   type ToolCategory,
   type ToolExecutionMode,
   type ToolItem,
@@ -43,7 +42,6 @@ function toToolCreateInput(tool: ToolItem, ownerUserId?: string | null) {
     trustSignals: tool.trustSignals,
     subscriptionSupport: tool.subscriptionSupport,
     defaultArgs: toJsonValue(tool.defaultArgs),
-    isBuiltin: Boolean(tool.isBuiltin),
     siteHostname: tool.siteHostname ?? null,
     marketAssetOrigin: tool.marketAssetOrigin ?? null,
     seedSource: tool.source === 'submitted' ? 'user_submission' : 'system_seed',
@@ -137,7 +135,6 @@ export async function upsertImportedTool(input: ImportedToolInput) {
     },
     subscriptionSupport: false,
     defaultArgs: undefined,
-    isBuiltin: false,
     siteHostname: hostname,
     marketAssetOrigin: 'community',
     seedSource: 'community_submission',
@@ -175,15 +172,4 @@ export async function listActiveTools() {
 
 export async function findToolById(toolId: string) {
   return prisma.tool.findUnique({ where: { id: toolId } })
-}
-
-export async function upsertSeedTools(ownerUserId?: string | null) {
-  for (const tool of BUILTIN_TOOL_REGISTRY) {
-    const input = toToolCreateInput(tool, ownerUserId)
-    await prisma.tool.upsert({
-      where: { id: tool.id },
-      create: input,
-      update: withoutIconFields(input),
-    })
-  }
 }

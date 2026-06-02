@@ -18,15 +18,3 @@ export function collectToolIdsFromCandidates(
 export function buildToolLookupMap(tools: ToolItem[]): Map<string, ToolItem> {
   return new Map(tools.map((tool) => [tool.id, tool]))
 }
-
-export function mergeToolLookup(
-  getBuiltin: ToolLookupFn,
-  marketById: Map<string, ToolItem>,
-): ToolLookupFn {
-  return (id) => {
-    if (!id) return null
-    const builtin = getBuiltin(id)
-    if (builtin) return builtin
-    return marketById.get(id) ?? null
-  }
-}

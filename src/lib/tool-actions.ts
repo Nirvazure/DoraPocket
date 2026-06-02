@@ -1,5 +1,3 @@
-import { resolveBuiltinToolUrlById } from '@/shared/tool-registry'
-
 type MarkToolUsed = (input: { toolId: string }) => void
 type SaveToolToPocket = (input: {
   toolId: string
@@ -12,7 +10,7 @@ export function openToolById(
   markToolUsed: MarkToolUsed,
   options?: { url?: string | null },
 ): boolean {
-  const url = options?.url ?? resolveBuiltinToolUrlById(toolId)
+  const url = options?.url?.trim() || null
   if (!url) return false
   markToolUsed({ toolId })
   window.open(url, '_blank', 'noopener,noreferrer')

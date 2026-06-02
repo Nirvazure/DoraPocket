@@ -25,16 +25,12 @@ export async function getUserSettings(userId: string): Promise<UserSettings> {
   if (!settings) {
     return getDefaultUserSettings()
   }
-  const settingsWithBuiltin = settings as typeof settings & {
-    builtinToolsEnabled?: boolean | null
-  }
   return {
     voicePlaybackEnabled: settings.voicePlaybackEnabled,
     voicePlaybackMode: settings.voicePlaybackMode as UserSettings['voicePlaybackMode'],
     soundEffectsEnabled: settings.soundEffectsEnabled,
     defaultInputMode: settings.defaultInputMode as UserSettings['defaultInputMode'],
     memoryEnabled: settings.memoryEnabled,
-    builtinToolsEnabled: settingsWithBuiltin.builtinToolsEnabled === true,
     explanationMode: settings.explanationMode as UserSettings['explanationMode'],
     fontPreset: settings.fontPreset as UserSettings['fontPreset'],
   }
@@ -42,10 +38,28 @@ export async function getUserSettings(userId: string): Promise<UserSettings> {
 
 export async function upsertUserSettings(userId: string, input: UserSettings) {
   try {
+    const {
+      voicePlaybackEnabled,
+      voicePlaybackMode,
+      soundEffectsEnabled,
+      defaultInputMode,
+      memoryEnabled,
+      explanationMode,
+      fontPreset,
+    } = input
+    const payload = {
+      voicePlaybackEnabled,
+      voicePlaybackMode,
+      soundEffectsEnabled,
+      defaultInputMode,
+      memoryEnabled,
+      explanationMode,
+      fontPreset,
+    }
     return await prisma.userSettings.upsert({
       where: { userId },
-      create: { userId, ...input },
-      update: { ...input },
+      create: { userId, ...payload },
+      update: payload,
     })
   } catch (error) {
     if (!isMissingUserSettingsColumnError(error)) {

@@ -3,7 +3,6 @@ import { cn } from '@/lib/utils'
 import type { AgentCandidate } from '@/shared/market-types'
 
 function hubSubLabel(sourceLabel: AgentCandidate['sourceLabel']): string | null {
-  if (sourceLabel === 'builtin') return '原生'
   if (sourceLabel === 'pocket') return '口袋'
   if (sourceLabel === 'market') return '市场'
   return null

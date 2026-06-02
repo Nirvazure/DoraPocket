@@ -86,7 +86,6 @@ export type PreferenceProfileOverride = {
 }
 
 export type MarketContext = {
-  builtinToolsEnabled: boolean
   savedItems: PocketSavedItem[]
   subscriptions: MarketSubscriptionRecord[]
   feedback: MarketFeedbackRecord[]
@@ -96,7 +95,7 @@ export type MarketContext = {
 
 export type AgentTaskFrame = {
   goal: string
-  mode: 'discover' | 'use_builtin' | 'manage_pocket' | 'answer_book' | 'chat'
+  mode: 'discover' | 'manage_pocket' | 'chat'
   missingInputs: string[]
 }
 
@@ -105,9 +104,9 @@ export type AgentCandidate = {
   title: string
   url?: string | null
   candidateType: 'tool' | 'submission' | 'external_suggestion'
-  assetOrigin?: 'builtin' | 'curated_market' | 'bookmark_seed'
+  assetOrigin?: 'curated_market' | 'bookmark_seed'
   score: number
-  sourceLabel: 'builtin' | 'pocket' | 'market' | 'external'
+  sourceLabel: 'pocket' | 'market' | 'external'
   reason: string
   externalConfidence?: number
   externalBoundary?: string

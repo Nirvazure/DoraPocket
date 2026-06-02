@@ -8,7 +8,6 @@ import type {
   ToolTrustSignals,
   ToolUsageStats,
 } from '@/shared/tool-registry'
-import { filterToolsByBuiltinAvailability as filterVisibleTools } from '@/shared/tool-registry'
 
 function defaultRatingSummary(): ToolRatingSummary {
   return {
@@ -82,13 +81,12 @@ export function mapDbToolToToolItem(tool: DbTool): ToolItem {
     usageStats: defaultUsageStats(),
     subscriptionSupport: tool.subscriptionSupport,
     defaultArgs: toDefaultArgs(tool.defaultArgs),
-    isBuiltin: tool.isBuiltin,
     siteHostname: tool.siteHostname ?? undefined,
     marketAssetOrigin: (tool.marketAssetOrigin as ToolItem['marketAssetOrigin']) ?? undefined,
   }
 }
 
-export async function listActiveToolItems(builtinToolsEnabled = true) {
+export async function listActiveToolItems() {
   const tools = await listActiveTools()
-  return filterVisibleTools(tools.map(mapDbToolToToolItem), builtinToolsEnabled)
+  return tools.map(mapDbToolToToolItem)
 }

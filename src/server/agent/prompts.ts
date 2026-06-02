@@ -9,16 +9,6 @@ function buildExplanationStyleInstruction(state: PocketState) {
   return '解释风格：保持 DoraPocket 默认表达，先结论、再理由、再动作；解释适中，不要过度扩写。'
 }
 
-export function buildBuiltinResponsePrompt(state: PocketState) {
-  return [
-    `用户问题：${state.messages[state.messages.length - 1]?.content ?? ''}`,
-    `工具结果：${state.tool_result}`,
-    `选择理由：${state.selection_reason}`,
-    buildExplanationStyleInstruction(state),
-    '请用简洁方式回答，并补一句“下一步可做什么”。',
-  ].join('\n')
-}
-
 export function buildDiscoveryResponsePrompt(state: PocketState) {
   return [
     `用户问题：${state.messages[state.messages.length - 1]?.content ?? ''}`,

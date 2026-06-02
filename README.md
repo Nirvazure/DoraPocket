@@ -47,17 +47,10 @@ npm install
 cp .env.example .env.local
 npm run prisma:generate
 npm run prisma:migrate
-npm run seed:tools
-npm run seed:market-catalog
 npm run dev
 ```
 
-首次导入市场工具目录（或更新 `scripts/data/market-catalog-snapshot.json` 后）：
-
-```bash
-npm run seed:market-catalog
-npm run verify:tool-parity
-```
+市场工具目录以数据库为准；本地/生产库需已包含 `Tool` 数据（不再从仓库 JSON 或内置 seed 写入）。
 
 ## 环境变量
 
@@ -96,7 +89,6 @@ Aliyun 命名规范统一为 `ALIYUN_AK_ID` / `ALIYUN_AK_SECRET`，若旧环境�
 - 当前头像展示依赖公开 URL，因此头像 bucket 需要可公开读取
 - `SUPABASE_SECRET_KEY` 必须是真正的 `sb_secret_...`，不能填 publishable key
 - 生产数据库需要执行 migration
-- 首次部署后按需执行 `npm run seed:tools`
 - 配置 `CRON_SECRET`（Vercel Cron 与 Supabase Database Webhook 共用；Supabase Webhook Header 填 `Authorization: Bearer <CRON_SECRET>`）
 - Cron 默认每天 03:00 UTC 批量同步 Tool embedding/favicon、MarketSubmission 去重、工具评分聚合、清理过期 RecommendationSession（Hobby 计划 Cron 最多每天一次；Pro 可改为更短间隔如 `*/5 * * * *`）
 - 本地测试 Cron：`curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/process-jobs`

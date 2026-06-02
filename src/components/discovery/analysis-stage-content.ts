@@ -1,4 +1,3 @@
-import { getBuiltinToolById } from '@/shared/tool-registry'
 import type { ToolLookupFn } from '@/shared/tool-lookup'
 import type { ToolItem } from '@/shared/tool-registry'
 import type { ChatToolPayload } from '@/lib/client/llm'
@@ -165,7 +164,7 @@ function resolveTool(
   id: string | null | undefined,
 ): ToolItem | null {
   if (!id) return null
-  return getTool?.(id) ?? getBuiltinToolById(id)
+  return getTool?.(id) ?? null
 }
 
 export function resolveLeadingCandidate(
@@ -182,7 +181,7 @@ export function resolveLeadingCandidate(
             resolveTool(getTool, selectedToolPayload.toolId)?.name ?? selectedToolPayload.toolId,
           candidateType: 'tool',
           score: 0,
-          sourceLabel: 'builtin',
+          sourceLabel: 'market',
           reason: '',
         } satisfies AgentCandidate)
       : null)

@@ -15,7 +15,6 @@ export function createEmptyPreferenceProfile(): UserPreferenceProfile {
 
 export function createEmptyMarketContext(): MarketContext {
   return {
-    builtinToolsEnabled: false,
     savedItems: [],
     feedback: [],
     subscriptions: [],

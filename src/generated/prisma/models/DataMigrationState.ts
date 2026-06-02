@@ -28,21 +28,18 @@ export type DataMigrationStateMinAggregateOutputType = {
   id: string | null
   userId: string | null
   localDataImportedAt: Date | null
-  toolSeedImportedAt: Date | null
 }
 
 export type DataMigrationStateMaxAggregateOutputType = {
   id: string | null
   userId: string | null
   localDataImportedAt: Date | null
-  toolSeedImportedAt: Date | null
 }
 
 export type DataMigrationStateCountAggregateOutputType = {
   id: number
   userId: number
   localDataImportedAt: number
-  toolSeedImportedAt: number
   _all: number
 }
 
@@ -51,21 +48,18 @@ export type DataMigrationStateMinAggregateInputType = {
   id?: true
   userId?: true
   localDataImportedAt?: true
-  toolSeedImportedAt?: true
 }
 
 export type DataMigrationStateMaxAggregateInputType = {
   id?: true
   userId?: true
   localDataImportedAt?: true
-  toolSeedImportedAt?: true
 }
 
 export type DataMigrationStateCountAggregateInputType = {
   id?: true
   userId?: true
   localDataImportedAt?: true
-  toolSeedImportedAt?: true
   _all?: true
 }
 
@@ -145,7 +139,6 @@ export type DataMigrationStateGroupByOutputType = {
   id: string
   userId: string
   localDataImportedAt: Date | null
-  toolSeedImportedAt: Date | null
   _count: DataMigrationStateCountAggregateOutputType | null
   _min: DataMigrationStateMinAggregateOutputType | null
   _max: DataMigrationStateMaxAggregateOutputType | null
@@ -173,7 +166,6 @@ export type DataMigrationStateWhereInput = {
   id?: Prisma.StringFilter<"DataMigrationState"> | string
   userId?: Prisma.StringFilter<"DataMigrationState"> | string
   localDataImportedAt?: Prisma.DateTimeNullableFilter<"DataMigrationState"> | Date | string | null
-  toolSeedImportedAt?: Prisma.DateTimeNullableFilter<"DataMigrationState"> | Date | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
@@ -181,7 +173,6 @@ export type DataMigrationStateOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   localDataImportedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  toolSeedImportedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
 }
 
@@ -192,7 +183,6 @@ export type DataMigrationStateWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.DataMigrationStateWhereInput[]
   NOT?: Prisma.DataMigrationStateWhereInput | Prisma.DataMigrationStateWhereInput[]
   localDataImportedAt?: Prisma.DateTimeNullableFilter<"DataMigrationState"> | Date | string | null
-  toolSeedImportedAt?: Prisma.DateTimeNullableFilter<"DataMigrationState"> | Date | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id" | "userId">
 
@@ -200,7 +190,6 @@ export type DataMigrationStateOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   localDataImportedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  toolSeedImportedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.DataMigrationStateCountOrderByAggregateInput
   _max?: Prisma.DataMigrationStateMaxOrderByAggregateInput
   _min?: Prisma.DataMigrationStateMinOrderByAggregateInput
@@ -213,13 +202,11 @@ export type DataMigrationStateScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"DataMigrationState"> | string
   userId?: Prisma.StringWithAggregatesFilter<"DataMigrationState"> | string
   localDataImportedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"DataMigrationState"> | Date | string | null
-  toolSeedImportedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"DataMigrationState"> | Date | string | null
 }
 
 export type DataMigrationStateCreateInput = {
   id?: string
   localDataImportedAt?: Date | string | null
-  toolSeedImportedAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutMigrationStateInput
 }
 
@@ -227,13 +214,11 @@ export type DataMigrationStateUncheckedCreateInput = {
   id?: string
   userId: string
   localDataImportedAt?: Date | string | null
-  toolSeedImportedAt?: Date | string | null
 }
 
 export type DataMigrationStateUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   localDataImportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  toolSeedImportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutMigrationStateNestedInput
 }
 
@@ -241,27 +226,23 @@ export type DataMigrationStateUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   localDataImportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  toolSeedImportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type DataMigrationStateCreateManyInput = {
   id?: string
   userId: string
   localDataImportedAt?: Date | string | null
-  toolSeedImportedAt?: Date | string | null
 }
 
 export type DataMigrationStateUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   localDataImportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  toolSeedImportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type DataMigrationStateUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   localDataImportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  toolSeedImportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type DataMigrationStateNullableScalarRelationFilter = {
@@ -273,21 +254,18 @@ export type DataMigrationStateCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   localDataImportedAt?: Prisma.SortOrder
-  toolSeedImportedAt?: Prisma.SortOrder
 }
 
 export type DataMigrationStateMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   localDataImportedAt?: Prisma.SortOrder
-  toolSeedImportedAt?: Prisma.SortOrder
 }
 
 export type DataMigrationStateMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   localDataImportedAt?: Prisma.SortOrder
-  toolSeedImportedAt?: Prisma.SortOrder
 }
 
 export type DataMigrationStateCreateNestedOneWithoutUserInput = {
@@ -325,13 +303,11 @@ export type DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput = {
 export type DataMigrationStateCreateWithoutUserInput = {
   id?: string
   localDataImportedAt?: Date | string | null
-  toolSeedImportedAt?: Date | string | null
 }
 
 export type DataMigrationStateUncheckedCreateWithoutUserInput = {
   id?: string
   localDataImportedAt?: Date | string | null
-  toolSeedImportedAt?: Date | string | null
 }
 
 export type DataMigrationStateCreateOrConnectWithoutUserInput = {
@@ -353,13 +329,11 @@ export type DataMigrationStateUpdateToOneWithWhereWithoutUserInput = {
 export type DataMigrationStateUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   localDataImportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  toolSeedImportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type DataMigrationStateUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   localDataImportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  toolSeedImportedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -368,7 +342,6 @@ export type DataMigrationStateSelect<ExtArgs extends runtime.Types.Extensions.In
   id?: boolean
   userId?: boolean
   localDataImportedAt?: boolean
-  toolSeedImportedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["dataMigrationState"]>
 
@@ -376,7 +349,6 @@ export type DataMigrationStateSelectCreateManyAndReturn<ExtArgs extends runtime.
   id?: boolean
   userId?: boolean
   localDataImportedAt?: boolean
-  toolSeedImportedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["dataMigrationState"]>
 
@@ -384,7 +356,6 @@ export type DataMigrationStateSelectUpdateManyAndReturn<ExtArgs extends runtime.
   id?: boolean
   userId?: boolean
   localDataImportedAt?: boolean
-  toolSeedImportedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["dataMigrationState"]>
 
@@ -392,10 +363,9 @@ export type DataMigrationStateSelectScalar = {
   id?: boolean
   userId?: boolean
   localDataImportedAt?: boolean
-  toolSeedImportedAt?: boolean
 }
 
-export type DataMigrationStateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "localDataImportedAt" | "toolSeedImportedAt", ExtArgs["result"]["dataMigrationState"]>
+export type DataMigrationStateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "localDataImportedAt", ExtArgs["result"]["dataMigrationState"]>
 export type DataMigrationStateInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -415,7 +385,6 @@ export type $DataMigrationStatePayload<ExtArgs extends runtime.Types.Extensions.
     id: string
     userId: string
     localDataImportedAt: Date | null
-    toolSeedImportedAt: Date | null
   }, ExtArgs["result"]["dataMigrationState"]>
   composites: {}
 }
@@ -843,7 +812,6 @@ export interface DataMigrationStateFieldRefs {
   readonly id: Prisma.FieldRef<"DataMigrationState", 'String'>
   readonly userId: Prisma.FieldRef<"DataMigrationState", 'String'>
   readonly localDataImportedAt: Prisma.FieldRef<"DataMigrationState", 'DateTime'>
-  readonly toolSeedImportedAt: Prisma.FieldRef<"DataMigrationState", 'DateTime'>
 }
     
 
