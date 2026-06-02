@@ -44,11 +44,7 @@ export async function recallToolMatches(
   const queryEmbedding = await embedQuery(userText)
   if (queryEmbedding) {
     try {
-      vectorSimilarity = await searchToolsByEmbedding(
-        queryEmbedding,
-        VECTOR_LIMIT,
-        rankOpts?.builtinToolsEnabled ?? true,
-      )
+      vectorSimilarity = await searchToolsByEmbedding(queryEmbedding, VECTOR_LIMIT)
     } catch {
       // fall back to keyword-only
     }
@@ -86,6 +82,6 @@ export async function recallToolMatchesFromCatalog(
   userText: string,
   rankOpts: RankOpts,
 ): Promise<ToolRecallResult> {
-  const tools = await listActiveToolItems(rankOpts?.builtinToolsEnabled ?? true)
+  const tools = await listActiveToolItems()
   return recallToolMatches(userText, tools, rankOpts)
 }

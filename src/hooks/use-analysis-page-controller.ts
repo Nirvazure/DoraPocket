@@ -17,15 +17,13 @@ import {
 import { useAnalysisFlowReveal } from '@/hooks/analysis-flow-reveal'
 import { useAnalysisToolLookup } from '@/hooks/use-analysis-tool-lookup'
 import { useAnalysisSession } from '@/hooks/use-analysis-session'
-import { useAppShellState } from '@/hooks/use-app-shell-state'
 import { useDiscoveryWorkspaceActions } from '@/hooks/use-discovery-workspace-actions'
 import { usePocketGadgetModalActions } from '@/hooks/use-pocket-gadget-modal-actions'
-import { useToolDial } from '@/hooks/use-tool-dial'
 import { useVoiceInput } from '@/hooks/use-voice-input'
 import { useAuthSessionQuery, resolveSettingsReadOnly } from '@/lib/query/auth-session'
 import { useMarkToolUsedMutation, useSaveToolToPocketMutation } from '@/lib/query/pocket'
 import { useSaveUserSettingsMutation, useUserSettingsQuery } from '@/lib/query/user-settings'
-import { MODE_KEY_ANYWHERE_DOOR, type AssistantModeCard } from '@/shared/mode-registry'
+import type { AssistantModeCard } from '@/shared/mode-registry'
 import { PAGE_COPY, SYSTEM_NOTICE_COPY } from '@/shared/ui-copy'
 import { mergeStep2IntoAnalysisFlow, useStore } from '@/store'
 import { shouldRestartAnalysisFlow } from '@/hooks/analysis-stage-restart'
@@ -37,7 +35,6 @@ export function useAnalysisPageController() {
   const transcript = useStore((state) => state.transcript)
   const botResponse = useStore((state) => state.botResponse)
   const systemNotice = useStore((state) => state.systemNotice)
-  const selectedGadgetKey = useStore((state) => state.selectedGadgetKey)
   const analysisFlow = useStore((state) => state.analysisFlow)
   const step2Session = useStore((state) => state.step2Session)
   const setAppState = useStore((state) => state.setAppState)
@@ -46,7 +43,6 @@ export function useAnalysisPageController() {
   const setLastSpeechError = useStore((state) => state.setLastSpeechError)
   const setSystemNotice = useStore((state) => state.setSystemNotice)
   const clearSystemNotice = useStore((state) => state.clearSystemNotice)
-  const setSelectedGadgetKey = useStore((state) => state.setSelectedGadgetKey)
   const setAnalysisFlow = useStore((state) => state.setAnalysisFlow)
 
   const saveToolToPocketMutation = useSaveToolToPocketMutation()
@@ -75,14 +71,6 @@ export function useAnalysisPageController() {
     resetAnalysisFlowAfterError,
     workingFlow,
   } = useAnalysisFlowReveal(setAnalysisFlow)
-  const {
-    toolDialOpen,
-    toolDialMode,
-    toolDialRef,
-    setToolDialMode,
-    closeToolDial,
-    toggleToolDial,
-  } = useToolDial()
   const inputMode = inputModeOverride ?? userSettings?.defaultInputMode ?? 'text'
 
   const {
@@ -160,26 +148,10 @@ export function useAnalysisPageController() {
     markToolUsed: markToolUsedMutation.mutate,
   })
 
-  const { rootCursor, dialGadgets, handleSelectDialGadget } = useAppShellState({
-    appState,
-    selectedToolPayload,
-    toolDialMode,
-    setPocketGadget,
-    setPocketModalOpen,
-    closeToolDial,
-    setSelectedGadgetKey,
-  })
-
   useLayoutEffect(() => {
     if (!userSettings?.fontPreset) return
     document.documentElement.dataset.fontPreset = userSettings.fontPreset
   }, [userSettings?.fontPreset])
-
-  useEffect(() => {
-    if (selectedGadgetKey == null) {
-      setSelectedGadgetKey(MODE_KEY_ANYWHERE_DOOR)
-    }
-  }, [selectedGadgetKey, setSelectedGadgetKey])
 
   useEffect(() => {
     if (!systemNotice?.autoDismissMs) return
@@ -299,7 +271,6 @@ export function useAnalysisPageController() {
     transcript,
     botResponse,
     systemNotice,
-    selectedGadgetKey,
     pocketModalOpen,
     quickSettingsOpen,
     pocketGadget,
@@ -313,11 +284,6 @@ export function useAnalysisPageController() {
     selectedToolPayload,
     agentUiPayload,
     getTool,
-    rootCursor,
-    toolDialRef,
-    toolDialOpen,
-    toolDialMode,
-    dialGadgets,
     inputMode,
     textFallback,
     canSendText,
@@ -326,12 +292,9 @@ export function useAnalysisPageController() {
     workspaceActions,
     pocketGadgetModalActions,
     handleDraftTask,
-    toggleToolDial,
-    handleSelectDialGadget,
     setPocketModalOpen,
     setQuickSettingsOpen,
     saveUserSettings,
-    setToolDialMode,
     setInputMode,
     setTextFallback,
     submitTextMessage,

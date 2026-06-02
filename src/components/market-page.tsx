@@ -32,6 +32,7 @@ import { cn } from '@/lib/utils'
 import {
   useMarketReviewAggregatesQuery,
   useSaveMarketFeedbackMutation,
+  useMarketToolsByIdsQuery,
   useMarketToolsQuery,
   useSubmitMarketToolMutation,
 } from '@/lib/query/market'
@@ -75,6 +76,21 @@ export function MarketPage({ initialSection = null }: MarketPageProps) {
   const showGridSkeleton = !showInitialSkeleton && marketToolsFetching
 
   const pocketToolIds = useMemo(() => buildActivePocketToolIds(pocketInventory), [pocketInventory])
+  const pocketToolIdList = useMemo(() => [...pocketToolIds], [pocketToolIds])
+  const { data: pocketResolvedTools = [] } = useMarketToolsByIdsQuery(pocketToolIdList)
+
+  const mergedMarketTools = useMemo(() => {
+    const byId = new Map(marketTools.map((tool) => [tool.id, tool]))
+    for (const tool of pocketResolvedTools) {
+      byId.set(tool.id, tool)
+    }
+    return [...byId.values()]
+  }, [marketTools, pocketResolvedTools])
+
+  const unavailablePocketToolIds = useMemo(() => {
+    const resolved = new Set(pocketResolvedTools.map((tool) => tool.id))
+    return pocketToolIdList.filter((id) => !resolved.has(id))
+  }, [pocketResolvedTools, pocketToolIdList])
 
   const isAuthenticated =
     authSession != null &&
@@ -92,7 +108,7 @@ export function MarketPage({ initialSection = null }: MarketPageProps) {
   })
 
   const marketModel = useMarketPageModel(
-    marketTools,
+    mergedMarketTools,
     reviewAggregates,
     submitMarketToolMutation.mutate,
     { pocketToolIds, initialSection, query, onQueryChange: setQuery },
@@ -100,7 +116,10 @@ export function MarketPage({ initialSection = null }: MarketPageProps) {
 
   const showPocketLoginState = marketModel.marketScope === 'pocket' && !isAuthenticated
   const showPocketEmptyState =
-    marketModel.marketScope === 'pocket' && isAuthenticated && marketModel.totalPocketCount === 0
+    marketModel.marketScope === 'pocket' &&
+    isAuthenticated &&
+    marketModel.totalPocketCount === 0 &&
+    unavailablePocketToolIds.length === 0
 
   return (
     <PageShell
@@ -183,7 +202,8 @@ export function MarketPage({ initialSection = null }: MarketPageProps) {
                     </Button>
                   </DisplayPanelContent>
                 </DisplayPanel>
-              ) : marketModel.currentCategoryTools.length === 0 ? (
+              ) : marketModel.currentCategoryTools.length === 0 &&
+                unavailablePocketToolIds.length === 0 ? (
                 <DisplayPanel className="rounded-[1.8rem] border-dashed border-slate-200 bg-slate-50/80 shadow-none">
                   <DisplayPanelContent className="space-y-2 p-6 text-center">
                     <DisplayPanelTitle className="text-xl text-slate-950">
@@ -198,6 +218,9 @@ export function MarketPage({ initialSection = null }: MarketPageProps) {
                 <MarketToolGrid
                   tools={marketModel.currentCategoryTools}
                   savedToolIds={pocketToolIds}
+                  unavailableToolIds={
+                    marketModel.marketScope === 'pocket' ? unavailablePocketToolIds : []
+                  }
                   onSaveTool={toolCardActions.saveTool}
                   onRemoveTool={(toolId) => removeToolFromPocketMutation.mutate({ toolId })}
                   onOpenTool={toolCardActions.openTool}

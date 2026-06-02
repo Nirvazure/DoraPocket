@@ -4,9 +4,7 @@ import type { ExplanationMode } from '@/shared/user-settings'
 
 export type AskQwenOptions = {
   signal?: AbortSignal
-  answerBookFromPocket?: boolean
   explanationMode?: ExplanationMode
-  builtinToolsEnabled?: boolean
   sessionTurn?: 1 | 2 | 3
   anchorPrompt?: string
   priorMessages?: Step2Message[]
@@ -93,9 +91,7 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
     signal: opts?.signal,
     body: JSON.stringify({
       message,
-      answerBookFromPocket: opts?.answerBookFromPocket === true,
       explanationMode: opts?.explanationMode ?? 'standard',
-      builtinToolsEnabled: opts?.builtinToolsEnabled === true,
       sessionTurn: opts?.sessionTurn ?? 1,
       anchorPrompt: opts?.anchorPrompt,
       priorMessages: opts?.priorMessages ?? [],

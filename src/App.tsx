@@ -25,7 +25,6 @@ export default function App() {
     appState,
     systemNotice,
     botResponse,
-    selectedGadgetKey,
     pocketModalOpen,
     quickSettingsOpen,
     pocketGadget,
@@ -37,11 +36,6 @@ export default function App() {
     selectedToolPayload,
     agentUiPayload,
     getTool,
-    rootCursor,
-    toolDialRef,
-    toolDialOpen,
-    toolDialMode,
-    dialGadgets,
     inputMode,
     textFallback,
     canSendText,
@@ -50,12 +44,9 @@ export default function App() {
     workspaceActions,
     pocketGadgetModalActions,
     handleDraftTask,
-    toggleToolDial,
-    handleSelectDialGadget,
     setPocketModalOpen,
     setQuickSettingsOpen,
     saveUserSettings,
-    setToolDialMode,
     setInputMode,
     setTextFallback,
     submitTextMessage,
@@ -94,7 +85,7 @@ export default function App() {
 
   return (
     <PageShell
-      className={rootCursor}
+      className="cursor-default"
       contentMaxWidthClassName="max-w-[min(100%,120rem)]"
       contentClassName="flex min-h-0 flex-col gap-3 px-3 pb-4 pt-2 sm:px-4 sm:pt-3 lg:h-[calc(100dvh-6.9rem)] lg:overflow-hidden lg:px-4 lg:pb-2 lg:pt-4"
       header={
@@ -158,16 +149,6 @@ export default function App() {
           <AnalysisStagePanel
             appState={appState}
             analysisFlow={analysisFlow}
-            toolDialRef={toolDialRef}
-            toolDialOpen={toolDialOpen}
-            toolDialMode={toolDialMode}
-            selectedGadgetKey={selectedGadgetKey}
-            dialGadgets={dialGadgets}
-            onToggleToolDial={toggleToolDial}
-            onSelectDialGadget={handleSelectDialGadget}
-            onToggleToolDialMode={() =>
-              setToolDialMode((value) => (value === 'quick' ? 'all' : 'quick'))
-            }
             onOpenQuickSettings={() => setQuickSettingsOpen(true)}
             mobileCompact={showMobileCompactStage}
             mobileCompactExpanded={mobileStageExpanded}

@@ -9,7 +9,6 @@ import { listPocketItems } from '@/server/repositories/pocket-repo'
 import { getPreferenceProfileOverride } from '@/server/repositories/preference-repo'
 import { getToolActivityMap } from '@/server/repositories/tool-activity-repo'
 import { listActiveTools } from '@/server/repositories/tool-repo'
-import { getUserSettings } from '@/server/repositories/user-settings-repo'
 import {
   applyPreferenceOverride,
   inferUserPreferenceProfile,
@@ -19,25 +18,16 @@ export async function buildMarketContextForUser(
   userId: string,
   mode: 'applied' | 'inferred' = 'applied',
 ): Promise<MarketContext> {
-  const [
-    pocketInventory,
-    feedback,
-    subscriptions,
-    submissions,
-    activityMap,
-    override,
-    tools,
-    userSettings,
-  ] = await Promise.all([
-    listPocketItems(userId),
-    listMarketFeedback(userId),
-    listMarketSubscriptions(userId),
-    listMarketSubmissions(userId),
-    getToolActivityMap(userId),
-    getPreferenceProfileOverride(userId),
-    listActiveTools(),
-    getUserSettings(userId),
-  ])
+  const [pocketInventory, feedback, subscriptions, submissions, activityMap, override, tools] =
+    await Promise.all([
+      listPocketItems(userId),
+      listMarketFeedback(userId),
+      listMarketSubscriptions(userId),
+      listMarketSubmissions(userId),
+      getToolActivityMap(userId),
+      getPreferenceProfileOverride(userId),
+      listActiveTools(),
+    ])
 
   const inferred = inferUserPreferenceProfile({
     pocketInventory,
@@ -48,7 +38,6 @@ export async function buildMarketContextForUser(
   })
 
   return {
-    builtinToolsEnabled: userSettings.builtinToolsEnabled,
     savedItems: pocketInventory.map(
       (item: {
         toolId: string

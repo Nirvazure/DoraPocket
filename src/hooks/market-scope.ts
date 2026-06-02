@@ -2,10 +2,9 @@ import type { PocketInventoryItem } from '@/shared/pocket-types'
 import type { MarketReviewAggregate } from '@/shared/market-types'
 import { TOOL_CATEGORY_LABELS, TOOL_CATEGORY_ORDER } from '@/shared/tool-labels'
 import type { ToolCategory, ToolItem } from '@/shared/tool-registry'
-import { PAGE_COPY } from '@/shared/ui-copy'
 
 export type MarketScope = 'discover' | 'pocket'
-export type MarketSectionKey = 'pocket' | 'builtin' | ToolCategory
+export type MarketSectionKey = 'pocket' | ToolCategory
 
 export type MarketToolCardItem = ToolItem & {
   reviewAggregate: MarketReviewAggregate | null
@@ -71,12 +70,9 @@ export function buildMarketNavigation(args: {
   categoryCounts: Record<DiscoverSectionKey, number>
 } {
   const pocketCount = args.allTools.filter((tool) => args.pocketToolIds.has(tool.id)).length
-  const builtinTools = args.scopedTools.filter((tool) => tool.source === 'builtin')
-  const marketTools = args.scopedTools.filter((tool) => tool.source !== 'builtin')
-  const grouped = groupTools(marketTools)
+  const grouped = groupTools(args.scopedTools)
 
   const categoryCounts = {
-    builtin: builtinTools.length,
     ai_assistant: grouped.ai_assistant.length,
     search: grouped.search.length,
     developer: grouped.developer.length,
@@ -87,14 +83,8 @@ export function buildMarketNavigation(args: {
     writing: grouped.writing.length,
   } satisfies Record<DiscoverSectionKey, number>
 
-  const discoverEntries: Array<MarketNavEntry> = []
-  if (categoryCounts.builtin > 0) {
-    discoverEntries.push(['builtin', PAGE_COPY.market.builtinSection])
-  }
-  discoverEntries.push(
-    ...TOOL_CATEGORY_ORDER.map(
-      (category): MarketNavEntry => [category, TOOL_CATEGORY_LABELS[category]],
-    ),
+  const discoverEntries: Array<MarketNavEntry> = TOOL_CATEGORY_ORDER.map(
+    (category): MarketNavEntry => [category, TOOL_CATEGORY_LABELS[category]],
   )
 
   const filteredDiscoverEntries = discoverEntries.filter(
@@ -122,8 +112,6 @@ export function resolveCurrentTools(args: {
   scopedTools: MarketToolCardItem[]
 }): MarketToolCardItem[] {
   if (args.selectedSection === 'pocket') return args.scopedTools
-  const builtinTools = args.scopedTools.filter((tool) => tool.source === 'builtin')
-  if (args.selectedSection === 'builtin') return builtinTools
-  const grouped = groupTools(args.scopedTools.filter((tool) => tool.source !== 'builtin'))
+  const grouped = groupTools(args.scopedTools)
   return grouped[args.selectedSection]
 }

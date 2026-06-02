@@ -103,7 +103,7 @@ export function PocketGadgetModal({
               onClick={openAction}
               disabled={!canOpenExternal}
             >
-              {canOpenExternal ? '打开工具' : '这是一个内置模式'}
+              {canOpenExternal ? '打开工具' : '暂无外链'}
             </Button>
           </div>
         </div>

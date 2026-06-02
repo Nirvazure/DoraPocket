@@ -101,15 +101,13 @@ export async function embedQuery(text: string): Promise<number[] | null> {
 export async function searchToolsByEmbedding(
   queryEmbedding: number[],
   limit: number,
-  builtinToolsEnabled: boolean,
 ): Promise<Map<string, number>> {
-  const builtinFilter = builtinToolsEnabled ? '' : `AND "isBuiltin" = false`
   const vector = `[${queryEmbedding.join(',')}]`
 
   const rows = await prisma.$queryRawUnsafe<Array<{ id: string; similarity: number }>>(
     `SELECT "id", 1 - ("embedding" <=> $1::vector) AS similarity
      FROM "Tool"
-     WHERE "status" = 'active' AND "embedding" IS NOT NULL ${builtinFilter}
+     WHERE "status" = 'active' AND "embedding" IS NOT NULL
      ORDER BY "embedding" <=> $1::vector
      LIMIT $2`,
     vector,

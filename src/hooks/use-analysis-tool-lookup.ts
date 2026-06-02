@@ -7,10 +7,8 @@ import type { AgentUiPayload } from '@/shared/market-types'
 import {
   buildToolLookupMap,
   collectToolIdsFromCandidates,
-  mergeToolLookup,
   type ToolLookupFn,
 } from '@/shared/tool-lookup'
-import { getBuiltinToolById } from '@/shared/tool-registry'
 
 function collectAnalysisToolIds(
   payload: AgentUiPayload | null,
@@ -21,7 +19,7 @@ function collectAnalysisToolIds(
   for (const candidate of payload?.candidates ?? []) {
     if (candidate.toolId) ids.push(candidate.toolId)
   }
-  return collectToolIdsFromCandidates(ids).filter((id) => !getBuiltinToolById(id))
+  return collectToolIdsFromCandidates(ids)
 }
 
 export function useAnalysisToolLookup(
@@ -35,5 +33,5 @@ export function useAnalysisToolLookup(
   const { data: marketTools = [] } = useMarketToolsByIdsQuery(marketIds)
   const marketById = useMemo(() => buildToolLookupMap(marketTools), [marketTools])
 
-  return useMemo(() => mergeToolLookup(getBuiltinToolById, marketById), [marketById])
+  return useMemo(() => (id) => (id ? (marketById.get(id) ?? null) : null), [marketById])
 }

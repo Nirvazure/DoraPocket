@@ -10,9 +10,10 @@
 
 ## 架构 — 工具数据源
 
-- [x] 删除 `market-bookmark-seeds.ts` 等遗留 seed 源文件；市场目录仅以 `scripts/data/market-catalog-snapshot.json` + DB 为准
+- [x] 删除 `market-bookmark-seeds.ts` 与市场 catalog JSON seed；市场目录仅以 DB 为准
 - [x] Market 工具以 DB 为单源；UI 经 `/api/market/tools/batch` + React Query
-- [x] Builtin 保留代码内小表；`seed:tools` 仅 builtin
+- [x] 移除内置分析模式与原生小工具（Agent 仅市场推荐）
+- [x] 删除 Prisma `builtinToolsEnabled` / `isBuiltin` / `toolSeedImportedAt` 与遗留 seed 流程
 
 ## 本轮实施
 

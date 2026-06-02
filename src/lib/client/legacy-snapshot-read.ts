@@ -76,7 +76,6 @@ export function readLegacyUserSettings(): UserSettings {
     soundEffectsEnabled: normalizeBoolean(raw.soundEffectsEnabled, defaults.soundEffectsEnabled),
     defaultInputMode: normalizeInputMode(raw.defaultInputMode),
     memoryEnabled: normalizeBoolean(raw.memoryEnabled, defaults.memoryEnabled),
-    builtinToolsEnabled: normalizeBoolean(raw.builtinToolsEnabled, defaults.builtinToolsEnabled),
     explanationMode: normalizeExplanationMode(raw.explanationMode),
     fontPreset: normalizeFontPreset(raw.fontPreset ?? resolveLegacyFontPreset()),
   }

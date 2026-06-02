@@ -3,8 +3,6 @@ import 'server-only'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { prisma } from '@/server/db/prisma'
 import { resolveSupabaseUserProfile } from '@/server/auth/supabase-user'
-import { seedToolsForUser } from '@/server/seeds/tool-seed'
-
 export const appUserSelect = {
   id: true,
   supabaseUserId: true,
@@ -46,14 +44,6 @@ export async function ensureAppUserFromSupabaseUser(user: SupabaseUser): Promise
     },
     select: appUserSelect,
   })
-
-  const migration = await prisma.dataMigrationState.findUnique({
-    where: { userId: appUser.id },
-    select: { toolSeedImportedAt: true },
-  })
-  if (!migration?.toolSeedImportedAt) {
-    await seedToolsForUser(appUser.id)
-  }
 
   return appUser
 }

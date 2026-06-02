@@ -36,7 +36,6 @@ model UserSettings {
   soundEffectsEnabled     Boolean  @default(true)
   defaultInputMode        String   @default("text")
   memoryEnabled           Boolean  @default(true)
-  builtinToolsEnabled     Boolean  @default(false)
   explanationMode         String   @default("standard")
   fontPreset              String   @default("c")
   createdAt               DateTime @default(now())
@@ -68,7 +67,6 @@ model Tool {
   trustSignals       Json
   subscriptionSupport Boolean
   defaultArgs        Json?
-  isBuiltin          Boolean @default(false)
   siteHostname       String?
   marketAssetOrigin  String?
   seedSource         String   @default("system_seed")
@@ -202,6 +200,5 @@ model DataMigrationState {
   id                  String    @id @default(cuid())
   userId              String    @unique
   localDataImportedAt DateTime?
-  toolSeedImportedAt  DateTime?
   user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

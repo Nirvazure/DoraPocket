@@ -8,11 +8,10 @@ import {
   resolveCategoryKeysMatchingQuery,
   toIlikePattern,
 } from '@/shared/market-search-query'
-import { filterToolsByBuiltinAvailability } from '@/shared/tool-registry'
 
 const SEARCH_LIMIT = 200
 
-export async function searchActiveTools(rawQuery: string, builtinToolsEnabled = true) {
+export async function searchActiveTools(rawQuery: string) {
   const query = normalizeMarketSearchQuery(rawQuery)
   if (!query) {
     throw new Error('searchActiveTools requires normalized query length >= 2')
@@ -20,7 +19,6 @@ export async function searchActiveTools(rawQuery: string, builtinToolsEnabled = 
 
   const ilike = toIlikePattern(query)
   const categoryKeys = resolveCategoryKeysMatchingQuery(query)
-  const builtinFilter = builtinToolsEnabled ? '' : `AND "isBuiltin" = false`
   const categoryClause = categoryKeys.length > 0 ? `OR "category" = ANY($3::text[])` : ''
   const params: unknown[] = [query, ilike]
   if (categoryKeys.length > 0) params.push(categoryKeys)
@@ -29,7 +27,6 @@ export async function searchActiveTools(rawQuery: string, builtinToolsEnabled = 
     `SELECT *
      FROM "Tool"
      WHERE "status" = 'active'
-       ${builtinFilter}
        AND (
          "searchDocument" @@ plainto_tsquery('simple', $1)
          OR "name" ILIKE $2 ESCAPE '\\'
@@ -46,5 +43,5 @@ export async function searchActiveTools(rawQuery: string, builtinToolsEnabled = 
     ...params,
   )
 
-  return filterToolsByBuiltinAvailability(rows.map(mapDbToolToToolItem), builtinToolsEnabled)
+  return rows.map(mapDbToolToToolItem)
 }

@@ -20,8 +20,10 @@ export const PAGE_COPY = {
     reviewAction: '补充体验',
     reviewSupplementScore: '补充评分',
     updateReviewAction: '更新体验',
-    builtinSection: '内置道具',
     pocketSection: '我的口袋',
+    unavailableToolTitle: '工具已下架',
+    unavailableToolDescription: '这件道具已不在道具库中，可以从口袋移出。',
+    removeUnavailableAction: '移出口袋',
     removeFromPocketAction: '移出口袋',
     pocketEmptyTitle: '口袋里还没有工具',
     pocketEmptyDescription: '先去发现道具，把你以后还想再打开的工具收进来。',
@@ -118,10 +120,6 @@ export const SETTINGS_COPY = {
     memory: {
       title: '记录历史帮助推荐',
       description: '允许系统记住你怎么选，减少下一次重复判断。',
-    },
-    builtinToolsEnabled: {
-      title: '内置道具开关',
-      description: '关闭后，系统会把内置道具视为不存在，不展示、不推荐，也不允许使用。',
     },
     explanationMode: {
       title: '解释详细度',

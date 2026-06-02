@@ -1,6 +1,5 @@
 import type { ToolCategory } from '@/shared/tool-registry'
 import type { PocketInventoryItem } from '@/shared/pocket-types'
-import { getBuiltinToolById } from '@/shared/tool-registry'
 import type { ToolItem } from '@/shared/tool-registry'
 import { TOOL_CATEGORY_LABELS, TOOL_CATEGORY_ORDER } from '@/shared/tool-labels'
 
@@ -13,7 +12,7 @@ export function getPocketCategoryLabel(category: PocketCategoryFilter) {
 
 export function getPocketAvailableCategories(
   items: PocketInventoryItem[],
-  getTool: (toolId: string) => ToolItem | null = getBuiltinToolById,
+  getTool: (toolId: string) => ToolItem | null = () => null,
 ) {
   const categories = new Set<ToolCategory>()
 
@@ -29,7 +28,7 @@ export function filterPocketItems(
   items: PocketInventoryItem[],
   query: string,
   category: PocketCategoryFilter,
-  getTool: (toolId: string) => ToolItem | null = getBuiltinToolById,
+  getTool: (toolId: string) => ToolItem | null = () => null,
 ) {
   const keyword = query.trim().toLowerCase()
 
@@ -48,7 +47,7 @@ export function filterPocketItems(
 
 export function getPocketStats(
   items: PocketInventoryItem[],
-  getTool: (toolId: string) => ToolItem | null = getBuiltinToolById,
+  getTool: (toolId: string) => ToolItem | null = () => null,
 ) {
   const activeItems = items.filter((item) => !item.archived)
 

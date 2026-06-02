@@ -32,7 +32,6 @@ export type UserSettingsMinAggregateOutputType = {
   soundEffectsEnabled: boolean | null
   defaultInputMode: string | null
   memoryEnabled: boolean | null
-  builtinToolsEnabled: boolean | null
   explanationMode: string | null
   fontPreset: string | null
   createdAt: Date | null
@@ -47,7 +46,6 @@ export type UserSettingsMaxAggregateOutputType = {
   soundEffectsEnabled: boolean | null
   defaultInputMode: string | null
   memoryEnabled: boolean | null
-  builtinToolsEnabled: boolean | null
   explanationMode: string | null
   fontPreset: string | null
   createdAt: Date | null
@@ -62,7 +60,6 @@ export type UserSettingsCountAggregateOutputType = {
   soundEffectsEnabled: number
   defaultInputMode: number
   memoryEnabled: number
-  builtinToolsEnabled: number
   explanationMode: number
   fontPreset: number
   createdAt: number
@@ -79,7 +76,6 @@ export type UserSettingsMinAggregateInputType = {
   soundEffectsEnabled?: true
   defaultInputMode?: true
   memoryEnabled?: true
-  builtinToolsEnabled?: true
   explanationMode?: true
   fontPreset?: true
   createdAt?: true
@@ -94,7 +90,6 @@ export type UserSettingsMaxAggregateInputType = {
   soundEffectsEnabled?: true
   defaultInputMode?: true
   memoryEnabled?: true
-  builtinToolsEnabled?: true
   explanationMode?: true
   fontPreset?: true
   createdAt?: true
@@ -109,7 +104,6 @@ export type UserSettingsCountAggregateInputType = {
   soundEffectsEnabled?: true
   defaultInputMode?: true
   memoryEnabled?: true
-  builtinToolsEnabled?: true
   explanationMode?: true
   fontPreset?: true
   createdAt?: true
@@ -197,7 +191,6 @@ export type UserSettingsGroupByOutputType = {
   soundEffectsEnabled: boolean
   defaultInputMode: string
   memoryEnabled: boolean
-  builtinToolsEnabled: boolean
   explanationMode: string
   fontPreset: string
   createdAt: Date
@@ -233,7 +226,6 @@ export type UserSettingsWhereInput = {
   soundEffectsEnabled?: Prisma.BoolFilter<"UserSettings"> | boolean
   defaultInputMode?: Prisma.StringFilter<"UserSettings"> | string
   memoryEnabled?: Prisma.BoolFilter<"UserSettings"> | boolean
-  builtinToolsEnabled?: Prisma.BoolFilter<"UserSettings"> | boolean
   explanationMode?: Prisma.StringFilter<"UserSettings"> | string
   fontPreset?: Prisma.StringFilter<"UserSettings"> | string
   createdAt?: Prisma.DateTimeFilter<"UserSettings"> | Date | string
@@ -249,7 +241,6 @@ export type UserSettingsOrderByWithRelationInput = {
   soundEffectsEnabled?: Prisma.SortOrder
   defaultInputMode?: Prisma.SortOrder
   memoryEnabled?: Prisma.SortOrder
-  builtinToolsEnabled?: Prisma.SortOrder
   explanationMode?: Prisma.SortOrder
   fontPreset?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -268,7 +259,6 @@ export type UserSettingsWhereUniqueInput = Prisma.AtLeast<{
   soundEffectsEnabled?: Prisma.BoolFilter<"UserSettings"> | boolean
   defaultInputMode?: Prisma.StringFilter<"UserSettings"> | string
   memoryEnabled?: Prisma.BoolFilter<"UserSettings"> | boolean
-  builtinToolsEnabled?: Prisma.BoolFilter<"UserSettings"> | boolean
   explanationMode?: Prisma.StringFilter<"UserSettings"> | string
   fontPreset?: Prisma.StringFilter<"UserSettings"> | string
   createdAt?: Prisma.DateTimeFilter<"UserSettings"> | Date | string
@@ -284,7 +274,6 @@ export type UserSettingsOrderByWithAggregationInput = {
   soundEffectsEnabled?: Prisma.SortOrder
   defaultInputMode?: Prisma.SortOrder
   memoryEnabled?: Prisma.SortOrder
-  builtinToolsEnabled?: Prisma.SortOrder
   explanationMode?: Prisma.SortOrder
   fontPreset?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -305,7 +294,6 @@ export type UserSettingsScalarWhereWithAggregatesInput = {
   soundEffectsEnabled?: Prisma.BoolWithAggregatesFilter<"UserSettings"> | boolean
   defaultInputMode?: Prisma.StringWithAggregatesFilter<"UserSettings"> | string
   memoryEnabled?: Prisma.BoolWithAggregatesFilter<"UserSettings"> | boolean
-  builtinToolsEnabled?: Prisma.BoolWithAggregatesFilter<"UserSettings"> | boolean
   explanationMode?: Prisma.StringWithAggregatesFilter<"UserSettings"> | string
   fontPreset?: Prisma.StringWithAggregatesFilter<"UserSettings"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"UserSettings"> | Date | string
@@ -319,7 +307,6 @@ export type UserSettingsCreateInput = {
   soundEffectsEnabled?: boolean
   defaultInputMode?: string
   memoryEnabled?: boolean
-  builtinToolsEnabled?: boolean
   explanationMode?: string
   fontPreset?: string
   createdAt?: Date | string
@@ -335,7 +322,6 @@ export type UserSettingsUncheckedCreateInput = {
   soundEffectsEnabled?: boolean
   defaultInputMode?: string
   memoryEnabled?: boolean
-  builtinToolsEnabled?: boolean
   explanationMode?: string
   fontPreset?: string
   createdAt?: Date | string
@@ -349,7 +335,6 @@ export type UserSettingsUpdateInput = {
   soundEffectsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultInputMode?: Prisma.StringFieldUpdateOperationsInput | string
   memoryEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  builtinToolsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   explanationMode?: Prisma.StringFieldUpdateOperationsInput | string
   fontPreset?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -365,7 +350,6 @@ export type UserSettingsUncheckedUpdateInput = {
   soundEffectsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultInputMode?: Prisma.StringFieldUpdateOperationsInput | string
   memoryEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  builtinToolsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   explanationMode?: Prisma.StringFieldUpdateOperationsInput | string
   fontPreset?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -380,7 +364,6 @@ export type UserSettingsCreateManyInput = {
   soundEffectsEnabled?: boolean
   defaultInputMode?: string
   memoryEnabled?: boolean
-  builtinToolsEnabled?: boolean
   explanationMode?: string
   fontPreset?: string
   createdAt?: Date | string
@@ -394,7 +377,6 @@ export type UserSettingsUpdateManyMutationInput = {
   soundEffectsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultInputMode?: Prisma.StringFieldUpdateOperationsInput | string
   memoryEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  builtinToolsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   explanationMode?: Prisma.StringFieldUpdateOperationsInput | string
   fontPreset?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -409,7 +391,6 @@ export type UserSettingsUncheckedUpdateManyInput = {
   soundEffectsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultInputMode?: Prisma.StringFieldUpdateOperationsInput | string
   memoryEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  builtinToolsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   explanationMode?: Prisma.StringFieldUpdateOperationsInput | string
   fontPreset?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -429,7 +410,6 @@ export type UserSettingsCountOrderByAggregateInput = {
   soundEffectsEnabled?: Prisma.SortOrder
   defaultInputMode?: Prisma.SortOrder
   memoryEnabled?: Prisma.SortOrder
-  builtinToolsEnabled?: Prisma.SortOrder
   explanationMode?: Prisma.SortOrder
   fontPreset?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -444,7 +424,6 @@ export type UserSettingsMaxOrderByAggregateInput = {
   soundEffectsEnabled?: Prisma.SortOrder
   defaultInputMode?: Prisma.SortOrder
   memoryEnabled?: Prisma.SortOrder
-  builtinToolsEnabled?: Prisma.SortOrder
   explanationMode?: Prisma.SortOrder
   fontPreset?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -459,7 +438,6 @@ export type UserSettingsMinOrderByAggregateInput = {
   soundEffectsEnabled?: Prisma.SortOrder
   defaultInputMode?: Prisma.SortOrder
   memoryEnabled?: Prisma.SortOrder
-  builtinToolsEnabled?: Prisma.SortOrder
   explanationMode?: Prisma.SortOrder
   fontPreset?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -509,7 +487,6 @@ export type UserSettingsCreateWithoutUserInput = {
   soundEffectsEnabled?: boolean
   defaultInputMode?: string
   memoryEnabled?: boolean
-  builtinToolsEnabled?: boolean
   explanationMode?: string
   fontPreset?: string
   createdAt?: Date | string
@@ -523,7 +500,6 @@ export type UserSettingsUncheckedCreateWithoutUserInput = {
   soundEffectsEnabled?: boolean
   defaultInputMode?: string
   memoryEnabled?: boolean
-  builtinToolsEnabled?: boolean
   explanationMode?: string
   fontPreset?: string
   createdAt?: Date | string
@@ -553,7 +529,6 @@ export type UserSettingsUpdateWithoutUserInput = {
   soundEffectsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultInputMode?: Prisma.StringFieldUpdateOperationsInput | string
   memoryEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  builtinToolsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   explanationMode?: Prisma.StringFieldUpdateOperationsInput | string
   fontPreset?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -567,7 +542,6 @@ export type UserSettingsUncheckedUpdateWithoutUserInput = {
   soundEffectsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultInputMode?: Prisma.StringFieldUpdateOperationsInput | string
   memoryEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  builtinToolsEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   explanationMode?: Prisma.StringFieldUpdateOperationsInput | string
   fontPreset?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -584,7 +558,6 @@ export type UserSettingsSelect<ExtArgs extends runtime.Types.Extensions.Internal
   soundEffectsEnabled?: boolean
   defaultInputMode?: boolean
   memoryEnabled?: boolean
-  builtinToolsEnabled?: boolean
   explanationMode?: boolean
   fontPreset?: boolean
   createdAt?: boolean
@@ -600,7 +573,6 @@ export type UserSettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   soundEffectsEnabled?: boolean
   defaultInputMode?: boolean
   memoryEnabled?: boolean
-  builtinToolsEnabled?: boolean
   explanationMode?: boolean
   fontPreset?: boolean
   createdAt?: boolean
@@ -616,7 +588,6 @@ export type UserSettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   soundEffectsEnabled?: boolean
   defaultInputMode?: boolean
   memoryEnabled?: boolean
-  builtinToolsEnabled?: boolean
   explanationMode?: boolean
   fontPreset?: boolean
   createdAt?: boolean
@@ -632,14 +603,13 @@ export type UserSettingsSelectScalar = {
   soundEffectsEnabled?: boolean
   defaultInputMode?: boolean
   memoryEnabled?: boolean
-  builtinToolsEnabled?: boolean
   explanationMode?: boolean
   fontPreset?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "voicePlaybackEnabled" | "voicePlaybackMode" | "soundEffectsEnabled" | "defaultInputMode" | "memoryEnabled" | "builtinToolsEnabled" | "explanationMode" | "fontPreset" | "createdAt" | "updatedAt", ExtArgs["result"]["userSettings"]>
+export type UserSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "voicePlaybackEnabled" | "voicePlaybackMode" | "soundEffectsEnabled" | "defaultInputMode" | "memoryEnabled" | "explanationMode" | "fontPreset" | "createdAt" | "updatedAt", ExtArgs["result"]["userSettings"]>
 export type UserSettingsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -663,7 +633,6 @@ export type $UserSettingsPayload<ExtArgs extends runtime.Types.Extensions.Intern
     soundEffectsEnabled: boolean
     defaultInputMode: string
     memoryEnabled: boolean
-    builtinToolsEnabled: boolean
     explanationMode: string
     fontPreset: string
     createdAt: Date
@@ -1099,7 +1068,6 @@ export interface UserSettingsFieldRefs {
   readonly soundEffectsEnabled: Prisma.FieldRef<"UserSettings", 'Boolean'>
   readonly defaultInputMode: Prisma.FieldRef<"UserSettings", 'String'>
   readonly memoryEnabled: Prisma.FieldRef<"UserSettings", 'Boolean'>
-  readonly builtinToolsEnabled: Prisma.FieldRef<"UserSettings", 'Boolean'>
   readonly explanationMode: Prisma.FieldRef<"UserSettings", 'String'>
   readonly fontPreset: Prisma.FieldRef<"UserSettings", 'String'>
   readonly createdAt: Prisma.FieldRef<"UserSettings", 'DateTime'>

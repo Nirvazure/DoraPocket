@@ -38,9 +38,6 @@ interface DoraStore {
   systemNotice: SystemNotice | null
   setSystemNotice: (notice: Omit<SystemNotice, 'id' | 'createdAt'> | null) => void
   clearSystemNotice: () => void
-  selectedGadgetKey: string | null
-  setSelectedGadgetKey: (key: string | null) => void
-
   agentTurnId: number
   analysisFlow: AnalysisFlow
   step2Session: Step2Session | null
@@ -83,9 +80,6 @@ export const useStore = create<DoraStore>((set, get) => ({
         : null,
     }),
   clearSystemNotice: () => set({ systemNotice: null }),
-  selectedGadgetKey: null,
-  setSelectedGadgetKey: (key) => set({ selectedGadgetKey: key }),
-
   agentTurnId: 0,
   analysisFlow: IDLE_ANALYSIS_FLOW,
   step2Session: null,

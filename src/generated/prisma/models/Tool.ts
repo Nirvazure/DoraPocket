@@ -43,7 +43,6 @@ export type ToolMinAggregateOutputType = {
   platform: string | null
   sourceNote: string | null
   subscriptionSupport: boolean | null
-  isBuiltin: boolean | null
   siteHostname: string | null
   marketAssetOrigin: string | null
   seedSource: string | null
@@ -74,7 +73,6 @@ export type ToolMaxAggregateOutputType = {
   platform: string | null
   sourceNote: string | null
   subscriptionSupport: boolean | null
-  isBuiltin: boolean | null
   siteHostname: string | null
   marketAssetOrigin: string | null
   seedSource: string | null
@@ -110,7 +108,6 @@ export type ToolCountAggregateOutputType = {
   trustSignals: number
   subscriptionSupport: number
   defaultArgs: number
-  isBuiltin: number
   siteHostname: number
   marketAssetOrigin: number
   seedSource: number
@@ -143,7 +140,6 @@ export type ToolMinAggregateInputType = {
   platform?: true
   sourceNote?: true
   subscriptionSupport?: true
-  isBuiltin?: true
   siteHostname?: true
   marketAssetOrigin?: true
   seedSource?: true
@@ -174,7 +170,6 @@ export type ToolMaxAggregateInputType = {
   platform?: true
   sourceNote?: true
   subscriptionSupport?: true
-  isBuiltin?: true
   siteHostname?: true
   marketAssetOrigin?: true
   seedSource?: true
@@ -210,7 +205,6 @@ export type ToolCountAggregateInputType = {
   trustSignals?: true
   subscriptionSupport?: true
   defaultArgs?: true
-  isBuiltin?: true
   siteHostname?: true
   marketAssetOrigin?: true
   seedSource?: true
@@ -319,7 +313,6 @@ export type ToolGroupByOutputType = {
   trustSignals: runtime.JsonValue
   subscriptionSupport: boolean
   defaultArgs: runtime.JsonValue | null
-  isBuiltin: boolean
   siteHostname: string | null
   marketAssetOrigin: string | null
   seedSource: string
@@ -376,7 +369,6 @@ export type ToolWhereInput = {
   trustSignals?: Prisma.JsonFilter<"Tool">
   subscriptionSupport?: Prisma.BoolFilter<"Tool"> | boolean
   defaultArgs?: Prisma.JsonNullableFilter<"Tool">
-  isBuiltin?: Prisma.BoolFilter<"Tool"> | boolean
   siteHostname?: Prisma.StringNullableFilter<"Tool"> | string | null
   marketAssetOrigin?: Prisma.StringNullableFilter<"Tool"> | string | null
   seedSource?: Prisma.StringFilter<"Tool"> | string
@@ -417,7 +409,6 @@ export type ToolOrderByWithRelationInput = {
   trustSignals?: Prisma.SortOrder
   subscriptionSupport?: Prisma.SortOrder
   defaultArgs?: Prisma.SortOrderInput | Prisma.SortOrder
-  isBuiltin?: Prisma.SortOrder
   siteHostname?: Prisma.SortOrderInput | Prisma.SortOrder
   marketAssetOrigin?: Prisma.SortOrderInput | Prisma.SortOrder
   seedSource?: Prisma.SortOrder
@@ -461,7 +452,6 @@ export type ToolWhereUniqueInput = Prisma.AtLeast<{
   trustSignals?: Prisma.JsonFilter<"Tool">
   subscriptionSupport?: Prisma.BoolFilter<"Tool"> | boolean
   defaultArgs?: Prisma.JsonNullableFilter<"Tool">
-  isBuiltin?: Prisma.BoolFilter<"Tool"> | boolean
   siteHostname?: Prisma.StringNullableFilter<"Tool"> | string | null
   marketAssetOrigin?: Prisma.StringNullableFilter<"Tool"> | string | null
   seedSource?: Prisma.StringFilter<"Tool"> | string
@@ -502,7 +492,6 @@ export type ToolOrderByWithAggregationInput = {
   trustSignals?: Prisma.SortOrder
   subscriptionSupport?: Prisma.SortOrder
   defaultArgs?: Prisma.SortOrderInput | Prisma.SortOrder
-  isBuiltin?: Prisma.SortOrder
   siteHostname?: Prisma.SortOrderInput | Prisma.SortOrder
   marketAssetOrigin?: Prisma.SortOrderInput | Prisma.SortOrder
   seedSource?: Prisma.SortOrder
@@ -544,7 +533,6 @@ export type ToolScalarWhereWithAggregatesInput = {
   trustSignals?: Prisma.JsonWithAggregatesFilter<"Tool">
   subscriptionSupport?: Prisma.BoolWithAggregatesFilter<"Tool"> | boolean
   defaultArgs?: Prisma.JsonNullableWithAggregatesFilter<"Tool">
-  isBuiltin?: Prisma.BoolWithAggregatesFilter<"Tool"> | boolean
   siteHostname?: Prisma.StringNullableWithAggregatesFilter<"Tool"> | string | null
   marketAssetOrigin?: Prisma.StringNullableWithAggregatesFilter<"Tool"> | string | null
   seedSource?: Prisma.StringWithAggregatesFilter<"Tool"> | string
@@ -580,7 +568,6 @@ export type ToolCreateInput = {
   trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport: boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: boolean
   siteHostname?: string | null
   marketAssetOrigin?: string | null
   seedSource?: string
@@ -620,7 +607,6 @@ export type ToolUncheckedCreateInput = {
   trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport: boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: boolean
   siteHostname?: string | null
   marketAssetOrigin?: string | null
   seedSource?: string
@@ -660,7 +646,6 @@ export type ToolUpdateInput = {
   trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seedSource?: Prisma.StringFieldUpdateOperationsInput | string
@@ -700,7 +685,6 @@ export type ToolUncheckedUpdateInput = {
   trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seedSource?: Prisma.StringFieldUpdateOperationsInput | string
@@ -740,7 +724,6 @@ export type ToolCreateManyInput = {
   trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport: boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: boolean
   siteHostname?: string | null
   marketAssetOrigin?: string | null
   seedSource?: string
@@ -776,7 +759,6 @@ export type ToolUpdateManyMutationInput = {
   trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seedSource?: Prisma.StringFieldUpdateOperationsInput | string
@@ -811,7 +793,6 @@ export type ToolUncheckedUpdateManyInput = {
   trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seedSource?: Prisma.StringFieldUpdateOperationsInput | string
@@ -865,7 +846,6 @@ export type ToolCountOrderByAggregateInput = {
   trustSignals?: Prisma.SortOrder
   subscriptionSupport?: Prisma.SortOrder
   defaultArgs?: Prisma.SortOrder
-  isBuiltin?: Prisma.SortOrder
   siteHostname?: Prisma.SortOrder
   marketAssetOrigin?: Prisma.SortOrder
   seedSource?: Prisma.SortOrder
@@ -896,7 +876,6 @@ export type ToolMaxOrderByAggregateInput = {
   platform?: Prisma.SortOrder
   sourceNote?: Prisma.SortOrder
   subscriptionSupport?: Prisma.SortOrder
-  isBuiltin?: Prisma.SortOrder
   siteHostname?: Prisma.SortOrder
   marketAssetOrigin?: Prisma.SortOrder
   seedSource?: Prisma.SortOrder
@@ -927,7 +906,6 @@ export type ToolMinOrderByAggregateInput = {
   platform?: Prisma.SortOrder
   sourceNote?: Prisma.SortOrder
   subscriptionSupport?: Prisma.SortOrder
-  isBuiltin?: Prisma.SortOrder
   siteHostname?: Prisma.SortOrder
   marketAssetOrigin?: Prisma.SortOrder
   seedSource?: Prisma.SortOrder
@@ -1097,7 +1075,6 @@ export type ToolCreateWithoutCreatedByInput = {
   trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport: boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: boolean
   siteHostname?: string | null
   marketAssetOrigin?: string | null
   seedSource?: string
@@ -1136,7 +1113,6 @@ export type ToolUncheckedCreateWithoutCreatedByInput = {
   trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport: boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: boolean
   siteHostname?: string | null
   marketAssetOrigin?: string | null
   seedSource?: string
@@ -1204,7 +1180,6 @@ export type ToolScalarWhereInput = {
   trustSignals?: Prisma.JsonFilter<"Tool">
   subscriptionSupport?: Prisma.BoolFilter<"Tool"> | boolean
   defaultArgs?: Prisma.JsonNullableFilter<"Tool">
-  isBuiltin?: Prisma.BoolFilter<"Tool"> | boolean
   siteHostname?: Prisma.StringNullableFilter<"Tool"> | string | null
   marketAssetOrigin?: Prisma.StringNullableFilter<"Tool"> | string | null
   seedSource?: Prisma.StringFilter<"Tool"> | string
@@ -1240,7 +1215,6 @@ export type ToolCreateWithoutPocketItemsInput = {
   trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport: boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: boolean
   siteHostname?: string | null
   marketAssetOrigin?: string | null
   seedSource?: string
@@ -1279,7 +1253,6 @@ export type ToolUncheckedCreateWithoutPocketItemsInput = {
   trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport: boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: boolean
   siteHostname?: string | null
   marketAssetOrigin?: string | null
   seedSource?: string
@@ -1334,7 +1307,6 @@ export type ToolUpdateWithoutPocketItemsInput = {
   trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seedSource?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1373,7 +1345,6 @@ export type ToolUncheckedUpdateWithoutPocketItemsInput = {
   trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seedSource?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1412,7 +1383,6 @@ export type ToolCreateWithoutMarketFeedbackInput = {
   trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport: boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: boolean
   siteHostname?: string | null
   marketAssetOrigin?: string | null
   seedSource?: string
@@ -1451,7 +1421,6 @@ export type ToolUncheckedCreateWithoutMarketFeedbackInput = {
   trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport: boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: boolean
   siteHostname?: string | null
   marketAssetOrigin?: string | null
   seedSource?: string
@@ -1506,7 +1475,6 @@ export type ToolUpdateWithoutMarketFeedbackInput = {
   trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seedSource?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1545,7 +1513,6 @@ export type ToolUncheckedUpdateWithoutMarketFeedbackInput = {
   trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seedSource?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1584,7 +1551,6 @@ export type ToolCreateWithoutMarketSubscriptionsInput = {
   trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport: boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: boolean
   siteHostname?: string | null
   marketAssetOrigin?: string | null
   seedSource?: string
@@ -1623,7 +1589,6 @@ export type ToolUncheckedCreateWithoutMarketSubscriptionsInput = {
   trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport: boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: boolean
   siteHostname?: string | null
   marketAssetOrigin?: string | null
   seedSource?: string
@@ -1678,7 +1643,6 @@ export type ToolUpdateWithoutMarketSubscriptionsInput = {
   trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seedSource?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1717,7 +1681,6 @@ export type ToolUncheckedUpdateWithoutMarketSubscriptionsInput = {
   trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seedSource?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1756,7 +1719,6 @@ export type ToolCreateWithoutToolActivitiesInput = {
   trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport: boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: boolean
   siteHostname?: string | null
   marketAssetOrigin?: string | null
   seedSource?: string
@@ -1795,7 +1757,6 @@ export type ToolUncheckedCreateWithoutToolActivitiesInput = {
   trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport: boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: boolean
   siteHostname?: string | null
   marketAssetOrigin?: string | null
   seedSource?: string
@@ -1850,7 +1811,6 @@ export type ToolUpdateWithoutToolActivitiesInput = {
   trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seedSource?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1889,7 +1849,6 @@ export type ToolUncheckedUpdateWithoutToolActivitiesInput = {
   trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seedSource?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1928,7 +1887,6 @@ export type ToolCreateManyCreatedByInput = {
   trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport: boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: boolean
   siteHostname?: string | null
   marketAssetOrigin?: string | null
   seedSource?: string
@@ -1963,7 +1921,6 @@ export type ToolUpdateWithoutCreatedByInput = {
   trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seedSource?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2002,7 +1959,6 @@ export type ToolUncheckedUpdateWithoutCreatedByInput = {
   trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seedSource?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2041,7 +1997,6 @@ export type ToolUncheckedUpdateManyWithoutCreatedByInput = {
   trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
   defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  isBuiltin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   seedSource?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2134,7 +2089,6 @@ export type ToolSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   trustSignals?: boolean
   subscriptionSupport?: boolean
   defaultArgs?: boolean
-  isBuiltin?: boolean
   siteHostname?: boolean
   marketAssetOrigin?: boolean
   seedSource?: boolean
@@ -2176,7 +2130,6 @@ export type ToolSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   trustSignals?: boolean
   subscriptionSupport?: boolean
   defaultArgs?: boolean
-  isBuiltin?: boolean
   siteHostname?: boolean
   marketAssetOrigin?: boolean
   seedSource?: boolean
@@ -2213,7 +2166,6 @@ export type ToolSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   trustSignals?: boolean
   subscriptionSupport?: boolean
   defaultArgs?: boolean
-  isBuiltin?: boolean
   siteHostname?: boolean
   marketAssetOrigin?: boolean
   seedSource?: boolean
@@ -2250,7 +2202,6 @@ export type ToolSelectScalar = {
   trustSignals?: boolean
   subscriptionSupport?: boolean
   defaultArgs?: boolean
-  isBuiltin?: boolean
   siteHostname?: boolean
   marketAssetOrigin?: boolean
   seedSource?: boolean
@@ -2262,7 +2213,7 @@ export type ToolSelectScalar = {
   embeddedAt?: boolean
 }
 
-export type ToolOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "icon" | "iconType" | "iconText" | "iconImageUrl" | "iconImageLocalPath" | "url" | "description" | "category" | "tags" | "source" | "status" | "executionMode" | "pricingModel" | "requiresAuth" | "platform" | "capabilities" | "recommendedFor" | "sourceNote" | "trustSignals" | "subscriptionSupport" | "defaultArgs" | "isBuiltin" | "siteHostname" | "marketAssetOrigin" | "seedSource" | "createdByUserId" | "createdAt" | "updatedAt" | "embeddingModel" | "embeddingContentHash" | "embeddedAt", ExtArgs["result"]["tool"]>
+export type ToolOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "icon" | "iconType" | "iconText" | "iconImageUrl" | "iconImageLocalPath" | "url" | "description" | "category" | "tags" | "source" | "status" | "executionMode" | "pricingModel" | "requiresAuth" | "platform" | "capabilities" | "recommendedFor" | "sourceNote" | "trustSignals" | "subscriptionSupport" | "defaultArgs" | "siteHostname" | "marketAssetOrigin" | "seedSource" | "createdByUserId" | "createdAt" | "updatedAt" | "embeddingModel" | "embeddingContentHash" | "embeddedAt", ExtArgs["result"]["tool"]>
 export type ToolInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.Tool$createdByArgs<ExtArgs>
   pocketItems?: boolean | Prisma.Tool$pocketItemsArgs<ExtArgs>
@@ -2311,7 +2262,6 @@ export type $ToolPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     trustSignals: runtime.JsonValue
     subscriptionSupport: boolean
     defaultArgs: runtime.JsonValue | null
-    isBuiltin: boolean
     siteHostname: string | null
     marketAssetOrigin: string | null
     seedSource: string
@@ -2772,7 +2722,6 @@ export interface ToolFieldRefs {
   readonly trustSignals: Prisma.FieldRef<"Tool", 'Json'>
   readonly subscriptionSupport: Prisma.FieldRef<"Tool", 'Boolean'>
   readonly defaultArgs: Prisma.FieldRef<"Tool", 'Json'>
-  readonly isBuiltin: Prisma.FieldRef<"Tool", 'Boolean'>
   readonly siteHostname: Prisma.FieldRef<"Tool", 'String'>
   readonly marketAssetOrigin: Prisma.FieldRef<"Tool", 'String'>
   readonly seedSource: Prisma.FieldRef<"Tool", 'String'>

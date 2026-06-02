@@ -10,8 +10,6 @@ export const DORA_PROMPT = [
   '回答要简洁、清楚、偏产品经理+Agent 工程师口吻。',
 ].join(' ')
 
-export const ANSWER_BOOK_PROMPT = '你处于答案之书模式，只回答一句简短启发句。'
-
 export function createModel(temperature = 0.4) {
   const apiKey = process.env.QWEN_API_KEY?.trim()
   if (!apiKey) throw new Error('QWEN_API_KEY missing')

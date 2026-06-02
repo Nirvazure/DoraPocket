@@ -38,7 +38,7 @@ export async function dedupMarketSubmission(
     return 'skipped'
   }
 
-  const matches = await searchToolsByEmbedding(embedding, 1, true)
+  const matches = await searchToolsByEmbedding(embedding, 1)
   const threshold = SUBMISSION_DEDUP_SIMILARITY_THRESHOLD
   const topMatch = [...matches.entries()][0]
 

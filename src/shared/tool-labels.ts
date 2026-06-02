@@ -28,7 +28,6 @@ export const TOOL_CATEGORY_ORDER: ToolCategory[] = [
 ]
 
 export const TOOL_SOURCE_LABELS: Record<ToolSource, string> = {
-  builtin: '原生能力',
   market: '市场精选',
   submitted: '用户提交',
   external_resource: '参考资源',

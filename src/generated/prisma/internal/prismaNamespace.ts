@@ -1363,7 +1363,6 @@ export const UserSettingsScalarFieldEnum = {
   soundEffectsEnabled: 'soundEffectsEnabled',
   defaultInputMode: 'defaultInputMode',
   memoryEnabled: 'memoryEnabled',
-  builtinToolsEnabled: 'builtinToolsEnabled',
   explanationMode: 'explanationMode',
   fontPreset: 'fontPreset',
   createdAt: 'createdAt',
@@ -1397,7 +1396,6 @@ export const ToolScalarFieldEnum = {
   trustSignals: 'trustSignals',
   subscriptionSupport: 'subscriptionSupport',
   defaultArgs: 'defaultArgs',
-  isBuiltin: 'isBuiltin',
   siteHostname: 'siteHostname',
   marketAssetOrigin: 'marketAssetOrigin',
   seedSource: 'seedSource',
@@ -1530,8 +1528,7 @@ export type RecommendationSessionScalarFieldEnum = (typeof RecommendationSession
 export const DataMigrationStateScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  localDataImportedAt: 'localDataImportedAt',
-  toolSeedImportedAt: 'toolSeedImportedAt'
+  localDataImportedAt: 'localDataImportedAt'
 } as const
 
 export type DataMigrationStateScalarFieldEnum = (typeof DataMigrationStateScalarFieldEnum)[keyof typeof DataMigrationStateScalarFieldEnum]

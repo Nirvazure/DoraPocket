@@ -57,7 +57,6 @@ const EMPTY_PREFERENCE_PROFILE: UserPreferenceProfile = {
 }
 
 const EMPTY_MARKET_CONTEXT: MarketContext = {
-  builtinToolsEnabled: false,
   savedItems: [],
   feedback: [],
   subscriptions: [],
