@@ -32,12 +32,67 @@ export function isInputLockedFlow(flow: AnalysisFlow): boolean {
   return flow.phase === 'analyzing'
 }
 
+/** 顶栏 Step 1/2/3：思考与收束在 Step 2；进入 reveal / revealed 后展示推荐（Step 3） */
+function resolveDecisionPanelStep(
+  flow: AnalysisFlow,
+  hasPrompt: boolean,
+  hasResult: boolean,
+): number {
+  if (!hasPrompt) return 1
+  if (flow.phase === 'idle') return hasResult ? 3 : 1
+  if (flow.phase === 'revealed') return 3
+  if (flow.phase === 'analyzing' && flow.beat === 'reveal') return 3
+  if (flow.phase === 'analyzing') return 2
+  return 3
+}
+
+/**
+ * 轨道三条（理解任务 / 提取限制 / 收束候选）的单一高亮索引。
+ * 优先 progressStage（与 Agent 流式阶段一致）；无 progress 时按 flow 回退。
+ */
+export function resolveLiveTrackActiveIndex({
+  progressStage = null,
+  analysisFlow,
+  appState,
+  hasPayload,
+}: {
+  progressStage?: ProgressStage | null
+  analysisFlow: AnalysisFlow
+  appState: AppState
+  hasPayload: boolean
+}): number {
+  if (progressStage) {
+    if (progressStage === 'understanding') return 0
+    if (progressStage === 'constraining' || progressStage === 'clarifying') return 1
+    if (progressStage === 'recalling' || progressStage === 'ranking' || progressStage === 'ready') {
+      return 2
+    }
+  }
+
+  if (
+    analysisFlow.phase === 'analyzing' &&
+    (analysisFlow.beat === 'cover' || analysisFlow.beat === 'reveal')
+  ) {
+    return 3
+  }
+  if (analysisFlow.phase === 'revealed') return 3
+
+  if (analysisFlow.phase === 'analyzing' && analysisFlow.beat === 'working') {
+    if (appState === 'thinking') return hasPayload ? 2 : 0
+    return hasPayload ? 2 : 0
+  }
+
+  return hasPayload ? 3 : 0
+}
+
+/** @deprecated 使用 resolveLiveTrackActiveIndex；保留供既有测试 */
 export function resolveActiveTrackIndexFromProgress(stage: ProgressStage | null): number {
-  if (!stage) return 0
-  if (stage === 'understanding') return 0
-  if (stage === 'constraining' || stage === 'clarifying') return 1
-  if (stage === 'recalling' || stage === 'ranking' || stage === 'ready') return 2
-  return 0
+  return resolveLiveTrackActiveIndex({
+    progressStage: stage,
+    analysisFlow: IDLE_ANALYSIS_FLOW,
+    appState: 'idle',
+    hasPayload: false,
+  })
 }
 
 export function shouldPreserveTurnFlow(flow: AnalysisFlow) {
@@ -54,21 +109,11 @@ export type LiveAnalysisTrackItem = {
 }
 
 export function resolveCurrentStep(flow: AnalysisFlow, hasPrompt: boolean, hasResult: boolean) {
-  if (!hasPrompt) return 1
-  if (flow.phase === 'idle') return hasResult ? 3 : 1
-  if (flow.phase === 'analyzing') {
-    return flow.beat === 'working' ? 2 : 3
-  }
-  return 3
+  return resolveDecisionPanelStep(flow, hasPrompt, hasResult)
 }
 
 export function resolveMaxVisibleStep(flow: AnalysisFlow, hasPrompt: boolean, hasResult: boolean) {
-  if (!hasPrompt) return 1
-  if (flow.phase === 'idle') return hasResult ? 3 : 1
-  if (flow.phase === 'analyzing') {
-    return flow.beat === 'working' ? 2 : 3
-  }
-  return 3
+  return resolveDecisionPanelStep(flow, hasPrompt, hasResult)
 }
 
 export function isStepDone(step: number, currentStep: number) {
@@ -214,15 +259,6 @@ function resolveTrackStatus(index: number, activeIndex: number): LiveAnalysisTra
   return 'pending'
 }
 
-function resolveActiveTrackIndex(flow: AnalysisFlow, appState: AppState, hasPayload: boolean) {
-  if (flow.phase === 'analyzing' && flow.beat === 'working') {
-    return appState === 'thinking' && !hasPayload ? 1 : 2
-  }
-  if (flow.phase === 'analyzing' && (flow.beat === 'cover' || flow.beat === 'reveal')) return 3
-  if (flow.phase === 'revealed') return 3
-  return hasPayload ? 3 : 0
-}
-
 export function buildLiveAnalysisTrack({
   currentPrompt,
   payload,
@@ -238,10 +274,12 @@ export function buildLiveAnalysisTrack({
 }): LiveAnalysisTrackItem[] {
   const prompt = currentPrompt?.trim()
   const goal = payload?.taskFrame.goal?.trim() || prompt || '等待任务输入'
-  const activeIndex =
-    progressStage != null
-      ? resolveActiveTrackIndexFromProgress(progressStage)
-      : resolveActiveTrackIndex(analysisFlow, appState, Boolean(payload))
+  const activeIndex = resolveLiveTrackActiveIndex({
+    progressStage,
+    analysisFlow,
+    appState,
+    hasPayload: Boolean(payload),
+  })
   const candidates = payload?.candidates ?? []
   const missingInputs = payload?.taskFrame.missingInputs ?? []
   const preferenceHint = payload?.preferenceSignals[0]

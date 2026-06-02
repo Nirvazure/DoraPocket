@@ -3,6 +3,7 @@ import type { ProgressStage, Step2DoneStatus, Step2Message } from '@/shared/step
 import type { ExplanationMode } from '@/shared/user-settings'
 
 export type AskQwenOptions = {
+  signal?: AbortSignal
   answerBookFromPocket?: boolean
   explanationMode?: ExplanationMode
   builtinToolsEnabled?: boolean
@@ -89,6 +90,7 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
   const response = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    signal: opts?.signal,
     body: JSON.stringify({
       message,
       answerBookFromPocket: opts?.answerBookFromPocket === true,
@@ -118,6 +120,9 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
   let buffer = ''
 
   while (true) {
+    if (opts?.signal?.aborted) {
+      throw new DOMException('The operation was aborted.', 'AbortError')
+    }
     const { done, value } = await reader.read()
     if (done) break
     buffer += decoder.decode(value, { stream: true })
@@ -125,6 +130,9 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
     buffer = lines.pop() ?? ''
 
     for (const line of lines) {
+      if (opts?.signal?.aborted) {
+        throw new DOMException('The operation was aborted.', 'AbortError')
+      }
       const event = parseStreamLine(line)
       if (!event) continue
       if (event.type === 'progress') {
