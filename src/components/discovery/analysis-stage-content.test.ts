@@ -6,6 +6,8 @@ import {
   isAnalyzingFlow,
   isInputLockedFlow,
   resolveActiveTrackIndexFromProgress,
+  resolveCurrentStep,
+  resolveLiveTrackActiveIndex,
   resolveAnalysisFlowAfterError,
   shouldPreserveTurnFlow,
 } from '@/components/discovery/analysis-stage-content'
@@ -26,6 +28,30 @@ test('shouldPreserveTurnFlow keeps cover and reveal beats but not working', () =
 
 test('resolveActiveTrackIndexFromProgress marks constraining active during clarifying', () => {
   assert.equal(resolveActiveTrackIndexFromProgress('clarifying'), 1)
+})
+
+test('resolveLiveTrackActiveIndex starts on understanding before progress arrives', () => {
+  assert.equal(
+    resolveLiveTrackActiveIndex({
+      progressStage: null,
+      analysisFlow: { phase: 'analyzing', beat: 'working' },
+      appState: 'thinking',
+      hasPayload: false,
+    }),
+    0,
+  )
+})
+
+test('resolveCurrentStep stays on analysis panel during cover beat', () => {
+  assert.equal(resolveCurrentStep({ phase: 'analyzing', beat: 'cover' }, true, true), 2)
+})
+
+test('resolveCurrentStep opens recommendation panel at reveal beat', () => {
+  assert.equal(resolveCurrentStep({ phase: 'analyzing', beat: 'reveal' }, true, true), 3)
+})
+
+test('resolveCurrentStep opens recommendation panel after revealed', () => {
+  assert.equal(resolveCurrentStep({ phase: 'revealed', beat: 'working' }, true, true), 3)
 })
 
 test('isInputLockedFlow returns false when step2 status is clarifying', () => {

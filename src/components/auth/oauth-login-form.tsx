@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 
 type OAuthProvider = 'github' | 'google'
 
@@ -41,14 +42,39 @@ function GoogleIcon() {
 export function OAuthLoginForm() {
   const searchParams = useSearchParams()
   const [pendingProvider, setPendingProvider] = useState<OAuthProvider | null>(null)
+  const [localError, setLocalError] = useState<string | null>(null)
   const errorFromQuery = searchParams.get('error')
   const nextPath = searchParams.get('next')?.trim() || '/analyse'
   const safeNext = nextPath.startsWith('/') ? nextPath : '/analyse'
 
-  const handleOAuthSignIn = (provider: OAuthProvider) => {
+  const handleOAuthSignIn = async (provider: OAuthProvider) => {
     setPendingProvider(provider)
-    window.location.href = `/api/auth/oauth/${provider}?next=${encodeURIComponent(safeNext)}`
+    setLocalError(null)
+
+    const redirectTo = new URL('/api/auth/callback', window.location.origin)
+    redirectTo.searchParams.set('next', safeNext)
+
+    const supabase = createSupabaseBrowserClient()
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: redirectTo.toString() },
+    })
+
+    if (error) {
+      setPendingProvider(null)
+      setLocalError(error.message)
+      return
+    }
+
+    if (data.url) {
+      window.location.href = data.url
+    } else {
+      setPendingProvider(null)
+      setLocalError('无法启动 OAuth 登录，请稍后再试。')
+    }
   }
+
+  const displayError = localError ?? errorFromQuery
 
   return (
     <div className="flex flex-col gap-6">
@@ -58,7 +84,7 @@ export function OAuthLoginForm() {
           variant="outline"
           className="h-12 rounded-full px-5 text-sm font-bold"
           disabled={pendingProvider !== null}
-          onClick={() => handleOAuthSignIn('github')}
+          onClick={() => void handleOAuthSignIn('github')}
         >
           <GitHubIcon />
           {pendingProvider === 'github' ? '跳转 GitHub 中...' : '使用 GitHub 登录'}
@@ -68,16 +94,14 @@ export function OAuthLoginForm() {
           variant="outline"
           className="h-12 rounded-full px-5 text-sm font-bold"
           disabled={pendingProvider !== null}
-          onClick={() => handleOAuthSignIn('google')}
+          onClick={() => void handleOAuthSignIn('google')}
         >
           <GoogleIcon />
           {pendingProvider === 'google' ? '跳转 Google 中...' : '使用 Google 登录'}
         </Button>
       </div>
 
-      {errorFromQuery ? (
-        <p className="text-sm font-medium text-destructive">{errorFromQuery}</p>
-      ) : null}
+      {displayError ? <p className="text-sm font-medium text-destructive">{displayError}</p> : null}
 
       <div className="flex flex-wrap items-center gap-3">
         <Button

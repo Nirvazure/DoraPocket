@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { playAudioStream, playDoraPocketSfx, stopAudioPlayback } from '@/lib/client/audio'
 import { askQwen, type ChatToolPayload } from '@/lib/client/llm'
 import { buildTTSAudioUrl } from '@/lib/client/tts'
@@ -8,9 +8,9 @@ import type { UserSettings, VoicePlaybackMode } from '@/shared/user-settings'
 import { pickModeCardAfterTurn, type AssistantModeCard } from '@/shared/mode-registry'
 import type { AgentUiPayload } from '@/shared/market-types'
 import { SYSTEM_NOTICE_COPY } from '@/shared/ui-copy'
-import type { ProgressStage, Step2Session } from '@/shared/step2-session-types'
+import type { Step2Session } from '@/shared/step2-session-types'
 import { appendStep2Turn, createStep2Session } from '@/shared/step2-session'
-import type { AppState } from '@/store'
+import { useStore } from '@/store'
 
 type RunTurnOptions = {
   answerBookFromPocket?: boolean
@@ -20,19 +20,10 @@ type RunTurnOptions = {
 
 type UseAnalysisSessionOptions = {
   userSettings?: UserSettings
-  setAppState: (state: AppState) => void
-  setTranscript: (text: string) => void
-  setBotResponse: (text: string) => void
-  setLastSpeechError: (message: string) => void
-  setSystemNotice: (notice: {
-    level: 'task' | 'ambient' | 'critical' | 'silent'
-    message: string
-    autoDismissMs?: number
-  }) => void
-  getSelectedGadgetKey: () => string | null
+  onPrepareAgentTurn?: () => void
   onPocketGadgetChange: (gadget: AssistantModeCard) => void
   onCoverRecommendation: () => void
-  onRevealRecommendation: () => void
+  onRevealRecommendation: (force?: boolean) => void
   onAnalysisError?: () => void
 }
 
@@ -67,14 +58,13 @@ function resolveVoicePlaybackText(reply: AgentTurnReply, mode: VoicePlaybackMode
   return `${firstSentence.slice(0, KEY_RESULT_MAX_CHARS)}…`
 }
 
+function isAbortError(error: unknown): boolean {
+  return error instanceof DOMException && error.name === 'AbortError'
+}
+
 export function useAnalysisSession({
   userSettings,
-  setAppState,
-  setTranscript,
-  setBotResponse,
-  setLastSpeechError,
-  setSystemNotice,
-  getSelectedGadgetKey,
+  onPrepareAgentTurn,
   onPocketGadgetChange,
   onCoverRecommendation,
   onRevealRecommendation,
@@ -86,11 +76,27 @@ export function useAnalysisSession({
   const recommendationCoverStartedRef = useRef(false)
   const skipCoverRef = useRef(false)
   const clarifyQuickRepliesRef = useRef<string[]>([])
-  const [selectedToolPayload, setSelectedToolPayload] = useState<ChatToolPayload>(null)
-  const [agentUiPayload, setAgentUiPayload] = useState<AgentUiPayload | null>(null)
-  const [currentPrompt, setCurrentPrompt] = useState<string | null>(null)
-  const [step2Session, setStep2Session] = useState<Step2Session | null>(null)
-  const [progressStage, setProgressStage] = useState<ProgressStage | null>(null)
+
+  const setAppState = useStore((state) => state.setAppState)
+  const setTranscript = useStore((state) => state.setTranscript)
+  const setBotResponse = useStore((state) => state.setBotResponse)
+  const setLastSpeechError = useStore((state) => state.setLastSpeechError)
+  const setSystemNotice = useStore((state) => state.setSystemNotice)
+  const beginAgentTurn = useStore((state) => state.beginAgentTurn)
+  const isAgentTurnActive = useStore((state) => state.isAgentTurnActive)
+  const setStep2Session = useStore((state) => state.setStep2Session)
+  const setCurrentPrompt = useStore((state) => state.setCurrentPrompt)
+  const setProgressStage = useStore((state) => state.setProgressStage)
+  const setSelectedToolPayload = useStore((state) => state.setSelectedToolPayload)
+  const setAgentUiPayload = useStore((state) => state.setAgentUiPayload)
+  const resetAgentResponse = useStore((state) => state.resetAgentResponse)
+
+  const selectedToolPayload = useStore((state) => state.selectedToolPayload)
+  const agentUiPayload = useStore((state) => state.agentUiPayload)
+  const currentPrompt = useStore((state) => state.currentPrompt)
+  const step2Session = useStore((state) => state.step2Session)
+  const progressStage = useStore((state) => state.progressStage)
+
   const voicePlaybackMode = userSettings?.voicePlaybackMode ?? 'key-result'
   const voicePlaybackEnabled =
     userSettings?.voicePlaybackEnabled !== false && voicePlaybackMode !== 'off'
@@ -117,112 +123,27 @@ export function useAnalysisSession({
 
   const clearResponseState = useCallback(() => {
     setLastSpeechError('')
-    setSelectedToolPayload(null)
-    setAgentUiPayload(null)
-  }, [setLastSpeechError])
+    resetAgentResponse()
+  }, [resetAgentResponse, setLastSpeechError])
 
-  const handleReplyMeta = useCallback(
-    ({
-      selectedTool,
-      uiPayload,
-    }: {
-      selectedTool: ChatToolPayload
-      uiPayload: AgentUiPayload | null
-    }) => {
-      setSelectedToolPayload(selectedTool)
-      setAgentUiPayload(uiPayload)
-      if (
-        skipCoverRef.current ||
-        !((selectedTool?.toolId || uiPayload) && !recommendationCoverStartedRef.current)
-      ) {
-        return
+  const releaseStaleTurn = useCallback(
+    (turnId: number) => {
+      if (isAgentTurnActive(turnId)) return
+      const { agentTurnId, appState } = useStore.getState()
+      if (agentTurnId > turnId) return
+      if (appState === 'thinking' || appState === 'speaking') {
+        setAppState('idle')
+        setProgressStage(null)
       }
-      recommendationCoverStartedRef.current = true
-      onCoverRecommendation()
     },
-    [onCoverRecommendation],
-  )
-
-  const handleReplyDelta = useCallback(
-    (chunk: string) => {
-      responseBufferRef.current += chunk
-      setBotResponse(responseBufferRef.current)
-    },
-    [setBotResponse],
-  )
-
-  const handleReplySuccess = useCallback(
-    async (safeText: string, reply: AgentTurnReply) => {
-      setSelectedToolPayload(reply.selectedTool)
-      setAgentUiPayload(reply.uiPayload)
-      if (
-        (reply.selectedTool?.toolId || reply.uiPayload) &&
-        !recommendationCoverStartedRef.current
-      ) {
-        recommendationCoverStartedRef.current = true
-        onCoverRecommendation()
-      }
-
-      const pocketKey = getSelectedGadgetKey()
-      const nextPocketGadget = pickModeCardAfterTurn(pocketKey, reply.selectedTool?.toolId)
-      onPocketGadgetChange(nextPocketGadget)
-      if (reply.selectedTool?.toolId) {
-        triggerPocketReveal(nextPocketGadget)
-      }
-
-      setBotResponse(reply.text)
-      if (soundEffectsEnabled && reply.text.trim()) {
-        void playDoraPocketSfx()
-      }
-
-      if (!voicePlaybackEnabled) {
-        onRevealRecommendation()
-        finishSpeakingTurn()
-        return
-      }
-
-      const speechText = resolveVoicePlaybackText(reply, voicePlaybackMode)
-      if (!speechText) {
-        onRevealRecommendation()
-        finishSpeakingTurn()
-        return
-      }
-
-      const audioUrl = await buildTTSAudioUrl(speechText)
-
-      if (audioUrl) {
-        setAppState('speaking')
-        playAudioStream(audioUrl, () => {
-          onRevealRecommendation()
-          finishSpeakingTurn()
-        })
-        return
-      }
-
-      onRevealRecommendation()
-      finishSpeakingTurn()
-    },
-    [
-      finishSpeakingTurn,
-      getSelectedGadgetKey,
-      onCoverRecommendation,
-      onPocketGadgetChange,
-      onRevealRecommendation,
-      setAppState,
-      setBotResponse,
-      soundEffectsEnabled,
-      triggerPocketReveal,
-      voicePlaybackEnabled,
-      voicePlaybackMode,
-    ],
+    [isAgentTurnActive, setAppState, setProgressStage],
   )
 
   const handleReplyError = useCallback(
-    (error: unknown) => {
+    (error: unknown, turnId: number) => {
+      if (!isAgentTurnActive(turnId)) return
       stopAudioPlayback()
-      setSelectedToolPayload(null)
-      setAgentUiPayload(null)
-      setBotResponse('')
+      resetAgentResponse()
       setStep2Session(null)
       setProgressStage(null)
       setAppState('idle')
@@ -231,7 +152,16 @@ export function useAnalysisSession({
       setLastSpeechError(message)
       setSystemNotice({ level: 'critical', message, autoDismissMs: 2800 })
     },
-    [onAnalysisError, setAppState, setBotResponse, setLastSpeechError, setSystemNotice],
+    [
+      isAgentTurnActive,
+      onAnalysisError,
+      resetAgentResponse,
+      setAppState,
+      setLastSpeechError,
+      setProgressStage,
+      setStep2Session,
+      setSystemNotice,
+    ],
   )
 
   const runAgentTurn = useCallback(
@@ -239,14 +169,106 @@ export function useAnalysisSession({
       const safeText = text.trim()
       if (!safeText && !options?.skipClarify) return
 
-      const isContinuation =
-        step2Session?.status === 'clarifying' || options?.isContinuation === true
+      const priorStep2 = useStore.getState().step2Session
+      const isContinuation = priorStep2?.status === 'clarifying' || options?.isContinuation === true
       const session =
-        isContinuation && step2Session
-          ? step2Session
-          : createStep2Session(safeText || step2Session?.anchorPrompt || '')
+        isContinuation && priorStep2
+          ? priorStep2
+          : createStep2Session(safeText || priorStep2?.anchorPrompt || '')
 
       const requestMessage = isContinuation ? safeText || '跳过' : session.anchorPrompt
+      onPrepareAgentTurn?.()
+      const { turnId, signal } = beginAgentTurn()
+      const isActive = () => isAgentTurnActive(turnId)
+
+      const handleReplyMeta = ({
+        selectedTool,
+        uiPayload,
+      }: {
+        selectedTool: ChatToolPayload
+        uiPayload: AgentUiPayload | null
+      }) => {
+        if (!isActive()) return
+        setSelectedToolPayload(selectedTool)
+        setAgentUiPayload(uiPayload)
+        if (
+          skipCoverRef.current ||
+          !((selectedTool?.toolId || uiPayload) && !recommendationCoverStartedRef.current)
+        ) {
+          return
+        }
+        recommendationCoverStartedRef.current = true
+        onCoverRecommendation()
+      }
+
+      const handleReplyDelta = (chunk: string) => {
+        if (!isActive()) return
+        responseBufferRef.current += chunk
+        setBotResponse(responseBufferRef.current)
+      }
+
+      const handleReplySuccess = async (reply: AgentTurnReply) => {
+        if (!isActive()) {
+          releaseStaleTurn(turnId)
+          return
+        }
+        setSelectedToolPayload(reply.selectedTool)
+        setAgentUiPayload(reply.uiPayload)
+        if (
+          (reply.selectedTool?.toolId || reply.uiPayload) &&
+          !recommendationCoverStartedRef.current
+        ) {
+          recommendationCoverStartedRef.current = true
+          onCoverRecommendation()
+        }
+
+        const pocketKey = useStore.getState().selectedGadgetKey
+        const nextPocketGadget = pickModeCardAfterTurn(pocketKey, reply.selectedTool?.toolId)
+        onPocketGadgetChange(nextPocketGadget)
+        if (reply.selectedTool?.toolId) {
+          triggerPocketReveal(nextPocketGadget)
+        }
+
+        setBotResponse(reply.text)
+        if (soundEffectsEnabled && reply.text.trim()) {
+          void playDoraPocketSfx()
+        }
+
+        if (!voicePlaybackEnabled) {
+          onRevealRecommendation()
+          finishSpeakingTurn()
+          return
+        }
+
+        const speechText = resolveVoicePlaybackText(reply, voicePlaybackMode)
+        if (!speechText) {
+          onRevealRecommendation()
+          finishSpeakingTurn()
+          return
+        }
+
+        const audioUrl = await buildTTSAudioUrl(speechText)
+        if (!isActive()) {
+          releaseStaleTurn(turnId)
+          return
+        }
+
+        if (audioUrl) {
+          setAppState('speaking')
+          playAudioStream(audioUrl, () => {
+            if (!isActive()) {
+              releaseStaleTurn(turnId)
+              return
+            }
+            onRevealRecommendation()
+            finishSpeakingTurn()
+          })
+          return
+        }
+
+        onRevealRecommendation()
+        finishSpeakingTurn()
+      }
 
       try {
         stopAudioPlayback()
@@ -254,7 +276,7 @@ export function useAnalysisSession({
         recommendationCoverStartedRef.current = false
         clarifyQuickRepliesRef.current = []
         skipCoverRef.current =
-          isContinuation && step2Session?.status === 'clarifying' && !options?.skipClarify
+          isContinuation && priorStep2?.status === 'clarifying' && !options?.skipClarify
         setLastSpeechError('')
         setBotResponse('')
         setAppState('thinking')
@@ -267,6 +289,7 @@ export function useAnalysisSession({
         }
 
         const reply = await askQwen(requestMessage, {
+          signal,
           sessionTurn: session.turn,
           anchorPrompt: session.anchorPrompt,
           priorMessages: session.messages,
@@ -274,14 +297,23 @@ export function useAnalysisSession({
           answerBookFromPocket: options?.answerBookFromPocket === true,
           explanationMode,
           builtinToolsEnabled,
-          onProgress: setProgressStage,
+          onProgress: (stage) => {
+            if (!isActive()) return
+            setProgressStage(stage)
+          },
           onClarify: (payload) => {
+            if (!isActive()) return
             skipCoverRef.current = true
             clarifyQuickRepliesRef.current = payload.quickReplies
           },
           onMeta: handleReplyMeta,
           onDelta: handleReplyDelta,
         })
+
+        if (!isActive()) {
+          releaseStaleTurn(turnId)
+          return
+        }
 
         if (reply.step2Status === 'clarifying') {
           const updated: Step2Session = {
@@ -302,42 +334,60 @@ export function useAnalysisSession({
         setStep2Session(null)
         setProgressStage(null)
         skipCoverRef.current = false
-        await handleReplySuccess(session.anchorPrompt, reply)
+        await handleReplySuccess(reply)
       } catch (error) {
-        handleReplyError(error)
+        if (isAbortError(error)) {
+          releaseStaleTurn(turnId)
+          return
+        }
+        handleReplyError(error, turnId)
       }
     },
     [
+      beginAgentTurn,
       builtinToolsEnabled,
       explanationMode,
-      handleReplyDelta,
+      finishSpeakingTurn,
       handleReplyError,
-      handleReplyMeta,
-      handleReplySuccess,
+      isAgentTurnActive,
+      onPrepareAgentTurn,
+      onCoverRecommendation,
+      releaseStaleTurn,
+      onPocketGadgetChange,
+      onRevealRecommendation,
+      setAgentUiPayload,
       setAppState,
       setBotResponse,
+      setCurrentPrompt,
       setLastSpeechError,
-      step2Session,
+      setProgressStage,
+      setSelectedToolPayload,
+      setStep2Session,
+      soundEffectsEnabled,
+      triggerPocketReveal,
+      voicePlaybackEnabled,
+      voicePlaybackMode,
     ],
   )
 
   const skipToRecommendation = useCallback(() => {
-    if (!step2Session) return
-    void runAgentTurn(step2Session.anchorPrompt, {
+    const session = useStore.getState().step2Session
+    if (!session) return
+    void runAgentTurn(session.anchorPrompt, {
       skipClarify: true,
       isContinuation: true,
     })
-  }, [runAgentTurn, step2Session])
+  }, [runAgentTurn])
 
   const toggleDialogueExpanded = useCallback(() => {
     setStep2Session((session) =>
       session ? { ...session, dialogueExpanded: !session.dialogueExpanded } : null,
     )
-  }, [])
+  }, [setStep2Session])
 
   const revealNow = useCallback(() => {
     stopAudioPlayback()
-    onRevealRecommendation()
+    onRevealRecommendation(true)
     finishSpeakingTurn()
   }, [finishSpeakingTurn, onRevealRecommendation])
 

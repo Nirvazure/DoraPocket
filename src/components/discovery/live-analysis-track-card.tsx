@@ -46,7 +46,7 @@ export function LiveAnalysisTrackCard({
     <div className="space-y-3">
       {items.map((item, index) => (
         <div
-          key={item.title}
+          key={`track-${index}-${item.title}`}
           className={cn(
             'relative rounded-[1.35rem] border p-4 transition-colors',
             item.status === 'active'
@@ -82,9 +82,9 @@ export function LiveAnalysisTrackCard({
               ) : null}
               {item.tags && item.tags.length > 0 ? (
                 <div className="mt-2 flex flex-wrap gap-1.5">
-                  {item.tags.map((tag) => (
+                  {item.tags.map((tag, tagIndex) => (
                     <span
-                      key={tag}
+                      key={`${index}-${tagIndex}-${tag}`}
                       className="rounded-full border border-primary/15 bg-primary/[0.06] px-2.5 py-1 text-[11px] font-semibold text-primary"
                     >
                       {tag}
