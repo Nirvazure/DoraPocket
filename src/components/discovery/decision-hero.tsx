@@ -54,7 +54,7 @@ export function DecisionHero({
     : '不是先给你一堆列表：本页会先给裁决，再给备选和理由。'
 
   return (
-    <DisplayPanel className="relative overflow-hidden rounded-[2rem] border-primary/20 bg-slate-950 px-5 py-5 text-white shadow-2xl shadow-slate-950/20 sm:px-6 sm:py-6">
+    <DisplayPanel className="relative overflow-hidden rounded-[2rem] border-primary/25 bg-[linear-gradient(145deg,hsl(200_85%_28%)_0%,hsl(199_90%_22%)_48%,hsl(201_95%_16%)_100%)] px-5 py-5 text-white shadow-[0_24px_60px_-16px_hsl(var(--primary)/0.45)] sm:px-6 sm:py-6">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(80,171,255,0.34),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.12),transparent_42%)]" />
       <div className="relative z-10">
         <Badge className="w-fit border-white/15 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-white/80">

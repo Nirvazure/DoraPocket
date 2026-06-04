@@ -11,7 +11,7 @@ type MarketUnavailableToolCardProps = {
 
 export function MarketUnavailableToolCard({ toolId, onRemove }: MarketUnavailableToolCardProps) {
   return (
-    <article className="flex min-h-40 flex-col rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50/90 p-4">
+    <article className="flex min-h-[11.5rem] flex-col rounded-[1.65rem] border border-dashed border-slate-300/80 bg-white/60 p-4 backdrop-blur-md">
       <div className="flex items-start gap-3">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-400">
           <Archive className="h-5 w-5" aria-hidden />

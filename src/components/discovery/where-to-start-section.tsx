@@ -1,43 +1,11 @@
 'use client'
 
-import { BookOpenCheck, FileText, GitBranch, Wand2 } from 'lucide-react'
+import { GitBranch } from 'lucide-react'
+import { StarterWizardContent } from '@/components/discovery/starter-wizard/starter-wizard-content'
 import { DisplayPanel, DisplayPanelContent } from '@/components/ui/display-shell'
-
-type StarterScene = {
-  id: string
-  title: string
-  description: string
-  prompt: string
-  chips: string[]
-  Icon: typeof BookOpenCheck
-}
-
-const STARTER_SCENES: StarterScene[] = [
-  {
-    id: 'research',
-    title: '查资料，要引用',
-    description: '适合需要可靠来源、出处和对比判断的任务。',
-    prompt: '我需要查一个资料，并希望结果带可靠引用。请帮我判断这次先用哪个工具，以及为什么。',
-    chips: ['准确优先', '要附来源', '减少试错'],
-    Icon: BookOpenCheck,
-  },
-  {
-    id: 'structure',
-    title: '整理内容，出结构',
-    description: '适合长文总结、信息抽取、会议材料和结构化输出。',
-    prompt: '我有一段内容需要整理成清晰结构。请帮我判断这次更适合用哪个工具或处理路径。',
-    chips: ['提炼重点', '保留脉络', '结构清晰'],
-    Icon: FileText,
-  },
-  {
-    id: 'office',
-    title: '办公小工具选型',
-    description: '适合 PDF、翻译、去背景、网页摘要等低摩擦任务。',
-    prompt: '我有一个办公效率小任务，需要最快找到合适工具。请帮我给出这次最值得先试的选择。',
-    chips: ['最快开始', '免费优先', '免注册优先'],
-    Icon: Wand2,
-  },
-]
+import { PAGE_COPY } from '@/shared/ui-copy'
+import type { StarterIntake, StarterWizardStep } from '@/shared/starter-intake'
+import type { StarterWizardContentProps } from '@/components/discovery/starter-wizard/starter-wizard-content'
 
 const THINKING_STEPS = [
   {
@@ -55,61 +23,57 @@ const THINKING_STEPS = [
 ]
 
 type WhereToStartSectionProps = {
-  onDraftTask?: (draft: string) => void
+  actionsEnabled?: boolean
+  wizardStep: StarterWizardStep
+  intake: StarterIntake
+  wizardDisabled?: boolean
+  onSelectRole: StarterWizardContentProps['onSelectRole']
+  onSelectOutcome: StarterWizardContentProps['onSelectOutcome']
+  onToggleConstraint: StarterWizardContentProps['onToggleConstraint']
+  onCustomTaskChange: StarterWizardContentProps['onCustomTaskChange']
 }
 
-export function WhereToStartSection({ onDraftTask }: WhereToStartSectionProps) {
-  const handleDraftScene = (draft: string) => {
-    onDraftTask?.(draft)
-  }
+export function WhereToStartSection({
+  actionsEnabled = true,
+  wizardStep,
+  intake,
+  wizardDisabled,
+  onSelectRole,
+  onSelectOutcome,
+  onToggleConstraint,
+  onCustomTaskChange,
+}: WhereToStartSectionProps) {
+  const copy = PAGE_COPY.analysis.starter
 
   return (
     <div className="flex min-h-full flex-col gap-3">
-      <section className="shrink-0 rounded-[1.8rem] border border-primary/15 bg-primary/[0.04] p-4">
-        <div>
+      <section className="flex min-h-0 flex-1 flex-col rounded-[1.8rem] border border-primary/15 bg-primary/[0.04] p-4">
+        <div className="shrink-0">
           <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
-            从一个具体场景开始
-          </p>
-          <p className="mt-1 text-sm font-semibold text-foreground">
-            选一个接近的入口，DoraPocket 会把它变成可分析的任务草稿。
+            {copy.wizardEyebrow}
           </p>
         </div>
 
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
-          {STARTER_SCENES.map((scene) => {
-            const Icon = scene.Icon
-            return (
-              <button
-                key={scene.id}
-                type="button"
-                data-starter-scene={scene.id}
-                className="group rounded-[1.35rem] border border-border/60 bg-white p-4 text-left shadow-sm transition-colors hover:border-primary/25 hover:bg-primary/[0.03]"
-                onClick={() => handleDraftScene(scene.prompt)}
-              >
-                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/[0.08] text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                  <Icon className="h-4 w-4" />
-                </span>
-                <span className="mt-3 block text-sm font-black text-foreground">{scene.title}</span>
-                <span className="mt-1 line-clamp-2 block text-xs leading-relaxed text-muted-foreground">
-                  {scene.description}
-                </span>
-                <span className="mt-3 flex flex-wrap gap-1.5">
-                  {scene.chips.map((chip) => (
-                    <span
-                      key={chip}
-                      className="rounded-full border border-primary/10 bg-primary/[0.04] px-2 py-1 text-[10px] font-bold text-primary/80"
-                    >
-                      {chip}
-                    </span>
-                  ))}
-                </span>
-              </button>
-            )
-          })}
-        </div>
+        {!actionsEnabled ? (
+          <div className="mt-3 shrink-0">
+            <p className="text-sm text-muted-foreground">{copy.actionsDisabledHint}</p>
+          </div>
+        ) : (
+          <div className="mt-3 min-h-0 flex-1">
+            <StarterWizardContent
+              wizardStep={wizardStep}
+              intake={intake}
+              disabled={wizardDisabled}
+              onSelectRole={onSelectRole}
+              onSelectOutcome={onSelectOutcome}
+              onToggleConstraint={onToggleConstraint}
+              onCustomTaskChange={onCustomTaskChange}
+            />
+          </div>
+        )}
       </section>
 
-      <DisplayPanel className="flex min-h-0 flex-1 flex-col rounded-[1.8rem] border-border/70 bg-white shadow-sm">
+      <DisplayPanel className="shrink-0 rounded-[1.8rem] border-border/70 bg-white shadow-sm">
         <DisplayPanelContent className="p-4 sm:p-4">
           <div className="flex items-center gap-2">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-primary">

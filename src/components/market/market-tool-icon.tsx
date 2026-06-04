@@ -7,7 +7,7 @@ import type { ToolItem } from '@/shared/tool-registry'
 
 type MarketToolIconProps = {
   tool: ToolItem
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'card'
 }
 
 export function MarketToolIcon({ tool, size = 'md' }: MarketToolIconProps) {
@@ -20,16 +20,19 @@ export function MarketToolIcon({ tool, size = 'md' }: MarketToolIconProps) {
   const boxClassName =
     size === 'sm'
       ? 'h-10 w-10 rounded-2xl text-lg'
-      : size === 'lg'
-        ? 'h-16 w-16 rounded-[1.25rem] text-2xl'
-        : 'h-12 w-12 rounded-2xl text-xl'
+      : size === 'card'
+        ? 'dp-tool-icon-tile h-14 w-14 text-xl'
+        : size === 'lg'
+          ? 'h-16 w-16 rounded-[1.25rem] text-2xl'
+          : 'h-12 w-12 rounded-2xl text-xl'
 
-  const imageSize = size === 'lg' ? 64 : size === 'sm' ? 40 : 48
+  const imageSize = size === 'lg' ? 64 : size === 'card' ? 56 : size === 'sm' ? 40 : 48
 
   return (
     <div
       className={cn(
-        'flex shrink-0 items-center justify-center overflow-hidden border border-border/60 bg-white shadow-sm',
+        'flex shrink-0 items-center justify-center overflow-hidden',
+        size !== 'card' && 'border border-border/60 bg-white shadow-sm',
         boxClassName,
       )}
     >

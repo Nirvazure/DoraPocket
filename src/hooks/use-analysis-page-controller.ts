@@ -7,6 +7,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type RefObject,
   type SetStateAction,
 } from 'react'
 import {
@@ -14,7 +15,7 @@ import {
   shouldPreserveTurnFlow,
   type AnalysisFlow,
 } from '@/components/discovery/analysis-stage-content'
-import { useAnalysisFlowReveal } from '@/hooks/analysis-flow-reveal'
+import { useAnalysisFlowReveal } from '@/hooks/use-analysis-flow-reveal'
 import { useAnalysisToolLookup } from '@/hooks/use-analysis-tool-lookup'
 import { useAnalysisSession } from '@/hooks/use-analysis-session'
 import { useDiscoveryWorkspaceActions } from '@/hooks/use-discovery-workspace-actions'
@@ -26,21 +27,24 @@ import { useSaveUserSettingsMutation, useUserSettingsQuery } from '@/lib/query/u
 import type { AssistantModeCard } from '@/shared/mode-registry'
 import { PAGE_COPY, SYSTEM_NOTICE_COPY } from '@/shared/ui-copy'
 import { mergeStep2IntoAnalysisFlow, useStore } from '@/store'
-import { shouldRestartAnalysisFlow } from '@/hooks/analysis-stage-restart'
+import { shouldRestartAnalysisFlow } from '@/shared/analysis-stage-restart'
+import { composeStarterPromptFromVoice, createEmptyStarterIntake } from '@/shared/starter-intake'
+import type { DiscoveryWorkspaceHandle } from '@/components/discovery-workspace'
 
 type InputMode = 'text' | 'voice'
 
-export function useAnalysisPageController() {
+type UseAnalysisPageControllerOptions = {
+  workspaceRef?: RefObject<DiscoveryWorkspaceHandle | null>
+}
+
+export function useAnalysisPageController(options: UseAnalysisPageControllerOptions = {}) {
+  const { workspaceRef } = options
   const appState = useStore((state) => state.appState)
   const transcript = useStore((state) => state.transcript)
   const botResponse = useStore((state) => state.botResponse)
   const systemNotice = useStore((state) => state.systemNotice)
   const analysisFlow = useStore((state) => state.analysisFlow)
   const step2Session = useStore((state) => state.step2Session)
-  const setAppState = useStore((state) => state.setAppState)
-  const setTranscript = useStore((state) => state.setTranscript)
-  const setBotResponse = useStore((state) => state.setBotResponse)
-  const setLastSpeechError = useStore((state) => state.setLastSpeechError)
   const setSystemNotice = useStore((state) => state.setSystemNotice)
   const clearSystemNotice = useStore((state) => state.clearSystemNotice)
   const setAnalysisFlow = useStore((state) => state.setAnalysisFlow)
@@ -80,6 +84,7 @@ export function useAnalysisPageController() {
     progressStage,
     latestUserPromptRef,
     clearResponseState,
+    resetAnalysisForNewTask,
     runAgentTurn,
     revealNow,
     skipToRecommendation,
@@ -93,14 +98,25 @@ export function useAnalysisPageController() {
     onRevealRecommendation: requestRevealRecommendation,
   })
 
+  const runAgentTurnForVoice = useCallback(
+    async (text: string) => {
+      const trimmed = text.trim()
+      if (!trimmed) return
+      if (!currentPrompt?.trim()) {
+        if (appState !== 'idle') return
+        const intake = workspaceRef?.current?.getStarterIntake() ?? createEmptyStarterIntake()
+        const prompt = composeStarterPromptFromVoice(intake, trimmed)
+        await runAgentTurn(prompt, { displayPrompt: trimmed })
+        return
+      }
+      await runAgentTurn(trimmed, { isContinuation: true })
+    },
+    [appState, currentPrompt, runAgentTurn, workspaceRef],
+  )
+
   const { holdToTalkStart, holdToTalkEnd, cancelVoiceInput, submitTextMessage } = useVoiceInput({
     appState,
-    runAgentTurn,
-    setAppState,
-    setTranscript,
-    setBotResponse,
-    setLastSpeechError,
-    setSystemNotice,
+    runAgentTurn: runAgentTurnForVoice,
     clearResponseState,
   })
 
@@ -234,9 +250,21 @@ export function useAnalysisPageController() {
     return clearTimers
   }, [appState, clearRevealTimers, currentPrompt, setAnalysisFlow, step2Session, workingFlow])
 
-  const handleDraftTask = useCallback((draft: string) => {
-    setTextFallback(draft)
-  }, [])
+  const handleStartStructuredAnalysis = useCallback(
+    async (prompt: string, displayPrompt: string) => {
+      if (appState !== 'idle') return
+      setTextFallback('')
+      await runAgentTurn(prompt, { displayPrompt })
+    },
+    [appState, runAgentTurn],
+  )
+
+  const handleStartNewTask = useCallback(() => {
+    resetAnalysisForNewTask()
+    setTextFallback('')
+    clearRevealTimers()
+    setAnalysisFlow(IDLE_ANALYSIS_FLOW)
+  }, [clearRevealTimers, resetAnalysisForNewTask, setAnalysisFlow])
 
   const handleQuickReply = useCallback(
     (text: string) => {
@@ -291,7 +319,9 @@ export function useAnalysisPageController() {
     promptPlaceholder,
     workspaceActions,
     pocketGadgetModalActions,
-    handleDraftTask,
+    handleStartStructuredAnalysis,
+    handleStartNewTask,
+    starterActionsEnabled: !currentPrompt?.trim() && appState === 'idle',
     setPocketModalOpen,
     setQuickSettingsOpen,
     saveUserSettings,

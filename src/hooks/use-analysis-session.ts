@@ -9,12 +9,14 @@ import { pickModeCardAfterTurn, type AssistantModeCard } from '@/shared/mode-reg
 import type { AgentUiPayload } from '@/shared/market-types'
 import { SYSTEM_NOTICE_COPY } from '@/shared/ui-copy'
 import type { Step2Session } from '@/shared/step2-session-types'
+import { IDLE_ANALYSIS_FLOW } from '@/components/discovery/analysis-stage-content'
 import { appendStep2Turn, createStep2Session } from '@/shared/step2-session'
 import { useStore } from '@/store'
 
 type RunTurnOptions = {
   skipClarify?: boolean
   isContinuation?: boolean
+  displayPrompt?: string
 }
 
 type UseAnalysisSessionOptions = {
@@ -85,6 +87,7 @@ export function useAnalysisSession({
   const isAgentTurnActive = useStore((state) => state.isAgentTurnActive)
   const setStep2Session = useStore((state) => state.setStep2Session)
   const setCurrentPrompt = useStore((state) => state.setCurrentPrompt)
+  const setAnalysisFlow = useStore((state) => state.setAnalysisFlow)
   const setProgressStage = useStore((state) => state.setProgressStage)
   const setSelectedToolPayload = useStore((state) => state.setSelectedToolPayload)
   const setAgentUiPayload = useStore((state) => state.setAgentUiPayload)
@@ -281,7 +284,7 @@ export function useAnalysisSession({
 
         if (!isContinuation) {
           latestUserPromptRef.current = session.anchorPrompt
-          setCurrentPrompt(session.anchorPrompt)
+          setCurrentPrompt(options?.displayPrompt?.trim() || session.anchorPrompt)
           setStep2Session(session)
         }
 
@@ -385,6 +388,38 @@ export function useAnalysisSession({
     finishSpeakingTurn()
   }, [finishSpeakingTurn, onRevealRecommendation])
 
+  const cancelActiveAgentTurn = useStore((state) => state.cancelActiveAgentTurn)
+
+  const resetAnalysisForNewTask = useCallback(() => {
+    stopAudioPlayback()
+    cancelActiveAgentTurn()
+    setLastSpeechError('')
+    setBotResponse('')
+    setTranscript('')
+    setCurrentPrompt(null)
+    setStep2Session(null)
+    setProgressStage(null)
+    resetAgentResponse()
+    setAnalysisFlow(IDLE_ANALYSIS_FLOW)
+    setAppState('idle')
+    latestUserPromptRef.current = ''
+    responseBufferRef.current = ''
+    recommendationCoverStartedRef.current = false
+    skipCoverRef.current = false
+    clarifyQuickRepliesRef.current = []
+  }, [
+    cancelActiveAgentTurn,
+    resetAgentResponse,
+    setAnalysisFlow,
+    setAppState,
+    setBotResponse,
+    setCurrentPrompt,
+    setLastSpeechError,
+    setProgressStage,
+    setStep2Session,
+    setTranscript,
+  ])
+
   useEffect(() => {
     return () => {
       stopAudioPlayback()
@@ -400,6 +435,7 @@ export function useAnalysisSession({
     progressStage,
     latestUserPromptRef,
     clearResponseState,
+    resetAnalysisForNewTask,
     runAgentTurn,
     revealNow,
     skipToRecommendation,

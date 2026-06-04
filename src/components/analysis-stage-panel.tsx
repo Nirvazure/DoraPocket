@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import type { AnalysisFlow } from '@/components/discovery/analysis-stage-content'
+import { StageVoiceFab } from '@/components/analysis/stage-voice-fab'
 import { AnalysisStageStatusBar } from '@/components/analysis-stage-status-bar'
 import { AnalysisStageCanvasFallback } from '@/components/analysis-stage-canvas-fallback'
 
@@ -24,7 +25,10 @@ type AnalysisStagePanelProps = {
   mobileCompact?: boolean
   mobileCompactExpanded?: boolean
   onToggleMobileCompact?: () => void
-  children?: React.ReactNode
+  voiceFabDisabled?: boolean
+  onHoldToTalkStart: () => void
+  onHoldToTalkEnd: () => void
+  onCancelVoiceInput: () => void
 }
 
 export function AnalysisStagePanel({
@@ -34,7 +38,10 @@ export function AnalysisStagePanel({
   mobileCompact = false,
   mobileCompactExpanded = false,
   onToggleMobileCompact,
-  children,
+  voiceFabDisabled = false,
+  onHoldToTalkStart,
+  onHoldToTalkEnd,
+  onCancelVoiceInput,
 }: AnalysisStagePanelProps) {
   const showCompactStage = mobileCompact && !mobileCompactExpanded
 
@@ -98,9 +105,16 @@ export function AnalysisStagePanel({
             </Button>
           </div>
         ) : null}
+        {!showCompactStage ? (
+          <StageVoiceFab
+            appState={appState}
+            disabled={voiceFabDisabled}
+            onHoldToTalkStart={onHoldToTalkStart}
+            onHoldToTalkEnd={onHoldToTalkEnd}
+            onHoldToTalkCancel={onCancelVoiceInput}
+          />
+        ) : null}
       </div>
-
-      {children}
     </section>
   )
 }

@@ -38,19 +38,6 @@ export function buildActivePocketToolIds(inventory: PocketInventoryItem[]): Set<
   return new Set(inventory.filter((item) => !item.archived).map((item) => item.toolId))
 }
 
-export function filterToolsByKeyword(
-  tools: MarketToolCardItem[],
-  keyword: string,
-): MarketToolCardItem[] {
-  const normalized = keyword.trim().toLowerCase()
-  if (!normalized) return tools
-  return tools.filter((tool) =>
-    `${tool.name} ${tool.description} ${tool.tags.join(' ')} ${TOOL_CATEGORY_LABELS[tool.category]}`
-      .toLowerCase()
-      .includes(normalized),
-  )
-}
-
 export function resolveScopedTools(args: {
   scope: MarketScope
   tools: MarketToolCardItem[]

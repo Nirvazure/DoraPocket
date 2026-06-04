@@ -19,6 +19,7 @@ type AnalysisInputComposerProps = {
   onHoldToTalkEnd: () => void
   onCancelVoiceInput?: () => void
   onInteractionStart?: () => void
+  hideVoiceToggle?: boolean
 }
 
 export function AnalysisInputComposer({
@@ -35,7 +36,9 @@ export function AnalysisInputComposer({
   onHoldToTalkEnd,
   onCancelVoiceInput,
   onInteractionStart,
+  hideVoiceToggle = false,
 }: AnalysisInputComposerProps) {
+  const showTextInput = hideVoiceToggle || inputMode === 'text'
   return (
     <div
       data-dorapocket-textbox
@@ -43,20 +46,22 @@ export function AnalysisInputComposer({
       className="relative z-10 shrink-0 pointer-events-auto border-t border-white/60 bg-white/78 p-2.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur-md sm:p-3"
     >
       <div className="flex items-center gap-2 sm:gap-3">
-        <button
-          type="button"
-          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/80 bg-white/92 text-foreground shadow-sm transition-colors hover:bg-white"
-          onClick={() => {
-            onInteractionStart?.()
-            onToggleInputMode()
-          }}
-          aria-label={inputMode === 'text' ? '切换到语音输入' : '切换到文字输入'}
-          title={inputMode === 'text' ? '切换到语音输入' : '切换到文字输入'}
-        >
-          {inputMode === 'text' ? <Mic className="h-4 w-4" /> : <Keyboard className="h-4 w-4" />}
-        </button>
+        {!hideVoiceToggle ? (
+          <button
+            type="button"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/80 bg-white/92 text-foreground shadow-sm transition-colors hover:bg-white"
+            onClick={() => {
+              onInteractionStart?.()
+              onToggleInputMode()
+            }}
+            aria-label={inputMode === 'text' ? '切换到语音输入' : '切换到文字输入'}
+            title={inputMode === 'text' ? '切换到语音输入' : '切换到文字输入'}
+          >
+            {inputMode === 'text' ? <Mic className="h-4 w-4" /> : <Keyboard className="h-4 w-4" />}
+          </button>
+        ) : null}
 
-        {inputMode === 'text' ? (
+        {showTextInput ? (
           <div className="flex min-w-0 flex-1 items-center gap-2 rounded-2xl border border-white/80 bg-white/95 p-1.5 shadow-sm backdrop-blur-md">
             <input
               type="text"

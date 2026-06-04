@@ -1,6 +1,7 @@
+'use client'
+
 import { useCallback } from 'react'
-import { openToolById, saveToolById } from '@/lib/tool-actions'
-import { redirectToLoginUnlessAuthenticated } from '@/lib/query/auth-session'
+import { useAuthenticatedToolActions } from '@/hooks/use-authenticated-tool-actions'
 import type { ToolLookupFn } from '@/shared/tool-lookup'
 
 type UseDiscoveryWorkspaceActionsOptions = {
@@ -30,27 +31,34 @@ export function useDiscoveryWorkspaceActions({
   markToolUsed,
   setSystemNotice,
 }: UseDiscoveryWorkspaceActionsOptions) {
+  const { openTool, saveTool } = useAuthenticatedToolActions({
+    authPending,
+    isAuthenticated,
+    markToolUsed,
+    saveToolToPocket,
+    getSourceQuestion: getLatestUserPrompt,
+    getTool,
+  })
+
   const onSaveCandidate = useCallback(
     (toolId: string) => {
-      if (!redirectToLoginUnlessAuthenticated(authPending, isAuthenticated)) return
-
-      const saved = saveToolById(toolId, saveToolToPocket, getLatestUserPrompt() || undefined)
-      if (!saved) {
-        setSystemNotice({
-          level: 'critical',
-          message: '暂时无法收进口袋，请稍后再试。',
-          autoDismissMs: 2200,
-        })
-      }
+      const saved = saveTool(toolId)
+      if (saved) return
+      if (authPending || !isAuthenticated) return
+      setSystemNotice({
+        level: 'critical',
+        message: '暂时无法收进口袋，请稍后再试。',
+        autoDismissMs: 2200,
+      })
     },
-    [getLatestUserPrompt, authPending, isAuthenticated, saveToolToPocket, setSystemNotice],
+    [authPending, isAuthenticated, saveTool, setSystemNotice],
   )
 
   const onLaunchCandidate = useCallback(
     (toolId: string) => {
-      openToolById(toolId, markToolUsed, { url: getTool(toolId)?.url })
+      openTool(toolId)
     },
-    [getTool, markToolUsed],
+    [openTool],
   )
 
   const onOpenExternalCandidate = useCallback(
