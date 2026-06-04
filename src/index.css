@@ -10,8 +10,14 @@
     --card-foreground: 0.145 0 0;
     --popover: 1 0 0;
     --popover-foreground: 0.145 0 0;
-    --primary: 0.65 0.16 250;
-    --primary-foreground: 0.985 0 0;
+    /* 哆啦 A 梦蓝 #00A0E9 — HSL 199° 青蓝，勿用 OKLCH 238°（会偏紫） */
+    --primary: 199 100% 46%;
+    --primary-foreground: 0 0% 100%;
+    --dora-blue-deep: 200 100% 39%;
+    --dora-blue-bright: 197 100% 48%;
+    --dora-blue-sky: 199 75% 72%;
+    --accent-glow: 199 90% 55%;
+    --accent-sky: 199 80% 65%;
     --secondary: 0.97 0 0;
     --secondary-foreground: 0.205 0 0;
     --muted: 0.97 0 0;
@@ -22,7 +28,7 @@
     --destructive-foreground: 0 0% 100%;
     --border: 0.922 0 0;
     --input: 0.922 0 0;
-    --ring: 0.65 0.16 250;
+    --ring: 199 100% 46%;
     --radius: 0.625rem;
     --dora-red: 0 72% 52%;
     --bell: 45 96% 58%;
@@ -30,6 +36,9 @@
     --surface-strong: 0 0% 100%;
     --surface-soft: 210 30% 98%;
     --surface-float: 0 0% 100% / 0.76;
+    --glass-border: 0 0% 100% / 0.82;
+    --glass-bg: 0 0% 100% / 0.78;
+    --glass-highlight: 0 0% 100% / 0.95;
     --chart-1: 0.87 0 0;
     --chart-2: 0.556 0 0;
     --chart-3: 0.439 0 0;
@@ -37,12 +46,12 @@
     --chart-5: 0.269 0 0;
     --sidebar: 0.985 0 0;
     --sidebar-foreground: 0.145 0 0;
-    --sidebar-primary: 0.65 0.16 250;
+    --sidebar-primary: 199 100% 46%;
     --sidebar-primary-foreground: 0.985 0 0;
     --sidebar-accent: 0.97 0 0;
     --sidebar-accent-foreground: 0.205 0 0;
     --sidebar-border: 0.922 0 0;
-    --sidebar-ring: 0.65 0.16 250;
+    --sidebar-ring: 199 100% 46%;
   }
 
   html[data-font-preset='b'] {
@@ -67,27 +76,34 @@
     padding: 0;
     overflow-x: hidden;
     overflow-y: auto;
-    background-color: hsl(219 54% 66%);
-    background-image: radial-gradient(
-      ellipse 125% 100% at 50% 36%,
-      hsl(205 12% 99.4%) 0%,
-      hsl(204 28% 97.5%) 14%,
-      hsl(202 48% 94%) 32%,
-      hsl(204 58% 90%) 52%,
-      hsl(210.97 59.24% 69.22%) 72%,
-      hsl(217.07 59.42% 59.41%) 88%,
-      hsl(220.98 78.85% 59.22%) 100%
-    );
+    background-color: hsl(var(--dora-blue-sky));
+    background-image:
+      radial-gradient(ellipse 90% 70% at 8% 12%, hsl(var(--accent-glow) / 0.45), transparent 58%),
+      radial-gradient(
+        ellipse 80% 60% at 92% 8%,
+        hsl(var(--dora-blue-bright) / 0.35),
+        transparent 55%
+      ),
+      radial-gradient(ellipse 120% 90% at 50% 100%, hsl(var(--primary) / 0.28), transparent 62%),
+      radial-gradient(
+        ellipse 125% 100% at 50% 36%,
+        hsl(199 30% 99%) 0%,
+        hsl(199 45% 96%) 18%,
+        hsl(199 55% 92%) 38%,
+        hsl(199 65% 82%) 58%,
+        hsl(199 70% 72%) 78%,
+        hsl(199 75% 62%) 100%
+      );
     background-attachment: fixed;
   }
 
   ::selection {
-    background: oklch(var(--primary) / 0.32);
+    background: hsl(var(--primary) / 0.32);
     color: oklch(var(--foreground));
   }
 
   ::-moz-selection {
-    background: oklch(var(--primary) / 0.32);
+    background: hsl(var(--primary) / 0.32);
     color: oklch(var(--foreground));
   }
 
@@ -103,7 +119,8 @@
     --card-foreground: 0.985 0 0;
     --popover: 0.205 0 0;
     --popover-foreground: 0.985 0 0;
-    --primary: 0.7 0.16 250;
+    --primary: 199 100% 52%;
+    --dora-blue-deep: 200 100% 44%;
     --primary-foreground: 0.985 0 0;
     --secondary: 0.269 0 0;
     --secondary-foreground: 0.985 0 0;
@@ -114,7 +131,7 @@
     --destructive: 0.704 0.191 22.216;
     --border: 1 0 0 / 10%;
     --input: 1 0 0 / 15%;
-    --ring: 0.7 0.16 250;
+    --ring: 199 100% 52%;
     --chart-1: 0.87 0 0;
     --chart-2: 0.556 0 0;
     --chart-3: 0.439 0 0;
@@ -122,12 +139,12 @@
     --chart-5: 0.269 0 0;
     --sidebar: 0.205 0 0;
     --sidebar-foreground: 0.985 0 0;
-    --sidebar-primary: 0.7 0.16 250;
+    --sidebar-primary: 199 100% 52%;
     --sidebar-primary-foreground: 0.985 0 0;
     --sidebar-accent: 0.269 0 0;
     --sidebar-accent-foreground: 0.985 0 0;
     --sidebar-border: 1 0 0 / 10%;
-    --sidebar-ring: 0.7 0.16 250;
+    --sidebar-ring: 199 100% 52%;
   }
   html {
     @apply font-sans;
@@ -182,12 +199,348 @@
 }
 
 @layer components {
+  .dp-mesh-page-bg {
+    @apply relative overflow-hidden bg-transparent;
+    background-image:
+      radial-gradient(ellipse 70% 55% at 0% 0%, hsl(var(--accent-sky) / 0.14), transparent 52%),
+      radial-gradient(ellipse 65% 50% at 100% 4%, hsl(var(--accent-glow) / 0.16), transparent 48%),
+      linear-gradient(180deg, #f8fbff 0%, #edf4ff 42%, #eef2f7 100%);
+  }
+
+  .dp-glass-panel {
+    @apply rounded-[2rem] border border-white/80 bg-white/80 text-card-foreground shadow-[0_20px_50px_-12px_rgba(15,23,42,0.14),0_0_0_1px_rgba(255,255,255,0.65)_inset] backdrop-blur-2xl;
+  }
+
+  .dp-glass-card {
+    @apply cursor-pointer rounded-[1.5rem] border border-white/75 bg-white/80 shadow-[0_8px_28px_-8px_rgba(15,23,42,0.12)] backdrop-blur-xl transition-[border-color,box-shadow,background-color] duration-200;
+  }
+
+  .dp-glass-card:hover {
+    @apply border-primary/20 bg-white/90 shadow-[0_18px_40px_-10px_hsl(var(--primary)/0.22),0_0_0_1px_rgba(255,255,255,0.8)_inset];
+  }
+
+  /* 道具库工具卡 — Radium 式分层玻璃（静态，无虹彩动画） */
+  .dp-tool-card {
+    @apply relative cursor-default overflow-hidden rounded-[1.65rem] border border-white/80 p-4 backdrop-blur-xl transition-[box-shadow,border-color] duration-200;
+    background-image: linear-gradient(
+      165deg,
+      hsl(0 0% 100% / 0.92) 0%,
+      hsl(199 45% 98% / 0.84) 38%,
+      hsl(199 55% 96% / 0.8) 100%
+    );
+    box-shadow:
+      0 10px 32px -12px rgba(15, 23, 42, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  }
+
+  .dp-tool-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(180deg, hsl(var(--primary) / 0.08) 0%, transparent 42%);
+  }
+
+  .dp-tool-card:hover {
+    border-color: hsl(var(--primary) / 0.22);
+    box-shadow:
+      0 18px 44px -14px hsl(var(--primary) / 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 1);
+  }
+
+  .dp-tool-card-footer {
+    border-top: 1px solid hsl(var(--primary) / 0.08);
+  }
+
+  .dp-tool-chip {
+    @apply rounded-full border border-white/80 bg-white/85 shadow-sm backdrop-blur-sm transition-colors duration-200;
+  }
+
+  .dp-tool-chip:hover {
+    @apply border-primary/15 bg-white;
+  }
+
+  .dp-tool-cta {
+    @apply border-0 text-primary-foreground shadow-[0_8px_22px_-8px_hsl(var(--primary)/0.55)];
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--dora-blue-deep)) 100%
+    );
+  }
+
+  .dp-tool-cta:hover {
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--dora-blue-deep)) 100%
+    );
+  }
+
+  .dp-tool-pocket-btn {
+    @apply size-8 border-white/80 bg-white/90 shadow-sm backdrop-blur-sm;
+  }
+
+  .dp-tool-pocket-btn-outline {
+    @apply border-slate-200/90 text-slate-500 hover:border-primary/20 hover:bg-white hover:text-primary;
+  }
+
+  .dp-tool-icon-tile {
+    @apply flex shrink-0 items-center justify-center overflow-hidden rounded-[1.05rem] border border-white/90 shadow-[0_10px_24px_-10px_rgba(15,23,42,0.2),inset_0_1px_0_rgba(255,255,255,0.9)] ring-1 ring-slate-200/50;
+    background-image: linear-gradient(145deg, #ffffff 0%, #f1f5f9 100%);
+  }
+
+  /* 道具库侧栏分类导航 */
+  .dp-market-sidebar {
+    @apply relative flex min-h-0 w-full flex-col overflow-hidden rounded-[1.65rem] border border-white/80 p-3 backdrop-blur-xl;
+    background-image: linear-gradient(
+      165deg,
+      hsl(0 0% 100% / 0.92) 0%,
+      hsl(199 45% 98% / 0.84) 38%,
+      hsl(199 55% 96% / 0.8) 100%
+    );
+    box-shadow:
+      0 10px 32px -12px rgba(15, 23, 42, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  }
+
+  .dp-market-sidebar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(180deg, hsl(var(--primary) / 0.07) 0%, transparent 38%);
+  }
+
+  .dp-market-sidebar-header {
+    @apply relative z-[1] shrink-0 border-b border-primary/10 pb-3;
+  }
+
+  .dp-market-sidebar-list {
+    @apply relative z-[1] mt-3 space-y-1.5 pb-1;
+  }
+
+  .dp-market-scope-switch {
+    @apply flex w-full min-h-11 min-w-0 items-stretch rounded-full border border-white/75 bg-white/50 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-md;
+  }
+
+  .dp-market-scope-tab {
+    @apply flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-1.5 self-stretch rounded-full px-2.5 py-1.5 text-[11px] font-semibold leading-none text-slate-600 transition-[background-color,box-shadow,color] duration-200;
+  }
+
+  .dp-market-scope-tab:hover:not(.dp-market-scope-tab-active) {
+    @apply bg-white/80 text-slate-900;
+  }
+
+  .dp-market-scope-tab-active {
+    @apply border-0 text-primary-foreground shadow-[0_6px_18px_-6px_hsl(var(--primary)/0.45)];
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--dora-blue-deep)) 100%
+    );
+  }
+
+  .dp-market-scope-count {
+    @apply shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-bold leading-none tabular-nums;
+  }
+
+  .dp-market-scope-count-active {
+    @apply bg-primary-foreground/20 text-primary-foreground;
+  }
+
+  .dp-market-scope-count-idle {
+    @apply bg-slate-100 text-slate-500;
+  }
+
+  .dp-market-nav-item {
+    @apply flex w-full cursor-pointer items-center justify-between gap-2 rounded-[0.9rem] border border-white/70 bg-white/70 px-2.5 py-2 text-left shadow-[0_4px_14px_-10px_rgba(15,23,42,0.12)] backdrop-blur-sm transition-[border-color,box-shadow,background-color] duration-200;
+  }
+
+  .dp-market-nav-item:hover {
+    @apply border-white/90 bg-white/90 shadow-[0_8px_20px_-12px_rgba(15,23,42,0.14)];
+  }
+
+  .dp-market-nav-item-active {
+    border-color: hsl(var(--primary) / 0.2);
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--primary) / 0.12) 0%,
+      hsl(199 50% 97% / 0.55) 100%
+    );
+    box-shadow:
+      0 10px 26px -14px hsl(var(--primary) / 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  }
+
+  .dp-market-nav-icon {
+    @apply flex size-9 shrink-0 items-center justify-center rounded-full border border-white/90 text-slate-600 shadow-sm;
+    background-image: linear-gradient(145deg, #ffffff 0%, #f1f5f9 100%);
+  }
+
+  .dp-market-nav-icon-active {
+    @apply border-primary/15 text-primary-foreground shadow-[0_6px_16px_-6px_hsl(var(--primary)/0.4)];
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--dora-blue-deep)) 100%
+    );
+  }
+
+  .dp-market-nav-label-active {
+    @apply font-bold text-primary;
+  }
+
+  .dp-market-nav-count {
+    @apply rounded-full px-2 py-0.5 text-[10px] font-semibold tabular-nums text-muted-foreground;
+    background-color: hsl(199 40% 96% / 0.9);
+  }
+
+  .dp-market-nav-count-active {
+    @apply bg-primary/10 font-bold text-primary;
+  }
+
+  .dp-market-chip {
+    @apply inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-full border border-white/80 bg-white/80 px-3 py-2 text-xs font-bold text-slate-700 shadow-sm backdrop-blur-sm transition-[border-color,box-shadow,background-color] duration-200;
+  }
+
+  .dp-market-chip:hover {
+    @apply border-primary/15 bg-white shadow-[0_8px_20px_-12px_rgba(15,23,42,0.12)];
+  }
+
+  .dp-market-chip-active {
+    @apply border-0 text-primary-foreground shadow-[0_8px_22px_-8px_hsl(var(--primary)/0.45)];
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--dora-blue-deep)) 100%
+    );
+  }
+
+  /* 全站顶栏 — Egloo 式浮动胶囊（静态玻璃） */
+  .dp-top-bar-shell {
+    @apply w-full;
+  }
+
+  .dp-top-bar {
+    @apply relative overflow-hidden rounded-[1.85rem] border border-white/85 p-1 shadow-[0_16px_48px_-16px_rgba(15,23,42,0.16)] backdrop-blur-2xl sm:rounded-[2rem];
+    background-image: linear-gradient(
+      165deg,
+      hsl(0 0% 100% / 0.94) 0%,
+      hsl(199 40% 99% / 0.88) 52%,
+      hsl(199 50% 97% / 0.86) 100%
+    );
+  }
+
+  .dp-top-bar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, transparent 42%);
+  }
+
+  .dp-top-bar-inner {
+    @apply relative z-[1] grid w-full grid-cols-[auto_1fr_auto] items-center gap-2.5 px-2 py-2 sm:gap-3 sm:px-3 sm:py-2.5;
+  }
+
+  .dp-top-bar-logo {
+    @apply inline-flex size-10 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-white/90 shadow-[0_8px_20px_-10px_rgba(15,23,42,0.18)] transition-[box-shadow,transform] duration-200;
+    background-image: linear-gradient(145deg, #ffffff 0%, #f4f7fb 100%);
+  }
+
+  .dp-top-bar-logo:hover {
+    box-shadow: 0 10px 24px -10px hsl(var(--primary) / 0.22);
+  }
+
+  .dp-top-bar-back {
+    @apply inline-flex h-10 cursor-pointer items-center gap-1 rounded-full border border-white/80 bg-white/90 px-3 text-xs font-semibold text-slate-800 shadow-sm transition-colors duration-200 hover:border-primary/20 hover:bg-white sm:text-sm;
+  }
+
+  .dp-top-bar-title {
+    @apply truncate text-sm font-black tracking-tight text-slate-900 sm:text-base;
+  }
+
+  .dp-top-bar-subtitle {
+    @apply mt-0.5 hidden truncate text-[11px] leading-5 text-slate-500 sm:block sm:text-xs;
+  }
+
+  .dp-top-bar-actions {
+    @apply flex min-w-[2.75rem] items-center justify-end gap-1.5 sm:gap-2;
+  }
+
+  .dp-top-bar-status {
+    @apply rounded-full border border-white/80 bg-white/80 px-3 py-1 text-[11px] font-semibold text-slate-600 shadow-sm backdrop-blur-sm;
+  }
+
+  .dp-top-nav-switch {
+    @apply flex items-center rounded-full border border-white/75 bg-white/45 p-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-md;
+  }
+
+  .dp-top-nav-tab {
+    @apply inline-flex h-8 cursor-pointer items-center justify-center rounded-full px-3 text-xs font-bold text-slate-600 transition-[background-color,box-shadow,color] duration-200;
+  }
+
+  .dp-top-nav-tab:hover:not(.dp-top-nav-tab-active) {
+    @apply bg-white/85 text-slate-900;
+  }
+
+  .dp-top-nav-tab-active {
+    @apply text-primary-foreground shadow-[0_6px_16px_-6px_hsl(var(--primary)/0.42)];
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--dora-blue-deep)) 100%
+    );
+  }
+
+  .dp-top-profile-pill {
+    @apply inline-flex h-10 cursor-pointer items-center gap-2 rounded-full border border-white/85 px-2 pr-3 shadow-[0_8px_22px_-12px_rgba(15,23,42,0.14)] backdrop-blur-sm transition-[border-color,box-shadow,background-color] duration-200;
+    background-image: linear-gradient(
+      145deg,
+      hsl(0 0% 100% / 0.92) 0%,
+      hsl(199 45% 98% / 0.82) 100%
+    );
+  }
+
+  .dp-top-profile-pill:hover {
+    @apply border-primary/15 shadow-[0_10px_26px_-12px_hsl(var(--primary)/0.2)];
+  }
+
+  .dp-top-profile-pill-active {
+    @apply border-primary/20 text-primary-foreground shadow-[0_8px_22px_-8px_hsl(var(--primary)/0.4)];
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--dora-blue-deep)) 100%
+    );
+  }
+
+  .dp-top-profile-avatar {
+    @apply inline-flex size-7 shrink-0 overflow-hidden rounded-full border border-white/90 bg-slate-100;
+  }
+
+  .dp-glass-nav {
+    @apply rounded-[1.55rem] border border-white/80 bg-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_12px_32px_-8px_rgba(15,23,42,0.12)] backdrop-blur-2xl;
+  }
+
+  .dp-glass-nav-outer {
+    @apply rounded-[2rem] border border-white/80 bg-white/55 p-1.5 shadow-[0_14px_40px_-12px_rgba(15,23,42,0.14)] backdrop-blur-2xl;
+  }
+
+  .dp-nav-pill {
+    @apply inline-flex items-center rounded-full border border-white/70 bg-white/55 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] backdrop-blur-md;
+  }
+
   .dp-pocket-surface {
-    @apply overflow-hidden rounded-3xl border-2 border-primary/35 bg-gradient-to-b from-primary/10 to-card text-card-foreground shadow-[0_10px_36px_hsl(199_89%_48%/0.12)] backdrop-blur-md;
+    @apply overflow-hidden rounded-3xl border border-primary/25 bg-gradient-to-b from-primary/10 via-white/80 to-white/90 text-card-foreground shadow-[0_14px_44px_-8px_hsl(var(--primary)/0.2)] backdrop-blur-xl;
   }
 
   .dp-pocket-item {
-    @apply rounded-2xl border border-primary/15 bg-background/85 px-3 py-2 shadow-sm;
+    @apply rounded-2xl border border-primary/10 bg-white/80 px-3 py-2 shadow-sm backdrop-blur-sm;
   }
 
   .dp-pocket-heading {
@@ -195,11 +548,11 @@
   }
 
   .dp-page-surface {
-    @apply rounded-[2rem] border border-white/75 bg-white/80 shadow-2xl shadow-slate-900/10 backdrop-blur-xl;
+    @apply dp-glass-panel;
   }
 
   .dp-reading-surface {
-    @apply rounded-3xl border border-border/55 bg-white shadow-sm;
+    @apply rounded-3xl border border-white/70 bg-white/90 shadow-[0_6px_24px_-10px_rgba(15,23,42,0.1)] backdrop-blur-md;
   }
 
   .dp-app-shell {
@@ -207,7 +560,7 @@
   }
 
   .dp-secondary-surface {
-    @apply rounded-3xl border border-white/70 bg-white/74 shadow-sm backdrop-blur-md;
+    @apply rounded-3xl border border-white/70 bg-white/75 shadow-[0_8px_28px_-12px_rgba(15,23,42,0.1)] backdrop-blur-lg;
   }
 
   /* 分析页左栏（图1）：桌面端略放大字号/间距；右栏舞台不套用 */

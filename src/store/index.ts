@@ -57,6 +57,7 @@ interface DoraStore {
   setSelectedToolPayload: (payload: ChatToolPayload) => void
   setAgentUiPayload: (payload: AgentUiPayload | null) => void
   resetAgentResponse: () => void
+  cancelActiveAgentTurn: () => void
 }
 
 export const useStore = create<DoraStore>((set, get) => ({
@@ -113,6 +114,12 @@ export const useStore = create<DoraStore>((set, get) => ({
       agentUiPayload: null,
       botResponse: '',
     }),
+
+  cancelActiveAgentTurn: () => {
+    chatAbortController?.abort()
+    chatAbortController = null
+    set({ agentTurnId: get().agentTurnId + 1 })
+  },
 }))
 
 export function mergeStep2IntoAnalysisFlow(

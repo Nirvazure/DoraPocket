@@ -11,15 +11,7 @@ import {
 import { cn } from '@/lib/utils'
 
 function DisplayPanel({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <Card
-      className={cn(
-        'rounded-[2rem] border-white/80 bg-white/90 shadow-xl shadow-slate-900/8 backdrop-blur-xl',
-        className,
-      )}
-      {...props}
-    />
-  )
+  return <Card className={cn('dp-glass-panel border-0 shadow-none', className)} {...props} />
 }
 
 function DisplayPanelHeader({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
@@ -27,7 +19,9 @@ function DisplayPanelHeader({ className, ...props }: HTMLAttributes<HTMLDivEleme
 }
 
 function DisplayPanelTitle({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <CardTitle className={cn('font-black tracking-tight text-foreground', className)} {...props} />
+  return (
+    <CardTitle className={cn('font-black tracking-tight text-foreground', className)} {...props} />
+  )
 }
 
 function DisplayPanelDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {

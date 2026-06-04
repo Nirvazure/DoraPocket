@@ -1,12 +1,11 @@
 'use client'
 
-import { AnalysisBottomBar } from '@/components/analysis-bottom-bar'
 import { AnalysisStagePanel } from '@/components/analysis-stage-panel'
 import { PageShell } from '@/components/common/page-shell'
 import { ProfileEntryPill } from '@/components/common/profile-entry-pill'
 import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
-import { DiscoveryWorkspace } from '@/components/discovery-workspace'
+import { DiscoveryWorkspace, type DiscoveryWorkspaceHandle } from '@/components/discovery-workspace'
 import { ListeningHud } from '@/components/listening-hud'
 import { PocketGadgetModal } from '@/components/pocket-gadget-modal'
 import { PocketQuickSettingsModal } from '@/components/pocket/pocket-quick-settings-modal'
@@ -21,6 +20,7 @@ import {
 } from '@/components/discovery/analysis-stage-content'
 
 export default function App() {
+  const workspaceRef = useRef<DiscoveryWorkspaceHandle>(null)
   const {
     appState,
     systemNotice,
@@ -43,7 +43,9 @@ export default function App() {
     promptPlaceholder,
     workspaceActions,
     pocketGadgetModalActions,
-    handleDraftTask,
+    handleStartStructuredAnalysis,
+    handleStartNewTask,
+    starterActionsEnabled,
     setPocketModalOpen,
     setQuickSettingsOpen,
     saveUserSettings,
@@ -58,9 +60,8 @@ export default function App() {
     skipToRecommendation,
     toggleDialogueExpanded,
     handleQuickReply,
-  } = useAnalysisPageController()
+  } = useAnalysisPageController({ workspaceRef })
 
-  const workspaceRef = useRef<HTMLElement>(null)
   const prefersCompactStage = usePrefersCompactStage()
   const [mobileStageExpanded, setMobileStageExpanded] = useState(false)
 
@@ -83,6 +84,62 @@ export default function App() {
     }
   }, [prefersCompactStage])
 
+  const sessionDock = useMemo(
+    () => ({
+      analysisFlow,
+      appState,
+      botResponse,
+      step2Session,
+      showSkip:
+        step2Session != null &&
+        step2Session.turn < (userSettings?.explanationMode === 'brief' ? 2 : 3),
+      canSkipVoice,
+      inputMode,
+      textFallback,
+      canSendText,
+      placeholder: promptPlaceholder,
+      onToggleInputMode: () => setInputMode((mode) => (mode === 'text' ? 'voice' : 'text')),
+      onTextChange: setTextFallback,
+      onSubmit: () => {
+        submitTextMessage(textFallback, () => {
+          setTextFallback('')
+        })
+      },
+      onHoldToTalkStart: holdToTalkStart,
+      onHoldToTalkEnd: holdToTalkEnd,
+      onCancelVoiceInput: cancelVoiceInput,
+      onStopVoicePlayback: stopAudioPlayback,
+      onRevealNow: revealNow,
+      onQuickReply: handleQuickReply,
+      onSkipRecommendation: skipToRecommendation,
+      onToggleDialogueExpanded: toggleDialogueExpanded,
+    }),
+    [
+      analysisFlow,
+      appState,
+      botResponse,
+      canSendText,
+      canSkipVoice,
+      cancelVoiceInput,
+      handleQuickReply,
+      holdToTalkEnd,
+      holdToTalkStart,
+      inputMode,
+      promptPlaceholder,
+      revealNow,
+      setInputMode,
+      setTextFallback,
+      skipToRecommendation,
+      step2Session,
+      submitTextMessage,
+      textFallback,
+      toggleDialogueExpanded,
+      userSettings?.explanationMode,
+    ],
+  )
+
+  const voiceFabDisabled = appState === 'thinking' || appState === 'speaking'
+
   return (
     <PageShell
       className="cursor-default"
@@ -93,11 +150,7 @@ export default function App() {
           title={PAGE_COPY.analysis.title}
           subtitle={PAGE_COPY.analysis.subtitle}
           statusSlot={
-            systemNotice ? (
-              <span className="rounded-full border border-border/60 bg-white px-3 py-1 text-[11px] font-semibold text-foreground/75">
-                {systemNotice.message}
-              </span>
-            ) : null
+            systemNotice ? <span className="dp-top-bar-status">{systemNotice.message}</span> : null
           }
           rightSlot={
             <div className="flex items-center gap-2">
@@ -139,9 +192,12 @@ export default function App() {
             onSaveCandidate={workspaceActions.onSaveCandidate}
             onLaunchCandidate={workspaceActions.onLaunchCandidate}
             onOpenExternalCandidate={workspaceActions.onOpenExternalCandidate}
-            onDraftTask={handleDraftTask}
+            onStartAnalysis={handleStartStructuredAnalysis}
+            onStartNewTask={handleStartNewTask}
+            starterActionsEnabled={starterActionsEnabled}
             onReachRecommendationStep={handleReachRecommendationStep}
             scrollOnReachRecommendation={prefersCompactStage}
+            sessionDock={sessionDock}
           />
         </div>
 
@@ -153,38 +209,11 @@ export default function App() {
             mobileCompact={showMobileCompactStage}
             mobileCompactExpanded={mobileStageExpanded}
             onToggleMobileCompact={() => setMobileStageExpanded((value) => !value)}
-          >
-            <AnalysisBottomBar
-              analysisFlow={analysisFlow}
-              appState={appState}
-              botResponse={botResponse}
-              step2Session={step2Session}
-              showSkip={
-                step2Session != null &&
-                step2Session.turn < (userSettings?.explanationMode === 'brief' ? 2 : 3)
-              }
-              canSkipVoice={canSkipVoice}
-              inputMode={inputMode}
-              textFallback={textFallback}
-              canSendText={canSendText}
-              placeholder={promptPlaceholder}
-              onToggleInputMode={() => setInputMode((mode) => (mode === 'text' ? 'voice' : 'text'))}
-              onTextChange={setTextFallback}
-              onSubmit={() => {
-                submitTextMessage(textFallback, () => {
-                  setTextFallback('')
-                })
-              }}
-              onHoldToTalkStart={holdToTalkStart}
-              onHoldToTalkEnd={holdToTalkEnd}
-              onCancelVoiceInput={cancelVoiceInput}
-              onStopVoicePlayback={stopAudioPlayback}
-              onRevealNow={revealNow}
-              onQuickReply={handleQuickReply}
-              onSkipRecommendation={skipToRecommendation}
-              onToggleDialogueExpanded={toggleDialogueExpanded}
-            />
-          </AnalysisStagePanel>
+            voiceFabDisabled={voiceFabDisabled}
+            onHoldToTalkStart={holdToTalkStart}
+            onHoldToTalkEnd={holdToTalkEnd}
+            onCancelVoiceInput={cancelVoiceInput}
+          />
         </div>
       </div>
     </PageShell>

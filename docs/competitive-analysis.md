@@ -1,7 +1,8 @@
 # DoraPocket 竞品分析
 
-> 更新日期：2026-05-29  
-> 分析范围：[toolhunter.ai](https://toolhunter.ai/)（目录型竞品）、任务驱动型 AI 工具推荐 Agent、间接竞品与基础设施型产品
+> 更新日期：2026-06-03  
+> 分析范围：[toolhunter.ai](https://toolhunter.ai/)（目录型竞品）、[AI Suggests](https://aisuggests.ai/find)（问卷+目录型）、任务驱动型 AI 工具推荐 Agent、间接竞品与基础设施型产品  
+> **AI Suggests 专项沉淀**（含「请选择」与优先改动建议）：[competitive-analysis-ai-suggests.md](./competitive-analysis-ai-suggests.md)
 
 ---
 

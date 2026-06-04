@@ -19,20 +19,18 @@ export function PageShell({
   contentMaxWidthClassName = 'max-w-[1440px]',
 }: PageShellProps) {
   return (
-    <div
-      className={cn(
-        'h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(187,224,255,0.45),transparent_35%),linear-gradient(180deg,#f8fbff_0%,#edf4ff_46%,#eef2f7_100%)]',
-        className,
-      )}
-    >
-      <div className="sticky top-0 z-30 bg-white/76 backdrop-blur-xl">
-        <div className={cn('mx-auto w-full px-4 py-3 sm:px-6', contentMaxWidthClassName)}>
-          {header}
-        </div>
+    <div className={cn('dp-mesh-page-bg h-screen overflow-hidden', className)}>
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+        <div className="absolute -left-24 top-16 h-72 w-72 rounded-full bg-[hsl(var(--dora-blue-bright)/0.35)] blur-3xl" />
+        <div className="absolute -right-20 top-8 h-64 w-64 rounded-full bg-[hsl(var(--accent-glow)/0.3)] blur-3xl" />
+        <div className="absolute bottom-0 left-1/2 h-80 w-[min(100%,48rem)] -translate-x-1/2 rounded-full bg-[hsl(var(--primary)/0.2)] blur-3xl" />
+      </div>
+      <div className="sticky top-0 z-30 px-4 pb-1 pt-4 sm:px-6 sm:pt-5">
+        <div className={cn('relative mx-auto w-full', contentMaxWidthClassName)}>{header}</div>
       </div>
       <ScrollArea
         className={cn(
-          'mx-auto flex h-[calc(100vh-5.25rem)] w-full flex-col gap-5 px-4 pb-24 pt-3 sm:h-[calc(100vh-5.75rem)] sm:px-6 sm:pt-4 lg:h-[calc(100vh-6.25rem)] lg:pt-5',
+          'relative mx-auto flex h-[calc(100vh-5.5rem)] w-full flex-col gap-5 px-4 pb-24 pt-2 sm:h-[calc(100vh-6rem)] sm:px-6 sm:pt-3 lg:h-[calc(100vh-6.5rem)] lg:pt-4',
           contentMaxWidthClassName,
           contentClassName,
         )}

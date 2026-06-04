@@ -1,16 +1,27 @@
 import { Suspense } from 'react'
 import { OAuthLoginForm } from '@/components/auth/oauth-login-form'
-import { UnifiedTopBar } from '@/components/common/unified-top-bar'
+import { ProfileEntryPill } from '@/components/common/profile-entry-pill'
 import { PageShell } from '@/components/common/page-shell'
+import { TopNavSwitch } from '@/components/common/top-nav-switch'
+import { UnifiedTopBar } from '@/components/common/unified-top-bar'
 
 export default function LoginPage() {
   return (
     <PageShell
       header={
-        <UnifiedTopBar title="登录 DoraPocket" subtitle="同步我的口袋、设置和推荐记忆到云端。" />
+        <UnifiedTopBar
+          title="登录 DoraPocket"
+          subtitle="同步我的口袋、设置和推荐记忆到云端。"
+          rightSlot={
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <TopNavSwitch />
+              <ProfileEntryPill />
+            </div>
+          }
+        />
       }
     >
-      <section className="mx-auto flex w-full max-w-3xl flex-col gap-6 rounded-[2rem] border border-white/80 bg-white/92 p-8 shadow-[0_18px_60px_rgba(15,23,42,0.08)]">
+      <section className="dp-page-surface mx-auto flex w-full max-w-3xl flex-col gap-6 p-8">
         <div className="space-y-3">
           <p className="text-sm font-black uppercase tracking-[0.22em] text-primary">Cloud Sync</p>
           <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-4xl">
@@ -24,7 +35,7 @@ export default function LoginPage() {
           {['我的口袋同步', '设置与反馈同步', '跨设备继续使用'].map((item) => (
             <div
               key={item}
-              className="rounded-[1.5rem] border border-slate-200/80 bg-slate-50/85 p-4 text-sm font-semibold text-foreground/80"
+              className="dp-secondary-surface p-4 text-sm font-semibold text-foreground/80"
             >
               {item}
             </div>

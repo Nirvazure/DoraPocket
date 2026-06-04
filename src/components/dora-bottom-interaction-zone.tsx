@@ -39,6 +39,7 @@ export type DoraBottomInteractionZoneProps = {
   onQuickReply: (text: string) => void
   onSkipRecommendation: () => void
   onToggleDialogueExpanded: () => void
+  hideVoiceToggle?: boolean
 }
 
 function resolveDialogueMessages(
@@ -88,6 +89,7 @@ export function DoraBottomInteractionZone({
   onQuickReply,
   onSkipRecommendation,
   onToggleDialogueExpanded,
+  hideVoiceToggle = false,
 }: DoraBottomInteractionZoneProps) {
   const dialogueMessages = useMemo(
     () => resolveDialogueMessages(step2Session, botResponse, appState),
@@ -139,6 +141,7 @@ export function DoraBottomInteractionZone({
           canSendText={canSendText}
           locked={inputLocked}
           placeholder={placeholder}
+          hideVoiceToggle={hideVoiceToggle}
           onToggleInputMode={onToggleInputMode}
           onTextChange={onTextChange}
           onSubmit={onSubmit}

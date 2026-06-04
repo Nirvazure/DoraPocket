@@ -1,10 +1,10 @@
 import { cn } from '@/lib/utils'
 
 const TAG_ACCENT = [
-  'bg-sky-500/[0.08] text-sky-700 ring-sky-500/15',
-  'bg-violet-500/[0.08] text-violet-700 ring-violet-500/15',
-  'bg-emerald-500/[0.08] text-emerald-700 ring-emerald-500/15',
-  'bg-amber-500/[0.08] text-amber-700 ring-amber-500/15',
+  'bg-sky-500/10 text-sky-800 ring-sky-400/20',
+  'bg-blue-500/10 text-blue-800 ring-blue-400/20',
+  'bg-emerald-500/10 text-emerald-800 ring-emerald-400/20',
+  'bg-amber-500/10 text-amber-800 ring-amber-400/20',
 ] as const
 
 function formatToolTagLabel(tag: string) {
@@ -27,7 +27,7 @@ export function MarketToolTags({ tags, className, max = 2 }: MarketToolTagsProps
         <span
           key={tag}
           className={cn(
-            'inline-flex max-w-full items-center rounded-md px-1.5 py-0.5 ring-1 ring-inset transition-colors duration-200',
+            'inline-flex max-w-full items-center rounded-full px-2 py-0.5 ring-1 ring-inset transition-colors duration-200',
             TAG_ACCENT[index % TAG_ACCENT.length],
             'group-hover:ring-current/25',
           )}

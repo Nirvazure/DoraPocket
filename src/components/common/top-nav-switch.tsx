@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 type TopNavPage = 'intro' | 'analysis' | 'market' | 'pocket'
@@ -16,30 +15,20 @@ const NAV_ITEMS: Array<{ key: TopNavPage; label: string; href: string }> = [
 
 export function TopNavSwitch({ current, className }: TopNavSwitchProps) {
   return (
-    <div
-      className={cn(
-        'inline-flex items-center rounded-full border border-slate-200/80 bg-slate-100/90 p-1 shadow-sm',
-        className,
-      )}
-    >
+    <nav className={cn('dp-top-nav-switch', className)} aria-label="主站导航">
       {NAV_ITEMS.map((item) => {
         const active = item.key === current
         return (
-          <Button
+          <Link
             key={item.key}
-            nativeButton={false}
-            render={<Link href={item.href} aria-current={active ? 'page' : undefined} />}
-            size="sm"
-            variant={active ? 'default' : 'ghost'}
-            className={cn(
-              'rounded-full px-3 text-xs font-bold',
-              active ? 'shadow-sm' : 'text-foreground/75 hover:bg-white hover:text-foreground',
-            )}
+            href={item.href}
+            aria-current={active ? 'page' : undefined}
+            className={cn('dp-top-nav-tab', active && 'dp-top-nav-tab-active')}
           >
             {item.label}
-          </Button>
+          </Link>
         )
       })}
-    </div>
+    </nav>
   )
 }

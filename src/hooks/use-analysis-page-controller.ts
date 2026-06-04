@@ -7,6 +7,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type RefObject,
   type SetStateAction,
 } from 'react'
 import {
@@ -27,10 +28,17 @@ import type { AssistantModeCard } from '@/shared/mode-registry'
 import { PAGE_COPY, SYSTEM_NOTICE_COPY } from '@/shared/ui-copy'
 import { mergeStep2IntoAnalysisFlow, useStore } from '@/store'
 import { shouldRestartAnalysisFlow } from '@/shared/analysis-stage-restart'
+import { composeStarterPromptFromVoice, createEmptyStarterIntake } from '@/shared/starter-intake'
+import type { DiscoveryWorkspaceHandle } from '@/components/discovery-workspace'
 
 type InputMode = 'text' | 'voice'
 
-export function useAnalysisPageController() {
+type UseAnalysisPageControllerOptions = {
+  workspaceRef?: RefObject<DiscoveryWorkspaceHandle | null>
+}
+
+export function useAnalysisPageController(options: UseAnalysisPageControllerOptions = {}) {
+  const { workspaceRef } = options
   const appState = useStore((state) => state.appState)
   const transcript = useStore((state) => state.transcript)
   const botResponse = useStore((state) => state.botResponse)
@@ -90,9 +98,25 @@ export function useAnalysisPageController() {
     onRevealRecommendation: requestRevealRecommendation,
   })
 
+  const runAgentTurnForVoice = useCallback(
+    async (text: string) => {
+      const trimmed = text.trim()
+      if (!trimmed) return
+      if (!currentPrompt?.trim()) {
+        if (appState !== 'idle') return
+        const intake = workspaceRef?.current?.getStarterIntake() ?? createEmptyStarterIntake()
+        const prompt = composeStarterPromptFromVoice(intake, trimmed)
+        await runAgentTurn(prompt, { displayPrompt: trimmed })
+        return
+      }
+      await runAgentTurn(trimmed, { isContinuation: true })
+    },
+    [appState, currentPrompt, runAgentTurn, workspaceRef],
+  )
+
   const { holdToTalkStart, holdToTalkEnd, cancelVoiceInput, submitTextMessage } = useVoiceInput({
     appState,
-    runAgentTurn,
+    runAgentTurn: runAgentTurnForVoice,
     clearResponseState,
   })
 
