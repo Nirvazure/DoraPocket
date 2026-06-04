@@ -4,7 +4,7 @@ import { ExternalLink, FolderHeart, PenLine, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { MarketToolIcon } from '@/components/market/market-tool-icon'
 import { MarketToolTags } from '@/components/market/market-tool-tags'
-import type { MarketToolCardItem } from '@/hooks/market-scope'
+import type { MarketToolCardItem } from '@/shared/market-scope'
 import { MarketUnavailableToolCard } from '@/components/market/market-unavailable-tool-card'
 import { MARKET_ACTIVITY_COPY, PAGE_COPY } from '@/shared/ui-copy'
 

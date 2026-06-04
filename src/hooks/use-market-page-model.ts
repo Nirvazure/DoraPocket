@@ -11,7 +11,7 @@ import {
   type MarketScope,
   type MarketSectionKey,
   type MarketToolCardItem,
-} from '@/hooks/market-scope'
+} from '@/shared/market-scope'
 
 type Draft = {
   name: string
@@ -27,7 +27,7 @@ export const EMPTY_MARKET_DRAFT: Draft = {
   tags: '',
 }
 
-export type { MarketScope, MarketSectionKey, MarketToolCardItem }
+export type { MarketScope, MarketSectionKey, MarketToolCardItem } from '@/shared/market-scope'
 
 type DiscoverSectionKey = Exclude<MarketSectionKey, 'pocket'>
 

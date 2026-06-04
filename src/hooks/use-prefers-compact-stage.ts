@@ -13,7 +13,6 @@ export function usePrefersCompactStage() {
   useEffect(() => {
     const media = window.matchMedia(COMPACT_STAGE_QUERY)
     const sync = () => setPrefersCompact(media.matches)
-    sync()
     media.addEventListener('change', sync)
     return () => media.removeEventListener('change', sync)
   }, [])

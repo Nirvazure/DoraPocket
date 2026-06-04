@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 
-import { shouldRestartAnalysisFlow } from './analysis-stage-restart'
+import { shouldRestartAnalysisFlow } from '@/shared/analysis-stage-restart'
 
 test('restarts analysis flow for a new prompt after previous turn finished', () => {
   assert.equal(

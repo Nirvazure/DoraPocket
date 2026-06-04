@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { MarketPage } from '@/components/market-page'
-import type { MarketSectionKey } from '@/hooks/market-scope'
+import type { MarketSectionKey } from '@/shared/market-scope'
 
 export const metadata: Metadata = {
   title: '道具库 | DoraPocket',

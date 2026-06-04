@@ -16,7 +16,7 @@ import { MarketReviewDrawer } from '@/components/market/market-review-drawer'
 import { MarketSubmitModal } from '@/components/market/market-submit-modal'
 import { MarketToolGrid } from '@/components/market/market-tool-grid'
 import { MarketToolbar } from '@/components/market/market-toolbar'
-import { buildActivePocketToolIds } from '@/hooks/market-scope'
+import { buildActivePocketToolIds } from '@/shared/market-scope'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
 import { useMarketPageModel } from '@/hooks/use-market-page-model'
 import { useToolCardActions } from '@/hooks/use-tool-card-actions'
@@ -42,7 +42,7 @@ import {
   useRemoveToolFromPocketMutation,
   useSaveToolToPocketMutation,
 } from '@/lib/query/pocket'
-import type { MarketSectionKey } from '@/hooks/market-scope'
+import type { MarketSectionKey } from '@/shared/market-scope'
 import { PAGE_COPY } from '@/shared/ui-copy'
 
 type MarketPageProps = {

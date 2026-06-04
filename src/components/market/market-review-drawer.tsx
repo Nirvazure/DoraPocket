@@ -10,7 +10,7 @@ import {
   DisplayPanelHeader,
   DisplayPanelTitle,
 } from '@/components/ui/display-shell'
-import type { MarketToolCardItem } from '@/hooks/use-market-page-model'
+import type { MarketToolCardItem } from '@/shared/market-scope'
 import {
   NEGATIVE_MARKET_REVIEW_TAGS,
   POSITIVE_MARKET_REVIEW_TAGS,

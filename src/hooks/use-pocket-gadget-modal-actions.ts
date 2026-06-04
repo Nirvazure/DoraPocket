@@ -1,7 +1,9 @@
+'use client'
+
+import { useCallback } from 'react'
 import type { AssistantModeCard } from '@/shared/mode-registry'
 import type { ChatToolPayload } from '@/lib/client/llm'
-import { redirectToLoginUnlessAuthenticated } from '@/lib/query/auth-session'
-import { openToolById, saveToolById } from '@/lib/tool-actions'
+import { useAuthenticatedToolActions } from '@/hooks/use-authenticated-tool-actions'
 import type { ToolLookupFn } from '@/shared/tool-lookup'
 
 type UsePocketGadgetModalActionsOptions = {
@@ -27,20 +29,36 @@ export function usePocketGadgetModalActions({
   saveToolToPocket,
   markToolUsed,
 }: UsePocketGadgetModalActionsOptions) {
-  return {
-    onOpenTool: (toolId: string) => {
-      openToolById(toolId, markToolUsed, { url: getTool(toolId)?.url })
-    },
-    onSaveToPocket: (gadget: AssistantModeCard) => {
-      if (!gadget.toolId) return
-      if (!redirectToLoginUnlessAuthenticated(authPending, isAuthenticated)) return
+  const { openTool, saveTool } = useAuthenticatedToolActions({
+    authPending,
+    isAuthenticated,
+    markToolUsed,
+    saveToolToPocket,
+    getSourceQuestion: getLatestUserPrompt,
+    getTool,
+  })
 
+  const onOpenTool = useCallback(
+    (toolId: string) => {
+      openTool(toolId)
+    },
+    [openTool],
+  )
+
+  const onSaveToPocket = useCallback(
+    (gadget: AssistantModeCard) => {
+      if (!gadget.toolId) return
       const presetArgs =
         selectedToolPayload?.toolId === gadget.toolId && selectedToolPayload.args
           ? selectedToolPayload.args
           : undefined
-
-      saveToolById(gadget.toolId, saveToolToPocket, getLatestUserPrompt() || undefined, presetArgs)
+      saveTool(gadget.toolId, presetArgs)
     },
+    [saveTool, selectedToolPayload],
+  )
+
+  return {
+    onOpenTool,
+    onSaveToPocket,
   }
 }

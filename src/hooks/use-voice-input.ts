@@ -1,4 +1,6 @@
-﻿import { useCallback, useEffect, useRef } from 'react'
+﻿'use client'
+
+import { useCallback, useEffect, useRef } from 'react'
 import {
   disposeSpeechSession,
   initAudioContext,
@@ -12,15 +14,6 @@ import { useStore } from '@/store'
 type UseVoiceInputOptions = {
   appState: AppState
   runAgentTurn: (text: string) => Promise<void>
-  setAppState: (state: AppState) => void
-  setTranscript: (text: string) => void
-  setBotResponse: (text: string) => void
-  setLastSpeechError: (message: string) => void
-  setSystemNotice: (notice: {
-    level: 'task' | 'ambient' | 'critical' | 'silent'
-    message: string
-    autoDismissMs?: number
-  }) => void
   clearResponseState: () => void
 }
 
@@ -32,13 +25,14 @@ function speechErrorMessage(code: string): string {
 export function useVoiceInput({
   appState,
   runAgentTurn,
-  setAppState,
-  setTranscript,
-  setBotResponse,
-  setLastSpeechError,
-  setSystemNotice,
   clearResponseState,
 }: UseVoiceInputOptions) {
+  const setAppState = useStore((state) => state.setAppState)
+  const setTranscript = useStore((state) => state.setTranscript)
+  const setBotResponse = useStore((state) => state.setBotResponse)
+  const setLastSpeechError = useStore((state) => state.setLastSpeechError)
+  const setSystemNotice = useStore((state) => state.setSystemNotice)
+
   const handleSpeechEndRef = useRef<() => Promise<void>>(async () => {})
   const speechBusyRef = useRef(false)
   const holdToTalkActiveRef = useRef(false)

@@ -7,7 +7,7 @@ import {
   resolveMarketSection,
   resolveScopedTools,
   type MarketToolCardItem,
-} from './market-scope'
+} from '@/shared/market-scope'
 
 const baseTool = (
   id: string,

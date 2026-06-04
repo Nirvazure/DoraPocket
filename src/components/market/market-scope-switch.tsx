@@ -1,6 +1,6 @@
 'use client'
 
-import type { MarketScope } from '@/hooks/market-scope'
+import type { MarketScope } from '@/shared/market-scope'
 import { cn } from '@/lib/utils'
 import { PAGE_COPY } from '@/shared/ui-copy'
 
