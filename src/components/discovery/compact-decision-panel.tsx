@@ -28,7 +28,7 @@ export function CompactDecisionPanel({
   onOpenExternalCandidate,
 }: CompactDecisionPanelProps) {
   return (
-    <div className="space-y-3">
+    <div className="flex w-full flex-col gap-5">
       <PrimaryRecommendationCard
         payload={payload}
         selectedToolPayload={selectedToolPayload}

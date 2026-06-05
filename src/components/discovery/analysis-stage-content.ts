@@ -317,7 +317,6 @@ export function buildLiveAnalysisTrack({
       detail: prompt
         ? `先确认这次真正要解决的是：${goal}`
         : '先等待你给出任务，再开始判断这次该从哪里切入。',
-      meta: prompt ? '已进入任务理解' : '还没有任务输入',
       status: resolveTrackStatus(0, activeIndex),
     },
     {
