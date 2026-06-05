@@ -1,9 +1,6 @@
 export function WhereToStartSectionSkeleton() {
   return (
-    <div
-      className="flex min-h-full animate-pulse flex-col rounded-[1.8rem] bg-muted/35 p-4"
-      aria-hidden
-    >
+    <div className="flex min-h-full w-full flex-1 animate-pulse flex-col" aria-hidden>
       <div className="h-4 w-24 rounded bg-muted/50" />
       <div className="mt-4 flex gap-2">
         <div className="h-1.5 flex-1 rounded-full bg-muted/45" />

@@ -124,7 +124,7 @@ export function MarketPage({ initialSection = null }: MarketPageProps) {
   return (
     <PageShell
       className="overflow-hidden"
-      contentClassName="pb-5 pt-5 sm:pt-6 lg:px-4 lg:pt-6 xl:px-3"
+      contentClassName="pb-5 pt-5 sm:pt-6 lg:pt-6"
       header={
         <UnifiedTopBar
           title={APP_BRAND_TITLE}

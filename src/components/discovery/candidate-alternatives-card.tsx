@@ -1,29 +1,23 @@
 import {
-  DisplayPanel,
-  DisplayPanelContent,
-  DisplayPanelHeader,
-  DisplayPanelTitle,
-} from '@/components/ui/display-shell'
-import {
   isRecommendationCovered,
   isRecommendationRevealing,
   resolveAlternativeCandidates,
   type AnalysisFlow,
 } from '@/components/discovery/analysis-stage-content'
+import { CandidateMatchScore } from '@/components/discovery/candidate-match-score'
 import { CandidateOriginBadge } from '@/components/discovery/candidate-origin-badge'
-import {
-  formatCandidateScore,
-  shouldShowCandidateScore,
-} from '@/components/discovery/candidate-score'
+import { shouldShowCandidateScore } from '@/components/discovery/candidate-score'
+import { MarketToolIcon } from '@/components/market/market-tool-icon'
 import { ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import type { ToolLookupFn } from '@/shared/tool-lookup'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
-
 import { Skeleton } from '@/components/ui/skeleton'
 import type { UserSettings } from '@/shared/user-settings'
+import { cn } from '@/lib/utils'
+
+const ALTERNATIVE_SLOT_LABELS = ['A', 'B', 'C'] as const
 
 type CandidateAlternativesCardProps = {
   payload: AgentUiPayload | null
@@ -32,6 +26,24 @@ type CandidateAlternativesCardProps = {
   getTool: ToolLookupFn
   explanationMode?: UserSettings['explanationMode']
   onOpenExternalCandidate?: (url: string) => void
+}
+
+function AlternativeCardSkeleton() {
+  return (
+    <div className="dp-gadget-alt-card flex flex-col p-3">
+      <div className="flex items-center justify-between gap-2">
+        <Skeleton className="h-3 w-10 bg-primary/10" />
+        <Skeleton className="h-7 w-14 rounded-full bg-primary/10" />
+      </div>
+      <div className="mt-3 flex gap-2.5">
+        <Skeleton className="h-11 w-11 shrink-0 rounded-xl bg-slate-100" />
+        <div className="flex-1 space-y-2">
+          <Skeleton className="h-3.5 w-full bg-slate-200" />
+          <Skeleton className="h-3 w-4/5 bg-slate-200" />
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export function CandidateAlternativesCard({
@@ -49,68 +61,63 @@ export function CandidateAlternativesCard({
 
   if (covered) {
     return (
-      <DisplayPanel className="rounded-[1.8rem] border-border/70 bg-white shadow-sm">
-        <DisplayPanelHeader className="space-y-2">
-          <Skeleton className="h-3 w-28 bg-slate-200" />
-          <Skeleton className="h-7 w-56 max-w-full bg-slate-200" />
-        </DisplayPanelHeader>
-        <DisplayPanelContent>
-          <div className="grid gap-3 md:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <DisplayPanel
-                key={index}
-                className="rounded-2xl border-border/60 bg-slate-50 p-3 shadow-none"
-              >
-                <Skeleton className="h-4 w-32 bg-slate-200" />
-                <Skeleton className="mt-2 h-3 w-full bg-slate-200" />
-                <Skeleton className="mt-2 h-3 w-4/5 bg-slate-200" />
-              </DisplayPanel>
-            ))}
-          </div>
-        </DisplayPanelContent>
-      </DisplayPanel>
+      <div className="grid w-full gap-2.5 md:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <AlternativeCardSkeleton key={index} />
+        ))}
+      </div>
     )
   }
 
   return (
-    <DisplayPanel className="rounded-[1.8rem] border-border/70 bg-white shadow-sm">
-      <DisplayPanelHeader className="space-y-2">
-        <DisplayPanelTitle className="text-xl text-foreground">
-          如果你不想用这个，还有这些
-        </DisplayPanelTitle>
-      </DisplayPanelHeader>
-      <DisplayPanelContent className={revealing ? 'animate-in fade-in duration-300' : undefined}>
-        {alternatives.length > 0 ? (
-          <div className="grid gap-3 md:grid-cols-3">
-            {alternatives.map((candidate, index) => {
-              const tool = candidate.toolId ? getTool(candidate.toolId) : null
-              const isExternal = candidate.candidateType === 'external_suggestion'
-              return (
-                <DisplayPanel
-                  key={candidate.toolId ?? `${candidate.title}-${index}`}
-                  className="rounded-2xl border-border/60 bg-slate-50 p-3 shadow-none"
-                >
-                  <div className="flex flex-wrap items-start justify-between gap-2">
-                    <p className="text-xs font-black text-foreground">
-                      备选 {index + 1} · {tool?.name ?? candidate.title}
-                    </p>
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      {showScore ? (
-                        <Badge
-                          variant="outline"
-                          className="border-border/55 bg-white px-2 py-0.5 text-[10px] font-semibold text-muted-foreground"
-                        >
-                          {formatCandidateScore(candidate)}
-                        </Badge>
-                      ) : null}
-                      <CandidateOriginBadge candidate={candidate} />
+    <div className={cn('w-full', revealing && 'animate-in fade-in duration-300')}>
+      {alternatives.length > 0 ? (
+        <div className="grid gap-2.5 md:grid-cols-3">
+          {alternatives.map((candidate, index) => {
+            const tool = candidate.toolId ? getTool(candidate.toolId) : null
+            const isExternal = candidate.candidateType === 'external_suggestion'
+            const slotLabel = ALTERNATIVE_SLOT_LABELS[index] ?? String(index + 1)
+            const displayName = tool?.name ?? candidate.title
+
+            return (
+              <article
+                key={candidate.toolId ?? `${candidate.title}-${index}`}
+                className="dp-gadget-alt-card flex h-full flex-col p-3"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <span className="rounded-full border border-primary/12 bg-primary/[0.06] px-2 py-0.5 text-[10px] font-bold tracking-wide text-primary/75">
+                    备选 {slotLabel}
+                  </span>
+                  {showScore ? (
+                    <CandidateMatchScore candidate={candidate} layout="chip" className="shrink-0" />
+                  ) : null}
+                </div>
+
+                <div className="mt-3 flex items-start gap-2.5">
+                  {tool ? (
+                    <MarketToolIcon tool={tool} size="sm" />
+                  ) : (
+                    <div
+                      className="dp-gadget-alt-icon flex items-center justify-center text-lg"
+                      aria-hidden
+                    >
+                      🌐
                     </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-sm font-bold leading-snug text-foreground">
+                      {displayName}
+                    </h3>
+                    <p className="mt-1 line-clamp-3 text-[11px] leading-relaxed text-muted-foreground">
+                      {candidate.reason}
+                    </p>
                   </div>
-                  <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-                    {candidate.reason}
-                  </p>
+                </div>
+
+                <div className="mt-auto flex flex-col gap-1.5 pt-3">
+                  <CandidateOriginBadge candidate={candidate} />
                   {isExternal && candidate.externalBoundary ? (
-                    <p className="mt-2 text-[10px] leading-relaxed text-amber-800/80">
+                    <p className="text-[10px] leading-relaxed text-amber-800/75">
                       {candidate.externalBoundary}
                     </p>
                   ) : null}
@@ -118,23 +125,24 @@ export function CandidateAlternativesCard({
                     <Button
                       type="button"
                       size="sm"
-                      className="mt-3 h-8 rounded-full px-3 text-[11px]"
+                      variant="outline"
+                      className="h-7 w-full rounded-full border-primary/15 bg-white/80 px-2.5 text-[10px] font-bold text-primary hover:bg-white"
                       onClick={() => onOpenExternalCandidate(candidate.url ?? '')}
                     >
-                      <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
+                      <ExternalLink className="mr-1 h-3 w-3" />
                       打开外部工具
                     </Button>
                   ) : null}
-                </DisplayPanel>
-              )
-            })}
-          </div>
-        ) : (
-          <DisplayPanel className="rounded-2xl border-dashed bg-slate-50 p-4 text-center text-xs font-semibold text-muted-foreground shadow-none">
-            当前备选已压缩到最小集合，先试主推荐即可。
-          </DisplayPanel>
-        )}
-      </DisplayPanelContent>
-    </DisplayPanel>
+                </div>
+              </article>
+            )
+          })}
+        </div>
+      ) : (
+        <div className="rounded-xl border border-dashed border-primary/15 bg-white/50 px-4 py-3 text-center text-xs font-medium text-muted-foreground">
+          当前备选已压缩到最小集合，先试主推荐即可。
+        </div>
+      )}
+    </div>
   )
 }

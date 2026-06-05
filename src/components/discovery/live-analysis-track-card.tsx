@@ -8,7 +8,11 @@ import { cn } from '@/lib/utils'
 import type { AgentUiPayload } from '@/shared/market-types'
 import type { ProgressStage } from '@/shared/step2-session-types'
 import type { StarterIntake } from '@/shared/starter-intake'
-import { StarterIntakeSummary } from '@/components/discovery/starter-wizard/starter-intake-summary'
+import {
+  StarterIntakeConstraintField,
+  StarterIntakeTaskFields,
+} from '@/components/discovery/starter-wizard/starter-intake-summary'
+import { PAGE_COPY } from '@/shared/ui-copy'
 import type { AppState } from '@/store'
 
 type LiveAnalysisTrackCardProps = {
@@ -46,9 +50,10 @@ export function LiveAnalysisTrackCard({
     progressStage,
   })
 
+  const starterCopy = PAGE_COPY.analysis.starter
+
   return (
     <div className="space-y-3">
-      {starterIntake ? <StarterIntakeSummary intake={starterIntake} /> : null}
       {items.map((item, index) => (
         <div
           key={`track-${index}-${item.title}`}
@@ -77,9 +82,20 @@ export function LiveAnalysisTrackCard({
             >
               <TrackIcon item={item} />
             </span>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-black text-foreground">{item.title}</p>
+              {index === 0 && starterIntake ? (
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  {starterCopy.intakeSummaryHint}
+                </p>
+              ) : null}
               <p className="mt-1 text-sm leading-7 text-muted-foreground">{item.detail}</p>
+              {index === 0 && starterIntake ? (
+                <StarterIntakeTaskFields intake={starterIntake} className="mt-3" />
+              ) : null}
+              {index === 1 && starterIntake ? (
+                <StarterIntakeConstraintField intake={starterIntake} className="mt-3" />
+              ) : null}
               {item.meta ? (
                 <p className="mt-2 rounded-2xl border border-border/60 bg-white/80 px-3 py-2 text-xs font-semibold text-foreground/75">
                   {item.meta}

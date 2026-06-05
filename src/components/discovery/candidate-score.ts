@@ -1,8 +1,11 @@
 import type { AgentCandidate } from '@/shared/market-types'
 
+export function getCandidateScoreValue(candidate: AgentCandidate): number {
+  return Math.max(0, Math.round(candidate.score))
+}
+
 export function formatCandidateScore(candidate: AgentCandidate): string {
-  const value = Math.max(0, Math.round(candidate.score))
-  return `匹配度 ${value}`
+  return `匹配度 ${getCandidateScoreValue(candidate)}`
 }
 
 export function shouldShowCandidateScore(

@@ -149,7 +149,7 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
           </div>
 
           <ScrollArea className="min-h-0 flex-1 px-3 pt-2 pb-4 sm:px-4 sm:pb-4">
-            <div className="mx-auto flex min-h-full max-w-6xl flex-col gap-3">
+            <div className="flex min-h-full w-full flex-col gap-3">
               {activePanelStep === 3 ? (
                 <CompactDecisionPanel
                   payload={agentPayload}

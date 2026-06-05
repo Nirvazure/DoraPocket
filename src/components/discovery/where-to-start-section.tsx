@@ -28,7 +28,7 @@ export function WhereToStartSection({
   const copy = PAGE_COPY.analysis.starter
 
   return (
-    <section className="flex min-h-full flex-col rounded-[1.8rem] border border-primary/15 bg-primary/[0.04] p-4">
+    <section className="flex min-h-full w-full flex-1 flex-col">
       <div className="shrink-0">
         <SectionLabel>{copy.wizardEyebrow}</SectionLabel>
       </div>
