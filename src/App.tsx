@@ -131,8 +131,7 @@ export default function App() {
   return (
     <PageShell
       className="cursor-default"
-      contentMaxWidthClassName="max-w-[min(100%,120rem)]"
-      contentClassName="flex min-h-0 flex-col gap-3 px-3 pb-4 pt-2 sm:px-4 sm:pt-3 lg:h-[calc(100dvh-6.9rem)] lg:overflow-hidden lg:px-4 lg:pb-2 lg:pt-4"
+      contentClassName="flex min-h-0 flex-col gap-3 pb-4 pt-2 sm:pt-3 lg:h-[calc(100dvh-6.9rem)] lg:overflow-hidden lg:pb-2 lg:pt-4"
       header={
         <UnifiedTopBar
           title={PAGE_COPY.analysis.title}
