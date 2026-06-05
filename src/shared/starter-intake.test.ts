@@ -3,6 +3,7 @@ import test from 'node:test'
 
 import {
   canAdvanceStarterStep,
+  canStartStarterAnalysis,
   canStartStructuredAnalysis,
   composeStarterPrompt,
   composeStarterPromptFromVoice,
@@ -48,7 +49,7 @@ test('canAdvanceStarterStep enforces role and outcome gates', () => {
   }
   assert.equal(canAdvanceStarterStep(ready, 2), true)
   assert.equal(canAdvanceStarterStep(ready, 3), true)
-  assert.equal(canAdvanceStarterStep(ready, 4), true)
+  assert.equal(canStartStarterAnalysis(ready), true)
 })
 
 test('composeStarterPrompt and display goal separate task line', () => {

@@ -14,8 +14,8 @@ export function TaskContextCard({ currentPrompt }: TaskContextCardProps) {
   return (
     <DisplayPanel className="rounded-3xl bg-white p-4 shadow-sm">
       <DisplayPanelHeader className="p-0">
-        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">当前任务</p>
-        <DisplayPanelTitle className="mt-2 text-lg leading-snug">{currentPrompt}</DisplayPanelTitle>
+        <DisplayPanelTitle className="text-lg leading-snug">当前任务</DisplayPanelTitle>
+        <p className="mt-2 text-sm leading-snug text-foreground">{currentPrompt}</p>
       </DisplayPanelHeader>
       <DisplayPanelContent className="p-0 pt-2">
         <DisplayPanelDescription className="text-sm">

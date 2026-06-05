@@ -40,8 +40,7 @@ export function CandidateComparisonList({
     <DisplayPanel className="rounded-3xl border-border/55 bg-white p-4 shadow-sm">
       <div className="flex items-center justify-between gap-3">
         <DisplayPanelHeader className="p-0">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">候选比较</p>
-          <DisplayPanelTitle className="mt-1 text-lg">为什么是它，而不是另外两个</DisplayPanelTitle>
+          <DisplayPanelTitle className="text-lg">为什么是它，而不是另外两个</DisplayPanelTitle>
         </DisplayPanelHeader>
         <Badge
           variant="outline"

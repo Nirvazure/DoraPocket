@@ -367,15 +367,6 @@ export function useAnalysisSession({
     ],
   )
 
-  const skipToRecommendation = useCallback(() => {
-    const session = useStore.getState().step2Session
-    if (!session) return
-    void runAgentTurn(session.anchorPrompt, {
-      skipClarify: true,
-      isContinuation: true,
-    })
-  }, [runAgentTurn])
-
   const toggleDialogueExpanded = useCallback(() => {
     setStep2Session((session) =>
       session ? { ...session, dialogueExpanded: !session.dialogueExpanded } : null,
@@ -438,7 +429,6 @@ export function useAnalysisSession({
     resetAnalysisForNewTask,
     runAgentTurn,
     revealNow,
-    skipToRecommendation,
     toggleDialogueExpanded,
   }
 }

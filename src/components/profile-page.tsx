@@ -17,7 +17,7 @@ import {
 import { useAuthSessionQuery, resolveSettingsReadOnly } from '@/lib/query/auth-session'
 import { useSaveUserSettingsMutation, useUserSettingsQuery } from '@/lib/query/user-settings'
 import { cn } from '@/lib/utils'
-import { PAGE_COPY } from '@/shared/ui-copy'
+import { PAGE_COPY, APP_BRAND_TITLE } from '@/shared/ui-copy'
 
 export function ProfilePage() {
   const { data: authSession, isPending: authPending } = useAuthSessionQuery()
@@ -41,7 +41,7 @@ export function ProfilePage() {
       contentClassName="pb-8 pt-4 sm:pt-5 lg:pt-6"
       header={
         <UnifiedTopBar
-          title={PAGE_COPY.profile.title}
+          title={APP_BRAND_TITLE}
           subtitle={PAGE_COPY.profile.subtitle}
           rightSlot={
             <div className="flex items-center gap-1.5">
@@ -83,9 +83,6 @@ export function ProfilePage() {
                 </span>
 
                 <div className="min-w-0 space-y-2">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-sky-700">
-                    My Profile
-                  </p>
                   <DisplayPanelTitle className="text-xl text-slate-950 sm:text-2xl">
                     {user?.nickname ?? '先登录，再同步你的设置'}
                   </DisplayPanelTitle>

@@ -41,7 +41,7 @@ export function RightStatusShowcase({ appState, analysisFlow }: RightStatusShowc
   const showLoadingDots = shouldShowAnalysisLoadingDots(analysisFlow, appState)
 
   return (
-    <div className="inline-flex max-w-full items-center justify-end gap-2 text-right">
+    <div className="inline-flex max-w-full items-center gap-2">
       <span className={cn('h-2 w-2 shrink-0 rounded-full', current.toneClassName)} aria-hidden />
       <span className="truncate text-[11px] font-bold tracking-[0.18em] text-foreground/86">
         {detail ?? current.label}

@@ -39,10 +39,7 @@ export function MarketSubmitModal({
       <DisplayPanel className="w-full max-w-xl rounded-[2rem] bg-white p-5 shadow-2xl">
         <div className="flex items-start justify-between gap-3">
           <DisplayPanelHeader className="p-0">
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
-              Contribute
-            </p>
-            <DisplayPanelTitle className="mt-1 text-2xl">提交到道具库</DisplayPanelTitle>
+            <DisplayPanelTitle className="text-2xl">提交到道具库</DisplayPanelTitle>
           </DisplayPanelHeader>
           <Button
             type="button"

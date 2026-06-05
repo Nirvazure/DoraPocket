@@ -60,7 +60,6 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
   const [inputModeOverride, setInputModeOverride] = useState<InputMode | null>(null)
   const [textFallback, setTextFallback] = useState('')
   const [pocketModalOpen, setPocketModalOpen] = useState(false)
-  const [quickSettingsOpen, setQuickSettingsOpen] = useState(false)
   const [pocketGadget, setPocketGadget] = useState<AssistantModeCard | null>(null)
   const previousPromptRef = useRef<string | null>(null)
   const stageImmediateTimerRef = useRef<number | null>(null)
@@ -87,7 +86,6 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     resetAnalysisForNewTask,
     runAgentTurn,
     revealNow,
-    skipToRecommendation,
     toggleDialogueExpanded,
   } = useAnalysisSession({
     userSettings,
@@ -300,7 +298,6 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     botResponse,
     systemNotice,
     pocketModalOpen,
-    quickSettingsOpen,
     pocketGadget,
     userSettings,
     isAuthenticated,
@@ -323,7 +320,6 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     handleStartNewTask,
     starterActionsEnabled: !currentPrompt?.trim() && appState === 'idle',
     setPocketModalOpen,
-    setQuickSettingsOpen,
     saveUserSettings,
     setInputMode,
     setTextFallback,
@@ -332,7 +328,6 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     holdToTalkEnd,
     cancelVoiceInput,
     revealNow,
-    skipToRecommendation,
     toggleDialogueExpanded,
     handleQuickReply,
   }

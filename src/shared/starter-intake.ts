@@ -10,11 +10,23 @@ export type StarterRoleId =
   | 'other'
 
 export type StarterConstraintId =
+  | 'solo'
+  | 'small_team'
+  | 'mid_team'
+  | 'enterprise'
   | 'free_first'
+  | 'subscription_ok'
+  | 'pay_as_you_go'
+  | 'enterprise_budget'
+  | 'no_ads'
+  | 'ads_acceptable'
+  | 'privacy_sensitive'
   | 'no_signup'
   | 'citations'
   | 'fast_start'
   | 'chinese'
+  | 'api_needed'
+  | 'mobile_first'
 
 export type StarterOutcomeId =
   | 'research_citations'
@@ -28,7 +40,7 @@ export type StarterOutcomeId =
   | 'support_email'
   | 'knowledge_learning'
 
-export type StarterWizardStep = 1 | 2 | 3 | 4
+export type StarterWizardStep = 1 | 2 | 3
 
 export type StarterOutcome = {
   id: StarterOutcomeId
@@ -56,13 +68,70 @@ export const STARTER_ROLES: Array<{ id: StarterRoleId; label: string; emoji: str
   { id: 'other', label: '其他', emoji: '✨' },
 ]
 
-export const STARTER_CONSTRAINTS: Array<{ id: StarterConstraintId; label: string }> = [
-  { id: 'free_first', label: '免费优先' },
-  { id: 'no_signup', label: '免注册优先' },
-  { id: 'citations', label: '要附来源' },
-  { id: 'fast_start', label: '最快开始' },
-  { id: 'chinese', label: '中文体验' },
+export type StarterConstraintDimension = {
+  id: string
+  title: string
+  hint: string
+  options: Array<{ id: StarterConstraintId; label: string }>
+}
+
+export const STARTER_CONSTRAINT_DIMENSIONS: StarterConstraintDimension[] = [
+  {
+    id: 'team',
+    title: '团队规模',
+    hint: '不同规模对协作、权限和管理要求不一样。',
+    options: [
+      { id: 'solo', label: '个人独立' },
+      { id: 'small_team', label: '小团队 (2-10)' },
+      { id: 'mid_team', label: '中型团队' },
+      { id: 'enterprise', label: '大企业' },
+    ],
+  },
+  {
+    id: 'pricing',
+    title: '收费方式',
+    hint: '预算和付费模式会直接影响推荐排序。',
+    options: [
+      { id: 'free_first', label: '免费优先' },
+      { id: 'subscription_ok', label: '可接受订阅' },
+      { id: 'pay_as_you_go', label: '按量付费' },
+      { id: 'enterprise_budget', label: '企业预算' },
+    ],
+  },
+  {
+    id: 'ads',
+    title: '广告与隐私',
+    hint: '是否接受广告、数据如何处理，也会影响取舍。',
+    options: [
+      { id: 'no_ads', label: '无广告优先' },
+      { id: 'ads_acceptable', label: '可接受广告' },
+      { id: 'privacy_sensitive', label: '隐私敏感' },
+    ],
+  },
+  {
+    id: 'experience',
+    title: '上手与体验',
+    hint: '从注册门槛到语言环境，决定这次能不能立刻开始。',
+    options: [
+      { id: 'no_signup', label: '免注册优先' },
+      { id: 'fast_start', label: '最快开始' },
+      { id: 'chinese', label: '中文体验' },
+      { id: 'mobile_first', label: '移动端优先' },
+    ],
+  },
+  {
+    id: 'output',
+    title: '输出与集成',
+    hint: '结果要不要可追溯，以及要不要接进现有流程。',
+    options: [
+      { id: 'citations', label: '要附来源' },
+      { id: 'api_needed', label: '需要 API' },
+    ],
+  },
 ]
+
+export const STARTER_CONSTRAINTS: Array<{ id: StarterConstraintId; label: string }> =
+  STARTER_CONSTRAINT_DIMENSIONS.flatMap((dimension) => dimension.options)
 
 export const STARTER_OUTCOMES: StarterOutcome[] = [
   {
@@ -156,6 +225,10 @@ export function canStartStructuredAnalysis(intake: StarterIntake): boolean {
   return resolveStarterTaskText(intake).length >= MIN_CUSTOM_TASK_LENGTH
 }
 
+export function canStartStarterAnalysis(intake: StarterIntake): boolean {
+  return intake.roleId != null && canStartStructuredAnalysis(intake)
+}
+
 export function canAdvanceStarterStep(intake: StarterIntake, step: StarterWizardStep): boolean {
   switch (step) {
     case 1:
@@ -164,8 +237,6 @@ export function canAdvanceStarterStep(intake: StarterIntake, step: StarterWizard
       return canStartStructuredAnalysis(intake)
     case 3:
       return true
-    case 4:
-      return canStartStructuredAnalysis(intake) && intake.roleId != null
     default:
       return false
   }

@@ -21,7 +21,6 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 type AnalysisStagePanelProps = {
   appState: AppState
   analysisFlow: AnalysisFlow
-  onOpenQuickSettings: () => void
   mobileCompact?: boolean
   mobileCompactExpanded?: boolean
   onToggleMobileCompact?: () => void
@@ -34,7 +33,6 @@ type AnalysisStagePanelProps = {
 export function AnalysisStagePanel({
   appState,
   analysisFlow,
-  onOpenQuickSettings,
   mobileCompact = false,
   mobileCompactExpanded = false,
   onToggleMobileCompact,
@@ -53,18 +51,6 @@ export function AnalysisStagePanel({
       )}
     >
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-20 rounded-t-[2rem] bg-white/92"
-        aria-hidden
-      />
-      <div className="relative z-10 shrink-0 border-b border-border/45 bg-white/90 px-4 py-2.5 backdrop-blur-md">
-        <AnalysisStageStatusBar
-          appState={appState}
-          analysisFlow={analysisFlow}
-          onOpenQuickSettings={onOpenQuickSettings}
-        />
-      </div>
-
-      <div
         className={cn(
           'relative flex-1',
           showCompactStage ? 'max-lg:min-h-[7rem] max-lg:max-h-[7rem]' : 'min-h-[18rem]',
@@ -81,6 +67,9 @@ export function AnalysisStagePanel({
             />
           </>
         )}
+        <div className="pointer-events-auto absolute inset-x-0 top-0 z-20 px-4 py-2.5">
+          <AnalysisStageStatusBar appState={appState} analysisFlow={analysisFlow} />
+        </div>
         {mobileCompact && onToggleMobileCompact ? (
           <div className="pointer-events-auto absolute left-3 top-3 z-20 max-lg:block lg:hidden">
             <Button
