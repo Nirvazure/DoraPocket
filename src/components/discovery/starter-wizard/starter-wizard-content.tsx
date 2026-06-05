@@ -1,7 +1,6 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { StarterConfirmStep } from '@/components/discovery/starter-wizard/starter-confirm-step'
 import { StarterConstraintStep } from '@/components/discovery/starter-wizard/starter-constraint-step'
 import { StarterOutcomeStep } from '@/components/discovery/starter-wizard/starter-outcome-step'
 import { StarterRoleStep } from '@/components/discovery/starter-wizard/starter-role-step'
@@ -13,7 +12,7 @@ import type {
   StarterWizardStep,
 } from '@/shared/starter-intake'
 
-const WIZARD_STEPS: StarterWizardStep[] = [1, 2, 3, 4]
+const WIZARD_STEPS: StarterWizardStep[] = [1, 2, 3]
 
 export type StarterWizardContentProps = {
   wizardStep: StarterWizardStep
@@ -22,7 +21,6 @@ export type StarterWizardContentProps = {
   onSelectRole: (roleId: StarterRoleId) => void
   onSelectOutcome: (outcomeId: StarterOutcomeId) => void
   onToggleConstraint: (constraintId: StarterConstraintId) => void
-  onCustomTaskChange: (value: string) => void
 }
 
 export function StarterWizardContent({
@@ -32,7 +30,6 @@ export function StarterWizardContent({
   onSelectRole,
   onSelectOutcome,
   onToggleConstraint,
-  onCustomTaskChange,
 }: StarterWizardContentProps) {
   return (
     <div className="flex min-h-0 flex-col gap-4">
@@ -58,7 +55,6 @@ export function StarterWizardContent({
             intake={intake}
             disabled={disabled}
             onSelectOutcome={onSelectOutcome}
-            onCustomTaskChange={onCustomTaskChange}
           />
         ) : null}
         {wizardStep === 3 ? (
@@ -68,7 +64,6 @@ export function StarterWizardContent({
             onToggleConstraint={onToggleConstraint}
           />
         ) : null}
-        {wizardStep === 4 ? <StarterConfirmStep intake={intake} /> : null}
       </div>
     </div>
   )

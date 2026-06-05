@@ -132,7 +132,7 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
 
     const handleWizardNext = useCallback(() => {
       if (!canAdvanceStarterStep(wizard.intake, wizard.wizardStep)) return
-      if (wizard.wizardStep >= 4) return
+      if (wizard.wizardStep >= 3) return
       wizard.goNext()
     }, [wizard])
 
@@ -170,7 +170,6 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
                   onSelectRole={wizard.selectRole}
                   onSelectOutcome={wizard.selectOutcome}
                   onToggleConstraint={wizard.toggleConstraint}
-                  onCustomTaskChange={wizard.handleCustomTaskChange}
                 />
               ) : activePanelStep === 2 ? (
                 <section className="dp-secondary-surface overflow-hidden p-3 sm:p-4">
@@ -180,6 +179,7 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
                     appState={appState}
                     analysisFlow={analysisFlow}
                     progressStage={progressStage}
+                    starterIntake={wizard.intake}
                   />
                 </section>
               ) : null}
@@ -194,6 +194,7 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
             wizardDisabled={!starterActionsEnabled}
             onWizardBack={wizard.goBack}
             onWizardNext={handleWizardNext}
+            onCustomTaskChange={wizard.handleCustomTaskChange}
             onStartAnalysis={(prompt, displayPrompt) => onStartAnalysis?.(prompt, displayPrompt)}
             onStartNewTask={handleStartNewTask}
             sessionZone={sessionDock}

@@ -20,9 +20,7 @@ export function DecisionThinkingRail({ payload }: DecisionThinkingRailProps) {
     <DisplayPanel className="overflow-hidden rounded-[2rem] border-primary/15 bg-white p-4 shadow-lg shadow-primary/5">
       <DisplayPanelContent className="grid gap-3 p-0 md:grid-cols-2">
         <DisplayPanel className="rounded-3xl border-border/60 bg-slate-50 p-3 shadow-none">
-          <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-primary">
-            适合你的信号
-          </p>
+          <p className="text-sm font-semibold text-foreground">适合你的信号</p>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {(payload.preferenceSignals.length ? payload.preferenceSignals : ['还在等待偏好信号'])
               .slice(0, 4)
@@ -38,9 +36,7 @@ export function DecisionThinkingRail({ payload }: DecisionThinkingRailProps) {
           </div>
         </DisplayPanel>
         <DisplayPanel className="rounded-3xl border-border/60 bg-slate-50 p-3 shadow-none">
-          <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-primary">
-            这次首选依据
-          </p>
+          <p className="text-sm font-semibold text-foreground">这次首选依据</p>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {(payload.selectionSignals.length ? payload.selectionSignals : ['等待裁决信号'])
               .slice(0, 4)

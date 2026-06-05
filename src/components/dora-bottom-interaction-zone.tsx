@@ -22,7 +22,6 @@ export type DoraBottomInteractionZoneProps = {
   appState: AppState
   botResponse: string
   step2Session: Step2Session | null
-  showSkip: boolean
   canSkipVoice: boolean
   inputMode: InputMode
   textFallback: string
@@ -37,7 +36,6 @@ export type DoraBottomInteractionZoneProps = {
   onStopVoicePlayback: () => void
   onRevealNow: () => void
   onQuickReply: (text: string) => void
-  onSkipRecommendation: () => void
   onToggleDialogueExpanded: () => void
   hideVoiceToggle?: boolean
 }
@@ -72,7 +70,6 @@ export function DoraBottomInteractionZone({
   appState,
   botResponse,
   step2Session,
-  showSkip,
   canSkipVoice,
   inputMode,
   textFallback,
@@ -87,7 +84,6 @@ export function DoraBottomInteractionZone({
   onStopVoicePlayback,
   onRevealNow,
   onQuickReply,
-  onSkipRecommendation,
   onToggleDialogueExpanded,
   hideVoiceToggle = false,
 }: DoraBottomInteractionZoneProps) {
@@ -98,8 +94,7 @@ export function DoraBottomInteractionZone({
 
   const showDialoguePeek = isStep2DialogueActive(step2Session, botResponse)
   const canExpandEarlier = (step2Session?.messages.length ?? 0) > 2
-  const showActionRow =
-    step2Session?.status === 'clarifying' || (step2Session?.status === 'thinking' && showSkip)
+  const showActionRow = step2Session?.status === 'clarifying'
   const inputLocked = isInputLockedFlow(analysisFlow)
   const showVoiceBar = appState === 'speaking' && botResponse.trim().length > 0
   const showDiggingBar = analysisFlow.phase === 'analyzing' && !isStep2Clarifying(analysisFlow)
@@ -118,9 +113,7 @@ export function DoraBottomInteractionZone({
       {showActionRow ? (
         <Step2ActionRow
           quickReplies={step2Session?.quickReplies ?? []}
-          showSkip={showSkip}
           onQuickReply={onQuickReply}
-          onSkipRecommendation={onSkipRecommendation}
         />
       ) : null}
 

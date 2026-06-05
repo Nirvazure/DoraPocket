@@ -75,9 +75,6 @@ export function CandidateAlternativesCard({
   return (
     <DisplayPanel className="rounded-[1.8rem] border-border/70 bg-white shadow-sm">
       <DisplayPanelHeader className="space-y-2">
-        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
-          本次出手里的备选
-        </p>
         <DisplayPanelTitle className="text-xl text-foreground">
           如果你不想用这个，还有这些
         </DisplayPanelTitle>

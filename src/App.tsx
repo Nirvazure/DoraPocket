@@ -8,7 +8,6 @@ import { UnifiedTopBar } from '@/components/common/unified-top-bar'
 import { DiscoveryWorkspace, type DiscoveryWorkspaceHandle } from '@/components/discovery-workspace'
 import { ListeningHud } from '@/components/listening-hud'
 import { PocketGadgetModal } from '@/components/pocket-gadget-modal'
-import { PocketQuickSettingsModal } from '@/components/pocket/pocket-quick-settings-modal'
 import { useAnalysisPageController } from '@/hooks/use-analysis-page-controller'
 import { usePrefersCompactStage } from '@/hooks/use-prefers-compact-stage'
 import { stopAudioPlayback } from '@/lib/client/audio'
@@ -26,10 +25,8 @@ export default function App() {
     systemNotice,
     botResponse,
     pocketModalOpen,
-    quickSettingsOpen,
     pocketGadget,
     userSettings,
-    settingsReadOnly,
     currentPrompt,
     progressStage,
     analysisFlow,
@@ -47,8 +44,6 @@ export default function App() {
     handleStartNewTask,
     starterActionsEnabled,
     setPocketModalOpen,
-    setQuickSettingsOpen,
-    saveUserSettings,
     setInputMode,
     setTextFallback,
     submitTextMessage,
@@ -57,7 +52,6 @@ export default function App() {
     cancelVoiceInput,
     revealNow,
     step2Session,
-    skipToRecommendation,
     toggleDialogueExpanded,
     handleQuickReply,
   } = useAnalysisPageController({ workspaceRef })
@@ -90,9 +84,6 @@ export default function App() {
       appState,
       botResponse,
       step2Session,
-      showSkip:
-        step2Session != null &&
-        step2Session.turn < (userSettings?.explanationMode === 'brief' ? 2 : 3),
       canSkipVoice,
       inputMode,
       textFallback,
@@ -111,7 +102,6 @@ export default function App() {
       onStopVoicePlayback: stopAudioPlayback,
       onRevealNow: revealNow,
       onQuickReply: handleQuickReply,
-      onSkipRecommendation: skipToRecommendation,
       onToggleDialogueExpanded: toggleDialogueExpanded,
     }),
     [
@@ -129,12 +119,10 @@ export default function App() {
       revealNow,
       setInputMode,
       setTextFallback,
-      skipToRecommendation,
-      step2Session,
       submitTextMessage,
+      step2Session,
       textFallback,
       toggleDialogueExpanded,
-      userSettings?.explanationMode,
     ],
   )
 
@@ -169,16 +157,9 @@ export default function App() {
         onOpenTool={pocketGadgetModalActions.onOpenTool}
         onSaveToPocket={pocketGadgetModalActions.onSaveToPocket}
       />
-      <PocketQuickSettingsModal
-        open={quickSettingsOpen}
-        settings={userSettings}
-        readOnly={settingsReadOnly}
-        onClose={() => setQuickSettingsOpen(false)}
-        onSave={saveUserSettings}
-      />
       {appState === 'listening' ? <ListeningHud /> : null}
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.45fr)_minmax(21rem,0.72fr)] lg:items-stretch">
-        <div className="discovery-panel-lg-type flex h-full min-h-0 flex-col">
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.52fr)_minmax(18rem,0.62fr)] lg:items-stretch">
+        <div className="discovery-panel-lg-type flex h-full min-h-0 flex-col lg:text-[17px] lg:leading-relaxed">
           <DiscoveryWorkspace
             ref={workspaceRef}
             currentPrompt={currentPrompt}
@@ -205,7 +186,6 @@ export default function App() {
           <AnalysisStagePanel
             appState={appState}
             analysisFlow={analysisFlow}
-            onOpenQuickSettings={() => setQuickSettingsOpen(true)}
             mobileCompact={showMobileCompactStage}
             mobileCompactExpanded={mobileStageExpanded}
             onToggleMobileCompact={() => setMobileStageExpanded((value) => !value)}

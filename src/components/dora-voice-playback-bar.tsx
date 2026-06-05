@@ -33,9 +33,7 @@ export function DoraVoicePlaybackBar({
                 className="h-2 w-2 shrink-0 rounded-full bg-primary motion-safe:animate-pulse"
                 aria-hidden
               />
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
-                Dora 正在说
-              </p>
+              <p className="text-xs font-semibold text-primary">Dora 正在说</p>
             </div>
             <div className="mt-2 max-h-20 overflow-y-auto pr-1 text-sm font-semibold leading-7 text-foreground/82">
               {text}

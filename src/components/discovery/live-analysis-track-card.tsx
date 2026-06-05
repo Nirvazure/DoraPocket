@@ -7,6 +7,8 @@ import {
 import { cn } from '@/lib/utils'
 import type { AgentUiPayload } from '@/shared/market-types'
 import type { ProgressStage } from '@/shared/step2-session-types'
+import type { StarterIntake } from '@/shared/starter-intake'
+import { StarterIntakeSummary } from '@/components/discovery/starter-wizard/starter-intake-summary'
 import type { AppState } from '@/store'
 
 type LiveAnalysisTrackCardProps = {
@@ -15,6 +17,7 @@ type LiveAnalysisTrackCardProps = {
   appState: AppState
   analysisFlow: AnalysisFlow
   progressStage?: ProgressStage | null
+  starterIntake?: StarterIntake | null
 }
 
 function TrackIcon({ item }: { item: LiveAnalysisTrackItem }) {
@@ -33,6 +36,7 @@ export function LiveAnalysisTrackCard({
   appState,
   analysisFlow,
   progressStage = null,
+  starterIntake = null,
 }: LiveAnalysisTrackCardProps) {
   const items = buildLiveAnalysisTrack({
     currentPrompt,
@@ -44,6 +48,7 @@ export function LiveAnalysisTrackCard({
 
   return (
     <div className="space-y-3">
+      {starterIntake ? <StarterIntakeSummary intake={starterIntake} /> : null}
       {items.map((item, index) => (
         <div
           key={`track-${index}-${item.title}`}

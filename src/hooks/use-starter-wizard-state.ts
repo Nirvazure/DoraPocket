@@ -86,7 +86,7 @@ export function useStarterWizardState(handleRef?: Ref<StarterWizardStateHandle>)
 
   const goNext = useCallback(() => {
     setWizardStep((step) => {
-      if (step >= 4) return step
+      if (step >= 3) return step
       return (step + 1) as StarterWizardStep
     })
   }, [])

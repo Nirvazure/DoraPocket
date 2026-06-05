@@ -10,6 +10,7 @@ import {
   DisplayPanelHeader,
   DisplayPanelTitle,
 } from '@/components/ui/display-shell'
+import { SectionLabel } from '@/components/ui/section-label'
 import type { MarketToolCardItem } from '@/shared/market-scope'
 import {
   NEGATIVE_MARKET_REVIEW_TAGS,
@@ -76,9 +77,7 @@ export function MarketReviewDrawer({ open, tool, onClose, onSubmit }: MarketRevi
         <DisplayPanel className="ml-auto flex h-full w-full flex-col rounded-[2rem] bg-white p-0 shadow-2xl">
           <div className="flex items-start justify-between gap-3 border-b border-border/60 p-5 sm:p-6">
             <DisplayPanelHeader className="space-y-2 p-0">
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
-                Review Loop
-              </p>
+              <SectionLabel>补充体验</SectionLabel>
               <DisplayPanelTitle className="text-2xl">
                 {PAGE_COPY.market.reviewDrawerTitle}
               </DisplayPanelTitle>

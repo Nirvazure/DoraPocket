@@ -1,6 +1,8 @@
+export const APP_BRAND_TITLE = 'DoraPocket'
+
 export const PAGE_COPY = {
   analysis: {
-    title: 'DoraPocket',
+    title: APP_BRAND_TITLE,
     subtitle: '像哆啦A梦一样，在你开口时先替你挑出这次最该用的工具。',
     promptSuggestion: '帮我找一个最好用的 PDF 压缩工具',
     promptPlaceholder: '试试：帮我找一个最好用的 PDF 压缩工具',
@@ -14,15 +16,16 @@ export const PAGE_COPY = {
       step1Title: '什么身份最接近你？',
       step1Hint: '我们会按你的日常分工来收束推荐。',
       step2Title: '这次想完成什么？',
-      step2Hint: '选一个结果导向的目标，或用一句话描述。',
+      step2Hint: '先选一个结果导向的目标；具体任务在下方操作区补充。',
       step3Title: '这次在意什么？',
-      step3Hint: '可多选，也可以不选，稍后再补。',
-      step4Title: '确认后，DoraPocket 开始分析',
-      step4Hint: '先核对这次出手的前提，再进入裁决。',
+      step3Hint: '从团队、收费、广告到上手体验，可多选，也可以先跳过。',
+      intakeSummaryTitle: '出手前提',
+      intakeSummaryHint: '基于你在「从哪里开始」的点选，DoraPocket 会按这些条件进入分析。',
+      dockTaskLabel: '这次想完成什么？',
+      dockTaskHint: '用一句话描述任务，至少 4 个字。',
       customTaskPlaceholder: '用自己的话描述任务，至少 4 个字…',
       nextToOutcome: '下一步：这次目标',
       nextToConstraints: '下一步：在意什么',
-      nextToConfirm: '下一步：确认',
       backAction: '上一步',
       startAction: '开始分析',
       newTaskAction: '开始新任务',
@@ -175,7 +178,6 @@ export const SETTINGS_COPY = {
 } as const
 
 export const STEP2_COPY = {
-  skipLabel: '跳过，先看推荐',
   expandEarlier: '展开 earlier ▾',
   lowConfidenceHint: '部分条件未确认，推荐置信度偏低。你可以返回 Step 2 补充。',
 } as const

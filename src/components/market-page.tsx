@@ -43,7 +43,7 @@ import {
   useSaveToolToPocketMutation,
 } from '@/lib/query/pocket'
 import type { MarketSectionKey } from '@/shared/market-scope'
-import { PAGE_COPY } from '@/shared/ui-copy'
+import { PAGE_COPY, APP_BRAND_TITLE } from '@/shared/ui-copy'
 
 type MarketPageProps = {
   initialSection?: MarketSectionKey | null
@@ -127,7 +127,7 @@ export function MarketPage({ initialSection = null }: MarketPageProps) {
       contentClassName="pb-5 pt-5 sm:pt-6 lg:px-4 lg:pt-6 xl:px-3"
       header={
         <UnifiedTopBar
-          title={PAGE_COPY.market.title}
+          title={APP_BRAND_TITLE}
           subtitle={PAGE_COPY.market.subtitle}
           rightSlot={
             <div className="flex items-center gap-1.5">

@@ -8,6 +8,7 @@ import {
 import { cn } from '@/lib/utils'
 import {
   canAdvanceStarterStep,
+  canStartStarterAnalysis,
   composeStarterPrompt,
   resolveStarterDisplayGoal,
   type StarterIntake,
@@ -23,6 +24,7 @@ export type AnalysisInteractionDockProps = {
   wizardDisabled?: boolean
   onWizardBack: () => void
   onWizardNext: () => void
+  onCustomTaskChange: (value: string) => void
   onStartAnalysis: (prompt: string, displayPrompt: string) => void | Promise<void>
   onStartNewTask: () => void
   sessionZone: DoraBottomInteractionZoneProps | null
@@ -36,6 +38,7 @@ export function AnalysisInteractionDock({
   wizardDisabled = false,
   onWizardBack,
   onWizardNext,
+  onCustomTaskChange,
   onStartAnalysis,
   onStartNewTask,
   sessionZone,
@@ -44,7 +47,8 @@ export function AnalysisInteractionDock({
   const startingRef = useRef(false)
 
   const canAdvance = canAdvanceStarterStep(intake, wizardSubStep)
-  const canStart = canAdvanceStarterStep(intake, 4) && !wizardDisabled
+  const canStart = canStartStarterAnalysis(intake) && !wizardDisabled
+  const showTaskInput = activePanelStep === 1 && starterActionsEnabled && wizardSubStep === 2
 
   const handleStart = async () => {
     if (startingRef.current || !canStart) return
@@ -57,12 +61,7 @@ export function AnalysisInteractionDock({
     }
   }
 
-  const nextLabel =
-    wizardSubStep === 1
-      ? copy.nextToOutcome
-      : wizardSubStep === 2
-        ? copy.nextToConstraints
-        : copy.nextToConfirm
+  const nextLabel = wizardSubStep === 1 ? copy.nextToOutcome : copy.nextToConstraints
 
   const showNewTaskOnly = activePanelStep === 3 || (activePanelStep === 1 && !starterActionsEnabled)
 
@@ -83,48 +82,66 @@ export function AnalysisInteractionDock({
           </button>
         </div>
       ) : activePanelStep === 1 && starterActionsEnabled ? (
-        <div className="flex flex-col gap-2 px-3 py-2.5 sm:flex-row sm:items-center sm:px-4 sm:py-3">
-          {wizardSubStep > 1 ? (
-            <button
-              type="button"
+        <div className="flex flex-col gap-2.5 px-3 py-2.5 sm:px-4 sm:py-3">
+          {showTaskInput ? (
+            <textarea
+              id="starter-task-input"
+              value={intake.customTask}
               disabled={wizardDisabled}
-              onClick={onWizardBack}
+              rows={3}
+              aria-label={copy.dockTaskLabel}
+              placeholder={copy.customTaskPlaceholder}
               className={cn(
-                'rounded-full border border-border/60 bg-white px-4 py-2.5 text-[11px] font-semibold text-foreground/80 transition-colors hover:bg-slate-50 sm:mr-auto',
+                'w-full resize-none rounded-2xl border border-border/70 bg-white px-3 py-2.5 font-sans text-sm text-foreground outline-none ring-primary/30 placeholder:text-muted-foreground focus-visible:ring-2',
                 wizardDisabled && 'cursor-not-allowed opacity-50',
               )}
-            >
-              {copy.backAction}
-            </button>
-          ) : (
-            <span className="hidden sm:mr-auto sm:block" />
-          )}
-          {wizardSubStep < 4 ? (
-            <button
-              type="button"
-              disabled={!canAdvance || wizardDisabled}
-              onClick={onWizardNext}
-              className={cn(
-                'flex flex-1 items-center justify-center rounded-full border-2 border-primary/30 bg-primary px-4 py-2.5 text-sm font-black text-primary-foreground shadow-sm transition-colors hover:bg-primary/90',
-                (!canAdvance || wizardDisabled) && 'cursor-not-allowed opacity-45',
-              )}
-            >
-              {nextLabel} →
-            </button>
-          ) : (
-            <button
-              type="button"
-              data-starter-path="wizard"
-              disabled={!canStart}
-              onClick={handleStart}
-              className={cn(
-                'flex flex-1 items-center justify-center rounded-full border-2 border-primary/30 bg-primary px-4 py-2.5 text-sm font-black text-primary-foreground shadow-sm transition-colors hover:bg-primary/90',
-                !canStart && 'cursor-not-allowed opacity-45',
-              )}
-            >
-              {copy.startAction}
-            </button>
-          )}
+              onChange={(event) => onCustomTaskChange(event.target.value)}
+            />
+          ) : null}
+
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            {wizardSubStep > 1 ? (
+              <button
+                type="button"
+                disabled={wizardDisabled}
+                onClick={onWizardBack}
+                className={cn(
+                  'rounded-full border border-border/60 bg-white px-4 py-2.5 text-[11px] font-semibold text-foreground/80 transition-colors hover:bg-slate-50 sm:mr-auto',
+                  wizardDisabled && 'cursor-not-allowed opacity-50',
+                )}
+              >
+                {copy.backAction}
+              </button>
+            ) : (
+              <span className="hidden sm:mr-auto sm:block" />
+            )}
+            {wizardSubStep < 3 ? (
+              <button
+                type="button"
+                disabled={!canAdvance || wizardDisabled}
+                onClick={onWizardNext}
+                className={cn(
+                  'flex flex-1 items-center justify-center rounded-full border-2 border-primary/30 bg-primary px-4 py-2.5 text-sm font-black text-primary-foreground shadow-sm transition-colors hover:bg-primary/90',
+                  (!canAdvance || wizardDisabled) && 'cursor-not-allowed opacity-45',
+                )}
+              >
+                {nextLabel} →
+              </button>
+            ) : (
+              <button
+                type="button"
+                data-starter-path="wizard"
+                disabled={!canStart}
+                onClick={handleStart}
+                className={cn(
+                  'flex flex-1 items-center justify-center rounded-full border-2 border-primary/30 bg-primary px-4 py-2.5 text-sm font-black text-primary-foreground shadow-sm transition-colors hover:bg-primary/90',
+                  !canStart && 'cursor-not-allowed opacity-45',
+                )}
+              >
+                {copy.startAction}
+              </button>
+            )}
+          </div>
         </div>
       ) : null}
     </div>

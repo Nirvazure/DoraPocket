@@ -66,7 +66,7 @@ export function PrimaryRecommendationCard({
           aria-hidden
         />
         <DisplayPanelHeader className="relative z-10 space-y-4 p-5 sm:p-6">
-          <Badge className="w-fit border-sky-200 bg-sky-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-sky-700">
+          <Badge className="w-fit border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
             <Sparkles className="h-3.5 w-3.5" />
             步骤 3 / 快掏出来了
           </Badge>
@@ -95,7 +95,7 @@ export function PrimaryRecommendationCard({
     <DisplayPanel className="relative overflow-hidden rounded-[2rem] border-primary/15 bg-slate-950 shadow-xl shadow-primary/5">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(80,171,255,0.34),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.12),transparent_42%)]" />
       <DisplayPanelHeader className="relative z-10 space-y-4 p-5 text-white sm:p-6">
-        <Badge className="w-fit border-white/15 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-white/76">
+        <Badge className="w-fit border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold text-white/76">
           <Sparkles className="h-3.5 w-3.5" />
           步骤 3 / 正式出手
         </Badge>

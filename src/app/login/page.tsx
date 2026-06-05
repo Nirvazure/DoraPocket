@@ -5,12 +5,14 @@ import { PageShell } from '@/components/common/page-shell'
 import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
 
+import { APP_BRAND_TITLE } from '@/shared/ui-copy'
+
 export default function LoginPage() {
   return (
     <PageShell
       header={
         <UnifiedTopBar
-          title="登录 DoraPocket"
+          title={APP_BRAND_TITLE}
           subtitle="同步我的口袋、设置和推荐记忆到云端。"
           rightSlot={
             <div className="flex items-center gap-1.5 sm:gap-2">
@@ -23,7 +25,6 @@ export default function LoginPage() {
     >
       <section className="dp-page-surface mx-auto flex w-full max-w-3xl flex-col gap-6 p-8">
         <div className="space-y-3">
-          <p className="text-sm font-black uppercase tracking-[0.22em] text-primary">Cloud Sync</p>
           <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-4xl">
             登录后，DoraPocket 才会真正把你的口袋带走。
           </h1>
