@@ -5,7 +5,7 @@ import {
   DEFAULT_USER_AVATAR_SRC,
   DEFAULT_USER_NICKNAME,
   type UserProfile,
-} from '@/lib/client/user-profile'
+} from '@/shared/user-profile'
 
 export async function getUserProfile(userId: string): Promise<UserProfile> {
   const user = await prisma.user.findUnique({

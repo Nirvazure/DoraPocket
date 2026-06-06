@@ -24,11 +24,6 @@ type TogglePocketFlagInput = {
   toolId: string
 }
 
-function invalidatePocketDependents(queryClient: QueryClient) {
-  void queryClient.invalidateQueries({ queryKey: queryKeys.preferenceProfile.all })
-  void queryClient.invalidateQueries({ queryKey: queryKeys.marketContext.all })
-}
-
 function getPreviousPocketInventory(queryClient: QueryClient) {
   return queryClient.getQueryData<PocketInventoryItem[]>(queryKeys.pocket.list()) ?? []
 }
@@ -46,7 +41,6 @@ function rollbackPocketInventory(queryClient: QueryClient, context?: PocketMutat
 
 function commitPocketInventory(queryClient: QueryClient, next: PocketInventoryItem[]) {
   queryClient.setQueryData(queryKeys.pocket.list(), next)
-  invalidatePocketDependents(queryClient)
 }
 
 export function getPocketInventoryQueryOptions() {
@@ -112,34 +106,6 @@ export function useRemoveToolFromPocketMutation() {
     },
   })
 }
-
-function createToggleMutation(field: 'pinned' | 'purchased' | 'archived') {
-  return function useTogglePocketMutation() {
-    const queryClient = useQueryClient()
-
-    return useMutation<PocketInventoryItem[], Error, TogglePocketFlagInput, PocketMutationContext>({
-      mutationFn: async ({ toolId }) =>
-        apiFetch<PocketInventoryItem[]>(`/api/me/pocket/${toolId}`, {
-          method: 'PATCH',
-          body: JSON.stringify({ field }),
-        }),
-      onMutate: async () => {
-        const previousPocketInventory = await preparePocketOptimisticUpdate(queryClient)
-        return { previousPocketInventory }
-      },
-      onError: (_error, _variables, context) => {
-        rollbackPocketInventory(queryClient, context)
-      },
-      onSuccess: (next) => {
-        commitPocketInventory(queryClient, next)
-      },
-    })
-  }
-}
-
-export const useTogglePinToolMutation = createToggleMutation('pinned')
-export const useTogglePurchasedToolMutation = createToggleMutation('purchased')
-export const useToggleArchiveToolMutation = createToggleMutation('archived')
 
 export function useMarkToolUsedMutation() {
   const queryClient = useQueryClient()

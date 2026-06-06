@@ -1,4 +1,4 @@
-import { getSiteUrl as getSiteUrlFromConstant, SUPABASE_STORAGE_BUCKET_AVATARS } from '@/constant'
+import { SUPABASE_STORAGE_BUCKET_AVATARS } from '@/constant'
 import { getMarketAssetsBucketName } from '@/shared/market-asset-url'
 
 export function getSupabaseUrl() {
@@ -23,10 +23,6 @@ export function getSupabaseSecretKey() {
     throw new Error('SUPABASE_SECRET_KEY is required')
   }
   return value
-}
-
-export function getSiteUrl() {
-  return getSiteUrlFromConstant()
 }
 
 export function getAvatarBucket() {
