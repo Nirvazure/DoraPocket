@@ -1,4 +1,4 @@
-import { type AnalysisFlow } from '@/components/discovery/analysis-stage-content'
+import { type AnalysisFlow } from '@/shared/analysis-stage-content'
 import { CandidateAlternativesCard } from '@/components/discovery/candidate-alternatives-card'
 import { PrimaryRecommendationCard } from '@/components/discovery/primary-recommendation-card'
 import type { ChatToolPayload } from '@/lib/client/llm'

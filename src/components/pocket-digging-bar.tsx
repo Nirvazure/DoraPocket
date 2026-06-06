@@ -5,7 +5,7 @@ import {
   isRecommendationRevealing,
   resolvePocketBarCopy,
   type AnalysisFlow,
-} from '@/components/discovery/analysis-stage-content'
+} from '@/shared/analysis-stage-content'
 import { cn } from '@/lib/utils'
 
 type PocketDiggingBarProps = {

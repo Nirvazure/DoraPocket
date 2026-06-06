@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import type { AnalysisFlow } from '@/components/discovery/analysis-stage-content'
+import type { AnalysisFlow } from '@/shared/analysis-stage-content'
 import { StageVoiceFab } from '@/components/analysis/stage-voice-fab'
 import { AnalysisStageStatusBar } from '@/components/analysis-stage-status-bar'
 import { AnalysisStageCanvasFallback } from '@/components/analysis-stage-canvas-fallback'

@@ -10,7 +10,7 @@ import {
   isInputLockedFlow,
   isStep2Clarifying,
   type AnalysisFlow,
-} from '@/components/discovery/analysis-stage-content'
+} from '@/shared/analysis-stage-content'
 import { getVisibleDialogueMessages } from '@/shared/step2-session'
 import type { Step2Message, Step2Session } from '@/shared/step2-session-types'
 import type { AppState } from '@/store'

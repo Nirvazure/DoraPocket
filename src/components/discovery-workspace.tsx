@@ -10,7 +10,7 @@ import {
   resolveCurrentStep,
   resolveMaxVisibleStep,
   type AnalysisFlow,
-} from '@/components/discovery/analysis-stage-content'
+} from '@/shared/analysis-stage-content'
 import { canAdvanceStarterStep } from '@/shared/starter-intake'
 import { DecisionProgressSteps } from '@/components/discovery/decision-progress-steps'
 import { LiveAnalysisTrackCard } from '@/components/discovery/live-analysis-track-card'

@@ -1,5 +1,5 @@
-import type { AnalysisFlow } from '@/components/discovery/analysis-stage-content'
-import { shouldPreserveTurnFlow } from '@/components/discovery/analysis-stage-content'
+import type { AnalysisFlow } from '@/shared/analysis-stage-content'
+import { shouldPreserveTurnFlow } from '@/shared/analysis-stage-content'
 
 export type ShouldRestartAnalysisFlowParams = {
   previousPrompt: string | null

@@ -1,8 +1,5 @@
 import { create } from 'zustand'
-import {
-  IDLE_ANALYSIS_FLOW,
-  type AnalysisFlow,
-} from '@/components/discovery/analysis-stage-content'
+import { IDLE_ANALYSIS_FLOW, type AnalysisFlow } from '@/shared/analysis-stage-content'
 import { createClientId } from '@/lib/id'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'

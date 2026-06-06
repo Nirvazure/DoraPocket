@@ -9,7 +9,7 @@ import { pickModeCardAfterTurn, type AssistantModeCard } from '@/shared/mode-reg
 import type { AgentUiPayload } from '@/shared/market-types'
 import { SYSTEM_NOTICE_COPY } from '@/shared/ui-copy'
 import type { Step2Session } from '@/shared/step2-session-types'
-import { IDLE_ANALYSIS_FLOW } from '@/components/discovery/analysis-stage-content'
+import { IDLE_ANALYSIS_FLOW } from '@/shared/analysis-stage-content'
 import { appendStep2Turn, createStep2Session } from '@/shared/step2-session'
 import { useStore } from '@/store'
 

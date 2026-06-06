@@ -14,7 +14,7 @@ import {
   IDLE_ANALYSIS_FLOW,
   shouldPreserveTurnFlow,
   type AnalysisFlow,
-} from '@/components/discovery/analysis-stage-content'
+} from '@/shared/analysis-stage-content'
 import { useAnalysisFlowReveal } from '@/hooks/use-analysis-flow-reveal'
 import { useAnalysisToolLookup } from '@/hooks/use-analysis-tool-lookup'
 import { useAnalysisSession } from '@/hooks/use-analysis-session'

@@ -13,10 +13,7 @@ import { usePrefersCompactStage } from '@/hooks/use-prefers-compact-stage'
 import { stopAudioPlayback } from '@/lib/client/audio'
 import { PAGE_COPY } from '@/shared/ui-copy'
 import { useCallback, useMemo, useRef, useState } from 'react'
-import {
-  resolveCurrentStep,
-  resolveMaxVisibleStep,
-} from '@/components/discovery/analysis-stage-content'
+import { resolveCurrentStep, resolveMaxVisibleStep } from '@/shared/analysis-stage-content'
 
 export default function App() {
   const workspaceRef = useRef<DiscoveryWorkspaceHandle>(null)

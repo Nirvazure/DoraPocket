@@ -17,7 +17,7 @@ import {
   isRecommendationCovered,
   isRecommendationRevealing,
   type AnalysisFlow,
-} from '@/components/discovery/analysis-stage-content'
+} from '@/shared/analysis-stage-content'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market-types'
 import { STEP2_COPY } from '@/shared/ui-copy'

@@ -3,7 +3,7 @@ import {
   isRecommendationRevealing,
   resolveAlternativeCandidates,
   type AnalysisFlow,
-} from '@/components/discovery/analysis-stage-content'
+} from '@/shared/analysis-stage-content'
 import { CandidateMatchScore } from '@/components/discovery/candidate-match-score'
 import { CandidateOriginBadge } from '@/components/discovery/candidate-origin-badge'
 import { shouldShowCandidateScore } from '@/components/discovery/candidate-score'
