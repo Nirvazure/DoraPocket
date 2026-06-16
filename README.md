@@ -1,19 +1,7 @@
 # DoraPocket-Next
 
-DoraPocket 是一个哆啦A梦式工具服务 Agent。
-
-它不是聊天助手，也不是普通工具导航站。它要做的事情是：当用户说出当前任务时，先理解处境，再从一套持续成长的工具知识库里，挑出这次最值得先用的工具，并推动用户进入下一步。
-
-## 产品定位
-
-DoraPocket 的前台价值是 `Agent`，不是工具目录。
-
-当前产品结构只保留三层：
-
-- `/analyse`：主舞台。用户描述任务，DoraPocket 负责理解场景、收敛候选、给出结论与下一步动作。
-- `/market`：`道具库`。发现工具、提交工具、补充体验；侧栏「我的口袋」管理收藏。
-- `/profile`：`我的`。账户信息与 DoraPocket 偏好设置。
-- `/pocket`：兼容旧链接，重定向至 `/profile`。
+DoraPocket 是一个基于用户反馈和Agent自动化收集优化的自迭代工具导航平台以及在这之上的复刻哆啦A梦隐喻的工具推荐Agent。
+希望每一个成长中的大雄都找到属于自己的哆啦A梦
 
 ## 当前进度
 
@@ -31,26 +19,19 @@ DoraPocket 的前台价值是 `Agent`，不是工具目录。
 
 ## 技术栈
 
-- 框架：`Next.js 16.2.4`
-- UI：`React 19.2.4`
+- 框架：`Next.js 16.2.4`+`React 19.2.4`
+- UI：`ShadcnUI`
 - 语言：`TypeScript`
 - 样式：`Tailwind CSS`
 - Agent：`LangChain` / `LangGraph`
 - 数据层：`Prisma 7` + `PostgreSQL`
-- 认证与云能力：`Supabase`
-- 状态管理：`Zustand`
+- 认证与云能力：`Supabase Auth`
+- OSS：`Supabase Storage`
+- 状态管理：`Zustand`+`TanStackQuery`
+- CI/CD：`Vercel`
+- LLM：`Qwen`
+- TTS：`AliyunTTS`
 
-## 本地启动
-
-```bash
-npm install
-cp .env.example .env.local
-npm run prisma:generate
-npm run prisma:migrate
-npm run dev
-```
-
-市场工具目录以数据库为准；本地/生产库需已包含 `Tool` 数据（不再从仓库 JSON 或内置 seed 写入）。
 
 ## 环境变量
 
