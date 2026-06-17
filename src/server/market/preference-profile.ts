@@ -1,5 +1,3 @@
-import 'server-only'
-
 import type { ToolModel as Tool } from '../../generated/prisma/models/Tool'
 import type { PocketInventoryItem } from '@/shared/pocket-types'
 import type {
@@ -18,6 +16,11 @@ import { MARKET_ACTIVITY_COPY } from '@/shared/ui-copy'
 
 type ToolLookup = Map<string, Tool>
 type ToolUsageStatsMap = Record<string, { saves: number; opens: number; subscriptions: number }>
+type RecommendationEvaluationSignal = {
+  selectedToolId?: string | null
+  helpful?: boolean | null
+  rating?: number | null
+}
 
 function bumpCounter(counter: Map<string, number>, key: string, score: number) {
   if (!key || score === 0) return
@@ -62,6 +65,7 @@ export function inferUserPreferenceProfile(args: {
   subscriptions: MarketSubscriptionRecord[]
   activityMap: ToolUsageStatsMap
   tools: Tool[]
+  recommendationEvaluations?: RecommendationEvaluationSignal[]
 }): UserPreferenceProfile {
   const toolLookup: ToolLookup = new Map(args.tools.map((tool) => [tool.id, tool]))
   const categoryScores = new Map<ToolCategory, number>()
@@ -101,6 +105,12 @@ export function inferUserPreferenceProfile(args: {
       toolLookup.get(toolId),
       Math.min(4, stats.opens) + Math.min(3, stats.saves) + Math.min(2, stats.subscriptions),
     )
+  }
+  for (const entry of args.recommendationEvaluations ?? []) {
+    if (!entry.selectedToolId) continue
+    const ratingWeight = entry.rating ? Math.max(1, Math.min(5, entry.rating)) - 2 : 1
+    const helpfulWeight = entry.helpful === false ? -4 : entry.helpful === true ? 4 : 1
+    collect(toolLookup.get(entry.selectedToolId), helpfulWeight + ratingWeight)
   }
 
   const base = {

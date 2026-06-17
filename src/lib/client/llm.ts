@@ -16,6 +16,10 @@ export type AskQwenOptions = {
     quickReplies: string[]
   }) => void
   onMeta?: (payload: { selectedTool: ChatToolPayload; uiPayload: AgentUiPayload | null }) => void
+  onRecommendationSession?: (payload: {
+    recommendationSessionId: string
+    selectedToolId: string | null
+  }) => void
   onDelta?: (text: string) => void
 }
 
@@ -29,6 +33,7 @@ export type ChatReply = {
   selectedTool: ChatToolPayload
   uiPayload: AgentUiPayload | null
   step2Status: Step2DoneStatus
+  recommendationSessionId?: string | null
 }
 
 type StreamProgressEvent = {
@@ -62,6 +67,12 @@ type StreamDoneEvent = {
   ui_payload?: AgentUiPayload
 }
 
+type StreamRecommendationSessionEvent = {
+  type: 'recommendation_session'
+  recommendationSessionId?: string
+  selectedToolId?: string | null
+}
+
 type StreamErrorEvent = {
   type: 'error'
   error?: string
@@ -73,6 +84,7 @@ type StreamEvent =
   | StreamMetaEvent
   | StreamDeltaEvent
   | StreamDoneEvent
+  | StreamRecommendationSessionEvent
   | StreamErrorEvent
 
 function parseStreamLine(line: string): StreamEvent | null {
@@ -113,6 +125,7 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
   let uiPayload: AgentUiPayload | null = null
   let fullText = ''
   let step2Status: Step2DoneStatus = 'ready'
+  let recommendationSessionId: string | null = null
   let buffer = ''
 
   while (true) {
@@ -168,6 +181,16 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
         }
         continue
       }
+      if (event.type === 'recommendation_session') {
+        recommendationSessionId = event.recommendationSessionId ?? null
+        if (recommendationSessionId) {
+          opts?.onRecommendationSession?.({
+            recommendationSessionId,
+            selectedToolId: event.selectedToolId ?? null,
+          })
+        }
+        continue
+      }
       if (event.type === 'error') {
         throw new Error(event.error || 'chat stream failed')
       }
@@ -179,5 +202,6 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
     selectedTool,
     uiPayload,
     step2Status,
+    recommendationSessionId,
   }
 }

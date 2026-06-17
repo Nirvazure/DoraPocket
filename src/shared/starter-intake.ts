@@ -226,13 +226,13 @@ export function canStartStructuredAnalysis(intake: StarterIntake): boolean {
 }
 
 export function canStartStarterAnalysis(intake: StarterIntake): boolean {
-  return intake.roleId != null && canStartStructuredAnalysis(intake)
+  return canStartStructuredAnalysis(intake)
 }
 
 export function canAdvanceStarterStep(intake: StarterIntake, step: StarterWizardStep): boolean {
   switch (step) {
     case 1:
-      return intake.roleId != null
+      return true
     case 2:
       return canStartStructuredAnalysis(intake)
     case 3:

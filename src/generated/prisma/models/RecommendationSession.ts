@@ -20,8 +20,18 @@ export type RecommendationSessionModel = runtime.Types.Result.DefaultSelection<P
 
 export type AggregateRecommendationSession = {
   _count: RecommendationSessionCountAggregateOutputType | null
+  _avg: RecommendationSessionAvgAggregateOutputType | null
+  _sum: RecommendationSessionSumAggregateOutputType | null
   _min: RecommendationSessionMinAggregateOutputType | null
   _max: RecommendationSessionMaxAggregateOutputType | null
+}
+
+export type RecommendationSessionAvgAggregateOutputType = {
+  clarifyTurnCount: number | null
+}
+
+export type RecommendationSessionSumAggregateOutputType = {
+  clarifyTurnCount: number | null
 }
 
 export type RecommendationSessionMinAggregateOutputType = {
@@ -31,6 +41,12 @@ export type RecommendationSessionMinAggregateOutputType = {
   selectedToolId: string | null
   selectionReason: string | null
   finalText: string | null
+  starterPath: string | null
+  clarifyTurnCount: number | null
+  confidenceLevel: string | null
+  openedToolId: string | null
+  savedToolId: string | null
+  evaluatedAt: Date | null
   createdAt: Date | null
 }
 
@@ -41,6 +57,12 @@ export type RecommendationSessionMaxAggregateOutputType = {
   selectedToolId: string | null
   selectionReason: string | null
   finalText: string | null
+  starterPath: string | null
+  clarifyTurnCount: number | null
+  confidenceLevel: string | null
+  openedToolId: string | null
+  savedToolId: string | null
+  evaluatedAt: Date | null
   createdAt: Date | null
 }
 
@@ -55,10 +77,24 @@ export type RecommendationSessionCountAggregateOutputType = {
   selectionSignals: number
   preferenceSignals: number
   finalText: number
+  starterPath: number
+  clarifyTurnCount: number
+  confidenceLevel: number
+  openedToolId: number
+  savedToolId: number
+  evaluatedAt: number
   createdAt: number
   _all: number
 }
 
+
+export type RecommendationSessionAvgAggregateInputType = {
+  clarifyTurnCount?: true
+}
+
+export type RecommendationSessionSumAggregateInputType = {
+  clarifyTurnCount?: true
+}
 
 export type RecommendationSessionMinAggregateInputType = {
   id?: true
@@ -67,6 +103,12 @@ export type RecommendationSessionMinAggregateInputType = {
   selectedToolId?: true
   selectionReason?: true
   finalText?: true
+  starterPath?: true
+  clarifyTurnCount?: true
+  confidenceLevel?: true
+  openedToolId?: true
+  savedToolId?: true
+  evaluatedAt?: true
   createdAt?: true
 }
 
@@ -77,6 +119,12 @@ export type RecommendationSessionMaxAggregateInputType = {
   selectedToolId?: true
   selectionReason?: true
   finalText?: true
+  starterPath?: true
+  clarifyTurnCount?: true
+  confidenceLevel?: true
+  openedToolId?: true
+  savedToolId?: true
+  evaluatedAt?: true
   createdAt?: true
 }
 
@@ -91,6 +139,12 @@ export type RecommendationSessionCountAggregateInputType = {
   selectionSignals?: true
   preferenceSignals?: true
   finalText?: true
+  starterPath?: true
+  clarifyTurnCount?: true
+  confidenceLevel?: true
+  openedToolId?: true
+  savedToolId?: true
+  evaluatedAt?: true
   createdAt?: true
   _all?: true
 }
@@ -133,6 +187,18 @@ export type RecommendationSessionAggregateArgs<ExtArgs extends runtime.Types.Ext
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: RecommendationSessionAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: RecommendationSessionSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: RecommendationSessionMinAggregateInputType
@@ -163,6 +229,8 @@ export type RecommendationSessionGroupByArgs<ExtArgs extends runtime.Types.Exten
   take?: number
   skip?: number
   _count?: RecommendationSessionCountAggregateInputType | true
+  _avg?: RecommendationSessionAvgAggregateInputType
+  _sum?: RecommendationSessionSumAggregateInputType
   _min?: RecommendationSessionMinAggregateInputType
   _max?: RecommendationSessionMaxAggregateInputType
 }
@@ -178,8 +246,16 @@ export type RecommendationSessionGroupByOutputType = {
   selectionSignals: string[]
   preferenceSignals: string[]
   finalText: string
+  starterPath: string | null
+  clarifyTurnCount: number
+  confidenceLevel: string | null
+  openedToolId: string | null
+  savedToolId: string | null
+  evaluatedAt: Date | null
   createdAt: Date
   _count: RecommendationSessionCountAggregateOutputType | null
+  _avg: RecommendationSessionAvgAggregateOutputType | null
+  _sum: RecommendationSessionSumAggregateOutputType | null
   _min: RecommendationSessionMinAggregateOutputType | null
   _max: RecommendationSessionMaxAggregateOutputType | null
 }
@@ -213,8 +289,15 @@ export type RecommendationSessionWhereInput = {
   selectionSignals?: Prisma.StringNullableListFilter<"RecommendationSession">
   preferenceSignals?: Prisma.StringNullableListFilter<"RecommendationSession">
   finalText?: Prisma.StringFilter<"RecommendationSession"> | string
+  starterPath?: Prisma.StringNullableFilter<"RecommendationSession"> | string | null
+  clarifyTurnCount?: Prisma.IntFilter<"RecommendationSession"> | number
+  confidenceLevel?: Prisma.StringNullableFilter<"RecommendationSession"> | string | null
+  openedToolId?: Prisma.StringNullableFilter<"RecommendationSession"> | string | null
+  savedToolId?: Prisma.StringNullableFilter<"RecommendationSession"> | string | null
+  evaluatedAt?: Prisma.DateTimeNullableFilter<"RecommendationSession"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"RecommendationSession"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  evaluations?: Prisma.RecommendationEvaluationListRelationFilter
 }
 
 export type RecommendationSessionOrderByWithRelationInput = {
@@ -228,8 +311,15 @@ export type RecommendationSessionOrderByWithRelationInput = {
   selectionSignals?: Prisma.SortOrder
   preferenceSignals?: Prisma.SortOrder
   finalText?: Prisma.SortOrder
+  starterPath?: Prisma.SortOrderInput | Prisma.SortOrder
+  clarifyTurnCount?: Prisma.SortOrder
+  confidenceLevel?: Prisma.SortOrderInput | Prisma.SortOrder
+  openedToolId?: Prisma.SortOrderInput | Prisma.SortOrder
+  savedToolId?: Prisma.SortOrderInput | Prisma.SortOrder
+  evaluatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
+  evaluations?: Prisma.RecommendationEvaluationOrderByRelationAggregateInput
 }
 
 export type RecommendationSessionWhereUniqueInput = Prisma.AtLeast<{
@@ -246,8 +336,15 @@ export type RecommendationSessionWhereUniqueInput = Prisma.AtLeast<{
   selectionSignals?: Prisma.StringNullableListFilter<"RecommendationSession">
   preferenceSignals?: Prisma.StringNullableListFilter<"RecommendationSession">
   finalText?: Prisma.StringFilter<"RecommendationSession"> | string
+  starterPath?: Prisma.StringNullableFilter<"RecommendationSession"> | string | null
+  clarifyTurnCount?: Prisma.IntFilter<"RecommendationSession"> | number
+  confidenceLevel?: Prisma.StringNullableFilter<"RecommendationSession"> | string | null
+  openedToolId?: Prisma.StringNullableFilter<"RecommendationSession"> | string | null
+  savedToolId?: Prisma.StringNullableFilter<"RecommendationSession"> | string | null
+  evaluatedAt?: Prisma.DateTimeNullableFilter<"RecommendationSession"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"RecommendationSession"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  evaluations?: Prisma.RecommendationEvaluationListRelationFilter
 }, "id">
 
 export type RecommendationSessionOrderByWithAggregationInput = {
@@ -261,10 +358,18 @@ export type RecommendationSessionOrderByWithAggregationInput = {
   selectionSignals?: Prisma.SortOrder
   preferenceSignals?: Prisma.SortOrder
   finalText?: Prisma.SortOrder
+  starterPath?: Prisma.SortOrderInput | Prisma.SortOrder
+  clarifyTurnCount?: Prisma.SortOrder
+  confidenceLevel?: Prisma.SortOrderInput | Prisma.SortOrder
+  openedToolId?: Prisma.SortOrderInput | Prisma.SortOrder
+  savedToolId?: Prisma.SortOrderInput | Prisma.SortOrder
+  evaluatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.RecommendationSessionCountOrderByAggregateInput
+  _avg?: Prisma.RecommendationSessionAvgOrderByAggregateInput
   _max?: Prisma.RecommendationSessionMaxOrderByAggregateInput
   _min?: Prisma.RecommendationSessionMinOrderByAggregateInput
+  _sum?: Prisma.RecommendationSessionSumOrderByAggregateInput
 }
 
 export type RecommendationSessionScalarWhereWithAggregatesInput = {
@@ -281,6 +386,12 @@ export type RecommendationSessionScalarWhereWithAggregatesInput = {
   selectionSignals?: Prisma.StringNullableListFilter<"RecommendationSession">
   preferenceSignals?: Prisma.StringNullableListFilter<"RecommendationSession">
   finalText?: Prisma.StringWithAggregatesFilter<"RecommendationSession"> | string
+  starterPath?: Prisma.StringNullableWithAggregatesFilter<"RecommendationSession"> | string | null
+  clarifyTurnCount?: Prisma.IntWithAggregatesFilter<"RecommendationSession"> | number
+  confidenceLevel?: Prisma.StringNullableWithAggregatesFilter<"RecommendationSession"> | string | null
+  openedToolId?: Prisma.StringNullableWithAggregatesFilter<"RecommendationSession"> | string | null
+  savedToolId?: Prisma.StringNullableWithAggregatesFilter<"RecommendationSession"> | string | null
+  evaluatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"RecommendationSession"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"RecommendationSession"> | Date | string
 }
 
@@ -294,8 +405,15 @@ export type RecommendationSessionCreateInput = {
   selectionSignals?: Prisma.RecommendationSessionCreateselectionSignalsInput | string[]
   preferenceSignals?: Prisma.RecommendationSessionCreatepreferenceSignalsInput | string[]
   finalText: string
+  starterPath?: string | null
+  clarifyTurnCount?: number
+  confidenceLevel?: string | null
+  openedToolId?: string | null
+  savedToolId?: string | null
+  evaluatedAt?: Date | string | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutRecommendationSessionsInput
+  evaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutRecommendationSessionInput
 }
 
 export type RecommendationSessionUncheckedCreateInput = {
@@ -309,7 +427,14 @@ export type RecommendationSessionUncheckedCreateInput = {
   selectionSignals?: Prisma.RecommendationSessionCreateselectionSignalsInput | string[]
   preferenceSignals?: Prisma.RecommendationSessionCreatepreferenceSignalsInput | string[]
   finalText: string
+  starterPath?: string | null
+  clarifyTurnCount?: number
+  confidenceLevel?: string | null
+  openedToolId?: string | null
+  savedToolId?: string | null
+  evaluatedAt?: Date | string | null
   createdAt?: Date | string
+  evaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutRecommendationSessionInput
 }
 
 export type RecommendationSessionUpdateInput = {
@@ -322,8 +447,15 @@ export type RecommendationSessionUpdateInput = {
   selectionSignals?: Prisma.RecommendationSessionUpdateselectionSignalsInput | string[]
   preferenceSignals?: Prisma.RecommendationSessionUpdatepreferenceSignalsInput | string[]
   finalText?: Prisma.StringFieldUpdateOperationsInput | string
+  starterPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarifyTurnCount?: Prisma.IntFieldUpdateOperationsInput | number
+  confidenceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evaluatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutRecommendationSessionsNestedInput
+  evaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutRecommendationSessionNestedInput
 }
 
 export type RecommendationSessionUncheckedUpdateInput = {
@@ -337,7 +469,14 @@ export type RecommendationSessionUncheckedUpdateInput = {
   selectionSignals?: Prisma.RecommendationSessionUpdateselectionSignalsInput | string[]
   preferenceSignals?: Prisma.RecommendationSessionUpdatepreferenceSignalsInput | string[]
   finalText?: Prisma.StringFieldUpdateOperationsInput | string
+  starterPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarifyTurnCount?: Prisma.IntFieldUpdateOperationsInput | number
+  confidenceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evaluatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  evaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutRecommendationSessionNestedInput
 }
 
 export type RecommendationSessionCreateManyInput = {
@@ -351,6 +490,12 @@ export type RecommendationSessionCreateManyInput = {
   selectionSignals?: Prisma.RecommendationSessionCreateselectionSignalsInput | string[]
   preferenceSignals?: Prisma.RecommendationSessionCreatepreferenceSignalsInput | string[]
   finalText: string
+  starterPath?: string | null
+  clarifyTurnCount?: number
+  confidenceLevel?: string | null
+  openedToolId?: string | null
+  savedToolId?: string | null
+  evaluatedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -364,6 +509,12 @@ export type RecommendationSessionUpdateManyMutationInput = {
   selectionSignals?: Prisma.RecommendationSessionUpdateselectionSignalsInput | string[]
   preferenceSignals?: Prisma.RecommendationSessionUpdatepreferenceSignalsInput | string[]
   finalText?: Prisma.StringFieldUpdateOperationsInput | string
+  starterPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarifyTurnCount?: Prisma.IntFieldUpdateOperationsInput | number
+  confidenceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evaluatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -378,6 +529,12 @@ export type RecommendationSessionUncheckedUpdateManyInput = {
   selectionSignals?: Prisma.RecommendationSessionUpdateselectionSignalsInput | string[]
   preferenceSignals?: Prisma.RecommendationSessionUpdatepreferenceSignalsInput | string[]
   finalText?: Prisma.StringFieldUpdateOperationsInput | string
+  starterPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarifyTurnCount?: Prisma.IntFieldUpdateOperationsInput | number
+  confidenceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evaluatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -402,7 +559,17 @@ export type RecommendationSessionCountOrderByAggregateInput = {
   selectionSignals?: Prisma.SortOrder
   preferenceSignals?: Prisma.SortOrder
   finalText?: Prisma.SortOrder
+  starterPath?: Prisma.SortOrder
+  clarifyTurnCount?: Prisma.SortOrder
+  confidenceLevel?: Prisma.SortOrder
+  openedToolId?: Prisma.SortOrder
+  savedToolId?: Prisma.SortOrder
+  evaluatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+}
+
+export type RecommendationSessionAvgOrderByAggregateInput = {
+  clarifyTurnCount?: Prisma.SortOrder
 }
 
 export type RecommendationSessionMaxOrderByAggregateInput = {
@@ -412,6 +579,12 @@ export type RecommendationSessionMaxOrderByAggregateInput = {
   selectedToolId?: Prisma.SortOrder
   selectionReason?: Prisma.SortOrder
   finalText?: Prisma.SortOrder
+  starterPath?: Prisma.SortOrder
+  clarifyTurnCount?: Prisma.SortOrder
+  confidenceLevel?: Prisma.SortOrder
+  openedToolId?: Prisma.SortOrder
+  savedToolId?: Prisma.SortOrder
+  evaluatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -422,7 +595,22 @@ export type RecommendationSessionMinOrderByAggregateInput = {
   selectedToolId?: Prisma.SortOrder
   selectionReason?: Prisma.SortOrder
   finalText?: Prisma.SortOrder
+  starterPath?: Prisma.SortOrder
+  clarifyTurnCount?: Prisma.SortOrder
+  confidenceLevel?: Prisma.SortOrder
+  openedToolId?: Prisma.SortOrder
+  savedToolId?: Prisma.SortOrder
+  evaluatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+}
+
+export type RecommendationSessionSumOrderByAggregateInput = {
+  clarifyTurnCount?: Prisma.SortOrder
+}
+
+export type RecommendationSessionScalarRelationFilter = {
+  is?: Prisma.RecommendationSessionWhereInput
+  isNot?: Prisma.RecommendationSessionWhereInput
 }
 
 export type RecommendationSessionCreateNestedManyWithoutUserInput = {
@@ -485,6 +673,20 @@ export type RecommendationSessionUpdatepreferenceSignalsInput = {
   push?: string | string[]
 }
 
+export type RecommendationSessionCreateNestedOneWithoutEvaluationsInput = {
+  create?: Prisma.XOR<Prisma.RecommendationSessionCreateWithoutEvaluationsInput, Prisma.RecommendationSessionUncheckedCreateWithoutEvaluationsInput>
+  connectOrCreate?: Prisma.RecommendationSessionCreateOrConnectWithoutEvaluationsInput
+  connect?: Prisma.RecommendationSessionWhereUniqueInput
+}
+
+export type RecommendationSessionUpdateOneRequiredWithoutEvaluationsNestedInput = {
+  create?: Prisma.XOR<Prisma.RecommendationSessionCreateWithoutEvaluationsInput, Prisma.RecommendationSessionUncheckedCreateWithoutEvaluationsInput>
+  connectOrCreate?: Prisma.RecommendationSessionCreateOrConnectWithoutEvaluationsInput
+  upsert?: Prisma.RecommendationSessionUpsertWithoutEvaluationsInput
+  connect?: Prisma.RecommendationSessionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RecommendationSessionUpdateToOneWithWhereWithoutEvaluationsInput, Prisma.RecommendationSessionUpdateWithoutEvaluationsInput>, Prisma.RecommendationSessionUncheckedUpdateWithoutEvaluationsInput>
+}
+
 export type RecommendationSessionCreateWithoutUserInput = {
   id?: string
   userText: string
@@ -495,7 +697,14 @@ export type RecommendationSessionCreateWithoutUserInput = {
   selectionSignals?: Prisma.RecommendationSessionCreateselectionSignalsInput | string[]
   preferenceSignals?: Prisma.RecommendationSessionCreatepreferenceSignalsInput | string[]
   finalText: string
+  starterPath?: string | null
+  clarifyTurnCount?: number
+  confidenceLevel?: string | null
+  openedToolId?: string | null
+  savedToolId?: string | null
+  evaluatedAt?: Date | string | null
   createdAt?: Date | string
+  evaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutRecommendationSessionInput
 }
 
 export type RecommendationSessionUncheckedCreateWithoutUserInput = {
@@ -508,7 +717,14 @@ export type RecommendationSessionUncheckedCreateWithoutUserInput = {
   selectionSignals?: Prisma.RecommendationSessionCreateselectionSignalsInput | string[]
   preferenceSignals?: Prisma.RecommendationSessionCreatepreferenceSignalsInput | string[]
   finalText: string
+  starterPath?: string | null
+  clarifyTurnCount?: number
+  confidenceLevel?: string | null
+  openedToolId?: string | null
+  savedToolId?: string | null
+  evaluatedAt?: Date | string | null
   createdAt?: Date | string
+  evaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutRecommendationSessionInput
 }
 
 export type RecommendationSessionCreateOrConnectWithoutUserInput = {
@@ -551,7 +767,109 @@ export type RecommendationSessionScalarWhereInput = {
   selectionSignals?: Prisma.StringNullableListFilter<"RecommendationSession">
   preferenceSignals?: Prisma.StringNullableListFilter<"RecommendationSession">
   finalText?: Prisma.StringFilter<"RecommendationSession"> | string
+  starterPath?: Prisma.StringNullableFilter<"RecommendationSession"> | string | null
+  clarifyTurnCount?: Prisma.IntFilter<"RecommendationSession"> | number
+  confidenceLevel?: Prisma.StringNullableFilter<"RecommendationSession"> | string | null
+  openedToolId?: Prisma.StringNullableFilter<"RecommendationSession"> | string | null
+  savedToolId?: Prisma.StringNullableFilter<"RecommendationSession"> | string | null
+  evaluatedAt?: Prisma.DateTimeNullableFilter<"RecommendationSession"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"RecommendationSession"> | Date | string
+}
+
+export type RecommendationSessionCreateWithoutEvaluationsInput = {
+  id?: string
+  userText: string
+  taskFrame: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  selectedToolId?: string | null
+  candidates: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  selectionReason: string
+  selectionSignals?: Prisma.RecommendationSessionCreateselectionSignalsInput | string[]
+  preferenceSignals?: Prisma.RecommendationSessionCreatepreferenceSignalsInput | string[]
+  finalText: string
+  starterPath?: string | null
+  clarifyTurnCount?: number
+  confidenceLevel?: string | null
+  openedToolId?: string | null
+  savedToolId?: string | null
+  evaluatedAt?: Date | string | null
+  createdAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutRecommendationSessionsInput
+}
+
+export type RecommendationSessionUncheckedCreateWithoutEvaluationsInput = {
+  id?: string
+  userId: string
+  userText: string
+  taskFrame: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  selectedToolId?: string | null
+  candidates: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  selectionReason: string
+  selectionSignals?: Prisma.RecommendationSessionCreateselectionSignalsInput | string[]
+  preferenceSignals?: Prisma.RecommendationSessionCreatepreferenceSignalsInput | string[]
+  finalText: string
+  starterPath?: string | null
+  clarifyTurnCount?: number
+  confidenceLevel?: string | null
+  openedToolId?: string | null
+  savedToolId?: string | null
+  evaluatedAt?: Date | string | null
+  createdAt?: Date | string
+}
+
+export type RecommendationSessionCreateOrConnectWithoutEvaluationsInput = {
+  where: Prisma.RecommendationSessionWhereUniqueInput
+  create: Prisma.XOR<Prisma.RecommendationSessionCreateWithoutEvaluationsInput, Prisma.RecommendationSessionUncheckedCreateWithoutEvaluationsInput>
+}
+
+export type RecommendationSessionUpsertWithoutEvaluationsInput = {
+  update: Prisma.XOR<Prisma.RecommendationSessionUpdateWithoutEvaluationsInput, Prisma.RecommendationSessionUncheckedUpdateWithoutEvaluationsInput>
+  create: Prisma.XOR<Prisma.RecommendationSessionCreateWithoutEvaluationsInput, Prisma.RecommendationSessionUncheckedCreateWithoutEvaluationsInput>
+  where?: Prisma.RecommendationSessionWhereInput
+}
+
+export type RecommendationSessionUpdateToOneWithWhereWithoutEvaluationsInput = {
+  where?: Prisma.RecommendationSessionWhereInput
+  data: Prisma.XOR<Prisma.RecommendationSessionUpdateWithoutEvaluationsInput, Prisma.RecommendationSessionUncheckedUpdateWithoutEvaluationsInput>
+}
+
+export type RecommendationSessionUpdateWithoutEvaluationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userText?: Prisma.StringFieldUpdateOperationsInput | string
+  taskFrame?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  selectedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  candidates?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  selectionReason?: Prisma.StringFieldUpdateOperationsInput | string
+  selectionSignals?: Prisma.RecommendationSessionUpdateselectionSignalsInput | string[]
+  preferenceSignals?: Prisma.RecommendationSessionUpdatepreferenceSignalsInput | string[]
+  finalText?: Prisma.StringFieldUpdateOperationsInput | string
+  starterPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarifyTurnCount?: Prisma.IntFieldUpdateOperationsInput | number
+  confidenceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evaluatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutRecommendationSessionsNestedInput
+}
+
+export type RecommendationSessionUncheckedUpdateWithoutEvaluationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  userText?: Prisma.StringFieldUpdateOperationsInput | string
+  taskFrame?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  selectedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  candidates?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  selectionReason?: Prisma.StringFieldUpdateOperationsInput | string
+  selectionSignals?: Prisma.RecommendationSessionUpdateselectionSignalsInput | string[]
+  preferenceSignals?: Prisma.RecommendationSessionUpdatepreferenceSignalsInput | string[]
+  finalText?: Prisma.StringFieldUpdateOperationsInput | string
+  starterPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarifyTurnCount?: Prisma.IntFieldUpdateOperationsInput | number
+  confidenceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evaluatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type RecommendationSessionCreateManyUserInput = {
@@ -564,6 +882,12 @@ export type RecommendationSessionCreateManyUserInput = {
   selectionSignals?: Prisma.RecommendationSessionCreateselectionSignalsInput | string[]
   preferenceSignals?: Prisma.RecommendationSessionCreatepreferenceSignalsInput | string[]
   finalText: string
+  starterPath?: string | null
+  clarifyTurnCount?: number
+  confidenceLevel?: string | null
+  openedToolId?: string | null
+  savedToolId?: string | null
+  evaluatedAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -577,7 +901,14 @@ export type RecommendationSessionUpdateWithoutUserInput = {
   selectionSignals?: Prisma.RecommendationSessionUpdateselectionSignalsInput | string[]
   preferenceSignals?: Prisma.RecommendationSessionUpdatepreferenceSignalsInput | string[]
   finalText?: Prisma.StringFieldUpdateOperationsInput | string
+  starterPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarifyTurnCount?: Prisma.IntFieldUpdateOperationsInput | number
+  confidenceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evaluatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  evaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutRecommendationSessionNestedInput
 }
 
 export type RecommendationSessionUncheckedUpdateWithoutUserInput = {
@@ -590,7 +921,14 @@ export type RecommendationSessionUncheckedUpdateWithoutUserInput = {
   selectionSignals?: Prisma.RecommendationSessionUpdateselectionSignalsInput | string[]
   preferenceSignals?: Prisma.RecommendationSessionUpdatepreferenceSignalsInput | string[]
   finalText?: Prisma.StringFieldUpdateOperationsInput | string
+  starterPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarifyTurnCount?: Prisma.IntFieldUpdateOperationsInput | number
+  confidenceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evaluatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  evaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutRecommendationSessionNestedInput
 }
 
 export type RecommendationSessionUncheckedUpdateManyWithoutUserInput = {
@@ -603,9 +941,44 @@ export type RecommendationSessionUncheckedUpdateManyWithoutUserInput = {
   selectionSignals?: Prisma.RecommendationSessionUpdateselectionSignalsInput | string[]
   preferenceSignals?: Prisma.RecommendationSessionUpdatepreferenceSignalsInput | string[]
   finalText?: Prisma.StringFieldUpdateOperationsInput | string
+  starterPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clarifyTurnCount?: Prisma.IntFieldUpdateOperationsInput | number
+  confidenceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  savedToolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evaluatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type RecommendationSessionCountOutputType
+ */
+
+export type RecommendationSessionCountOutputType = {
+  evaluations: number
+}
+
+export type RecommendationSessionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  evaluations?: boolean | RecommendationSessionCountOutputTypeCountEvaluationsArgs
+}
+
+/**
+ * RecommendationSessionCountOutputType without action
+ */
+export type RecommendationSessionCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecommendationSessionCountOutputType
+   */
+  select?: Prisma.RecommendationSessionCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * RecommendationSessionCountOutputType without action
+ */
+export type RecommendationSessionCountOutputTypeCountEvaluationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RecommendationEvaluationWhereInput
+}
 
 
 export type RecommendationSessionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -619,8 +992,16 @@ export type RecommendationSessionSelect<ExtArgs extends runtime.Types.Extensions
   selectionSignals?: boolean
   preferenceSignals?: boolean
   finalText?: boolean
+  starterPath?: boolean
+  clarifyTurnCount?: boolean
+  confidenceLevel?: boolean
+  openedToolId?: boolean
+  savedToolId?: boolean
+  evaluatedAt?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  evaluations?: boolean | Prisma.RecommendationSession$evaluationsArgs<ExtArgs>
+  _count?: boolean | Prisma.RecommendationSessionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["recommendationSession"]>
 
 export type RecommendationSessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -634,6 +1015,12 @@ export type RecommendationSessionSelectCreateManyAndReturn<ExtArgs extends runti
   selectionSignals?: boolean
   preferenceSignals?: boolean
   finalText?: boolean
+  starterPath?: boolean
+  clarifyTurnCount?: boolean
+  confidenceLevel?: boolean
+  openedToolId?: boolean
+  savedToolId?: boolean
+  evaluatedAt?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["recommendationSession"]>
@@ -649,6 +1036,12 @@ export type RecommendationSessionSelectUpdateManyAndReturn<ExtArgs extends runti
   selectionSignals?: boolean
   preferenceSignals?: boolean
   finalText?: boolean
+  starterPath?: boolean
+  clarifyTurnCount?: boolean
+  confidenceLevel?: boolean
+  openedToolId?: boolean
+  savedToolId?: boolean
+  evaluatedAt?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["recommendationSession"]>
@@ -664,12 +1057,20 @@ export type RecommendationSessionSelectScalar = {
   selectionSignals?: boolean
   preferenceSignals?: boolean
   finalText?: boolean
+  starterPath?: boolean
+  clarifyTurnCount?: boolean
+  confidenceLevel?: boolean
+  openedToolId?: boolean
+  savedToolId?: boolean
+  evaluatedAt?: boolean
   createdAt?: boolean
 }
 
-export type RecommendationSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "userText" | "taskFrame" | "selectedToolId" | "candidates" | "selectionReason" | "selectionSignals" | "preferenceSignals" | "finalText" | "createdAt", ExtArgs["result"]["recommendationSession"]>
+export type RecommendationSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "userText" | "taskFrame" | "selectedToolId" | "candidates" | "selectionReason" | "selectionSignals" | "preferenceSignals" | "finalText" | "starterPath" | "clarifyTurnCount" | "confidenceLevel" | "openedToolId" | "savedToolId" | "evaluatedAt" | "createdAt", ExtArgs["result"]["recommendationSession"]>
 export type RecommendationSessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  evaluations?: boolean | Prisma.RecommendationSession$evaluationsArgs<ExtArgs>
+  _count?: boolean | Prisma.RecommendationSessionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RecommendationSessionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -682,6 +1083,7 @@ export type $RecommendationSessionPayload<ExtArgs extends runtime.Types.Extensio
   name: "RecommendationSession"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
+    evaluations: Prisma.$RecommendationEvaluationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -694,6 +1096,12 @@ export type $RecommendationSessionPayload<ExtArgs extends runtime.Types.Extensio
     selectionSignals: string[]
     preferenceSignals: string[]
     finalText: string
+    starterPath: string | null
+    clarifyTurnCount: number
+    confidenceLevel: string | null
+    openedToolId: string | null
+    savedToolId: string | null
+    evaluatedAt: Date | null
     createdAt: Date
   }, ExtArgs["result"]["recommendationSession"]>
   composites: {}
@@ -1090,6 +1498,7 @@ readonly fields: RecommendationSessionFieldRefs;
 export interface Prisma__RecommendationSessionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  evaluations<T extends Prisma.RecommendationSession$evaluationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RecommendationSession$evaluationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecommendationEvaluationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1129,6 +1538,12 @@ export interface RecommendationSessionFieldRefs {
   readonly selectionSignals: Prisma.FieldRef<"RecommendationSession", 'String[]'>
   readonly preferenceSignals: Prisma.FieldRef<"RecommendationSession", 'String[]'>
   readonly finalText: Prisma.FieldRef<"RecommendationSession", 'String'>
+  readonly starterPath: Prisma.FieldRef<"RecommendationSession", 'String'>
+  readonly clarifyTurnCount: Prisma.FieldRef<"RecommendationSession", 'Int'>
+  readonly confidenceLevel: Prisma.FieldRef<"RecommendationSession", 'String'>
+  readonly openedToolId: Prisma.FieldRef<"RecommendationSession", 'String'>
+  readonly savedToolId: Prisma.FieldRef<"RecommendationSession", 'String'>
+  readonly evaluatedAt: Prisma.FieldRef<"RecommendationSession", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"RecommendationSession", 'DateTime'>
 }
     
@@ -1528,6 +1943,30 @@ export type RecommendationSessionDeleteManyArgs<ExtArgs extends runtime.Types.Ex
    * Limit how many RecommendationSessions to delete.
    */
   limit?: number
+}
+
+/**
+ * RecommendationSession.evaluations
+ */
+export type RecommendationSession$evaluationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecommendationEvaluation
+   */
+  select?: Prisma.RecommendationEvaluationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RecommendationEvaluation
+   */
+  omit?: Prisma.RecommendationEvaluationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecommendationEvaluationInclude<ExtArgs> | null
+  where?: Prisma.RecommendationEvaluationWhereInput
+  orderBy?: Prisma.RecommendationEvaluationOrderByWithRelationInput | Prisma.RecommendationEvaluationOrderByWithRelationInput[]
+  cursor?: Prisma.RecommendationEvaluationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RecommendationEvaluationScalarFieldEnum | Prisma.RecommendationEvaluationScalarFieldEnum[]
 }
 
 /**

@@ -2,6 +2,7 @@
 
 import { useCallback } from 'react'
 import { useAuthenticatedToolActions } from '@/hooks/use-authenticated-tool-actions'
+import { useSaveRecommendationSessionActionMutation } from '@/lib/query/recommendation-evaluation'
 import type { ToolLookupFn } from '@/shared/tool-lookup'
 
 type UseDiscoveryWorkspaceActionsOptions = {
@@ -20,6 +21,7 @@ type UseDiscoveryWorkspaceActionsOptions = {
     message: string
     autoDismissMs?: number
   }) => void
+  getRecommendationSessionId?: () => string | null
 }
 
 export function useDiscoveryWorkspaceActions({
@@ -30,7 +32,9 @@ export function useDiscoveryWorkspaceActions({
   saveToolToPocket,
   markToolUsed,
   setSystemNotice,
+  getRecommendationSessionId,
 }: UseDiscoveryWorkspaceActionsOptions) {
+  const sessionActionMutation = useSaveRecommendationSessionActionMutation()
   const { openTool, saveTool } = useAuthenticatedToolActions({
     authPending,
     isAuthenticated,
@@ -43,7 +47,17 @@ export function useDiscoveryWorkspaceActions({
   const onSaveCandidate = useCallback(
     (toolId: string) => {
       const saved = saveTool(toolId)
-      if (saved) return
+      if (saved) {
+        const recommendationSessionId = getRecommendationSessionId?.()
+        if (recommendationSessionId) {
+          sessionActionMutation.mutate({
+            recommendationSessionId,
+            toolId,
+            action: 'saved',
+          })
+        }
+        return
+      }
       if (authPending || !isAuthenticated) return
       setSystemNotice({
         level: 'critical',
@@ -51,14 +65,29 @@ export function useDiscoveryWorkspaceActions({
         autoDismissMs: 2200,
       })
     },
-    [authPending, isAuthenticated, saveTool, setSystemNotice],
+    [
+      authPending,
+      getRecommendationSessionId,
+      isAuthenticated,
+      saveTool,
+      sessionActionMutation,
+      setSystemNotice,
+    ],
   )
 
   const onLaunchCandidate = useCallback(
     (toolId: string) => {
       openTool(toolId)
+      const recommendationSessionId = getRecommendationSessionId?.()
+      if (recommendationSessionId) {
+        sessionActionMutation.mutate({
+          recommendationSessionId,
+          toolId,
+          action: 'opened',
+        })
+      }
     },
-    [openTool],
+    [getRecommendationSessionId, openTool, sessionActionMutation],
   )
 
   const onOpenExternalCandidate = useCallback(

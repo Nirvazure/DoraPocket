@@ -207,6 +207,7 @@ export type UserWhereInput = {
   chatHistory?: Prisma.ChatHistoryEntryListRelationFilter
   preferenceOverride?: Prisma.XOR<Prisma.PreferenceProfileOverrideNullableScalarRelationFilter, Prisma.PreferenceProfileOverrideWhereInput> | null
   recommendationSessions?: Prisma.RecommendationSessionListRelationFilter
+  recommendationEvaluations?: Prisma.RecommendationEvaluationListRelationFilter
   migrationState?: Prisma.XOR<Prisma.DataMigrationStateNullableScalarRelationFilter, Prisma.DataMigrationStateWhereInput> | null
   createdTools?: Prisma.ToolListRelationFilter
 }
@@ -228,6 +229,7 @@ export type UserOrderByWithRelationInput = {
   chatHistory?: Prisma.ChatHistoryEntryOrderByRelationAggregateInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideOrderByWithRelationInput
   recommendationSessions?: Prisma.RecommendationSessionOrderByRelationAggregateInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationOrderByRelationAggregateInput
   migrationState?: Prisma.DataMigrationStateOrderByWithRelationInput
   createdTools?: Prisma.ToolOrderByRelationAggregateInput
 }
@@ -252,6 +254,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   chatHistory?: Prisma.ChatHistoryEntryListRelationFilter
   preferenceOverride?: Prisma.XOR<Prisma.PreferenceProfileOverrideNullableScalarRelationFilter, Prisma.PreferenceProfileOverrideWhereInput> | null
   recommendationSessions?: Prisma.RecommendationSessionListRelationFilter
+  recommendationEvaluations?: Prisma.RecommendationEvaluationListRelationFilter
   migrationState?: Prisma.XOR<Prisma.DataMigrationStateNullableScalarRelationFilter, Prisma.DataMigrationStateWhereInput> | null
   createdTools?: Prisma.ToolListRelationFilter
 }, "id" | "supabaseUserId">
@@ -299,6 +302,7 @@ export type UserCreateInput = {
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
@@ -320,6 +324,7 @@ export type UserUncheckedCreateInput = {
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
@@ -341,6 +346,7 @@ export type UserUpdateInput = {
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
@@ -362,6 +368,7 @@ export type UserUncheckedUpdateInput = {
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
@@ -590,6 +597,20 @@ export type UserUpdateOneRequiredWithoutRecommendationSessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRecommendationSessionsInput, Prisma.UserUpdateWithoutRecommendationSessionsInput>, Prisma.UserUncheckedUpdateWithoutRecommendationSessionsInput>
 }
 
+export type UserCreateNestedOneWithoutRecommendationEvaluationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRecommendationEvaluationsInput, Prisma.UserUncheckedCreateWithoutRecommendationEvaluationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRecommendationEvaluationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutRecommendationEvaluationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRecommendationEvaluationsInput, Prisma.UserUncheckedCreateWithoutRecommendationEvaluationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRecommendationEvaluationsInput
+  upsert?: Prisma.UserUpsertWithoutRecommendationEvaluationsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRecommendationEvaluationsInput, Prisma.UserUpdateWithoutRecommendationEvaluationsInput>, Prisma.UserUncheckedUpdateWithoutRecommendationEvaluationsInput>
+}
+
 export type UserCreateNestedOneWithoutMigrationStateInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutMigrationStateInput, Prisma.UserUncheckedCreateWithoutMigrationStateInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutMigrationStateInput
@@ -620,6 +641,7 @@ export type UserCreateWithoutSettingsInput = {
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
@@ -640,6 +662,7 @@ export type UserUncheckedCreateWithoutSettingsInput = {
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
@@ -676,6 +699,7 @@ export type UserUpdateWithoutSettingsInput = {
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
@@ -696,6 +720,7 @@ export type UserUncheckedUpdateWithoutSettingsInput = {
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
@@ -717,6 +742,7 @@ export type UserCreateWithoutCreatedToolsInput = {
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
 }
 
@@ -737,6 +763,7 @@ export type UserUncheckedCreateWithoutCreatedToolsInput = {
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
 }
 
@@ -773,6 +800,7 @@ export type UserUpdateWithoutCreatedToolsInput = {
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
 }
 
@@ -793,6 +821,7 @@ export type UserUncheckedUpdateWithoutCreatedToolsInput = {
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
 }
 
@@ -812,6 +841,7 @@ export type UserCreateWithoutPocketItemsInput = {
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
@@ -832,6 +862,7 @@ export type UserUncheckedCreateWithoutPocketItemsInput = {
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
@@ -868,6 +899,7 @@ export type UserUpdateWithoutPocketItemsInput = {
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
@@ -888,6 +920,7 @@ export type UserUncheckedUpdateWithoutPocketItemsInput = {
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
@@ -908,6 +941,7 @@ export type UserCreateWithoutMarketFeedbackInput = {
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
@@ -928,6 +962,7 @@ export type UserUncheckedCreateWithoutMarketFeedbackInput = {
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
@@ -964,6 +999,7 @@ export type UserUpdateWithoutMarketFeedbackInput = {
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
@@ -984,6 +1020,7 @@ export type UserUncheckedUpdateWithoutMarketFeedbackInput = {
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
@@ -1004,6 +1041,7 @@ export type UserCreateWithoutMarketSubscriptionsInput = {
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
@@ -1024,6 +1062,7 @@ export type UserUncheckedCreateWithoutMarketSubscriptionsInput = {
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
@@ -1060,6 +1099,7 @@ export type UserUpdateWithoutMarketSubscriptionsInput = {
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
@@ -1080,6 +1120,7 @@ export type UserUncheckedUpdateWithoutMarketSubscriptionsInput = {
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
@@ -1100,6 +1141,7 @@ export type UserCreateWithoutMarketSubmissionsInput = {
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
@@ -1120,6 +1162,7 @@ export type UserUncheckedCreateWithoutMarketSubmissionsInput = {
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
@@ -1156,6 +1199,7 @@ export type UserUpdateWithoutMarketSubmissionsInput = {
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
@@ -1176,6 +1220,7 @@ export type UserUncheckedUpdateWithoutMarketSubmissionsInput = {
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
@@ -1196,6 +1241,7 @@ export type UserCreateWithoutToolActivitiesInput = {
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
@@ -1216,6 +1262,7 @@ export type UserUncheckedCreateWithoutToolActivitiesInput = {
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
@@ -1252,6 +1299,7 @@ export type UserUpdateWithoutToolActivitiesInput = {
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
@@ -1272,6 +1320,7 @@ export type UserUncheckedUpdateWithoutToolActivitiesInput = {
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
@@ -1292,6 +1341,7 @@ export type UserCreateWithoutChatHistoryInput = {
   toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
@@ -1312,6 +1362,7 @@ export type UserUncheckedCreateWithoutChatHistoryInput = {
   toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
@@ -1348,6 +1399,7 @@ export type UserUpdateWithoutChatHistoryInput = {
   toolActivities?: Prisma.ToolActivityUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
@@ -1368,6 +1420,7 @@ export type UserUncheckedUpdateWithoutChatHistoryInput = {
   toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
@@ -1388,6 +1441,7 @@ export type UserCreateWithoutPreferenceOverrideInput = {
   toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
@@ -1408,6 +1462,7 @@ export type UserUncheckedCreateWithoutPreferenceOverrideInput = {
   toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
@@ -1444,6 +1499,7 @@ export type UserUpdateWithoutPreferenceOverrideInput = {
   toolActivities?: Prisma.ToolActivityUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
@@ -1464,6 +1520,7 @@ export type UserUncheckedUpdateWithoutPreferenceOverrideInput = {
   toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
@@ -1484,6 +1541,7 @@ export type UserCreateWithoutRecommendationSessionsInput = {
   toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
@@ -1504,6 +1562,7 @@ export type UserUncheckedCreateWithoutRecommendationSessionsInput = {
   toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
   migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
@@ -1540,6 +1599,7 @@ export type UserUpdateWithoutRecommendationSessionsInput = {
   toolActivities?: Prisma.ToolActivityUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
@@ -1560,6 +1620,107 @@ export type UserUncheckedUpdateWithoutRecommendationSessionsInput = {
   toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
+  migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
+  createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutRecommendationEvaluationsInput = {
+  id?: string
+  supabaseUserId: string
+  email?: string | null
+  nickname: string
+  avatarSrc?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  settings?: Prisma.UserSettingsCreateNestedOneWithoutUserInput
+  pocketItems?: Prisma.PocketItemCreateNestedManyWithoutUserInput
+  marketFeedback?: Prisma.MarketFeedbackCreateNestedManyWithoutUserInput
+  marketSubscriptions?: Prisma.MarketSubscriptionCreateNestedManyWithoutUserInput
+  marketSubmissions?: Prisma.MarketSubmissionCreateNestedManyWithoutUserInput
+  toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutUserInput
+  chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
+  preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
+  recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
+  migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
+  createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutRecommendationEvaluationsInput = {
+  id?: string
+  supabaseUserId: string
+  email?: string | null
+  nickname: string
+  avatarSrc?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  settings?: Prisma.UserSettingsUncheckedCreateNestedOneWithoutUserInput
+  pocketItems?: Prisma.PocketItemUncheckedCreateNestedManyWithoutUserInput
+  marketFeedback?: Prisma.MarketFeedbackUncheckedCreateNestedManyWithoutUserInput
+  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  marketSubmissions?: Prisma.MarketSubmissionUncheckedCreateNestedManyWithoutUserInput
+  toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutUserInput
+  chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
+  preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
+  recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
+  migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
+  createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutRecommendationEvaluationsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutRecommendationEvaluationsInput, Prisma.UserUncheckedCreateWithoutRecommendationEvaluationsInput>
+}
+
+export type UserUpsertWithoutRecommendationEvaluationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutRecommendationEvaluationsInput, Prisma.UserUncheckedUpdateWithoutRecommendationEvaluationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutRecommendationEvaluationsInput, Prisma.UserUncheckedCreateWithoutRecommendationEvaluationsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutRecommendationEvaluationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutRecommendationEvaluationsInput, Prisma.UserUncheckedUpdateWithoutRecommendationEvaluationsInput>
+}
+
+export type UserUpdateWithoutRecommendationEvaluationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  supabaseUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nickname?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarSrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  settings?: Prisma.UserSettingsUpdateOneWithoutUserNestedInput
+  pocketItems?: Prisma.PocketItemUpdateManyWithoutUserNestedInput
+  marketFeedback?: Prisma.MarketFeedbackUpdateManyWithoutUserNestedInput
+  marketSubscriptions?: Prisma.MarketSubscriptionUpdateManyWithoutUserNestedInput
+  marketSubmissions?: Prisma.MarketSubmissionUpdateManyWithoutUserNestedInput
+  toolActivities?: Prisma.ToolActivityUpdateManyWithoutUserNestedInput
+  chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
+  preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
+  recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
+  migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
+  createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutRecommendationEvaluationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  supabaseUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nickname?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarSrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  settings?: Prisma.UserSettingsUncheckedUpdateOneWithoutUserNestedInput
+  pocketItems?: Prisma.PocketItemUncheckedUpdateManyWithoutUserNestedInput
+  marketFeedback?: Prisma.MarketFeedbackUncheckedUpdateManyWithoutUserNestedInput
+  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  marketSubmissions?: Prisma.MarketSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutUserNestedInput
+  chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
+  preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
+  recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
   migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
@@ -1581,6 +1742,7 @@ export type UserCreateWithoutMigrationStateInput = {
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
 
@@ -1601,6 +1763,7 @@ export type UserUncheckedCreateWithoutMigrationStateInput = {
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
@@ -1637,6 +1800,7 @@ export type UserUpdateWithoutMigrationStateInput = {
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -1657,6 +1821,7 @@ export type UserUncheckedUpdateWithoutMigrationStateInput = {
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
+  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -1673,6 +1838,7 @@ export type UserCountOutputType = {
   toolActivities: number
   chatHistory: number
   recommendationSessions: number
+  recommendationEvaluations: number
   createdTools: number
 }
 
@@ -1684,6 +1850,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   toolActivities?: boolean | UserCountOutputTypeCountToolActivitiesArgs
   chatHistory?: boolean | UserCountOutputTypeCountChatHistoryArgs
   recommendationSessions?: boolean | UserCountOutputTypeCountRecommendationSessionsArgs
+  recommendationEvaluations?: boolean | UserCountOutputTypeCountRecommendationEvaluationsArgs
   createdTools?: boolean | UserCountOutputTypeCountCreatedToolsArgs
 }
 
@@ -1749,6 +1916,13 @@ export type UserCountOutputTypeCountRecommendationSessionsArgs<ExtArgs extends r
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountRecommendationEvaluationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RecommendationEvaluationWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountCreatedToolsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ToolWhereInput
 }
@@ -1771,6 +1945,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   chatHistory?: boolean | Prisma.User$chatHistoryArgs<ExtArgs>
   preferenceOverride?: boolean | Prisma.User$preferenceOverrideArgs<ExtArgs>
   recommendationSessions?: boolean | Prisma.User$recommendationSessionsArgs<ExtArgs>
+  recommendationEvaluations?: boolean | Prisma.User$recommendationEvaluationsArgs<ExtArgs>
   migrationState?: boolean | Prisma.User$migrationStateArgs<ExtArgs>
   createdTools?: boolean | Prisma.User$createdToolsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -1817,6 +1992,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   chatHistory?: boolean | Prisma.User$chatHistoryArgs<ExtArgs>
   preferenceOverride?: boolean | Prisma.User$preferenceOverrideArgs<ExtArgs>
   recommendationSessions?: boolean | Prisma.User$recommendationSessionsArgs<ExtArgs>
+  recommendationEvaluations?: boolean | Prisma.User$recommendationEvaluationsArgs<ExtArgs>
   migrationState?: boolean | Prisma.User$migrationStateArgs<ExtArgs>
   createdTools?: boolean | Prisma.User$createdToolsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -1836,6 +2012,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     chatHistory: Prisma.$ChatHistoryEntryPayload<ExtArgs>[]
     preferenceOverride: Prisma.$PreferenceProfileOverridePayload<ExtArgs> | null
     recommendationSessions: Prisma.$RecommendationSessionPayload<ExtArgs>[]
+    recommendationEvaluations: Prisma.$RecommendationEvaluationPayload<ExtArgs>[]
     migrationState: Prisma.$DataMigrationStatePayload<ExtArgs> | null
     createdTools: Prisma.$ToolPayload<ExtArgs>[]
   }
@@ -2250,6 +2427,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   chatHistory<T extends Prisma.User$chatHistoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$chatHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatHistoryEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   preferenceOverride<T extends Prisma.User$preferenceOverrideArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$preferenceOverrideArgs<ExtArgs>>): Prisma.Prisma__PreferenceProfileOverrideClient<runtime.Types.Result.GetResult<Prisma.$PreferenceProfileOverridePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   recommendationSessions<T extends Prisma.User$recommendationSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recommendationSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecommendationSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  recommendationEvaluations<T extends Prisma.User$recommendationEvaluationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recommendationEvaluationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecommendationEvaluationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   migrationState<T extends Prisma.User$migrationStateArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$migrationStateArgs<ExtArgs>>): Prisma.Prisma__DataMigrationStateClient<runtime.Types.Result.GetResult<Prisma.$DataMigrationStatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   createdTools<T extends Prisma.User$createdToolsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdToolsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ToolPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -2884,6 +3062,30 @@ export type User$recommendationSessionsArgs<ExtArgs extends runtime.Types.Extens
   take?: number
   skip?: number
   distinct?: Prisma.RecommendationSessionScalarFieldEnum | Prisma.RecommendationSessionScalarFieldEnum[]
+}
+
+/**
+ * User.recommendationEvaluations
+ */
+export type User$recommendationEvaluationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecommendationEvaluation
+   */
+  select?: Prisma.RecommendationEvaluationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RecommendationEvaluation
+   */
+  omit?: Prisma.RecommendationEvaluationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecommendationEvaluationInclude<ExtArgs> | null
+  where?: Prisma.RecommendationEvaluationWhereInput
+  orderBy?: Prisma.RecommendationEvaluationOrderByWithRelationInput | Prisma.RecommendationEvaluationOrderByWithRelationInput[]
+  cursor?: Prisma.RecommendationEvaluationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RecommendationEvaluationScalarFieldEnum | Prisma.RecommendationEvaluationScalarFieldEnum[]
 }
 
 /**

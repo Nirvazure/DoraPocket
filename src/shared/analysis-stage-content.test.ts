@@ -10,7 +10,7 @@ import {
   resolveLiveTrackActiveIndex,
   resolveAnalysisFlowAfterError,
   shouldPreserveTurnFlow,
-} from '@/components/discovery/analysis-stage-content'
+} from '@/shared/analysis-stage-content'
 
 test('resolveAnalysisFlowAfterError unlocks input and stops analyzing UI', () => {
   const flow = resolveAnalysisFlowAfterError()
@@ -61,11 +61,11 @@ test('isInputLockedFlow returns false when step2 status is clarifying', () => {
       beat: 'working',
       step2: {
         turn: 1,
-        anchorPrompt: '查天气',
+        anchorPrompt: '???',
         messages: [],
         status: 'clarifying',
         dialogueExpanded: false,
-        quickReplies: ['北京'],
+        quickReplies: ['??'],
       },
     }),
     false,

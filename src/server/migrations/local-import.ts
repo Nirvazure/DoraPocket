@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { prisma } from '@/server/db/prisma'
-import type { LegacyLocalSnapshot } from '@/lib/local-snapshot'
+import type { LegacyLocalSnapshot } from '@/lib/client/legacy-snapshot-read'
 import type * as Prisma from '../../generated/prisma/internal/prismaNamespace'
 
 function toJsonValue(value: unknown): Prisma.InputJsonValue | undefined {

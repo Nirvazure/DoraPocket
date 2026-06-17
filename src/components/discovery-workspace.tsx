@@ -10,7 +10,7 @@ import {
   resolveCurrentStep,
   resolveMaxVisibleStep,
   type AnalysisFlow,
-} from '@/components/discovery/analysis-stage-content'
+} from '@/shared/analysis-stage-content'
 import { canAdvanceStarterStep } from '@/shared/starter-intake'
 import { DecisionProgressSteps } from '@/components/discovery/decision-progress-steps'
 import { LiveAnalysisTrackCard } from '@/components/discovery/live-analysis-track-card'
@@ -50,6 +50,7 @@ type DiscoveryWorkspaceProps = {
   onSaveCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
   onOpenExternalCandidate: (url: string) => void
+  recommendationSessionId?: string | null
   onStartAnalysis?: (prompt: string, displayPrompt: string) => void | Promise<void>
   onStartNewTask?: () => void
   starterActionsEnabled?: boolean
@@ -72,6 +73,7 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
       onSaveCandidate,
       onLaunchCandidate,
       onOpenExternalCandidate,
+      recommendationSessionId = null,
       onStartAnalysis,
       onStartNewTask,
       starterActionsEnabled = true,
@@ -160,6 +162,7 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
                   onSaveCandidate={onSaveCandidate}
                   onLaunchCandidate={onLaunchCandidate}
                   onOpenExternalCandidate={onOpenExternalCandidate}
+                  recommendationSessionId={recommendationSessionId}
                 />
               ) : activePanelStep === 1 ? (
                 <WhereToStartSection

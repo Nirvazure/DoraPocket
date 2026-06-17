@@ -1,8 +1,4 @@
-import {
-  disposeAliyunSttSession,
-  startAliyunSttSession,
-  stopAliyunSttSession,
-} from '@/lib/client/stt-aliyun-ws'
+import { disposeAliyunSttSession, startAliyunSttSession } from '@/lib/client/stt-aliyun-ws'
 
 export type SpeechSessionCallbacks = {
   onResult: (text: string) => void
@@ -16,10 +12,6 @@ export function disposeSpeechSession() {
 
 export function startSpeechSession(callbacks: SpeechSessionCallbacks): Promise<boolean> {
   return startAliyunSttSession(callbacks)
-}
-
-export function stopSpeechSession() {
-  stopAliyunSttSession()
 }
 
 let audioContext: AudioContext | null = null

@@ -3,7 +3,7 @@ import {
   buildLiveAnalysisTrack,
   type AnalysisFlow,
   type LiveAnalysisTrackItem,
-} from '@/components/discovery/analysis-stage-content'
+} from '@/shared/analysis-stage-content'
 import { cn } from '@/lib/utils'
 import type { AgentUiPayload } from '@/shared/market-types'
 import type { ProgressStage } from '@/shared/step2-session-types'

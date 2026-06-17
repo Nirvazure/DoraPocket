@@ -395,6 +395,7 @@ export const ModelName = {
   ChatHistoryEntry: 'ChatHistoryEntry',
   PreferenceProfileOverride: 'PreferenceProfileOverride',
   RecommendationSession: 'RecommendationSession',
+  RecommendationEvaluation: 'RecommendationEvaluation',
   DataMigrationState: 'DataMigrationState'
 } as const
 
@@ -411,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "userSettings" | "tool" | "pocketItem" | "marketFeedback" | "marketSubscription" | "marketSubmission" | "toolActivity" | "chatHistoryEntry" | "preferenceProfileOverride" | "recommendationSession" | "dataMigrationState"
+    modelProps: "user" | "userSettings" | "tool" | "pocketItem" | "marketFeedback" | "marketSubscription" | "marketSubmission" | "toolActivity" | "chatHistoryEntry" | "preferenceProfileOverride" | "recommendationSession" | "recommendationEvaluation" | "dataMigrationState"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1229,6 +1230,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    RecommendationEvaluation: {
+      payload: Prisma.$RecommendationEvaluationPayload<ExtArgs>
+      fields: Prisma.RecommendationEvaluationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RecommendationEvaluationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecommendationEvaluationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RecommendationEvaluationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecommendationEvaluationPayload>
+        }
+        findFirst: {
+          args: Prisma.RecommendationEvaluationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecommendationEvaluationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RecommendationEvaluationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecommendationEvaluationPayload>
+        }
+        findMany: {
+          args: Prisma.RecommendationEvaluationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecommendationEvaluationPayload>[]
+        }
+        create: {
+          args: Prisma.RecommendationEvaluationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecommendationEvaluationPayload>
+        }
+        createMany: {
+          args: Prisma.RecommendationEvaluationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RecommendationEvaluationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecommendationEvaluationPayload>[]
+        }
+        delete: {
+          args: Prisma.RecommendationEvaluationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecommendationEvaluationPayload>
+        }
+        update: {
+          args: Prisma.RecommendationEvaluationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecommendationEvaluationPayload>
+        }
+        deleteMany: {
+          args: Prisma.RecommendationEvaluationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RecommendationEvaluationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RecommendationEvaluationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecommendationEvaluationPayload>[]
+        }
+        upsert: {
+          args: Prisma.RecommendationEvaluationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecommendationEvaluationPayload>
+        }
+        aggregate: {
+          args: Prisma.RecommendationEvaluationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRecommendationEvaluation>
+        }
+        groupBy: {
+          args: Prisma.RecommendationEvaluationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RecommendationEvaluationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RecommendationEvaluationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RecommendationEvaluationCountAggregateOutputType> | number
+        }
+      }
+    }
     DataMigrationState: {
       payload: Prisma.$DataMigrationStatePayload<ExtArgs>
       fields: Prisma.DataMigrationStateFieldRefs
@@ -1519,10 +1594,36 @@ export const RecommendationSessionScalarFieldEnum = {
   selectionSignals: 'selectionSignals',
   preferenceSignals: 'preferenceSignals',
   finalText: 'finalText',
+  starterPath: 'starterPath',
+  clarifyTurnCount: 'clarifyTurnCount',
+  confidenceLevel: 'confidenceLevel',
+  openedToolId: 'openedToolId',
+  savedToolId: 'savedToolId',
+  evaluatedAt: 'evaluatedAt',
   createdAt: 'createdAt'
 } as const
 
 export type RecommendationSessionScalarFieldEnum = (typeof RecommendationSessionScalarFieldEnum)[keyof typeof RecommendationSessionScalarFieldEnum]
+
+
+export const RecommendationEvaluationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  recommendationSessionId: 'recommendationSessionId',
+  selectedToolId: 'selectedToolId',
+  opened: 'opened',
+  saved: 'saved',
+  tried: 'tried',
+  helpful: 'helpful',
+  outcome: 'outcome',
+  rating: 'rating',
+  tags: 'tags',
+  comment: 'comment',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RecommendationEvaluationScalarFieldEnum = (typeof RecommendationEvaluationScalarFieldEnum)[keyof typeof RecommendationEvaluationScalarFieldEnum]
 
 
 export const DataMigrationStateScalarFieldEnum = {
@@ -1785,6 +1886,7 @@ export type GlobalOmitConfig = {
   chatHistoryEntry?: Prisma.ChatHistoryEntryOmit
   preferenceProfileOverride?: Prisma.PreferenceProfileOverrideOmit
   recommendationSession?: Prisma.RecommendationSessionOmit
+  recommendationEvaluation?: Prisma.RecommendationEvaluationOmit
   dataMigrationState?: Prisma.DataMigrationStateOmit
 }
 

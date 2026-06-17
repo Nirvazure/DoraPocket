@@ -1,10 +1,10 @@
-import type { AnalysisFlow } from '@/components/discovery/analysis-stage-content'
+import type { AnalysisFlow } from '@/shared/analysis-stage-content'
 import { cn } from '@/lib/utils'
 import type { AppState } from '@/store'
 import {
   resolveAnalysisStatusDetail,
   shouldShowAnalysisLoadingDots,
-} from '@/components/discovery/analysis-stage-content'
+} from '@/shared/analysis-stage-content'
 
 type RightStatusShowcaseProps = {
   appState: AppState

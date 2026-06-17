@@ -4,20 +4,20 @@ import { useCallback, useEffect, useRef } from 'react'
 import { playAudioStream, playDoraPocketSfx, stopAudioPlayback } from '@/lib/client/audio'
 import { askQwen, type ChatToolPayload } from '@/lib/client/llm'
 import { buildTTSAudioUrl } from '@/lib/client/tts'
-import type { UserSettings, VoicePlaybackMode } from '@/shared/user-settings'
+import type { UserSettings } from '@/shared/user-settings'
 import { pickModeCardAfterTurn, type AssistantModeCard } from '@/shared/mode-registry'
 import type { AgentUiPayload } from '@/shared/market-types'
 import { SYSTEM_NOTICE_COPY } from '@/shared/ui-copy'
 import type { Step2Session } from '@/shared/step2-session-types'
-import { IDLE_ANALYSIS_FLOW } from '@/components/discovery/analysis-stage-content'
-import { appendStep2Turn, createStep2Session } from '@/shared/step2-session'
+import { IDLE_ANALYSIS_FLOW } from '@/shared/analysis-stage-content'
+import { appendStep2Turn } from '@/shared/step2-session'
+import {
+  resolveAgentTurnRequest,
+  resolveVoicePlaybackText,
+  type AgentTurnReply,
+  type RunTurnOptions,
+} from '@/shared/analysis-session'
 import { useStore } from '@/store'
-
-type RunTurnOptions = {
-  skipClarify?: boolean
-  isContinuation?: boolean
-  displayPrompt?: string
-}
 
 type UseAnalysisSessionOptions = {
   userSettings?: UserSettings
@@ -26,37 +26,6 @@ type UseAnalysisSessionOptions = {
   onCoverRecommendation: () => void
   onRevealRecommendation: (force?: boolean) => void
   onAnalysisError?: () => void
-}
-
-type AgentTurnReply = {
-  text: string
-  selectedTool: ChatToolPayload
-  uiPayload: AgentUiPayload | null
-}
-
-const KEY_RESULT_MAX_CHARS = 120
-
-function resolveVoicePlaybackText(reply: AgentTurnReply, mode: VoicePlaybackMode): string {
-  if (mode === 'full') {
-    return reply.text.trim()
-  }
-
-  const selectionReason = reply.uiPayload?.selectionReason?.trim()
-  if (selectionReason) {
-    return selectionReason.length <= KEY_RESULT_MAX_CHARS
-      ? selectionReason
-      : `${selectionReason.slice(0, KEY_RESULT_MAX_CHARS)}…`
-  }
-
-  const text = reply.text.trim()
-  if (!text) return ''
-
-  const firstSentence = text.match(/^[^。！？\n]+[。！？]?/u)?.[0]?.trim() ?? text
-  if (firstSentence.length <= KEY_RESULT_MAX_CHARS) {
-    return firstSentence
-  }
-
-  return `${firstSentence.slice(0, KEY_RESULT_MAX_CHARS)}…`
 }
 
 function isAbortError(error: unknown): boolean {
@@ -91,10 +60,12 @@ export function useAnalysisSession({
   const setProgressStage = useStore((state) => state.setProgressStage)
   const setSelectedToolPayload = useStore((state) => state.setSelectedToolPayload)
   const setAgentUiPayload = useStore((state) => state.setAgentUiPayload)
+  const setRecommendationSessionId = useStore((state) => state.setRecommendationSessionId)
   const resetAgentResponse = useStore((state) => state.resetAgentResponse)
 
   const selectedToolPayload = useStore((state) => state.selectedToolPayload)
   const agentUiPayload = useStore((state) => state.agentUiPayload)
+  const recommendationSessionId = useStore((state) => state.recommendationSessionId)
   const currentPrompt = useStore((state) => state.currentPrompt)
   const step2Session = useStore((state) => state.step2Session)
   const progressStage = useStore((state) => state.progressStage)
@@ -167,17 +138,10 @@ export function useAnalysisSession({
 
   const runAgentTurn = useCallback(
     async (text: string, options?: RunTurnOptions) => {
-      const safeText = text.trim()
-      if (!safeText && !options?.skipClarify) return
-
       const priorStep2 = useStore.getState().step2Session
-      const isContinuation = priorStep2?.status === 'clarifying' || options?.isContinuation === true
-      const session =
-        isContinuation && priorStep2
-          ? priorStep2
-          : createStep2Session(safeText || priorStep2?.anchorPrompt || '')
-
-      const requestMessage = isContinuation ? safeText || '跳过' : session.anchorPrompt
+      const request = resolveAgentTurnRequest({ text, options, priorStep2 })
+      if (!request) return
+      const { safeText, isContinuation, session, requestMessage } = request
       onPrepareAgentTurn?.()
       const { turnId, signal } = beginAgentTurn()
       const isActive = () => isAgentTurnActive(turnId)
@@ -215,6 +179,7 @@ export function useAnalysisSession({
         }
         setSelectedToolPayload(reply.selectedTool)
         setAgentUiPayload(reply.uiPayload)
+        setRecommendationSessionId(reply.recommendationSessionId ?? null)
         if (
           (reply.selectedTool?.toolId || reply.uiPayload) &&
           !recommendationCoverStartedRef.current
@@ -306,6 +271,10 @@ export function useAnalysisSession({
           },
           onMeta: handleReplyMeta,
           onDelta: handleReplyDelta,
+          onRecommendationSession: ({ recommendationSessionId }) => {
+            if (!isActive()) return
+            setRecommendationSessionId(recommendationSessionId)
+          },
         })
 
         if (!isActive()) {
@@ -358,6 +327,7 @@ export function useAnalysisSession({
       setCurrentPrompt,
       setLastSpeechError,
       setProgressStage,
+      setRecommendationSessionId,
       setSelectedToolPayload,
       setStep2Session,
       soundEffectsEnabled,
@@ -390,6 +360,7 @@ export function useAnalysisSession({
     setCurrentPrompt(null)
     setStep2Session(null)
     setProgressStage(null)
+    setRecommendationSessionId(null)
     resetAgentResponse()
     setAnalysisFlow(IDLE_ANALYSIS_FLOW)
     setAppState('idle')
@@ -407,6 +378,7 @@ export function useAnalysisSession({
     setCurrentPrompt,
     setLastSpeechError,
     setProgressStage,
+    setRecommendationSessionId,
     setStep2Session,
     setTranscript,
   ])
@@ -421,6 +393,7 @@ export function useAnalysisSession({
   return {
     selectedToolPayload,
     agentUiPayload,
+    recommendationSessionId,
     currentPrompt,
     step2Session,
     progressStage,

@@ -14,7 +14,7 @@ import {
   IDLE_ANALYSIS_FLOW,
   shouldPreserveTurnFlow,
   type AnalysisFlow,
-} from '@/components/discovery/analysis-stage-content'
+} from '@/shared/analysis-stage-content'
 import { useAnalysisFlowReveal } from '@/hooks/use-analysis-flow-reveal'
 import { useAnalysisToolLookup } from '@/hooks/use-analysis-tool-lookup'
 import { useAnalysisSession } from '@/hooks/use-analysis-session'
@@ -79,6 +79,7 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
   const {
     selectedToolPayload,
     agentUiPayload,
+    recommendationSessionId,
     currentPrompt,
     progressStage,
     latestUserPromptRef,
@@ -150,6 +151,7 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     saveToolToPocket,
     markToolUsed: markToolUsedMutation.mutate,
     setSystemNotice,
+    getRecommendationSessionId: () => useStore.getState().recommendationSessionId,
   })
 
   const pocketGadgetModalActions = usePocketGadgetModalActions({
@@ -246,7 +248,15 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     }
 
     return clearTimers
-  }, [appState, clearRevealTimers, currentPrompt, setAnalysisFlow, step2Session, workingFlow])
+  }, [
+    analysisFlowRef,
+    appState,
+    clearRevealTimers,
+    currentPrompt,
+    setAnalysisFlow,
+    step2Session,
+    workingFlow,
+  ])
 
   const handleStartStructuredAnalysis = useCallback(
     async (prompt: string, displayPrompt: string) => {
@@ -308,6 +318,7 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     analysisFlow: resolvedAnalysisFlow,
     selectedToolPayload,
     agentUiPayload,
+    recommendationSessionId,
     getTool,
     inputMode,
     textFallback,

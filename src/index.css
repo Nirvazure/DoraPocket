@@ -171,17 +171,6 @@
   }
 }
 
-@keyframes dp-danmaku-in {
-  from {
-    opacity: 0;
-    transform: translate3d(-18px, 10px, 0) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-}
-
 @keyframes dp-thinking-dots {
   0%,
   80%,
@@ -677,10 +666,6 @@
     animation: dp-listen-core 1.2s ease-in-out infinite;
   }
 
-  .animate-dp-danmaku-in {
-    animation: dp-danmaku-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
   .animate-dp-thinking-dot {
     animation: dp-thinking-dots 0.95s ease-in-out infinite;
   }
@@ -695,7 +680,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-dp-danmaku-in,
   .animate-dp-listen-ring,
   .animate-dp-listen-core {
     animation: none;

@@ -1,5 +1,7 @@
+'use client'
+
 import { readStorageJson } from '@/lib/storage'
-import { loadUserProfile } from '@/lib/client/user-profile'
+import { loadUserProfile, USER_PROFILE_STORAGE_KEY } from '@/lib/client/user-profile'
 import type { ChatHistoryEntry } from '@/shared/chat-history-types'
 import type {
   MarketFeedbackRecord,
@@ -219,5 +221,49 @@ export function collectLegacyLocalSnapshotForMigration() {
     chatHistory: readLegacyChatHistory(),
     preferenceProfileOverride: readLegacyPreferenceProfileOverride(),
     toolActivityMap: readLegacyToolActivityMap(),
+  }
+}
+
+export type LegacyLocalSnapshot = ReturnType<typeof collectLegacyLocalSnapshotForMigration>
+
+export const collectLegacyLocalSnapshot = collectLegacyLocalSnapshotForMigration
+
+function hasLegacyStorageKey(key: string): boolean {
+  if (typeof window === 'undefined') return false
+  try {
+    return window.localStorage.getItem(key) !== null
+  } catch {
+    return false
+  }
+}
+
+export function hasLegacyLocalMigrationData(snapshot: LegacyLocalSnapshot): boolean {
+  return (
+    snapshot.pocketInventory.length > 0 ||
+    snapshot.marketFeedback.length > 0 ||
+    snapshot.marketSubscriptions.length > 0 ||
+    snapshot.marketSubmissions.length > 0 ||
+    snapshot.chatHistory.length > 0 ||
+    hasLegacyStorageKey(USER_PROFILE_STORAGE_KEY) ||
+    hasLegacyStorageKey(USER_SETTINGS_STORAGE_KEY) ||
+    hasLegacyStorageKey(LEGACY_FONT_PRESET_STORAGE_KEY)
+  )
+}
+
+export function clearLegacyLocalSnapshot() {
+  if (typeof window === 'undefined') return
+  for (const key of [
+    USER_PROFILE_STORAGE_KEY,
+    USER_SETTINGS_STORAGE_KEY,
+    LEGACY_FONT_PRESET_STORAGE_KEY,
+    POCKET_INVENTORY_STORAGE_KEY,
+    CHAT_HISTORY_STORAGE_KEY,
+    FEEDBACK_STORAGE_KEY,
+    SUBMISSION_STORAGE_KEY,
+    SUBSCRIPTION_STORAGE_KEY,
+    PREFERENCE_OVERRIDE_STORAGE_KEY,
+    TOOL_ACTIVITY_STORAGE_KEY,
+  ]) {
+    window.localStorage.removeItem(key)
   }
 }

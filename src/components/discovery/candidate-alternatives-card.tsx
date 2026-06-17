@@ -3,7 +3,7 @@ import {
   isRecommendationRevealing,
   resolveAlternativeCandidates,
   type AnalysisFlow,
-} from '@/components/discovery/analysis-stage-content'
+} from '@/shared/analysis-stage-content'
 import { CandidateMatchScore } from '@/components/discovery/candidate-match-score'
 import { CandidateOriginBadge } from '@/components/discovery/candidate-origin-badge'
 import { shouldShowCandidateScore } from '@/components/discovery/candidate-score'
@@ -78,6 +78,8 @@ export function CandidateAlternativesCard({
             const isExternal = candidate.candidateType === 'external_suggestion'
             const slotLabel = ALTERNATIVE_SLOT_LABELS[index] ?? String(index + 1)
             const displayName = tool?.name ?? candidate.title
+            const notFirstReason =
+              payload?.whyNotAlternatives?.[candidate.toolId ?? candidate.title] ?? candidate.reason
 
             return (
               <article
@@ -110,6 +112,9 @@ export function CandidateAlternativesCard({
                     </h3>
                     <p className="mt-1 line-clamp-3 text-[11px] leading-relaxed text-muted-foreground">
                       {candidate.reason}
+                    </p>
+                    <p className="mt-2 rounded-lg bg-slate-100 px-2 py-1.5 text-[10px] font-semibold leading-relaxed text-slate-600">
+                      暂不首选：{notFirstReason}
                     </p>
                   </div>
                 </div>

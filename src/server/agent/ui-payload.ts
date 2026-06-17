@@ -1,5 +1,3 @@
-import { judgeToolRecommendations } from '@/server/agent/tool-rerank'
-import { recallToolMatchesFromCatalog } from '@/server/retrieval/tool-recall'
 import { mergeCandidatePool } from '@/shared/candidate-pool'
 import { type ToolItem, type ToolMatch } from '@/shared/tool-registry'
 import type {
@@ -156,6 +154,81 @@ export function buildPreferenceSignals(
   return Array.from(new Set(signals)).slice(0, 5)
 }
 
+function buildDecisionSummary(
+  primaryCandidate?: AgentCandidate | null,
+  topTool?: ToolItem | null,
+): string {
+  const name = topTool?.name ?? primaryCandidate?.title
+  return name ? `这次先试 ${name}。` : '这次先缩小任务范围再推荐。'
+}
+
+function buildWhyThisFirst(
+  selectionReason: string,
+  primaryCandidate?: AgentCandidate | null,
+): string[] {
+  return [primaryCandidate?.reason, selectionReason]
+    .filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+    .slice(0, 3)
+}
+
+function buildWhyNotAlternatives(candidates: AgentCandidate[]): Record<string, string> {
+  return Object.fromEntries(
+    candidates
+      .slice(1, 4)
+      .map((candidate) => [
+        candidate.toolId ?? candidate.title,
+        candidate.reason || '这次适合作为备选，但不是最先试的方向。',
+      ]),
+  )
+}
+
+function buildRiskNotes(taskFrame: AgentTaskFrame, topTool: ToolItem | null): string[] {
+  if (!topTool) return []
+  const notes: string[] = []
+  if (taskFrame.authPreference === 'no_signup' && topTool.requiresAuth) {
+    notes.push('需要注册或登录，可能不符合免注册优先。')
+  }
+  if (
+    taskFrame.budgetPreference === 'free_first' &&
+    topTool.pricingModel !== 'free' &&
+    topTool.pricingModel !== 'freemium'
+  ) {
+    notes.push('不是免费优先方案，试用前需要确认价格。')
+  }
+  if (taskFrame.platformPreference === 'api' && topTool.platform !== 'api') {
+    notes.push('当前不是 API 优先方案，集成前需要再确认能力边界。')
+  }
+  return notes.slice(0, 3)
+}
+
+function buildCommunityEvidence(topTool: ToolItem | null, marketContext: MarketContext): string[] {
+  if (!topTool) return []
+  const reviews = marketContext.feedback.filter((item) => item.toolId === topTool.id)
+  const positiveReviews = reviews.filter((item) => item.vote === 'up')
+  const evidence: string[] = []
+  if (reviews.length > 0) {
+    const average = reviews.reduce((sum, item) => sum + item.starRating, 0) / reviews.length
+    evidence.push(`${reviews.length} 条体验反馈，平均 ${average.toFixed(1)} 星。`)
+  }
+  const topTags = positiveReviews.flatMap((item) => item.selectedTags).slice(0, 3)
+  if (topTags.length > 0) evidence.push(`正向标签：${topTags.join(' / ')}。`)
+  return evidence.slice(0, 3)
+}
+
+function buildPersonalEvidence(topTool: ToolItem | null, marketContext: MarketContext): string[] {
+  if (!topTool) return []
+  const evidence: string[] = []
+  if (marketContext.savedItems.some((item) => item.toolId === topTool.id)) {
+    evidence.push('你已经收藏过它。')
+  }
+  if (marketContext.subscriptions.some((item) => item.active && item.toolId === topTool.id)) {
+    evidence.push('你已经订阅过它。')
+  }
+  const review = marketContext.feedback.find((item) => item.toolId === topTool.id)
+  if (review) evidence.push(`你曾给过 ${review.starRating} 星反馈。`)
+  return evidence.slice(0, 3)
+}
+
 export function stageLabelFor(
   taskFrame: AgentTaskFrame,
   topTool: ToolItem | null,
@@ -215,18 +288,23 @@ export async function buildRankedCandidates(
   marketContext: MarketContext,
   taskFrame?: AgentTaskFrame,
 ) {
+  const { recallToolMatchesFromCatalog } = await import('@/server/retrieval/tool-recall')
   const { matches: initialMatches, recallSummary } = await recallToolMatchesFromCatalog(userText, {
     ...marketSignalsFromContext(marketContext),
   })
   const judgement =
     taskFrame?.mode === 'discover'
-      ? await judgeToolRecommendations(userText, initialMatches).catch(() => ({
-          matches: initialMatches,
-          externalSuggestions: [],
-          preferExternal: false,
-          hubInsufficient: false,
-          selectionReason: undefined,
-        }))
+      ? await import('@/server/agent/tool-rerank')
+          .then(({ judgeToolRecommendations }) =>
+            judgeToolRecommendations(userText, initialMatches),
+          )
+          .catch(() => ({
+            matches: initialMatches,
+            externalSuggestions: [],
+            preferExternal: false,
+            hubInsufficient: false,
+            selectionReason: undefined,
+          }))
       : {
           matches: initialMatches,
           externalSuggestions: [],
@@ -269,14 +347,24 @@ export function buildAgentUiPayload(
   primaryCandidate?: AgentCandidate | null,
   recallSummary?: RecallSummary | null,
 ): AgentUiPayload {
+  const selectionSignals = buildSelectionSignals(topTool, marketContext, primaryCandidate)
+  const preferenceSignals = buildPreferenceSignals(topTool, marketContext)
   return {
     stageLabel: stageLabelFor(taskFrame, topTool, primaryCandidate),
     stageTrail: stageTrailFor(taskFrame, topTool, primaryCandidate),
     taskFrame,
     candidates,
     selectionReason,
-    selectionSignals: buildSelectionSignals(topTool, marketContext, primaryCandidate),
-    preferenceSignals: buildPreferenceSignals(topTool, marketContext),
+    decisionSummary: buildDecisionSummary(primaryCandidate, topTool),
+    whyThisFirst: buildWhyThisFirst(selectionReason, primaryCandidate),
+    whyNotAlternatives: buildWhyNotAlternatives(candidates),
+    riskNotes: buildRiskNotes(taskFrame, topTool),
+    trustEvidence: selectionSignals,
+    communityEvidence: buildCommunityEvidence(topTool, marketContext),
+    personalEvidence: buildPersonalEvidence(topTool, marketContext),
+    evaluationPrompt: '试完后告诉我这次推荐准不准，我会用它校准下一次。',
+    selectionSignals,
+    preferenceSignals,
     recommendedActions: buildRecommendedActions(taskFrame, topTool, primaryCandidate),
     recallSummary: recallSummary ?? null,
   }

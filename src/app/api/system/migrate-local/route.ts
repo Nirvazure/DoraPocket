@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifySession } from '@/server/auth/dal'
 import { importLocalSnapshotForUser } from '@/server/migrations/local-import'
-import type { LegacyLocalSnapshot } from '@/lib/local-snapshot'
+import type { LegacyLocalSnapshot } from '@/lib/client/legacy-snapshot-read'
 
 export async function POST(request: NextRequest) {
   const session = await verifySession()
