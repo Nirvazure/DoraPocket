@@ -1,53 +1,14 @@
 import 'server-only'
 
 import { createHash } from 'node:crypto'
-import type * as Prisma from '../../generated/prisma/internal/prismaNamespace'
 import { prisma } from '@/server/db/prisma'
 import { isSupabaseMarketAssetUrl } from '@/shared/market-asset-url'
 import {
   type ToolCategory,
   type ToolExecutionMode,
-  type ToolItem,
   type ToolPlatform,
   type ToolPricingModel,
 } from '@/shared/tool-registry'
-
-function toJsonValue(value: unknown): Prisma.InputJsonValue | undefined {
-  if (value == null) return undefined
-  return value as Prisma.InputJsonValue
-}
-
-function toToolCreateInput(tool: ToolItem, ownerUserId?: string | null) {
-  return {
-    id: tool.id,
-    name: tool.name,
-    icon: tool.icon,
-    iconType: tool.iconType ?? null,
-    iconText: tool.iconText ?? null,
-    iconImageUrl: tool.iconImageUrl ?? null,
-    iconImageLocalPath: null,
-    url: tool.url ?? null,
-    description: tool.description,
-    category: tool.category,
-    tags: tool.tags,
-    source: tool.source,
-    status: tool.status,
-    executionMode: tool.executionMode,
-    pricingModel: tool.pricingModel,
-    requiresAuth: tool.requiresAuth,
-    platform: tool.platform,
-    capabilities: tool.capabilities,
-    recommendedFor: tool.recommendedFor,
-    sourceNote: tool.sourceNote ?? null,
-    trustSignals: tool.trustSignals,
-    subscriptionSupport: tool.subscriptionSupport,
-    defaultArgs: toJsonValue(tool.defaultArgs),
-    siteHostname: tool.siteHostname ?? null,
-    marketAssetOrigin: tool.marketAssetOrigin ?? null,
-    seedSource: tool.source === 'submitted' ? 'user_submission' : 'system_seed',
-    createdByUserId: ownerUserId ?? null,
-  }
-}
 
 export type ImportedToolInput = {
   name: string
@@ -64,16 +25,6 @@ export type ImportedToolInput = {
   sourceNote?: string
   siteHostname?: string
   createdByUserId?: string | null
-}
-
-function withoutIconFields<T extends Record<string, unknown>>(input: T) {
-  const copy = { ...input }
-  delete copy.icon
-  delete copy.iconType
-  delete copy.iconText
-  delete copy.iconImageUrl
-  delete copy.iconImageLocalPath
-  return copy
 }
 
 function normalizeHostname(url: string): string | null {
@@ -126,7 +77,7 @@ export async function upsertImportedTool(input: ImportedToolInput) {
     recommendedFor: input.recommendedFor
       ?.map((item) => item.trim())
       .filter(Boolean)
-      .slice(0, 5) ?? [`需要${input.name.trim()}相关能力`],
+      .slice(0, 5) ?? [`需要 ${input.name.trim()} 相关能力`],
     sourceNote: input.sourceNote ?? '用户提交',
     trustSignals: {
       curated: false,
