@@ -18,6 +18,7 @@ import {
 import { useAnalysisFlowReveal } from '@/hooks/use-analysis-flow-reveal'
 import { useAnalysisToolLookup } from '@/hooks/use-analysis-tool-lookup'
 import { useAnalysisSession } from '@/hooks/use-analysis-session'
+import { useAutoDismissSystemNotice } from '@/hooks/use-auto-dismiss-system-notice'
 import { useDiscoveryWorkspaceActions } from '@/hooks/use-discovery-workspace-actions'
 import { usePocketGadgetModalActions } from '@/hooks/use-pocket-gadget-modal-actions'
 import { useVoiceInput } from '@/hooks/use-voice-input'
@@ -169,11 +170,7 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     document.documentElement.dataset.fontPreset = userSettings.fontPreset
   }, [userSettings?.fontPreset])
 
-  useEffect(() => {
-    if (!systemNotice?.autoDismissMs) return
-    const id = window.setTimeout(() => clearSystemNotice(), systemNotice.autoDismissMs)
-    return () => window.clearTimeout(id)
-  }, [clearSystemNotice, systemNotice])
+  useAutoDismissSystemNotice({ systemNotice, clearSystemNotice })
 
   const resolvedAnalysisFlow = useMemo(
     () => mergeStep2IntoAnalysisFlow(analysisFlow, step2Session),
