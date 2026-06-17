@@ -12,6 +12,7 @@ import {
 import { CandidateMatchScore } from '@/components/discovery/candidate-match-score'
 import { CandidateOriginBadge } from '@/components/discovery/candidate-origin-badge'
 import { shouldShowCandidateScore } from '@/components/discovery/candidate-score'
+import { RecommendationEvaluationBar } from '@/components/discovery/recommendation-evaluation-bar'
 import {
   buildPrimaryRecommendation,
   isRecommendationCovered,
@@ -33,6 +34,7 @@ type PrimaryRecommendationCardProps = {
   onSaveCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
   onOpenExternalCandidate: (url: string) => void
+  recommendationSessionId?: string | null
 }
 
 export function PrimaryRecommendationCard({
@@ -44,6 +46,7 @@ export function PrimaryRecommendationCard({
   onSaveCandidate,
   onLaunchCandidate,
   onOpenExternalCandidate,
+  recommendationSessionId = null,
 }: PrimaryRecommendationCardProps) {
   const content = buildPrimaryRecommendation(payload, selectedToolPayload, getTool)
   const leader = content.leader
@@ -137,6 +140,34 @@ export function PrimaryRecommendationCard({
             {STEP2_COPY.lowConfidenceHint}
           </p>
         ) : null}
+        {payload ? (
+          <div className="mb-2 grid w-full gap-2 text-xs leading-relaxed text-white/78 md:grid-cols-2">
+            {payload.whyThisFirst?.length ? (
+              <div className="rounded-xl border border-white/10 bg-white/8 px-3 py-2">
+                <p className="font-bold text-white">决策依据</p>
+                <p className="mt-1">{payload.whyThisFirst.slice(0, 2).join(' / ')}</p>
+              </div>
+            ) : null}
+            {payload.riskNotes?.length ? (
+              <div className="rounded-xl border border-amber-200/25 bg-amber-500/10 px-3 py-2 text-amber-50">
+                <p className="font-bold text-amber-50">风险边界</p>
+                <p className="mt-1">{payload.riskNotes.slice(0, 2).join(' / ')}</p>
+              </div>
+            ) : null}
+            {payload.communityEvidence?.length ? (
+              <div className="rounded-xl border border-white/10 bg-white/8 px-3 py-2">
+                <p className="font-bold text-white">社区体验</p>
+                <p className="mt-1">{payload.communityEvidence.slice(0, 2).join(' / ')}</p>
+              </div>
+            ) : null}
+            {payload.personalEvidence?.length ? (
+              <div className="rounded-xl border border-white/10 bg-white/8 px-3 py-2">
+                <p className="font-bold text-white">个人信号</p>
+                <p className="mt-1">{payload.personalEvidence.slice(0, 2).join(' / ')}</p>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
         {leaderExternalUrl ? (
           <Button
             type="button"
@@ -167,6 +198,10 @@ export function PrimaryRecommendationCard({
             </Button>
           </>
         ) : null}
+        <RecommendationEvaluationBar
+          recommendationSessionId={recommendationSessionId}
+          selectedToolId={leaderToolId}
+        />
       </DisplayPanelContent>
     </DisplayPanel>
   )

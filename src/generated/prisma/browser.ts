@@ -73,6 +73,11 @@ export type PreferenceProfileOverride = Prisma.PreferenceProfileOverrideModel
  */
 export type RecommendationSession = Prisma.RecommendationSessionModel
 /**
+ * Model RecommendationEvaluation
+ * 
+ */
+export type RecommendationEvaluation = Prisma.RecommendationEvaluationModel
+/**
  * Model DataMigrationState
  * 
  */

@@ -15,6 +15,11 @@ export function buildDiscoveryResponsePrompt(state: PocketState) {
     `任务模式：${state.task_frame.mode}`,
     `缺失参数：${state.task_frame.missingInputs.join('、') || '无'}`,
     `推荐理由：${state.selection_reason}`,
+    `决策摘要：${state.ui_payload.decisionSummary ?? '无'}`,
+    `首推依据：${state.ui_payload.whyThisFirst?.join('、') || '无'}`,
+    `风险边界：${state.ui_payload.riskNotes?.join('、') || '无'}`,
+    `社区证据：${state.ui_payload.communityEvidence?.join('、') || '无'}`,
+    `个人证据：${state.ui_payload.personalEvidence?.join('、') || '无'}`,
     `用户偏好画像：${state.ui_payload.preferenceSignals.join('、') || '无'}`,
     `候选工具：\n${formatCandidateLines(state.candidate_tools)}`,
     `用户提交的市场条目：\n${matchingSubmissionLines(

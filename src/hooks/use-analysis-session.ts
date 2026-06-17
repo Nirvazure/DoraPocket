@@ -32,6 +32,7 @@ type AgentTurnReply = {
   text: string
   selectedTool: ChatToolPayload
   uiPayload: AgentUiPayload | null
+  recommendationSessionId?: string | null
 }
 
 const KEY_RESULT_MAX_CHARS = 120
@@ -91,10 +92,12 @@ export function useAnalysisSession({
   const setProgressStage = useStore((state) => state.setProgressStage)
   const setSelectedToolPayload = useStore((state) => state.setSelectedToolPayload)
   const setAgentUiPayload = useStore((state) => state.setAgentUiPayload)
+  const setRecommendationSessionId = useStore((state) => state.setRecommendationSessionId)
   const resetAgentResponse = useStore((state) => state.resetAgentResponse)
 
   const selectedToolPayload = useStore((state) => state.selectedToolPayload)
   const agentUiPayload = useStore((state) => state.agentUiPayload)
+  const recommendationSessionId = useStore((state) => state.recommendationSessionId)
   const currentPrompt = useStore((state) => state.currentPrompt)
   const step2Session = useStore((state) => state.step2Session)
   const progressStage = useStore((state) => state.progressStage)
@@ -215,6 +218,7 @@ export function useAnalysisSession({
         }
         setSelectedToolPayload(reply.selectedTool)
         setAgentUiPayload(reply.uiPayload)
+        setRecommendationSessionId(reply.recommendationSessionId ?? null)
         if (
           (reply.selectedTool?.toolId || reply.uiPayload) &&
           !recommendationCoverStartedRef.current
@@ -306,6 +310,10 @@ export function useAnalysisSession({
           },
           onMeta: handleReplyMeta,
           onDelta: handleReplyDelta,
+          onRecommendationSession: ({ recommendationSessionId }) => {
+            if (!isActive()) return
+            setRecommendationSessionId(recommendationSessionId)
+          },
         })
 
         if (!isActive()) {
@@ -358,6 +366,7 @@ export function useAnalysisSession({
       setCurrentPrompt,
       setLastSpeechError,
       setProgressStage,
+      setRecommendationSessionId,
       setSelectedToolPayload,
       setStep2Session,
       soundEffectsEnabled,
@@ -390,6 +399,7 @@ export function useAnalysisSession({
     setCurrentPrompt(null)
     setStep2Session(null)
     setProgressStage(null)
+    setRecommendationSessionId(null)
     resetAgentResponse()
     setAnalysisFlow(IDLE_ANALYSIS_FLOW)
     setAppState('idle')
@@ -407,6 +417,7 @@ export function useAnalysisSession({
     setCurrentPrompt,
     setLastSpeechError,
     setProgressStage,
+    setRecommendationSessionId,
     setStep2Session,
     setTranscript,
   ])
@@ -421,6 +432,7 @@ export function useAnalysisSession({
   return {
     selectedToolPayload,
     agentUiPayload,
+    recommendationSessionId,
     currentPrompt,
     step2Session,
     progressStage,

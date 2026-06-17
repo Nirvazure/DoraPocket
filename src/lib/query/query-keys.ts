@@ -16,4 +16,7 @@ export const queryKeys = {
     search: (query: string) => ['marketTools', query] as const,
     byIds: (ids: string[]) => ['marketTools', 'byIds', [...ids].sort().join(',')] as const,
   },
+  recommendationEvaluations: {
+    all: ['recommendationEvaluations'] as const,
+  },
 } as const

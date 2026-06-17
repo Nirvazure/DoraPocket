@@ -78,12 +78,21 @@ export async function POST(request: Request) {
           const shouldPersistSession = step2Status === 'ready' || step2Status === 'exhausted'
           if (session?.user && finalText && finalUiPayload && shouldPersistSession) {
             const userText = body.anchorPrompt?.trim() || message
-            await createRecommendationSession(session.user.id, {
+            const recommendationSession = await createRecommendationSession(session.user.id, {
               userText,
               finalText,
               selectedToolId,
               uiPayload: finalUiPayload,
+              clarifyTurnCount: Math.max(0, step2Input.sessionTurn - 1),
+              confidenceLevel: finalUiPayload.confidenceLevel ?? 'normal',
             })
+            controller.enqueue(
+              jsonLine({
+                type: 'recommendation_session',
+                recommendationSessionId: recommendationSession.id,
+                selectedToolId,
+              }),
+            )
           }
 
           controller.close()

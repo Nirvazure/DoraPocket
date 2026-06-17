@@ -29,6 +29,7 @@ export default function App() {
     analysisFlow,
     selectedToolPayload,
     agentUiPayload,
+    recommendationSessionId,
     getTool,
     inputMode,
     textFallback,
@@ -169,6 +170,7 @@ export default function App() {
             onSaveCandidate={workspaceActions.onSaveCandidate}
             onLaunchCandidate={workspaceActions.onLaunchCandidate}
             onOpenExternalCandidate={workspaceActions.onOpenExternalCandidate}
+            recommendationSessionId={recommendationSessionId}
             onStartAnalysis={handleStartStructuredAnalysis}
             onStartNewTask={handleStartNewTask}
             starterActionsEnabled={starterActionsEnabled}

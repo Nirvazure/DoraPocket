@@ -24,6 +24,7 @@ model User {
   chatHistory            ChatHistoryEntry[]
   preferenceOverride     PreferenceProfileOverride?
   recommendationSessions RecommendationSession[]
+  recommendationEvaluations RecommendationEvaluation[]
   migrationState         DataMigrationState?
   createdTools           Tool[]
 }
@@ -192,8 +193,36 @@ model RecommendationSession {
   selectionSignals  String[]
   preferenceSignals String[]
   finalText         String
+  starterPath       String?
+  clarifyTurnCount  Int      @default(0)
+  confidenceLevel   String?
+  openedToolId      String?
+  savedToolId       String?
+  evaluatedAt       DateTime?
   createdAt         DateTime @default(now())
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  evaluations       RecommendationEvaluation[]
+}
+
+model RecommendationEvaluation {
+  id                      String   @id @default(cuid())
+  userId                  String
+  recommendationSessionId String
+  selectedToolId          String?
+  opened                  Boolean  @default(false)
+  saved                   Boolean  @default(false)
+  tried                   Boolean  @default(false)
+  helpful                 Boolean?
+  outcome                 String?
+  rating                  Int?
+  tags                    String[]
+  comment                 String?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recommendationSession   RecommendationSession @relation(fields: [recommendationSessionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, recommendationSessionId])
 }
 
 model DataMigrationState {

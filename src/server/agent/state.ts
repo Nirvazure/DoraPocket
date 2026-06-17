@@ -31,6 +31,24 @@ export type CreateInitialStateOptions = {
   priorMessages?: Array<{ role: 'user' | 'assistant'; content: string }>
 }
 
+function createEmptyTaskFrame(goal: string): AgentTaskFrame {
+  return {
+    goal,
+    mode: 'discover',
+    missingInputs: [],
+    role: null,
+    scenario: goal,
+    constraints: [],
+    budgetPreference: null,
+    authPreference: null,
+    languagePreference: null,
+    evidenceRequirement: null,
+    platformPreference: null,
+    urgency: 'unspecified',
+    confidenceDrivers: [],
+  }
+}
+
 export function createInitialState(
   input: string,
   marketContext: MarketContext,
@@ -47,22 +65,14 @@ export function createInitialState(
   return {
     messages,
     intent: 'discover',
-    task_frame: {
-      goal,
-      mode: 'discover',
-      missingInputs: [],
-    },
+    task_frame: createEmptyTaskFrame(goal),
     candidate_tools: [],
     selected_tool: null,
     selection_reason: '',
     ui_payload: {
       stageLabel: '任务分析',
       stageTrail: ['识别任务', '任务分析'],
-      taskFrame: {
-        goal,
-        mode: 'discover',
-        missingInputs: [],
-      },
+      taskFrame: createEmptyTaskFrame(goal),
       candidates: [],
       selectionReason: '',
       selectionSignals: [],

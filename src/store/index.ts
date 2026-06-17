@@ -42,6 +42,7 @@ interface DoraStore {
   progressStage: ProgressStage | null
   selectedToolPayload: ChatToolPayload
   agentUiPayload: AgentUiPayload | null
+  recommendationSessionId: string | null
 
   beginAgentTurn: () => AgentTurnHandle
   isAgentTurnActive: (turnId: number) => boolean
@@ -53,6 +54,7 @@ interface DoraStore {
   setProgressStage: (stage: ProgressStage | null) => void
   setSelectedToolPayload: (payload: ChatToolPayload) => void
   setAgentUiPayload: (payload: AgentUiPayload | null) => void
+  setRecommendationSessionId: (id: string | null) => void
   resetAgentResponse: () => void
   cancelActiveAgentTurn: () => void
 }
@@ -85,6 +87,7 @@ export const useStore = create<DoraStore>((set, get) => ({
   progressStage: null,
   selectedToolPayload: null,
   agentUiPayload: null,
+  recommendationSessionId: null,
 
   beginAgentTurn: () => {
     chatAbortController?.abort()
@@ -105,10 +108,12 @@ export const useStore = create<DoraStore>((set, get) => ({
   setProgressStage: (stage) => set({ progressStage: stage }),
   setSelectedToolPayload: (payload) => set({ selectedToolPayload: payload }),
   setAgentUiPayload: (payload) => set({ agentUiPayload: payload }),
+  setRecommendationSessionId: (id) => set({ recommendationSessionId: id }),
   resetAgentResponse: () =>
     set({
       selectedToolPayload: null,
       agentUiPayload: null,
+      recommendationSessionId: null,
       botResponse: '',
     }),
 

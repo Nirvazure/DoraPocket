@@ -62,6 +62,7 @@ export const ModelName = {
   ChatHistoryEntry: 'ChatHistoryEntry',
   PreferenceProfileOverride: 'PreferenceProfileOverride',
   RecommendationSession: 'RecommendationSession',
+  RecommendationEvaluation: 'RecommendationEvaluation',
   DataMigrationState: 'DataMigrationState'
 } as const
 
@@ -258,10 +259,36 @@ export const RecommendationSessionScalarFieldEnum = {
   selectionSignals: 'selectionSignals',
   preferenceSignals: 'preferenceSignals',
   finalText: 'finalText',
+  starterPath: 'starterPath',
+  clarifyTurnCount: 'clarifyTurnCount',
+  confidenceLevel: 'confidenceLevel',
+  openedToolId: 'openedToolId',
+  savedToolId: 'savedToolId',
+  evaluatedAt: 'evaluatedAt',
   createdAt: 'createdAt'
 } as const
 
 export type RecommendationSessionScalarFieldEnum = (typeof RecommendationSessionScalarFieldEnum)[keyof typeof RecommendationSessionScalarFieldEnum]
+
+
+export const RecommendationEvaluationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  recommendationSessionId: 'recommendationSessionId',
+  selectedToolId: 'selectedToolId',
+  opened: 'opened',
+  saved: 'saved',
+  tried: 'tried',
+  helpful: 'helpful',
+  outcome: 'outcome',
+  rating: 'rating',
+  tags: 'tags',
+  comment: 'comment',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RecommendationEvaluationScalarFieldEnum = (typeof RecommendationEvaluationScalarFieldEnum)[keyof typeof RecommendationEvaluationScalarFieldEnum]
 
 
 export const DataMigrationStateScalarFieldEnum = {

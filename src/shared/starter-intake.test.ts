@@ -33,23 +33,27 @@ test('canStartStructuredAnalysis requires outcome or custom task length', () => 
   )
 })
 
-test('canAdvanceStarterStep enforces role and outcome gates', () => {
+test('canAdvanceStarterStep treats role as optional and outcome as required before constraints', () => {
   const empty = createEmptyStarterIntake()
-  assert.equal(canAdvanceStarterStep(empty, 1), false)
+  assert.equal(canAdvanceStarterStep(empty, 1), true)
   assert.equal(canAdvanceStarterStep(empty, 2), false)
 
-  const withRole = { ...empty, roleId: 'developer' as const }
-  assert.equal(canAdvanceStarterStep(withRole, 1), true)
-  assert.equal(canAdvanceStarterStep(withRole, 2), false)
-
   const ready = {
-    ...withRole,
+    ...empty,
     outcomeId: 'writing' as const,
     customTask: '',
   }
   assert.equal(canAdvanceStarterStep(ready, 2), true)
   assert.equal(canAdvanceStarterStep(ready, 3), true)
   assert.equal(canStartStarterAnalysis(ready), true)
+
+  assert.equal(
+    canStartStarterAnalysis({
+      ...empty,
+      customTask: '压缩 PDF',
+    }),
+    true,
+  )
 })
 
 test('composeStarterPrompt and display goal separate task line', () => {
@@ -78,7 +82,8 @@ test('composeStarterPromptFromVoice merges role and constraints with voice task'
   }
   const prompt = composeStarterPromptFromVoice(intake, '用语音描述的任务')
   assert.match(prompt, /身份：开发/)
-  assert.match(prompt, /要附来源、中文体验/)
+  assert.match(prompt, /要附来源/)
+  assert.match(prompt, /中文体验/)
   assert.match(prompt, /任务：用语音描述的任务/)
   assert.doesNotMatch(prompt, /ignored when voice wins/)
 })

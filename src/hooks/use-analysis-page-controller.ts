@@ -79,6 +79,7 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
   const {
     selectedToolPayload,
     agentUiPayload,
+    recommendationSessionId,
     currentPrompt,
     progressStage,
     latestUserPromptRef,
@@ -150,6 +151,7 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     saveToolToPocket,
     markToolUsed: markToolUsedMutation.mutate,
     setSystemNotice,
+    getRecommendationSessionId: () => useStore.getState().recommendationSessionId,
   })
 
   const pocketGadgetModalActions = usePocketGadgetModalActions({
@@ -308,6 +310,7 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     analysisFlow: resolvedAnalysisFlow,
     selectedToolPayload,
     agentUiPayload,
+    recommendationSessionId,
     getTool,
     inputMode,
     textFallback,

@@ -15,6 +15,7 @@ type CompactDecisionPanelProps = {
   onSaveCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
   onOpenExternalCandidate: (url: string) => void
+  recommendationSessionId?: string | null
 }
 
 export function CompactDecisionPanel({
@@ -26,6 +27,7 @@ export function CompactDecisionPanel({
   onSaveCandidate,
   onLaunchCandidate,
   onOpenExternalCandidate,
+  recommendationSessionId = null,
 }: CompactDecisionPanelProps) {
   return (
     <div className="flex w-full flex-col gap-5">
@@ -38,6 +40,7 @@ export function CompactDecisionPanel({
         onSaveCandidate={onSaveCandidate}
         onLaunchCandidate={onLaunchCandidate}
         onOpenExternalCandidate={onOpenExternalCandidate}
+        recommendationSessionId={recommendationSessionId}
       />
       <CandidateAlternativesCard
         payload={payload}

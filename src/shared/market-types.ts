@@ -97,6 +97,16 @@ export type AgentTaskFrame = {
   goal: string
   mode: 'discover' | 'manage_pocket' | 'chat'
   missingInputs: string[]
+  role?: string | null
+  scenario?: string | null
+  constraints: string[]
+  budgetPreference?: 'free_first' | 'subscription_ok' | 'pay_as_you_go' | 'enterprise_budget' | null
+  authPreference?: 'no_signup' | 'signup_ok' | null
+  languagePreference?: 'chinese' | 'english_ok' | null
+  evidenceRequirement?: 'citations' | 'not_required' | null
+  platformPreference?: 'web' | 'mobile' | 'api' | null
+  urgency?: 'fast_start' | 'quality_first' | 'unspecified'
+  confidenceDrivers: string[]
 }
 
 export type AgentCandidate = {
@@ -126,6 +136,14 @@ export type AgentUiPayload = {
   taskFrame: AgentTaskFrame
   candidates: AgentCandidate[]
   selectionReason: string
+  decisionSummary?: string
+  whyThisFirst?: string[]
+  whyNotAlternatives?: Record<string, string>
+  riskNotes?: string[]
+  trustEvidence?: string[]
+  communityEvidence?: string[]
+  personalEvidence?: string[]
+  evaluationPrompt?: string
   selectionSignals: string[]
   preferenceSignals: string[]
   recommendedActions: string[]
