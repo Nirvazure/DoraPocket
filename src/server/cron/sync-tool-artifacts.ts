@@ -5,6 +5,24 @@ import { prisma } from '@/server/db/prisma'
 import { syncToolEmbedding } from '@/server/retrieval/tool-embedding'
 import { isSupabaseMarketAssetUrl } from '@/shared/market-asset-url'
 
+type ToolArtifactRecord = {
+  id: string
+  status: string
+  url: string | null
+  iconImageUrl: string | null
+  embeddedAt: Date | null
+}
+
+type SyncToolArtifactsDeps = {
+  findTool: (toolId: string) => Promise<ToolArtifactRecord | null>
+  readToolArtifacts: (
+    toolId: string,
+  ) => Promise<{ embeddedAt: Date | null; iconImageUrl: string | null } | null>
+  syncEmbedding: (toolId: string) => Promise<void>
+  syncFavicon: (toolId: string, siteUrl: string) => Promise<void>
+  isSyncedFaviconUrl: (url: string | null | undefined) => boolean
+}
+
 function needsFaviconSync(url: string | null, iconImageUrl: string | null): url is string {
   return Boolean(url) && !isSupabaseMarketAssetUrl(iconImageUrl)
 }
@@ -51,38 +69,69 @@ export function toolRecordNeedsArtifactSync(
 export async function syncToolArtifacts(toolId: string): Promise<{
   embeddingSynced: boolean
   faviconSynced: boolean
+}>
+export async function syncToolArtifacts(
+  toolId: string,
+  deps: Partial<SyncToolArtifactsDeps>,
+): Promise<{
+  embeddingSynced: boolean
+  faviconSynced: boolean
+}>
+export async function syncToolArtifacts(
+  toolId: string,
+  deps?: Partial<SyncToolArtifactsDeps>,
+): Promise<{
+  embeddingSynced: boolean
+  faviconSynced: boolean
 }> {
-  const tool = await prisma.tool.findUnique({
-    where: { id: toolId },
-    select: {
-      id: true,
-      status: true,
-      url: true,
-      iconImageUrl: true,
-      embeddedAt: true,
-    },
-  })
+  const resolvedDeps: SyncToolArtifactsDeps = {
+    findTool:
+      deps?.findTool ??
+      ((id) =>
+        prisma.tool.findUnique({
+          where: { id },
+          select: {
+            id: true,
+            status: true,
+            url: true,
+            iconImageUrl: true,
+            embeddedAt: true,
+          },
+        })),
+    readToolArtifacts:
+      deps?.readToolArtifacts ??
+      ((id) =>
+        prisma.tool.findUnique({
+          where: { id },
+          select: { embeddedAt: true, iconImageUrl: true },
+        })),
+    syncEmbedding: deps?.syncEmbedding ?? syncToolEmbedding,
+    syncFavicon: deps?.syncFavicon ?? syncToolFavicon,
+    isSyncedFaviconUrl: deps?.isSyncedFaviconUrl ?? isSupabaseMarketAssetUrl,
+  }
+
+  const needsFavicon = (url: string | null, iconImageUrl: string | null): url is string => {
+    return Boolean(url) && !resolvedDeps.isSyncedFaviconUrl(iconImageUrl)
+  }
+
+  const tool = await resolvedDeps.findTool(toolId)
   if (!tool || tool.status !== 'active') {
     return { embeddingSynced: false, faviconSynced: false }
   }
 
   const beforeEmbeddedAt = tool.embeddedAt
-  await syncToolEmbedding(tool.id)
+  await resolvedDeps.syncEmbedding(tool.id)
 
-  const after = await prisma.tool.findUnique({
-    where: { id: tool.id },
-    select: { embeddedAt: true, iconImageUrl: true },
-  })
-  const embeddingSynced = Boolean(after?.embeddedAt && after.embeddedAt !== beforeEmbeddedAt)
+  const after = await resolvedDeps.readToolArtifacts(tool.id)
+  const embeddingSynced = Boolean(
+    after?.embeddedAt && after.embeddedAt.getTime() !== beforeEmbeddedAt?.getTime(),
+  )
 
   let faviconSynced = false
-  if (needsFaviconSync(tool.url, after?.iconImageUrl ?? tool.iconImageUrl)) {
-    await syncToolFavicon(tool.id, tool.url)
-    const iconAfter = await prisma.tool.findUnique({
-      where: { id: tool.id },
-      select: { iconImageUrl: true },
-    })
-    faviconSynced = isSupabaseMarketAssetUrl(iconAfter?.iconImageUrl)
+  if (needsFavicon(tool.url, after?.iconImageUrl ?? tool.iconImageUrl)) {
+    await resolvedDeps.syncFavicon(tool.id, tool.url)
+    const iconAfter = await resolvedDeps.readToolArtifacts(tool.id)
+    faviconSynced = resolvedDeps.isSyncedFaviconUrl(iconAfter?.iconImageUrl)
   }
 
   return { embeddingSynced, faviconSynced }

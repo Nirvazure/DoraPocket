@@ -11,11 +11,49 @@ export type SyncPendingToolsResult = {
   errors: number
 }
 
-function needsFaviconSync(url: string | null, iconImageUrl: string | null): url is string {
-  return Boolean(url) && !isSupabaseMarketAssetUrl(iconImageUrl)
+type PendingToolRecord = {
+  id: string
+  url: string | null
+  iconImageUrl: string | null
+  embeddedAt: Date | null
 }
 
-export async function syncPendingTools(batchSize: number): Promise<SyncPendingToolsResult> {
+type SyncPendingToolsDeps = {
+  findCandidateTools: (take: number) => Promise<PendingToolRecord[]>
+  syncArtifacts: (toolId: string) => Promise<{ embeddingSynced: boolean; faviconSynced: boolean }>
+  isSyncedFaviconUrl: (url: string | null | undefined) => boolean
+}
+
+export async function syncPendingTools(
+  batchSize: number,
+  deps?: Partial<SyncPendingToolsDeps>,
+): Promise<SyncPendingToolsResult> {
+  const resolvedDeps: SyncPendingToolsDeps = {
+    findCandidateTools:
+      deps?.findCandidateTools ??
+      ((take) =>
+        prisma.tool.findMany({
+          where: {
+            status: 'active',
+            OR: [{ embeddedAt: null }, { url: { not: null } }],
+          },
+          select: {
+            id: true,
+            url: true,
+            iconImageUrl: true,
+            embeddedAt: true,
+          },
+          take,
+          orderBy: { updatedAt: 'asc' },
+        })),
+    syncArtifacts: deps?.syncArtifacts ?? syncToolArtifacts,
+    isSyncedFaviconUrl: deps?.isSyncedFaviconUrl ?? isSupabaseMarketAssetUrl,
+  }
+
+  const needsFavicon = (url: string | null, iconImageUrl: string | null): url is string => {
+    return Boolean(url) && !resolvedDeps.isSyncedFaviconUrl(iconImageUrl)
+  }
+
   const result: SyncPendingToolsResult = {
     scanned: 0,
     embeddingSynced: 0,
@@ -23,30 +61,17 @@ export async function syncPendingTools(batchSize: number): Promise<SyncPendingTo
     errors: 0,
   }
 
-  const tools = await prisma.tool.findMany({
-    where: {
-      status: 'active',
-      OR: [{ embeddedAt: null }, { url: { not: null } }],
-    },
-    select: {
-      id: true,
-      url: true,
-      iconImageUrl: true,
-      embeddedAt: true,
-    },
-    take: batchSize * 3,
-    orderBy: { updatedAt: 'asc' },
-  })
+  const tools = await resolvedDeps.findCandidateTools(batchSize * 3)
 
   const pending = tools
-    .filter((tool) => !tool.embeddedAt || needsFaviconSync(tool.url, tool.iconImageUrl))
+    .filter((tool) => !tool.embeddedAt || needsFavicon(tool.url, tool.iconImageUrl))
     .slice(0, batchSize)
 
   for (const tool of pending) {
     result.scanned += 1
 
     try {
-      const sync = await syncToolArtifacts(tool.id)
+      const sync = await resolvedDeps.syncArtifacts(tool.id)
       if (sync.embeddingSynced) result.embeddingSynced += 1
       if (sync.faviconSynced) result.faviconSynced += 1
     } catch (error) {
