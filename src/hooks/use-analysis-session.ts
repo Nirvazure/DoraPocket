@@ -93,6 +93,26 @@ export function useAnalysisSession({
     [onPocketGadgetChange],
   )
 
+  const applyFinalReplyState = useCallback(
+    (reply: AgentTurnReply) => {
+      setSelectedToolPayload(reply.selectedTool)
+      setAgentUiPayload(reply.uiPayload)
+      setRecommendationSessionId(reply.recommendationSessionId ?? null)
+    },
+    [setAgentUiPayload, setRecommendationSessionId, setSelectedToolPayload],
+  )
+
+  const presentPocketGadget = useCallback(
+    (reply: AgentTurnReply) => {
+      const nextPocketGadget = pickModeCardAfterTurn(null, reply.selectedTool?.toolId)
+      onPocketGadgetChange(nextPocketGadget)
+      if (reply.selectedTool?.toolId) {
+        triggerPocketReveal(nextPocketGadget)
+      }
+    },
+    [onPocketGadgetChange, triggerPocketReveal],
+  )
+
   const clearResponseState = useCallback(() => {
     setLastSpeechError('')
     resetAgentResponse()
@@ -109,6 +129,60 @@ export function useAnalysisSession({
       }
     },
     [isAgentTurnActive, setAppState, setProgressStage],
+  )
+
+  const finishReplyPlayback = useCallback(
+    async (reply: AgentTurnReply, turnId: number, isActive: () => boolean) => {
+      setBotResponse(reply.text)
+      if (soundEffectsEnabled && reply.text.trim()) {
+        void playDoraPocketSfx()
+      }
+
+      if (!voicePlaybackEnabled) {
+        onRevealRecommendation()
+        finishSpeakingTurn()
+        return
+      }
+
+      const speechText = resolveVoicePlaybackText(reply, voicePlaybackMode)
+      if (!speechText) {
+        onRevealRecommendation()
+        finishSpeakingTurn()
+        return
+      }
+
+      const audioUrl = await buildTTSAudioUrl(speechText)
+      if (!isActive()) {
+        releaseStaleTurn(turnId)
+        return
+      }
+
+      if (audioUrl) {
+        setAppState('speaking')
+        playAudioStream(audioUrl, () => {
+          if (!isActive()) {
+            releaseStaleTurn(turnId)
+            return
+          }
+          onRevealRecommendation()
+          finishSpeakingTurn()
+        })
+        return
+      }
+
+      onRevealRecommendation()
+      finishSpeakingTurn()
+    },
+    [
+      finishSpeakingTurn,
+      onRevealRecommendation,
+      releaseStaleTurn,
+      setAppState,
+      setBotResponse,
+      soundEffectsEnabled,
+      voicePlaybackEnabled,
+      voicePlaybackMode,
+    ],
   )
 
   const handleReplyError = useCallback(
@@ -177,9 +251,8 @@ export function useAnalysisSession({
           releaseStaleTurn(turnId)
           return
         }
-        setSelectedToolPayload(reply.selectedTool)
-        setAgentUiPayload(reply.uiPayload)
-        setRecommendationSessionId(reply.recommendationSessionId ?? null)
+        applyFinalReplyState(reply)
+
         if (
           (reply.selectedTool?.toolId || reply.uiPayload) &&
           !recommendationCoverStartedRef.current
@@ -188,51 +261,8 @@ export function useAnalysisSession({
           onCoverRecommendation()
         }
 
-        const nextPocketGadget = pickModeCardAfterTurn(null, reply.selectedTool?.toolId)
-        onPocketGadgetChange(nextPocketGadget)
-        if (reply.selectedTool?.toolId) {
-          triggerPocketReveal(nextPocketGadget)
-        }
-
-        setBotResponse(reply.text)
-        if (soundEffectsEnabled && reply.text.trim()) {
-          void playDoraPocketSfx()
-        }
-
-        if (!voicePlaybackEnabled) {
-          onRevealRecommendation()
-          finishSpeakingTurn()
-          return
-        }
-
-        const speechText = resolveVoicePlaybackText(reply, voicePlaybackMode)
-        if (!speechText) {
-          onRevealRecommendation()
-          finishSpeakingTurn()
-          return
-        }
-
-        const audioUrl = await buildTTSAudioUrl(speechText)
-        if (!isActive()) {
-          releaseStaleTurn(turnId)
-          return
-        }
-
-        if (audioUrl) {
-          setAppState('speaking')
-          playAudioStream(audioUrl, () => {
-            if (!isActive()) {
-              releaseStaleTurn(turnId)
-              return
-            }
-            onRevealRecommendation()
-            finishSpeakingTurn()
-          })
-          return
-        }
-
-        onRevealRecommendation()
-        finishSpeakingTurn()
+        presentPocketGadget(reply)
+        await finishReplyPlayback(reply, turnId, isActive)
       }
 
       try {
@@ -311,16 +341,15 @@ export function useAnalysisSession({
       }
     },
     [
+      applyFinalReplyState,
       beginAgentTurn,
       explanationMode,
-      finishSpeakingTurn,
+      finishReplyPlayback,
       handleReplyError,
       isAgentTurnActive,
       onPrepareAgentTurn,
       onCoverRecommendation,
-      releaseStaleTurn,
-      onPocketGadgetChange,
-      onRevealRecommendation,
+      presentPocketGadget,
       setAgentUiPayload,
       setAppState,
       setBotResponse,
@@ -330,10 +359,7 @@ export function useAnalysisSession({
       setRecommendationSessionId,
       setSelectedToolPayload,
       setStep2Session,
-      soundEffectsEnabled,
-      triggerPocketReveal,
-      voicePlaybackEnabled,
-      voicePlaybackMode,
+      releaseStaleTurn,
     ],
   )
 
