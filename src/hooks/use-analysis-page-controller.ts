@@ -248,7 +248,15 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     }
 
     return clearTimers
-  }, [appState, clearRevealTimers, currentPrompt, setAnalysisFlow, step2Session, workingFlow])
+  }, [
+    analysisFlowRef,
+    appState,
+    clearRevealTimers,
+    currentPrompt,
+    setAnalysisFlow,
+    step2Session,
+    workingFlow,
+  ])
 
   const handleStartStructuredAnalysis = useCallback(
     async (prompt: string, displayPrompt: string) => {
