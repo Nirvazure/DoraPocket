@@ -30,12 +30,12 @@ type CandidateAlternativesCardProps = {
 
 function AlternativeCardSkeleton() {
   return (
-    <div className="dp-gadget-alt-card flex flex-col p-3">
+    <div className="dp-gadget-alt-card flex flex-col p-2.5">
       <div className="flex items-center justify-between gap-2">
         <Skeleton className="h-3 w-10 bg-primary/10" />
         <Skeleton className="h-7 w-14 rounded-full bg-primary/10" />
       </div>
-      <div className="mt-3 flex gap-2.5">
+      <div className="mt-2 flex gap-2.5">
         <Skeleton className="h-11 w-11 shrink-0 rounded-xl bg-slate-100" />
         <div className="flex-1 space-y-2">
           <Skeleton className="h-3.5 w-full bg-slate-200" />
@@ -84,7 +84,7 @@ export function CandidateAlternativesCard({
             return (
               <article
                 key={candidate.toolId ?? `${candidate.title}-${index}`}
-                className="dp-gadget-alt-card flex h-full flex-col p-3"
+                className="dp-gadget-alt-card flex h-full flex-col p-2.5"
               >
                 <div className="flex items-start justify-between gap-2">
                   <span className="rounded-full border border-primary/12 bg-primary/[0.06] px-2 py-0.5 text-[10px] font-bold tracking-wide text-primary/75">
@@ -95,7 +95,7 @@ export function CandidateAlternativesCard({
                   ) : null}
                 </div>
 
-                <div className="mt-3 flex items-start gap-2.5">
+                <div className="mt-2 flex items-start gap-2.5">
                   {tool ? (
                     <MarketToolIcon tool={tool} size="sm" />
                   ) : (
@@ -103,7 +103,7 @@ export function CandidateAlternativesCard({
                       className="dp-gadget-alt-icon flex items-center justify-center text-lg"
                       aria-hidden
                     >
-                      🌐
+                      ◎
                     </div>
                   )}
                   <div className="min-w-0 flex-1">
@@ -113,9 +113,14 @@ export function CandidateAlternativesCard({
                     <p className="mt-1 line-clamp-3 text-[11px] leading-relaxed text-muted-foreground">
                       {candidate.reason}
                     </p>
-                    <p className="mt-2 rounded-lg bg-slate-100 px-2 py-1.5 text-[10px] font-semibold leading-relaxed text-slate-600">
-                      暂不首选：{notFirstReason}
-                    </p>
+                    <div className="mt-2 rounded-lg border border-slate-200/70 bg-slate-50/70 px-2 py-1.5">
+                      <p className="text-[10px] font-bold leading-none text-slate-500">
+                        未作为首选
+                      </p>
+                      <p className="mt-1 line-clamp-2 text-[10px] font-medium leading-relaxed text-slate-600">
+                        {notFirstReason}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
