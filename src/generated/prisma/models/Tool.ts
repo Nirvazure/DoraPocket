@@ -991,10 +991,6 @@ export type ToolUpdaterecommendedForInput = {
   push?: string | string[]
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type ToolCreateNestedOneWithoutPocketItemsInput = {
   create?: Prisma.XOR<Prisma.ToolCreateWithoutPocketItemsInput, Prisma.ToolUncheckedCreateWithoutPocketItemsInput>
   connectOrCreate?: Prisma.ToolCreateOrConnectWithoutPocketItemsInput

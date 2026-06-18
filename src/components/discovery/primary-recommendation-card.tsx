@@ -60,14 +60,14 @@ export function PrimaryRecommendationCard({
 
   if (covered) {
     return (
-      <DisplayPanel className="relative w-full overflow-hidden rounded-2xl border-sky-200/80 bg-white shadow-xl shadow-sky-900/8">
+      <DisplayPanel className="relative w-full overflow-hidden rounded-xl border-sky-200/80 bg-white shadow-xl shadow-sky-900/8">
         <div
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.94),rgba(240,249,255,0.88))]"
           aria-hidden
         />
-        <DisplayPanelHeader className="relative overflow-hidden p-5 sm:p-6">
+        <DisplayPanelHeader className="relative overflow-hidden p-4 sm:p-5">
           <Skeleton
-            className="pointer-events-none absolute -right-8 top-1/2 h-48 w-48 -translate-y-1/2 rounded-[2rem] bg-sky-100/60 sm:h-56 sm:w-56"
+            className="pointer-events-none absolute -right-8 top-1/2 h-40 w-40 -translate-y-1/2 rounded-[1.5rem] bg-sky-100/60 sm:h-48 sm:w-48"
             aria-hidden
           />
           <div className="relative z-10 flex items-start justify-between gap-4">
@@ -78,21 +78,21 @@ export function PrimaryRecommendationCard({
               </div>
               <Skeleton className="h-4 w-4/5 bg-slate-200" />
             </div>
-            <Skeleton className="h-[4.5rem] w-[4.25rem] shrink-0 rounded-2xl bg-sky-100" />
+            <Skeleton className="h-16 w-16 shrink-0 rounded-xl bg-sky-100" />
           </div>
         </DisplayPanelHeader>
-        <DisplayPanelContent className="relative z-10 flex flex-wrap gap-2 px-5 pb-6 pt-0 sm:px-6">
-          <Skeleton className="h-11 w-28 rounded-full bg-sky-100" />
-          <Skeleton className="h-11 w-28 rounded-full bg-slate-200" />
+        <DisplayPanelContent className="relative z-10 flex flex-wrap gap-2 px-4 pb-4 pt-0 sm:px-5">
+          <Skeleton className="h-10 w-24 rounded-full bg-sky-100" />
+          <Skeleton className="h-10 w-24 rounded-full bg-slate-200" />
         </DisplayPanelContent>
       </DisplayPanel>
     )
   }
 
   return (
-    <DisplayPanel className="relative w-full overflow-hidden rounded-2xl border-primary/15 bg-slate-950 shadow-xl shadow-primary/5">
+    <DisplayPanel className="relative w-full overflow-hidden rounded-xl border-primary/15 bg-slate-950 shadow-xl shadow-primary/5">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(80,171,255,0.34),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.12),transparent_42%)]" />
-      <DisplayPanelHeader className="relative overflow-hidden p-5 text-white sm:p-6">
+      <DisplayPanelHeader className="relative overflow-hidden p-4 text-white sm:p-5">
         {leaderTool ? (
           <div className="dp-primary-hero-watermark pointer-events-none" aria-hidden>
             <MarketToolIcon tool={leaderTool} size="watermark" tone="watermark" />
@@ -107,7 +107,7 @@ export function PrimaryRecommendationCard({
         >
           <div className="min-w-0 max-w-[68%] sm:max-w-[62%]">
             <div className="flex flex-wrap items-end gap-x-4 gap-y-2">
-              <DisplayPanelTitle className="text-4xl leading-tight text-white sm:text-5xl">
+              <DisplayPanelTitle className="text-2xl leading-tight text-white sm:text-3xl lg:text-4xl">
                 {content.title}
               </DisplayPanelTitle>
               {leader ? (
@@ -118,7 +118,7 @@ export function PrimaryRecommendationCard({
                 />
               ) : null}
             </div>
-            <DisplayPanelDescription className="mt-4 text-sm leading-7 text-white/76">
+            <DisplayPanelDescription className="mt-3 line-clamp-2 text-sm leading-6 text-white/76">
               {content.description}
             </DisplayPanelDescription>
             {leader?.candidateType === 'external_suggestion' && leader.externalBoundary ? (
@@ -134,39 +134,11 @@ export function PrimaryRecommendationCard({
           ) : null}
         </div>
       </DisplayPanelHeader>
-      <DisplayPanelContent className="relative z-10 flex flex-wrap gap-2 px-5 pb-6 pt-0 sm:px-6">
+      <DisplayPanelContent className="relative z-10 flex flex-wrap gap-2 px-4 pb-4 pt-0 sm:px-5">
         {payload?.confidenceLevel === 'low' ? (
           <p className="w-full rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
             {STEP2_COPY.lowConfidenceHint}
           </p>
-        ) : null}
-        {payload ? (
-          <div className="mb-2 grid w-full gap-2 text-xs leading-relaxed text-white/78 md:grid-cols-2">
-            {payload.whyThisFirst?.length ? (
-              <div className="rounded-xl border border-white/10 bg-white/8 px-3 py-2">
-                <p className="font-bold text-white">决策依据</p>
-                <p className="mt-1">{payload.whyThisFirst.slice(0, 2).join(' / ')}</p>
-              </div>
-            ) : null}
-            {payload.riskNotes?.length ? (
-              <div className="rounded-xl border border-amber-200/25 bg-amber-500/10 px-3 py-2 text-amber-50">
-                <p className="font-bold text-amber-50">风险边界</p>
-                <p className="mt-1">{payload.riskNotes.slice(0, 2).join(' / ')}</p>
-              </div>
-            ) : null}
-            {payload.communityEvidence?.length ? (
-              <div className="rounded-xl border border-white/10 bg-white/8 px-3 py-2">
-                <p className="font-bold text-white">社区体验</p>
-                <p className="mt-1">{payload.communityEvidence.slice(0, 2).join(' / ')}</p>
-              </div>
-            ) : null}
-            {payload.personalEvidence?.length ? (
-              <div className="rounded-xl border border-white/10 bg-white/8 px-3 py-2">
-                <p className="font-bold text-white">个人信号</p>
-                <p className="mt-1">{payload.personalEvidence.slice(0, 2).join(' / ')}</p>
-              </div>
-            ) : null}
-          </div>
         ) : null}
         {leaderExternalUrl ? (
           <Button

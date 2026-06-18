@@ -6,6 +6,13 @@ export type AuthSessionUser = {
   nickname: string
   avatarSrc?: string | null
   email?: string | null
+  bio?: string | null
+  website?: string | null
+  company?: string | null
+  authCreatedAt?: string | null
+  lastSignInAt?: string | null
+  authRole?: string | null
+  authProvider?: string | null
 }
 
 export function useAuthSessionQuery() {

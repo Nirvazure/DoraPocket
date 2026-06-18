@@ -24,6 +24,68 @@ type TogglePocketFlagInput = {
   toolId: string
 }
 
+function createOptimisticPocketItem(
+  input: SaveToolToPocketInput,
+  now: number,
+): PocketInventoryItem {
+  return {
+    toolId: input.toolId,
+    savedAt: now,
+    lastUsedAt: now,
+    useCount: 0,
+    pinned: false,
+    purchased: false,
+    archived: false,
+    sourceQuestion: input.sourceQuestion,
+    presetArgs: input.presetArgs,
+  }
+}
+
+function optimisticallySavePocketItem(
+  previous: PocketInventoryItem[],
+  input: SaveToolToPocketInput,
+  now: number,
+): PocketInventoryItem[] {
+  const existing = previous.find((item) => item.toolId === input.toolId)
+  if (!existing) {
+    return [createOptimisticPocketItem(input, now), ...previous]
+  }
+
+  return previous.map((item) =>
+    item.toolId === input.toolId
+      ? {
+          ...item,
+          archived: false,
+          sourceQuestion: input.sourceQuestion,
+          presetArgs: input.presetArgs,
+        }
+      : item,
+  )
+}
+
+function optimisticallyRemovePocketItem(
+  previous: PocketInventoryItem[],
+  toolId: string,
+): PocketInventoryItem[] {
+  return previous.filter((item) => item.toolId !== toolId)
+}
+
+function optimisticallyMarkPocketItemUsed(
+  previous: PocketInventoryItem[],
+  toolId: string,
+  now: number,
+): PocketInventoryItem[] {
+  return previous.map((item) =>
+    item.toolId === toolId
+      ? {
+          ...item,
+          lastUsedAt: now,
+          useCount: item.useCount + 1,
+        }
+      : item,
+  )
+}
+
 function getPreviousPocketInventory(queryClient: QueryClient) {
   return queryClient.getQueryData<PocketInventoryItem[]>(queryKeys.pocket.list()) ?? []
 }
@@ -41,6 +103,13 @@ function rollbackPocketInventory(queryClient: QueryClient, context?: PocketMutat
 
 function commitPocketInventory(queryClient: QueryClient, next: PocketInventoryItem[]) {
   queryClient.setQueryData(queryKeys.pocket.list(), next)
+}
+
+export const __pocketCacheTestUtils = {
+  createOptimisticPocketItem,
+  optimisticallySavePocketItem,
+  optimisticallyRemovePocketItem,
+  optimisticallyMarkPocketItemUsed,
 }
 
 export function getPocketInventoryQueryOptions() {
@@ -73,8 +142,12 @@ export function useSaveToolToPocketMutation() {
         method: 'POST',
         body: JSON.stringify({ toolId, sourceQuestion, presetArgs }),
       }),
-    onMutate: async () => {
+    onMutate: async (variables) => {
       const previousPocketInventory = await preparePocketOptimisticUpdate(queryClient)
+      commitPocketInventory(
+        queryClient,
+        optimisticallySavePocketItem(previousPocketInventory, variables, Date.now()),
+      )
       return { previousPocketInventory }
     },
     onError: (_error, _variables, context) => {
@@ -94,8 +167,12 @@ export function useRemoveToolFromPocketMutation() {
       apiFetch<PocketInventoryItem[]>(`/api/me/pocket/${toolId}`, {
         method: 'DELETE',
       }),
-    onMutate: async () => {
+    onMutate: async ({ toolId }) => {
       const previousPocketInventory = await preparePocketOptimisticUpdate(queryClient)
+      commitPocketInventory(
+        queryClient,
+        optimisticallyRemovePocketItem(previousPocketInventory, toolId),
+      )
       return { previousPocketInventory }
     },
     onError: (_error, _variables, context) => {
@@ -115,8 +192,12 @@ export function useMarkToolUsedMutation() {
       apiFetch<PocketInventoryItem[]>(`/api/me/pocket/${toolId}/used`, {
         method: 'POST',
       }),
-    onMutate: async () => {
+    onMutate: async ({ toolId }) => {
       const previousPocketInventory = await preparePocketOptimisticUpdate(queryClient)
+      commitPocketInventory(
+        queryClient,
+        optimisticallyMarkPocketItemUsed(previousPocketInventory, toolId, Date.now()),
+      )
       return { previousPocketInventory }
     },
     onError: (_error, _variables, context) => {

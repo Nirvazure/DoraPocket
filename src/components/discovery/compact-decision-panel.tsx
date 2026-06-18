@@ -30,7 +30,7 @@ export function CompactDecisionPanel({
   recommendationSessionId = null,
 }: CompactDecisionPanelProps) {
   return (
-    <div className="flex w-full flex-col gap-5">
+    <div className="flex w-full flex-col gap-3">
       <PrimaryRecommendationCard
         payload={payload}
         selectedToolPayload={selectedToolPayload}
