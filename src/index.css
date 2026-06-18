@@ -411,7 +411,7 @@
   }
 
   .dp-top-bar {
-    @apply relative overflow-hidden rounded-[1.85rem] border border-white/85 p-1 shadow-[0_16px_48px_-16px_rgba(15,23,42,0.16)] backdrop-blur-2xl sm:rounded-[2rem];
+    @apply relative overflow-visible rounded-[1.85rem] border border-white/85 p-1 shadow-[0_16px_48px_-16px_rgba(15,23,42,0.16)] backdrop-blur-2xl sm:rounded-[2rem];
     background-image: linear-gradient(
       165deg,
       hsl(0 0% 100% / 0.94) 0%,
