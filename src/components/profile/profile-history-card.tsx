@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { BookmarkCheck, CheckCircle2, ChevronDown, ExternalLink, Sparkles } from 'lucide-react'
+import { BookmarkCheck, CheckCircle2, ChevronDown, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { resolveTaskDirection, type RecommendationHistoryItem } from '@/shared/profile-memory'
 
@@ -20,58 +20,55 @@ export function ProfileHistoryCard({ item }: ProfileHistoryCardProps) {
   const signals = [...item.preferenceSignals, ...item.taskFrame.constraints].slice(0, 4)
 
   return (
-    <article className="rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm transition-colors hover:border-sky-200">
-      <div className="flex flex-wrap items-center gap-2 text-xs">
-        <span className="rounded-full bg-sky-50 px-2.5 py-1 font-black text-sky-700">
-          {direction.label}
-        </span>
+    <article className="rounded-[1.2rem] border border-slate-200 bg-white p-4 transition-colors hover:border-sky-200">
+      <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+        <span className="font-bold text-sky-700">{direction.label}</span>
+        <span className="h-1 w-1 rounded-full bg-slate-300" />
         <span className="text-slate-400">{new Date(item.createdAt).toLocaleString('zh-CN')}</span>
         {item.confidenceLevel === 'low' ? (
-          <span className="rounded-full bg-amber-50 px-2.5 py-1 font-bold text-amber-700">
+          <span className="rounded-full bg-amber-50 px-2 py-0.5 font-bold text-amber-700">
             低置信度
           </span>
         ) : null}
-      </div>
-
-      <div className="mt-3 grid gap-3 lg:grid-cols-[1fr_1fr]">
-        <div className="rounded-[1.1rem] bg-slate-50 px-3 py-3">
-          <p className="text-xs font-black text-slate-500">我当时问</p>
-          <p className="mt-1 line-clamp-3 text-sm leading-6 text-slate-800">{item.userText}</p>
-        </div>
-        <div className="rounded-[1.1rem] border border-sky-100 bg-sky-50/60 px-3 py-3">
-          <p className="flex items-center gap-1.5 text-xs font-black text-sky-700">
-            <Sparkles className="h-3.5 w-3.5" />
-            Dora 判断
-          </p>
-          <p className={cn('mt-1 text-sm leading-6 text-slate-800', !expanded && 'line-clamp-3')}>
-            {item.finalText}
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        {item.selectedToolId ? (
-          <span className="rounded-full border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-600">
-            首推：{item.selectedToolId}
-          </span>
-        ) : null}
-        {signals.map((signal) => (
-          <span
-            key={signal}
-            className="rounded-full border border-sky-100 bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-700"
-          >
-            {signal}
-          </span>
-        ))}
         {actionBadges.map(({ label, icon: Icon }) => (
           <span
             key={label}
-            className="inline-flex items-center gap-1 rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700"
+            className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2 py-0.5 font-bold text-slate-600"
           >
-            <Icon className="h-3.5 w-3.5" />
+            <Icon className="h-3 w-3" />
             {label}
           </span>
         ))}
+      </div>
+
+      <div className="mt-3">
+        <h3 className="line-clamp-2 text-base font-black leading-6 text-slate-950">
+          {item.userText}
+        </h3>
+        <p className={cn('mt-2 text-sm leading-6 text-slate-600', !expanded && 'line-clamp-2')}>
+          {item.finalText}
+        </p>
+      </div>
+
+      {expanded ? (
+        <div className="mt-3 flex flex-wrap gap-2 border-t border-slate-100 pt-3">
+          {item.selectedToolId ? (
+            <span className="rounded-full border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-600">
+              首推：{item.selectedToolId}
+            </span>
+          ) : null}
+          {signals.map((signal) => (
+            <span
+              key={signal}
+              className="rounded-full border border-sky-100 bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-700"
+            >
+              {signal}
+            </span>
+          ))}
+        </div>
+      ) : null}
+
+      <div className="mt-3 flex items-center">
         <button
           type="button"
           onClick={() => setExpanded((value) => !value)}
