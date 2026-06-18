@@ -9,6 +9,13 @@ export const appUserSelect = {
   email: true,
   nickname: true,
   avatarSrc: true,
+  bio: true,
+  website: true,
+  company: true,
+  authCreatedAt: true,
+  lastSignInAt: true,
+  authRole: true,
+  authProvider: true,
   createdAt: true,
   updatedAt: true,
 } as const
@@ -19,6 +26,13 @@ export type AppUser = {
   email: string | null
   nickname: string
   avatarSrc: string | null
+  bio: string | null
+  website: string | null
+  company: string | null
+  authCreatedAt: Date | null
+  lastSignInAt: Date | null
+  authRole: string | null
+  authProvider: string | null
   createdAt: Date
   updatedAt: Date
 }
@@ -36,11 +50,25 @@ export async function ensureAppUserFromSupabaseUser(user: SupabaseUser): Promise
       email: profile.email,
       nickname: profile.nickname,
       avatarSrc: profile.avatarSrc,
+      bio: profile.bio,
+      website: profile.website,
+      company: profile.company,
+      authCreatedAt: profile.authCreatedAt,
+      lastSignInAt: profile.lastSignInAt,
+      authRole: profile.authRole,
+      authProvider: profile.authProvider,
     },
     update: {
       email: profile.email,
       nickname: profile.nickname,
       avatarSrc: profile.avatarSrc,
+      bio: profile.bio,
+      website: profile.website,
+      company: profile.company,
+      authCreatedAt: profile.authCreatedAt,
+      lastSignInAt: profile.lastSignInAt,
+      authRole: profile.authRole,
+      authProvider: profile.authProvider,
     },
     select: appUserSelect,
   })

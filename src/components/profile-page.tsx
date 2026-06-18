@@ -19,6 +19,57 @@ import { useSaveUserSettingsMutation, useUserSettingsQuery } from '@/lib/query/u
 import { cn } from '@/lib/utils'
 import { PAGE_COPY, APP_BRAND_TITLE } from '@/shared/ui-copy'
 
+function formatAuthDate(value: string | null | undefined) {
+  if (!value) return '未提供'
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return '未提供'
+  return new Intl.DateTimeFormat('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date)
+}
+
+function displayText(value: string | null | undefined) {
+  return value?.trim() || '未提供'
+}
+
+function isHttpUrl(value: string | null | undefined) {
+  return Boolean(value?.startsWith('http://') || value?.startsWith('https://'))
+}
+
+function AuthInfoRow({
+  label,
+  value,
+  href,
+}: {
+  label: string
+  value: string
+  href?: string | null
+}) {
+  return (
+    <div className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-3 text-left text-xs leading-6">
+      <dt className="font-semibold text-slate-500">{label}</dt>
+      <dd className="min-w-0 break-words font-medium text-slate-800">
+        {href ? (
+          <a
+            href={href}
+            target="_blank"
+            rel="noreferrer"
+            className="text-sky-700 underline decoration-sky-200 underline-offset-4"
+          >
+            {value}
+          </a>
+        ) : (
+          value
+        )}
+      </dd>
+    </div>
+  )
+}
+
 export function ProfilePage() {
   const { data: authSession, isPending: authPending } = useAuthSessionQuery()
   const { data: userSettings } = useUserSettingsQuery()
@@ -30,6 +81,8 @@ export function ProfilePage() {
       : null
   const isAuthenticated = user != null
   const settingsReadOnly = resolveSettingsReadOnly(authPending, authSession?.authenticated)
+  const website = displayText(user?.website)
+  const websiteHref = isHttpUrl(user?.website) ? user?.website : null
 
   const saveUserSettings = (next: Parameters<typeof saveUserSettingsMutation.mutate>[0]) => {
     if (authPending || !isAuthenticated) return
@@ -91,6 +144,17 @@ export function ProfilePage() {
                       ? (user.email ?? '你的账户信息和 DoraPocket 偏好都会在这里收好。')
                       : '登录后，DoraPocket 才能替你同步设置，把偏好真正带走。'}
                   </DisplayPanelDescription>
+                  {user ? (
+                    <dl className="mt-4 grid gap-2 border-t border-slate-200/80 pt-4">
+                      <AuthInfoRow label="简介" value={displayText(user.bio)} />
+                      <AuthInfoRow label="网站" value={website} href={websiteHref} />
+                      <AuthInfoRow label="公司" value={displayText(user.company)} />
+                      <AuthInfoRow label="注册时间" value={formatAuthDate(user.authCreatedAt)} />
+                      <AuthInfoRow label="上次登录" value={formatAuthDate(user.lastSignInAt)} />
+                      <AuthInfoRow label="角色" value={displayText(user.authRole)} />
+                      <AuthInfoRow label="登录方式" value={displayText(user.authProvider)} />
+                    </dl>
+                  ) : null}
                 </div>
 
                 {!isAuthenticated ? (

@@ -1423,6 +1423,13 @@ export const UserScalarFieldEnum = {
   email: 'email',
   nickname: 'nickname',
   avatarSrc: 'avatarSrc',
+  bio: 'bio',
+  website: 'website',
+  company: 'company',
+  authCreatedAt: 'authCreatedAt',
+  lastSignInAt: 'lastSignInAt',
+  authRole: 'authRole',
+  authProvider: 'authProvider',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
