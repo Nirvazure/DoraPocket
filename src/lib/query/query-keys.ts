@@ -19,4 +19,8 @@ export const queryKeys = {
   recommendationEvaluations: {
     all: ['recommendationEvaluations'] as const,
   },
+  recommendationHistory: {
+    all: ['recommendationHistory'] as const,
+    list: () => ['recommendationHistory', 'list'] as const,
+  },
 } as const
