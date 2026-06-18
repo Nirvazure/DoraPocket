@@ -1,66 +1,55 @@
 'use client'
 
-import { LogIn, LogOut, Settings2, Volume2 } from 'lucide-react'
-import { buttonVariants } from '@/components/ui/button'
+import { Settings2, Volume2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { UserSettings } from '@/shared/user-settings'
 
 type ProfileSettingsPanelProps = {
   settings: UserSettings
   readOnly?: boolean
-  isAuthenticated: boolean
   onSave: (next: UserSettings) => void
 }
 
-export function ProfileSettingsPanel({
-  settings,
-  readOnly,
-  isAuthenticated,
-  onSave,
-}: ProfileSettingsPanelProps) {
+export function ProfileSettingsPanel({ settings, readOnly, onSave }: ProfileSettingsPanelProps) {
   const patchSettings = (patch: Partial<UserSettings>) => {
     if (readOnly) return
     onSave({ ...settings, ...patch })
   }
 
   return (
-    <aside className="space-y-4">
-      <div className="rounded-[2rem] border border-white/90 bg-white p-5 shadow-[0_28px_86px_rgba(14,165,233,0.06)]">
-        <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-sky-600">
+    <aside className="space-y-3">
+      <section className="rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-sky-600">
           <Settings2 className="h-4 w-4" />
-          Dora 怎么陪你
+          设置
         </div>
-        <p className="mt-2 text-sm leading-7 text-slate-600">
-          控制 Dora 如何记住历史、解释结果和使用声音。
-        </p>
-
         {readOnly ? (
-          <p className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-6 text-amber-900">
-            登录后才会同步到你的账号。当前只能预览设置。
+          <p className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-6 text-amber-900">
+            正在同步设置，请稍候。
           </p>
         ) : null}
 
-        <div className="mt-5 space-y-4">
+        <div className="mt-4 space-y-3">
           <ToggleRow
-            title="记录历史帮助推荐"
-            description="允许 Dora 使用判断记录形成任务记忆。"
+            title="记录历史"
+            description="用判断记录帮助后续推荐。"
             checked={settings.memoryEnabled}
             disabled={readOnly}
             onChange={(checked) => patchSettings({ memoryEnabled: checked })}
           />
           <SegmentedRow
-            title="解释详细度"
+            title="解释"
             value={settings.explanationMode}
             disabled={readOnly}
             options={[
-              { value: 'brief', label: '更直接' },
+              { value: 'brief', label: '直接' },
               { value: 'standard', label: '保留理由' },
             ]}
             onChange={(explanationMode) => patchSettings({ explanationMode })}
           />
           <ToggleRow
             title="语音播报"
-            description="结果出来后，用声音补一句。"
+            description="结果出来后用声音补一句。"
             checked={settings.voicePlaybackEnabled}
             disabled={readOnly}
             icon={<Volume2 className="h-4 w-4" />}
@@ -89,31 +78,7 @@ export function ProfileSettingsPanel({
             onChange={(fontPreset) => patchSettings({ fontPreset })}
           />
         </div>
-      </div>
-
-      <div className="rounded-[2rem] border border-white/90 bg-white p-5 shadow-sm">
-        <p className="text-sm font-black text-slate-950">账号</p>
-        <p className="mt-1 text-sm leading-6 text-slate-600">
-          {isAuthenticated ? '任务记忆和设置会同步到当前账号。' : '登录后才能同步任务记忆和设置。'}
-        </p>
-        {!isAuthenticated ? (
-          <a
-            href="/login"
-            className={cn(buttonVariants({ variant: 'default' }), 'mt-4 w-full rounded-full')}
-          >
-            <LogIn className="h-4 w-4" />
-            去登录
-          </a>
-        ) : (
-          <a
-            href="/api/auth/logout"
-            className={cn(buttonVariants({ variant: 'outline' }), 'mt-4 w-full rounded-full')}
-          >
-            <LogOut className="h-4 w-4" />
-            退出登录
-          </a>
-        )}
-      </div>
+      </section>
     </aside>
   )
 }
@@ -134,10 +99,10 @@ function ToggleRow({
   onChange: (checked: boolean) => void
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-[1.2rem] border border-slate-200 px-3 py-3">
+    <div className="flex items-center gap-3 rounded-[1rem] border border-slate-200 px-3 py-2.5">
       {icon ? <span className="text-sky-600">{icon}</span> : null}
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-black text-slate-900">{title}</p>
+        <p className="text-sm font-bold text-slate-900">{title}</p>
         <p className="mt-0.5 text-xs leading-5 text-slate-500">{description}</p>
       </div>
       <button
@@ -146,15 +111,15 @@ function ToggleRow({
         aria-pressed={checked}
         onClick={() => onChange(!checked)}
         className={cn(
-          'relative h-7 w-12 rounded-full transition-colors',
+          'relative h-6 w-10 rounded-full transition-colors',
           checked ? 'bg-sky-500' : 'bg-slate-200',
           disabled && 'cursor-not-allowed opacity-50',
         )}
       >
         <span
           className={cn(
-            'absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-transform',
-            checked ? 'translate-x-6' : 'translate-x-1',
+            'absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-transform',
+            checked ? 'translate-x-5' : 'translate-x-1',
           )}
         />
       </button>
@@ -176,8 +141,8 @@ function SegmentedRow<T extends string>({
   onChange: (value: T) => void
 }) {
   return (
-    <div className="rounded-[1.2rem] border border-slate-200 px-3 py-3">
-      <p className="text-sm font-black text-slate-900">{title}</p>
+    <div className="rounded-[1rem] border border-slate-200 px-3 py-2.5">
+      <p className="text-sm font-bold text-slate-900">{title}</p>
       <div className="mt-2 flex flex-wrap gap-1.5">
         {options.map((option) => (
           <button
@@ -186,7 +151,7 @@ function SegmentedRow<T extends string>({
             disabled={disabled}
             onClick={() => onChange(option.value)}
             className={cn(
-              'rounded-full border px-3 py-1.5 text-xs font-black transition-colors',
+              'rounded-full border px-2.5 py-1 text-xs font-bold transition-colors',
               value === option.value
                 ? 'border-sky-300 bg-sky-500 text-white'
                 : 'border-slate-200 bg-white text-slate-600 hover:bg-sky-50',

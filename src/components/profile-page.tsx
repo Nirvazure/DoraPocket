@@ -1,19 +1,18 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect } from 'react'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { ProfileEntryPill } from '@/components/common/profile-entry-pill'
 import { PageShell } from '@/components/common/page-shell'
 import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
 import { ProfileHistoryFeed } from '@/components/profile/profile-history-feed'
-import { ProfileMemorySummary } from '@/components/profile/profile-memory-summary'
 import { ProfileSettingsPanel } from '@/components/profile/profile-settings-panel'
-import { ProfileTaskCompass } from '@/components/profile/profile-task-compass'
 import { useAuthSessionQuery, resolveSettingsReadOnly } from '@/lib/query/auth-session'
 import { useRecommendationHistoryQuery } from '@/lib/query/recommendation-history'
 import { useSaveUserSettingsMutation, useUserSettingsQuery } from '@/lib/query/user-settings'
-import { buildProfileMemorySummary } from '@/shared/profile-memory'
-import type { ProfileHistoryStatusFilter, ProfileTaskDirectionId } from '@/shared/profile-memory'
+import type { ProfileHistoryStatusFilter } from '@/shared/profile-memory'
 import { PAGE_COPY, APP_BRAND_TITLE } from '@/shared/ui-copy'
 
 const EMPTY_HISTORY_ITEMS: NonNullable<
@@ -21,7 +20,7 @@ const EMPTY_HISTORY_ITEMS: NonNullable<
 >['items'] = []
 
 export function ProfilePage() {
-  const [selectedDirectionId, setSelectedDirectionId] = useState<ProfileTaskDirectionId>('all')
+  const router = useRouter()
   const [statusFilter, setStatusFilter] = useState<ProfileHistoryStatusFilter>('all')
   const { data: authSession, isPending: authPending } = useAuthSessionQuery()
   const { data: userSettings } = useUserSettingsQuery()
@@ -35,12 +34,19 @@ export function ProfilePage() {
   const isAuthenticated = user != null
   const settingsReadOnly = resolveSettingsReadOnly(authPending, authSession?.authenticated)
   const historyItems = historyQuery.data?.items ?? EMPTY_HISTORY_ITEMS
-  const summary = useMemo(() => buildProfileMemorySummary(historyItems), [historyItems])
+
+  useEffect(() => {
+    if (!authPending && !isAuthenticated) {
+      router.replace('/login')
+    }
+  }, [authPending, isAuthenticated, router])
 
   const saveUserSettings = (next: Parameters<typeof saveUserSettingsMutation.mutate>[0]) => {
     if (authPending || !isAuthenticated) return
     saveUserSettingsMutation.mutate(next)
   }
+
+  if (!authPending && !isAuthenticated) return null
 
   return (
     <PageShell
@@ -58,27 +64,11 @@ export function ProfilePage() {
         />
       }
     >
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-start">
-        <main className="min-w-0 space-y-5">
-          <ProfileTaskCompass
-            user={user}
-            selectedDirectionId={selectedDirectionId}
-            directionStats={summary.directionStats}
-            disabled={!isAuthenticated}
-            onSelectDirection={(directionId) => {
-              setSelectedDirectionId(directionId)
-              setStatusFilter('all')
-            }}
-          />
-
-          <ProfileMemorySummary
-            summary={summary}
-            memoryEnabled={userSettings.memoryEnabled && isAuthenticated}
-          />
-
+      <div className="grid gap-5 xl:min-h-[calc(100dvh-8.5rem)] xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
+        <main className="flex min-h-0 min-w-0">
           <ProfileHistoryFeed
+            className="w-full xl:min-h-[calc(100dvh-8.5rem)]"
             items={historyItems}
-            selectedDirectionId={selectedDirectionId}
             statusFilter={statusFilter}
             loading={historyQuery.isPending && isAuthenticated}
             error={historyQuery.isError}
@@ -90,7 +80,6 @@ export function ProfilePage() {
           <ProfileSettingsPanel
             settings={userSettings}
             readOnly={settingsReadOnly}
-            isAuthenticated={isAuthenticated}
             onSave={saveUserSettings}
           />
         </div>
