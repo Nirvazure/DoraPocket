@@ -36,8 +36,9 @@ export function ProfilePage() {
   const historyItems = historyQuery.data?.items ?? EMPTY_HISTORY_ITEMS
 
   useEffect(() => {
-    if (!authPending && !isAuthenticated) {
-      router.replace('/login')
+    if (authPending) return
+    if (!isAuthenticated) {
+      router.replace('/login?next=/profile')
     }
   }, [authPending, isAuthenticated, router])
 
