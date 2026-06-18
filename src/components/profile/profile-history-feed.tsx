@@ -41,7 +41,7 @@ export function ProfileHistoryFeed({
   return (
     <section
       className={cn(
-        'flex flex-col rounded-[1.8rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-5',
+        'flex h-full min-h-0 flex-col rounded-[1.8rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-5',
         className,
       )}
     >
@@ -74,7 +74,7 @@ export function ProfileHistoryFeed({
         </div>
       </div>
 
-      <div className="mt-5 flex min-h-0 flex-1 flex-col space-y-3">
+      <div className="mt-5 flex min-h-0 flex-1 flex-col space-y-3 overflow-y-auto [scrollbar-width:thin]">
         {loading ? (
           <div className="grid flex-1 content-start gap-3">
             {Array.from({ length: 3 }).map((_, index) => (
@@ -111,7 +111,7 @@ function EmptyState({
   description: string
 }) {
   return (
-    <div className="flex min-h-[22rem] flex-1 flex-col items-center justify-center rounded-[1.2rem] border border-dashed border-slate-200 bg-slate-50 px-5 py-10 text-center">
+    <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-[1.2rem] border border-dashed border-slate-200 bg-slate-50 px-5 py-10 text-center">
       <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-sky-600 shadow-sm">
         {icon}
       </span>
