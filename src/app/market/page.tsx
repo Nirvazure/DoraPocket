@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { MarketPage } from '@/components/market-page'
+import { MarketPageClient } from './market-page-client'
 import type { MarketSectionKey } from '@/shared/market-scope'
 
 export const metadata: Metadata = {
@@ -14,5 +14,5 @@ type MarketRoutePageProps = {
 export default async function MarketRoutePage({ searchParams }: MarketRoutePageProps) {
   const params = await searchParams
   const initialSection: MarketSectionKey | null = params.section === 'pocket' ? 'pocket' : null
-  return <MarketPage initialSection={initialSection} />
+  return <MarketPageClient initialSection={initialSection} />
 }

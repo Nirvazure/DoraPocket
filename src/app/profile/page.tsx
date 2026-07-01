@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { ProfilePage } from '@/components/profile-page'
+import { ProfilePageClient } from './profile-page-client'
 
 export const metadata: Metadata = {
   title: '我的 | DoraPocket',
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 }
 
 export default function ProfileRoutePage() {
-  return <ProfilePage />
+  return <ProfilePageClient />
 }

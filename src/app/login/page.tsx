@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
-import { OAuthLoginForm } from '@/components/auth/oauth-login-form'
-import { ProfileEntryPill } from '@/components/common/profile-entry-pill'
+import { OAuthLoginForm } from '@/app/login/_components/oauth-login-form'
+import { LoginEntryButton } from '@/components/auth/login-entry-button'
 import { PageShell } from '@/components/common/page-shell'
 import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
@@ -17,7 +17,7 @@ export default function LoginPage() {
           rightSlot={
             <div className="flex items-center gap-1.5 sm:gap-2">
               <TopNavSwitch />
-              <ProfileEntryPill />
+              <LoginEntryButton />
             </div>
           }
         />
