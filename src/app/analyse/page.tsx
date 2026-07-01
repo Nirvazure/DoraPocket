@@ -1,7 +1,12 @@
-'use client'
+import type { Metadata } from 'next'
+import { AnalysisPageClient } from './analysis-page-client'
+import { PAGE_COPY } from '@/shared/ui-copy'
 
-import App from '@/App'
+export const metadata: Metadata = {
+  title: '分析 | DoraPocket',
+  description: PAGE_COPY.analysis.subtitle,
+}
 
 export default function AnalyseRoutePage() {
-  return <App />
+  return <AnalysisPageClient />
 }
