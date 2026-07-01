@@ -11,7 +11,7 @@ import {
   Search,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import type { ToolCategory } from '@/shared/tool-registry'
+import type { ToolCategory } from '@/shared/market/tool-registry'
 
 export type MarketCategoryKey = 'pocket' | ToolCategory
 

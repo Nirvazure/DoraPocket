@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { PAGE_COPY } from '@/shared/ui-copy'
+import { PAGE_COPY } from '@/shared/copy/ui-copy'
 
 type DecisionProgressStepsProps = {
   currentStep: number

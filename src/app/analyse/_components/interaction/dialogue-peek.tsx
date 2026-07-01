@@ -1,8 +1,8 @@
-import { STEP2_COPY } from '@/shared/ui-copy'
-import type { Step2Message } from '@/shared/step2-session-types'
+import { CLARIFICATION_COPY } from '@/shared/copy/ui-copy'
+import type { ClarificationMessage } from '@/shared/discovery/clarification-session-types'
 
 export type DialoguePeekProps = {
-  messages: Step2Message[]
+  messages: ClarificationMessage[]
   expanded: boolean
   canExpandEarlier: boolean
   onToggleExpand: () => void
@@ -25,7 +25,7 @@ export function DialoguePeek({
           onClick={onToggleExpand}
           className="mb-1 text-[11px] font-semibold text-primary"
         >
-          {STEP2_COPY.expandEarlier}
+          {CLARIFICATION_COPY.expandEarlier}
         </button>
       ) : null}
       {visible.map((msg, index) => (

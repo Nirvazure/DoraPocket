@@ -14,7 +14,7 @@ import {
   IDLE_ANALYSIS_FLOW,
   shouldPreserveTurnFlow,
   type AnalysisFlow,
-} from '@/shared/analysis-stage-content'
+} from '@/app/analyse/_domain/analysis-stage-content'
 import { useAnalysisFlowReveal } from '@/app/analyse/_hooks/use-analysis-flow-reveal'
 import { useAnalysisToolLookup } from '@/app/analyse/_hooks/use-analysis-tool-lookup'
 import { useAnalysisSession } from '@/app/analyse/_hooks/use-analysis-session'
@@ -25,11 +25,14 @@ import { useVoiceInput } from '@/app/analyse/_hooks/use-voice-input'
 import { useAuthSessionQuery, resolveSettingsReadOnly } from '@/lib/query/auth-session'
 import { useMarkToolUsedMutation, useSaveToolToPocketMutation } from '@/lib/query/pocket'
 import { useSaveUserSettingsMutation, useUserSettingsQuery } from '@/lib/query/user-settings'
-import type { AssistantModeCard } from '@/shared/mode-registry'
-import { PAGE_COPY, SYSTEM_NOTICE_COPY } from '@/shared/ui-copy'
-import { mergeStep2IntoAnalysisFlow, useStore } from '@/store'
-import { shouldRestartAnalysisFlow } from '@/shared/analysis-stage-restart'
-import { composeStarterPromptFromVoice, createEmptyStarterIntake } from '@/shared/starter-intake'
+import type { AssistantModeCard } from '@/shared/discovery/mode-registry'
+import { PAGE_COPY, SYSTEM_NOTICE_COPY } from '@/shared/copy/ui-copy'
+import { mergeClarificationIntoAnalysisFlow, useStore } from '@/store'
+import { shouldRestartAnalysisFlow } from '@/app/analyse/_domain/analysis-stage-restart'
+import {
+  composeStarterPromptFromVoice,
+  createEmptyStarterIntake,
+} from '@/shared/discovery/starter-intake'
 import type { DiscoveryWorkspaceHandle } from '@/app/analyse/_components/discovery/discovery-workspace'
 
 type InputMode = 'text' | 'voice'
@@ -45,7 +48,7 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
   const botResponse = useStore((state) => state.botResponse)
   const systemNotice = useStore((state) => state.systemNotice)
   const analysisFlow = useStore((state) => state.analysisFlow)
-  const step2Session = useStore((state) => state.step2Session)
+  const clarificationSession = useStore((state) => state.clarificationSession)
   const setSystemNotice = useStore((state) => state.setSystemNotice)
   const clearSystemNotice = useStore((state) => state.clearSystemNotice)
   const setAnalysisFlow = useStore((state) => state.setAnalysisFlow)
@@ -173,8 +176,8 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
   useAutoDismissSystemNotice({ systemNotice, clearSystemNotice })
 
   const resolvedAnalysisFlow = useMemo(
-    () => mergeStep2IntoAnalysisFlow(analysisFlow, step2Session),
-    [analysisFlow, step2Session],
+    () => mergeClarificationIntoAnalysisFlow(analysisFlow, clarificationSession),
+    [analysisFlow, clarificationSession],
   )
 
   useEffect(() => {
@@ -225,7 +228,7 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
       previousPrompt,
       nextPrompt: normalizedPrompt,
       currentFlow,
-      anchorPrompt: step2Session?.anchorPrompt,
+      anchorPrompt: clarificationSession?.anchorPrompt,
     })
     if (!restartingForNewPrompt && shouldPreserveTurnFlow(currentFlow)) {
       return clearTimers
@@ -251,7 +254,7 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     clearRevealTimers,
     currentPrompt,
     setAnalysisFlow,
-    step2Session,
+    clarificationSession,
     workingFlow,
   ])
 
@@ -310,7 +313,7 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     isAuthenticated,
     settingsReadOnly,
     currentPrompt,
-    step2Session,
+    clarificationSession,
     progressStage,
     analysisFlow: resolvedAnalysisFlow,
     selectedToolPayload,

@@ -1,8 +1,12 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { STARTER_ROLES, type StarterIntake, type StarterRoleId } from '@/shared/starter-intake'
-import { PAGE_COPY } from '@/shared/ui-copy'
+import {
+  STARTER_ROLES,
+  type StarterIntake,
+  type StarterRoleId,
+} from '@/shared/discovery/starter-intake'
+import { PAGE_COPY } from '@/shared/copy/ui-copy'
 
 type StarterRoleStepProps = {
   intake: StarterIntake

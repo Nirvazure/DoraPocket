@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react'
 import { Brain, Settings2, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import type { UserSettings } from '@/shared/user-settings'
+import type { UserSettings } from '@/shared/user/user-settings'
 
 type ProfileSettingsPanelProps = {
   settings: UserSettings

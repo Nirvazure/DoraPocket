@@ -4,8 +4,8 @@ import { ExternalLink, FolderHeart, PenLine, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { MarketToolIcon } from '@/components/shared/market-tool-icon'
 import { MarketToolTags } from '@/app/market/_components/market-tool-tags'
-import type { MarketToolCardItem } from '@/shared/market-scope'
-import { MARKET_ACTIVITY_COPY, PAGE_COPY } from '@/shared/ui-copy'
+import type { MarketToolCardItem } from '@/shared/market/market-scope'
+import { MARKET_ACTIVITY_COPY, PAGE_COPY } from '@/shared/copy/ui-copy'
 import { cn } from '@/lib/utils'
 
 type MarketToolCardProps = {

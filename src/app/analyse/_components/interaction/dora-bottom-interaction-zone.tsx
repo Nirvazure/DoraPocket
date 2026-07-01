@@ -5,14 +5,17 @@ import { AnalysisInputComposer } from '@/app/analyse/_components/interaction/ana
 import { DialoguePeek } from '@/app/analyse/_components/interaction/dialogue-peek'
 import { DoraVoicePlaybackBar } from '@/app/analyse/_components/interaction/dora-voice-playback-bar'
 import { PocketDiggingBar } from '@/app/analyse/_components/interaction/pocket-digging-bar'
-import { Step2ActionRow } from '@/app/analyse/_components/interaction/step2-action-row'
+import { ClarificationActionRow } from '@/app/analyse/_components/interaction/clarification-action-row'
 import {
   isInputLockedFlow,
-  isStep2Clarifying,
+  isClarificationActive,
   type AnalysisFlow,
-} from '@/shared/analysis-stage-content'
-import { getVisibleDialogueMessages } from '@/shared/step2-session'
-import type { Step2Message, Step2Session } from '@/shared/step2-session-types'
+} from '@/app/analyse/_domain/analysis-stage-content'
+import { getVisibleDialogueMessages } from '@/shared/discovery/clarification-session'
+import type {
+  ClarificationMessage,
+  ClarificationSession,
+} from '@/shared/discovery/clarification-session-types'
 import type { AppState } from '@/store'
 
 type InputMode = 'text' | 'voice'
@@ -21,7 +24,7 @@ export type DoraBottomInteractionZoneProps = {
   analysisFlow: AnalysisFlow
   appState: AppState
   botResponse: string
-  step2Session: Step2Session | null
+  clarificationSession: ClarificationSession | null
   canSkipVoice: boolean
   inputMode: InputMode
   textFallback: string
@@ -41,15 +44,18 @@ export type DoraBottomInteractionZoneProps = {
 }
 
 function resolveDialogueMessages(
-  step2Session: Step2Session | null,
+  clarificationSession: ClarificationSession | null,
   botResponse: string,
   appState: AppState,
-): Step2Message[] {
-  if (!step2Session) return []
+): ClarificationMessage[] {
+  if (!clarificationSession) return []
 
-  const visible = getVisibleDialogueMessages(step2Session, step2Session.dialogueExpanded)
+  const visible = getVisibleDialogueMessages(
+    clarificationSession,
+    clarificationSession.dialogueExpanded,
+  )
   const streaming = botResponse.trim()
-  if (!streaming || (appState !== 'speaking' && step2Session.status !== 'thinking')) {
+  if (!streaming || (appState !== 'speaking' && clarificationSession.status !== 'thinking')) {
     return visible
   }
 
@@ -60,16 +66,19 @@ function resolveDialogueMessages(
   return [...visible, { role: 'assistant', content: streaming }]
 }
 
-function isStep2DialogueActive(step2Session: Step2Session | null, botResponse: string) {
-  if (!step2Session) return false
-  return step2Session.messages.length > 0 || botResponse.trim().length > 0
+function isClarificationDialogueActive(
+  clarificationSession: ClarificationSession | null,
+  botResponse: string,
+) {
+  if (!clarificationSession) return false
+  return clarificationSession.messages.length > 0 || botResponse.trim().length > 0
 }
 
 export function DoraBottomInteractionZone({
   analysisFlow,
   appState,
   botResponse,
-  step2Session,
+  clarificationSession,
   canSkipVoice,
   inputMode,
   textFallback,
@@ -88,31 +97,31 @@ export function DoraBottomInteractionZone({
   hideVoiceToggle = false,
 }: DoraBottomInteractionZoneProps) {
   const dialogueMessages = useMemo(
-    () => resolveDialogueMessages(step2Session, botResponse, appState),
-    [appState, botResponse, step2Session],
+    () => resolveDialogueMessages(clarificationSession, botResponse, appState),
+    [appState, botResponse, clarificationSession],
   )
 
-  const showDialoguePeek = isStep2DialogueActive(step2Session, botResponse)
-  const canExpandEarlier = (step2Session?.messages.length ?? 0) > 2
-  const showActionRow = step2Session?.status === 'clarifying'
+  const showDialoguePeek = isClarificationDialogueActive(clarificationSession, botResponse)
+  const canExpandEarlier = (clarificationSession?.messages.length ?? 0) > 2
+  const showActionRow = clarificationSession?.status === 'clarifying'
   const inputLocked = isInputLockedFlow(analysisFlow)
   const showVoiceBar = appState === 'speaking' && botResponse.trim().length > 0
-  const showDiggingBar = analysisFlow.phase === 'analyzing' && !isStep2Clarifying(analysisFlow)
+  const showDiggingBar = analysisFlow.phase === 'analyzing' && !isClarificationActive(analysisFlow)
 
   return (
     <div className="shrink-0 max-h-[min(38vh,240px)] overflow-hidden border-t border-white/60 bg-white/78 backdrop-blur-md">
       {showDialoguePeek ? (
         <DialoguePeek
           messages={dialogueMessages}
-          expanded={step2Session?.dialogueExpanded ?? false}
+          expanded={clarificationSession?.dialogueExpanded ?? false}
           canExpandEarlier={canExpandEarlier}
           onToggleExpand={onToggleDialogueExpanded}
         />
       ) : null}
 
       {showActionRow ? (
-        <Step2ActionRow
-          quickReplies={step2Session?.quickReplies ?? []}
+        <ClarificationActionRow
+          quickReplies={clarificationSession?.quickReplies ?? []}
           onQuickReply={onQuickReply}
         />
       ) : null}

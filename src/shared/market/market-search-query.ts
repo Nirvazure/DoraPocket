@@ -1,5 +1,5 @@
-import { TOOL_CATEGORY_LABELS, TOOL_CATEGORY_ORDER } from '@/shared/tool-labels'
-import type { ToolCategory } from '@/shared/tool-registry'
+import { TOOL_CATEGORY_LABELS, TOOL_CATEGORY_ORDER } from '@/shared/market/tool-labels'
+import type { ToolCategory } from '@/shared/market/tool-registry'
 
 const MIN_QUERY_LENGTH = 2
 

@@ -1,9 +1,12 @@
 import { create } from 'zustand'
-import { IDLE_ANALYSIS_FLOW, type AnalysisFlow } from '@/shared/analysis-stage-content'
+import { IDLE_ANALYSIS_FLOW, type AnalysisFlow } from '@/app/analyse/_domain/analysis-stage-content'
 import { createClientId } from '@/lib/id'
 import type { ChatToolPayload } from '@/lib/client/llm'
-import type { AgentUiPayload } from '@/shared/market-types'
-import type { ProgressStage, Step2Session } from '@/shared/step2-session-types'
+import type { AgentUiPayload } from '@/shared/market/market-types'
+import type {
+  ProgressStage,
+  ClarificationSession,
+} from '@/shared/discovery/clarification-session-types'
 
 export type AppState = 'idle' | 'listening' | 'thinking' | 'speaking'
 export type SystemNoticeLevel = 'critical' | 'task' | 'ambient' | 'silent'
@@ -37,7 +40,7 @@ interface DoraStore {
   clearSystemNotice: () => void
   agentTurnId: number
   analysisFlow: AnalysisFlow
-  step2Session: Step2Session | null
+  clarificationSession: ClarificationSession | null
   currentPrompt: string | null
   progressStage: ProgressStage | null
   selectedToolPayload: ChatToolPayload
@@ -47,8 +50,11 @@ interface DoraStore {
   beginAgentTurn: () => AgentTurnHandle
   isAgentTurnActive: (turnId: number) => boolean
   setAnalysisFlow: (flow: AnalysisFlow) => void
-  setStep2Session: (
-    session: Step2Session | null | ((prev: Step2Session | null) => Step2Session | null),
+  setClarificationSession: (
+    session:
+      | ClarificationSession
+      | null
+      | ((prev: ClarificationSession | null) => ClarificationSession | null),
   ) => void
   setCurrentPrompt: (prompt: string | null) => void
   setProgressStage: (stage: ProgressStage | null) => void
@@ -82,7 +88,7 @@ export const useStore = create<DoraStore>((set, get) => ({
   clearSystemNotice: () => set({ systemNotice: null }),
   agentTurnId: 0,
   analysisFlow: IDLE_ANALYSIS_FLOW,
-  step2Session: null,
+  clarificationSession: null,
   currentPrompt: null,
   progressStage: null,
   selectedToolPayload: null,
@@ -100,9 +106,10 @@ export const useStore = create<DoraStore>((set, get) => ({
   isAgentTurnActive: (turnId) => get().agentTurnId === turnId,
 
   setAnalysisFlow: (flow) => set({ analysisFlow: flow }),
-  setStep2Session: (session) =>
+  setClarificationSession: (session) =>
     set((state) => ({
-      step2Session: typeof session === 'function' ? session(state.step2Session) : session,
+      clarificationSession:
+        typeof session === 'function' ? session(state.clarificationSession) : session,
     })),
   setCurrentPrompt: (prompt) => set({ currentPrompt: prompt }),
   setProgressStage: (stage) => set({ progressStage: stage }),
@@ -124,11 +131,11 @@ export const useStore = create<DoraStore>((set, get) => ({
   },
 }))
 
-export function mergeStep2IntoAnalysisFlow(
+export function mergeClarificationIntoAnalysisFlow(
   flow: AnalysisFlow,
-  step2: Step2Session | null,
+  clarification: ClarificationSession | null,
 ): AnalysisFlow {
-  if (step2) return { ...flow, step2 }
-  if (!flow.step2) return flow
+  if (clarification) return { ...flow, clarification }
+  if (!flow.clarification) return flow
   return { phase: flow.phase, beat: flow.beat }
 }

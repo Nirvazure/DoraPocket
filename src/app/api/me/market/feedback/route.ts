@@ -5,7 +5,7 @@ import {
   listMarketFeedback,
   saveMarketFeedback,
 } from '@/server/repositories/market-feedback-repo'
-import type { MarketReviewTag, ToolVote } from '@/shared/market-types'
+import type { MarketReviewTag, ToolVote } from '@/shared/market/market-types'
 
 export async function GET() {
   const session = await verifySession()

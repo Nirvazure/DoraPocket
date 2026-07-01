@@ -3,7 +3,7 @@ import type {
   ToolExecutionMode,
   ToolPlatform,
   ToolPricingModel,
-} from '@/shared/tool-registry'
+} from '@/shared/market/tool-registry'
 
 export type PocketSavedItem = {
   toolId: string

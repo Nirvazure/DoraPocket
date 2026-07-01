@@ -10,8 +10,8 @@ import {
   resolveCurrentStep,
   resolveMaxVisibleStep,
   type AnalysisFlow,
-} from '@/shared/analysis-stage-content'
-import { canAdvanceStarterStep } from '@/shared/starter-intake'
+} from '@/app/analyse/_domain/analysis-stage-content'
+import { canAdvanceStarterStep } from '@/shared/discovery/starter-intake'
 import { DecisionProgressSteps } from '@/app/analyse/_components/discovery/decision-progress-steps'
 import { LiveAnalysisTrackCard } from '@/app/analyse/_components/discovery/live-analysis-track-card'
 import { WhereToStartSectionSkeleton } from '@/app/analyse/_components/discovery/where-to-start-section-skeleton'
@@ -22,10 +22,10 @@ import {
   type StarterWizardStateHandle,
 } from '@/app/analyse/_hooks/use-starter-wizard-state'
 import type { ChatToolPayload } from '@/lib/client/llm'
-import type { AgentUiPayload } from '@/shared/market-types'
-import type { ProgressStage } from '@/shared/step2-session-types'
-import type { UserSettings } from '@/shared/user-settings'
-import type { ToolLookupFn } from '@/shared/tool-lookup'
+import type { AgentUiPayload } from '@/shared/market/market-types'
+import type { ProgressStage } from '@/shared/discovery/clarification-session-types'
+import type { UserSettings } from '@/shared/user/user-settings'
+import type { ToolLookupFn } from '@/shared/market/tool-lookup'
 import type { AppState } from '@/store'
 
 const WhereToStartSection = dynamic(

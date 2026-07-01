@@ -1,15 +1,15 @@
 import 'server-only'
 
 import { invokeModel } from '@/server/agent/model'
-import type { AgentCandidate } from '@/shared/market-types'
+import type { AgentCandidate } from '@/shared/market/market-types'
 import {
   collectExternalSuggestionRaw,
   EXTERNAL_CONFIDENCE_DEFAULT,
   EXTERNAL_CONFIDENCE_HUB_WEAK,
   EXTERNAL_CONFIDENCE_PREFER,
   normalizeExternalSuggestions,
-} from '@/shared/candidate-pool'
-import type { ToolMatch } from '@/shared/tool-registry'
+} from '@/shared/discovery/candidate-pool'
+import type { ToolMatch } from '@/shared/market/tool-registry'
 
 function extractJsonArray(text: string): unknown[] {
   try {
@@ -53,7 +53,7 @@ export {
   HUB_WEAK_SCORE_THRESHOLD,
   MAX_EXTERNAL_SUGGESTIONS,
   normalizeExternalSuggestions,
-} from '@/shared/candidate-pool'
+} from '@/shared/discovery/candidate-pool'
 
 export async function judgeToolRecommendations(
   query: string,

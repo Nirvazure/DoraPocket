@@ -5,7 +5,7 @@ import { PageShell } from '@/components/common/page-shell'
 import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
 
-import { APP_BRAND_TITLE } from '@/shared/ui-copy'
+import { APP_BRAND_TITLE } from '@/shared/copy/ui-copy'
 
 export default function LoginPage() {
   return (

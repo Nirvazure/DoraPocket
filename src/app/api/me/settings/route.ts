@@ -6,7 +6,7 @@ import {
   setDevMockUserSettings,
 } from '@/server/auth/dev-mock-auth'
 import { getUserSettings, upsertUserSettings } from '@/server/repositories/user-settings-repo'
-import type { UserSettings } from '@/shared/user-settings'
+import type { UserSettings } from '@/shared/user/user-settings'
 
 export async function GET() {
   const session = await verifySession()

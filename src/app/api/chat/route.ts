@@ -2,10 +2,10 @@ import { streamPocketGraph } from '@/server/agent/graph'
 import { verifySession } from '@/server/auth/dal'
 import { buildMarketContextForUser } from '@/server/market/context'
 import { createRecommendationSession } from '@/server/repositories/recommendation-session-repo'
-import type { ExplanationMode } from '@/shared/user-settings'
-import { createEmptyMarketContext } from '@/shared/market-defaults'
-import type { AgentUiPayload, MarketContext } from '@/shared/market-types'
-import type { Step2DoneStatus } from '@/shared/step2-session-types'
+import type { ExplanationMode } from '@/shared/user/user-settings'
+import { createEmptyMarketContext } from '@/shared/market/market-defaults'
+import type { AgentUiPayload, MarketContext } from '@/shared/market/market-types'
+import type { ClarificationDoneStatus } from '@/shared/discovery/clarification-session-types'
 
 type ChatRequestBody = {
   message?: string
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
       ? await buildMarketContextForUser(session.user.id, 'applied')
       : createEmptyMarketContext()
 
-    const step2Input = {
+    const clarificationInput = {
       sessionTurn: (body.sessionTurn ?? 1) as 1 | 2 | 3,
       anchorPrompt: body.anchorPrompt?.trim() || message,
       priorMessages: body.priorMessages ?? [],
@@ -54,13 +54,13 @@ export async function POST(request: Request) {
           let finalText = ''
           let selectedToolId: string | null = null
           let finalUiPayload: AgentUiPayload | null = null
-          let step2Status: Step2DoneStatus | undefined
+          let clarificationStatus: ClarificationDoneStatus | undefined
 
           for await (const event of streamPocketGraph(
             message,
             marketContext,
             explanationMode,
-            step2Input,
+            clarificationInput,
           )) {
             if (event.type === 'meta') {
               selectedToolId = event.selected_tool?.toolId ?? null
@@ -68,14 +68,15 @@ export async function POST(request: Request) {
             }
             if (event.type === 'done') {
               finalText = event.text
-              step2Status = event.step2Status
+              clarificationStatus = event.clarificationStatus
               selectedToolId = event.selected_tool?.toolId ?? selectedToolId
               finalUiPayload = event.ui_payload ?? finalUiPayload
             }
             controller.enqueue(jsonLine(event))
           }
 
-          const shouldPersistSession = step2Status === 'ready' || step2Status === 'exhausted'
+          const shouldPersistSession =
+            clarificationStatus === 'ready' || clarificationStatus === 'exhausted'
           if (session?.user && finalText && finalUiPayload && shouldPersistSession) {
             const userText = body.anchorPrompt?.trim() || message
             const recommendationSession = await createRecommendationSession(session.user.id, {
@@ -83,7 +84,7 @@ export async function POST(request: Request) {
               finalText,
               selectedToolId,
               uiPayload: finalUiPayload,
-              clarifyTurnCount: Math.max(0, step2Input.sessionTurn - 1),
+              clarifyTurnCount: Math.max(0, clarificationInput.sessionTurn - 1),
               confidenceLevel: finalUiPayload.confidenceLevel ?? 'normal',
             })
             controller.enqueue(

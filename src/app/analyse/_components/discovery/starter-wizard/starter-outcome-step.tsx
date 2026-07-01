@@ -5,8 +5,8 @@ import {
   STARTER_OUTCOMES,
   type StarterIntake,
   type StarterOutcomeId,
-} from '@/shared/starter-intake'
-import { PAGE_COPY } from '@/shared/ui-copy'
+} from '@/shared/discovery/starter-intake'
+import { PAGE_COPY } from '@/shared/copy/ui-copy'
 
 type StarterOutcomeStepProps = {
   intake: StarterIntake

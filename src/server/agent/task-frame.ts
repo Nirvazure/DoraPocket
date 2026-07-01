@@ -1,5 +1,5 @@
-﻿import type { AgentTaskFrame } from '@/shared/market-types'
-import { extractColdStartTaskLine } from '@/shared/starter-intake'
+﻿import type { AgentTaskFrame } from '@/shared/market/market-types'
+import { extractColdStartTaskLine } from '@/shared/discovery/starter-intake'
 
 const POCKET_KEYWORDS = ['收藏', '口袋'] as const
 const DISCOVERY_KEYWORDS = ['工具', '推荐', '找个', '网站', '资源', '怎么找'] as const

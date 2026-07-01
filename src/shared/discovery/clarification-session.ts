@@ -1,6 +1,9 @@
-import type { Step2Message, Step2Session } from '@/shared/step2-session-types'
+import type {
+  ClarificationMessage,
+  ClarificationSession,
+} from '@/shared/discovery/clarification-session-types'
 
-export function createStep2Session(anchorPrompt: string): Step2Session {
+export function createClarificationSession(anchorPrompt: string): ClarificationSession {
   return {
     turn: 1,
     anchorPrompt,
@@ -11,10 +14,10 @@ export function createStep2Session(anchorPrompt: string): Step2Session {
   }
 }
 
-export function appendStep2Turn(
-  session: Step2Session,
+export function appendClarificationTurn(
+  session: ClarificationSession,
   turn: { user: string; assistant: string },
-): Step2Session {
+): ClarificationSession {
   const nextTurn = Math.min(3, session.turn + 1) as 1 | 2 | 3
   return {
     ...session,
@@ -28,14 +31,14 @@ export function appendStep2Turn(
 }
 
 export function getVisibleDialogueMessages(
-  session: Step2Session,
+  session: ClarificationSession,
   expanded: boolean,
-): Step2Message[] {
+): ClarificationMessage[] {
   if (expanded || session.messages.length <= 2) return session.messages
   return session.messages.slice(-2)
 }
 
-export function canContinueClarify(session: Step2Session, skipClarify: boolean): boolean {
+export function canContinueClarify(session: ClarificationSession, skipClarify: boolean): boolean {
   if (skipClarify) return false
   return session.turn < 3
 }

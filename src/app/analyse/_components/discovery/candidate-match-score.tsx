@@ -1,5 +1,5 @@
 import { getCandidateScoreValue } from '@/app/analyse/_components/discovery/candidate-score'
-import type { AgentCandidate } from '@/shared/market-types'
+import type { AgentCandidate } from '@/shared/market/market-types'
 import { cn } from '@/lib/utils'
 
 type CandidateMatchScoreProps = {

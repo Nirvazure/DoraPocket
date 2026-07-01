@@ -2,14 +2,14 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 
 import {
-  appendStep2Turn,
+  appendClarificationTurn,
   canContinueClarify,
-  createStep2Session,
+  createClarificationSession,
   getVisibleDialogueMessages,
-} from '@/shared/step2-session'
+} from '@/shared/discovery/clarification-session'
 
-test('createStep2Session starts at turn 1 with anchor only in messages after first user turn', () => {
-  const session = createStep2Session('查天气')
+test('createClarificationSession starts at turn 1 with anchor only in messages after first user turn', () => {
+  const session = createClarificationSession('查天气')
   assert.equal(session.turn, 1)
   assert.equal(session.anchorPrompt, '查天气')
   assert.equal(session.messages.length, 0)
@@ -17,9 +17,9 @@ test('createStep2Session starts at turn 1 with anchor only in messages after fir
 })
 
 test('getVisibleDialogueMessages returns last round by default', () => {
-  const session = createStep2Session('查天气')
-  const withTurns = appendStep2Turn(
-    appendStep2Turn(session, { user: '查天气', assistant: '哪个城市？' }),
+  const session = createClarificationSession('查天气')
+  const withTurns = appendClarificationTurn(
+    appendClarificationTurn(session, { user: '查天气', assistant: '哪个城市？' }),
     { user: '北京', assistant: '好的，我来判断。' },
   )
   const visible = getVisibleDialogueMessages(withTurns, false)
@@ -29,6 +29,10 @@ test('getVisibleDialogueMessages returns last round by default', () => {
 })
 
 test('canContinueClarify is false at turn 3', () => {
-  const session = { ...createStep2Session('x'), turn: 3 as const, status: 'clarifying' as const }
+  const session = {
+    ...createClarificationSession('x'),
+    turn: 3 as const,
+    status: 'clarifying' as const,
+  }
   assert.equal(canContinueClarify(session, false), false)
 })

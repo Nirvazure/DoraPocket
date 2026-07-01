@@ -5,8 +5,8 @@ import {
   STARTER_CONSTRAINT_DIMENSIONS,
   type StarterConstraintId,
   type StarterIntake,
-} from '@/shared/starter-intake'
-import { PAGE_COPY } from '@/shared/ui-copy'
+} from '@/shared/discovery/starter-intake'
+import { PAGE_COPY } from '@/shared/copy/ui-copy'
 
 type StarterConstraintStepProps = {
   intake: StarterIntake

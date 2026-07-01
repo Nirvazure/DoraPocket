@@ -3,7 +3,7 @@
 import { useCallback } from 'react'
 import { useAuthenticatedToolActions } from '@/hooks/use-authenticated-tool-actions'
 import { useSaveRecommendationSessionActionMutation } from '@/lib/query/recommendation-evaluation'
-import type { ToolLookupFn } from '@/shared/tool-lookup'
+import type { ToolLookupFn } from '@/shared/market/tool-lookup'
 
 type UseDiscoveryWorkspaceActionsOptions = {
   authPending: boolean

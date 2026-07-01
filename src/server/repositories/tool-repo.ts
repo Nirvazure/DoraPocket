@@ -2,13 +2,13 @@ import 'server-only'
 
 import { createHash } from 'node:crypto'
 import { prisma } from '@/server/db/prisma'
-import { isSupabaseMarketAssetUrl } from '@/shared/market-asset-url'
+import { isSupabaseMarketAssetUrl } from '@/shared/market/market-asset-url'
 import {
   type ToolCategory,
   type ToolExecutionMode,
   type ToolPlatform,
   type ToolPricingModel,
-} from '@/shared/tool-registry'
+} from '@/shared/market/tool-registry'
 
 export type ImportedToolInput = {
   name: string

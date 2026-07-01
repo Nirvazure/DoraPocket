@@ -7,7 +7,7 @@ import {
   normalizeMarketSearchQuery,
   resolveCategoryKeysMatchingQuery,
   toIlikePattern,
-} from '@/shared/market-search-query'
+} from '@/shared/market/market-search-query'
 
 const SEARCH_LIMIT = 200
 

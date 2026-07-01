@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
-import type { AgentCandidate } from '@/shared/market-types'
+import type { AgentCandidate } from '@/shared/market/market-types'
 
 function hubSubLabel(sourceLabel: AgentCandidate['sourceLabel']): string | null {
   if (sourceLabel === 'pocket') return '口袋'

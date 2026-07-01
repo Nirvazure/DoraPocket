@@ -3,7 +3,7 @@ import type {
   ToolExecutionMode,
   ToolPricingModel,
   ToolSource,
-} from '@/shared/tool-registry'
+} from '@/shared/market/tool-registry'
 
 export const TOOL_CATEGORY_LABELS: Record<ToolCategory, string> = {
   ai_assistant: 'AI 助手',

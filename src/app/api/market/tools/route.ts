@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { listActiveToolItems } from '@/server/market/tool-catalog'
 import { searchActiveTools } from '@/server/market/tool-search'
-import { normalizeMarketSearchQuery } from '@/shared/market-search-query'
+import { normalizeMarketSearchQuery } from '@/shared/market/market-search-query'
 
 function filterToolsByQueryFallback<
   T extends { name: string; description: string; tags: string[] },

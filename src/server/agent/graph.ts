@@ -1,7 +1,10 @@
 ﻿import { Annotation, END, START, StateGraph } from '@langchain/langgraph'
-import type { AgentUiPayload, MarketContext } from '@/shared/market-types'
-import type { ProgressStage, Step2DoneStatus } from '@/shared/step2-session-types'
-import type { ExplanationMode } from '@/shared/user-settings'
+import type { AgentUiPayload, MarketContext } from '@/shared/market/market-types'
+import type {
+  ProgressStage,
+  ClarificationDoneStatus,
+} from '@/shared/discovery/clarification-session-types'
+import type { ExplanationMode } from '@/shared/user/user-settings'
 import { buildClarifyQuestion, resolveClarifyOutcome } from '@/server/agent/clarify'
 import { resolveQuickReplies } from '@/server/agent/quick-replies'
 import { createInitialState, type PocketSelectedTool, type PocketState } from '@/server/agent/state'
@@ -84,19 +87,22 @@ function createGraph() {
 
 const pocketGraph = createGraph()
 
-export type Step2GraphInput = {
+export type ClarificationGraphInput = {
   sessionTurn: 1 | 2 | 3
   anchorPrompt: string
   priorMessages: Array<{ role: 'user' | 'assistant'; content: string }>
   skipClarify?: boolean
 }
 
-function resolveStep2Input(message: string, step2Input?: Step2GraphInput): Step2GraphInput {
+function resolveClarificationInput(
+  message: string,
+  clarificationInput?: ClarificationGraphInput,
+): ClarificationGraphInput {
   return {
-    sessionTurn: step2Input?.sessionTurn ?? 1,
-    anchorPrompt: step2Input?.anchorPrompt ?? message,
-    priorMessages: step2Input?.priorMessages ?? [],
-    skipClarify: step2Input?.skipClarify ?? false,
+    sessionTurn: clarificationInput?.sessionTurn ?? 1,
+    anchorPrompt: clarificationInput?.anchorPrompt ?? message,
+    priorMessages: clarificationInput?.priorMessages ?? [],
+    skipClarify: clarificationInput?.skipClarify ?? false,
   }
 }
 
@@ -110,12 +116,12 @@ export async function runPocketGraph(
   message: string,
   marketContext: MarketContext,
   explanationMode: ExplanationMode = 'standard',
-  step2Input?: Step2GraphInput,
+  clarificationInput?: ClarificationGraphInput,
 ): Promise<PocketGraphResult> {
-  const step2 = resolveStep2Input(message, step2Input)
+  const clarification = resolveClarificationInput(message, clarificationInput)
   const initialState = createInitialState(message, marketContext, explanationMode, {
-    anchorPrompt: step2.anchorPrompt,
-    priorMessages: step2.priorMessages,
+    anchorPrompt: clarification.anchorPrompt,
+    priorMessages: clarification.priorMessages,
   })
   const result = await pocketGraph.invoke(initialState)
   return {
@@ -138,7 +144,7 @@ export type PocketStreamEvent =
   | {
       type: 'done'
       text: string
-      step2Status: Step2DoneStatus
+      clarificationStatus: ClarificationDoneStatus
       selected_tool: PocketSelectedTool
       ui_payload: AgentUiPayload
     }
@@ -147,12 +153,12 @@ export async function* streamPocketGraph(
   message: string,
   marketContext: MarketContext,
   explanationMode: ExplanationMode = 'standard',
-  step2Input?: Step2GraphInput,
+  clarificationInput?: ClarificationGraphInput,
 ): AsyncGenerator<PocketStreamEvent> {
-  const step2 = resolveStep2Input(message, step2Input)
+  const clarification = resolveClarificationInput(message, clarificationInput)
   const initialState = createInitialState(message, marketContext, explanationMode, {
-    anchorPrompt: step2.anchorPrompt,
-    priorMessages: step2.priorMessages,
+    anchorPrompt: clarification.anchorPrompt,
+    priorMessages: clarification.priorMessages,
   })
 
   yield { type: 'progress', stage: 'understanding' }
@@ -168,8 +174,8 @@ export async function* streamPocketGraph(
 
   const outcome = resolveClarifyOutcome({
     missingInputs: classifiedState.task_frame.missingInputs,
-    sessionTurn: step2.sessionTurn,
-    skipClarify: step2.skipClarify === true,
+    sessionTurn: clarification.sessionTurn,
+    skipClarify: clarification.skipClarify === true,
     explanationMode,
   })
 
@@ -191,14 +197,14 @@ export async function* streamPocketGraph(
     yield {
       type: 'done',
       text: question,
-      step2Status: 'clarifying',
+      clarificationStatus: 'clarifying',
       selected_tool: classifiedState.selected_tool,
       ui_payload: classifiedState.ui_payload,
     }
     return
   }
 
-  const lowConfidence = outcome === 'exhausted' || step2.skipClarify === true
+  const lowConfidence = outcome === 'exhausted' || clarification.skipClarify === true
   const uiPayload: AgentUiPayload = {
     ...classifiedState.ui_payload,
     confidenceLevel: lowConfidence ? 'low' : 'normal',
@@ -225,7 +231,7 @@ export async function* streamPocketGraph(
   yield {
     type: 'done',
     text,
-    step2Status: outcome,
+    clarificationStatus: outcome,
     selected_tool: responseState.selected_tool,
     ui_payload: uiPayload,
   }

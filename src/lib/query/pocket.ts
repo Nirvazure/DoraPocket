@@ -8,7 +8,7 @@ import {
 import { useAuthenticatedQueryEnabled } from '@/lib/query/auth-session'
 import { apiFetch } from '@/lib/query/api-client'
 import { queryKeys } from '@/lib/query/query-keys'
-import type { PocketInventoryItem } from '@/shared/pocket-types'
+import type { PocketInventoryItem } from '@/shared/user/pocket-types'
 
 type PocketMutationContext = {
   previousPocketInventory: PocketInventoryItem[]

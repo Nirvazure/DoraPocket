@@ -1,5 +1,5 @@
-import type { ExplanationMode } from '@/shared/user-settings'
-import type { Step2DoneStatus } from '@/shared/step2-session-types'
+import type { ExplanationMode } from '@/shared/user/user-settings'
+import type { ClarificationDoneStatus } from '@/shared/discovery/clarification-session-types'
 
 type ClarifyInput = {
   missingInputs: string[]
@@ -13,7 +13,7 @@ function resolveMaxClarifyTurn(explanationMode: ExplanationMode | undefined) {
   return explanationMode === 'brief' ? 2 : 3
 }
 
-export function resolveClarifyOutcome(input: ClarifyInput): Step2DoneStatus {
+export function resolveClarifyOutcome(input: ClarifyInput): ClarificationDoneStatus {
   if (input.missingInputs.length === 0) return 'ready'
   const maxTurn = resolveMaxClarifyTurn(input.explanationMode)
   if (input.skipClarify) return input.sessionTurn >= maxTurn ? 'exhausted' : 'ready'

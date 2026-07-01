@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifySession } from '@/server/auth/dal'
 import { saveRecommendationEvaluation } from '@/server/repositories/recommendation-evaluation-repo'
-import { recommendationEvaluationInputSchema } from '@/shared/recommendation-evaluation'
+import { recommendationEvaluationInputSchema } from '@/shared/discovery/recommendation-evaluation'
 
 export async function POST(request: NextRequest) {
   const session = await verifySession()

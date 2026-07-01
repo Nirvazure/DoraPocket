@@ -3,12 +3,12 @@
 import { useMemo } from 'react'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import { useMarketToolsByIdsQuery } from '@/lib/query/market'
-import type { AgentUiPayload } from '@/shared/market-types'
+import type { AgentUiPayload } from '@/shared/market/market-types'
 import {
   buildToolLookupMap,
   collectToolIdsFromCandidates,
   type ToolLookupFn,
-} from '@/shared/tool-lookup'
+} from '@/shared/market/tool-lookup'
 
 function collectAnalysisToolIds(
   payload: AgentUiPayload | null,

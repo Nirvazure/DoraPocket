@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 
-import { shouldRestartAnalysisFlow } from '@/shared/analysis-stage-restart'
+import { shouldRestartAnalysisFlow } from '@/app/analyse/_domain/analysis-stage-restart'
 
 test('restarts analysis flow for a new prompt after previous turn finished', () => {
   assert.equal(
@@ -34,7 +34,7 @@ test('does not restart analysis flow for step2 clarifying continuation', () => {
       currentFlow: {
         phase: 'revealed',
         beat: 'working',
-        step2: {
+        clarification: {
           turn: 1,
           anchorPrompt: '查天气',
           messages: [],

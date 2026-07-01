@@ -9,7 +9,7 @@ import {
   type StarterOutcomeId,
   type StarterRoleId,
   type StarterWizardStep,
-} from '@/shared/starter-intake'
+} from '@/shared/discovery/starter-intake'
 
 export type StarterWizardStateHandle = {
   getStarterIntake: () => StarterIntake

@@ -1,8 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 
-import { mergeCandidatePool, normalizeExternalSuggestions } from '@/shared/candidate-pool'
-import type { AgentCandidate } from '@/shared/market-types'
+import { mergeCandidatePool, normalizeExternalSuggestions } from '@/shared/discovery/candidate-pool'
+import type { AgentCandidate } from '@/shared/market/market-types'
 
 function hubCandidate(id: string, score: number): AgentCandidate {
   return {

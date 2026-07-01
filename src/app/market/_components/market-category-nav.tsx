@@ -5,7 +5,7 @@ import {
   type MarketCategoryKey,
 } from '@/app/market/_components/market-category-icons'
 import { MarketScopeSwitch } from '@/app/market/_components/market-scope-switch'
-import type { MarketScope } from '@/shared/market-scope'
+import type { MarketScope } from '@/shared/market/market-scope'
 import { cn } from '@/lib/utils'
 
 type DiscoverCategoryKey = Exclude<MarketCategoryKey, 'pocket'>

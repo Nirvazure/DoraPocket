@@ -1,12 +1,12 @@
-import { mergeCandidatePool } from '@/shared/candidate-pool'
-import { type ToolItem, type ToolMatch } from '@/shared/tool-registry'
+import { mergeCandidatePool } from '@/shared/discovery/candidate-pool'
+import { type ToolItem, type ToolMatch } from '@/shared/market/tool-registry'
 import type {
   AgentCandidate,
   AgentTaskFrame,
   AgentUiPayload,
   MarketContext,
   RecallSummary,
-} from '@/shared/market-types'
+} from '@/shared/market/market-types'
 
 export function marketSignalsFromContext(marketContext: MarketContext) {
   return {

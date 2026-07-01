@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { prisma } from '@/server/db/prisma'
-import type { MarketSubscriptionRecord } from '@/shared/market-types'
+import type { MarketSubscriptionRecord } from '@/shared/market/market-types'
 import { recordToolSubscribed } from '@/server/repositories/tool-activity-repo'
 
 function toSubscription(item: {

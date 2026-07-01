@@ -3,16 +3,16 @@ import {
   buildLiveAnalysisTrack,
   type AnalysisFlow,
   type LiveAnalysisTrackItem,
-} from '@/shared/analysis-stage-content'
+} from '@/app/analyse/_domain/analysis-stage-content'
 import { cn } from '@/lib/utils'
-import type { AgentUiPayload } from '@/shared/market-types'
-import type { ProgressStage } from '@/shared/step2-session-types'
-import type { StarterIntake } from '@/shared/starter-intake'
+import type { AgentUiPayload } from '@/shared/market/market-types'
+import type { ProgressStage } from '@/shared/discovery/clarification-session-types'
+import type { StarterIntake } from '@/shared/discovery/starter-intake'
 import {
   StarterIntakeConstraintField,
   StarterIntakeTaskFields,
 } from '@/app/analyse/_components/discovery/starter-wizard/starter-intake-summary'
-import { PAGE_COPY } from '@/shared/ui-copy'
+import { PAGE_COPY } from '@/shared/copy/ui-copy'
 import type { AppState } from '@/store'
 
 type LiveAnalysisTrackCardProps = {

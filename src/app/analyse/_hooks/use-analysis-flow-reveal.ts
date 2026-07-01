@@ -5,7 +5,7 @@ import {
   IDLE_ANALYSIS_FLOW,
   resolveAnalysisFlowAfterError,
   type AnalysisFlow,
-} from '@/shared/analysis-stage-content'
+} from '@/app/analyse/_domain/analysis-stage-content'
 
 const COVER_DURATION_MS = 2600
 const REVEAL_DURATION_MS = 420

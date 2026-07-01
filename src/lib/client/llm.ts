@@ -1,13 +1,17 @@
-import type { AgentUiPayload } from '@/shared/market-types'
-import type { ProgressStage, Step2DoneStatus, Step2Message } from '@/shared/step2-session-types'
-import type { ExplanationMode } from '@/shared/user-settings'
+import type { AgentUiPayload } from '@/shared/market/market-types'
+import type {
+  ProgressStage,
+  ClarificationDoneStatus,
+  ClarificationMessage,
+} from '@/shared/discovery/clarification-session-types'
+import type { ExplanationMode } from '@/shared/user/user-settings'
 
 export type AskQwenOptions = {
   signal?: AbortSignal
   explanationMode?: ExplanationMode
   sessionTurn?: 1 | 2 | 3
   anchorPrompt?: string
-  priorMessages?: Step2Message[]
+  priorMessages?: ClarificationMessage[]
   skipClarify?: boolean
   onProgress?: (stage: ProgressStage) => void
   onClarify?: (payload: {
@@ -32,7 +36,7 @@ export type ChatReply = {
   text: string
   selectedTool: ChatToolPayload
   uiPayload: AgentUiPayload | null
-  step2Status: Step2DoneStatus
+  clarificationStatus: ClarificationDoneStatus
   recommendationSessionId?: string | null
 }
 
@@ -62,7 +66,7 @@ type StreamDeltaEvent = {
 type StreamDoneEvent = {
   type: 'done'
   text?: string
-  step2Status?: Step2DoneStatus
+  clarificationStatus?: ClarificationDoneStatus
   selected_tool?: ChatToolPayload
   ui_payload?: AgentUiPayload
 }
@@ -124,7 +128,7 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
   let selectedTool: ChatToolPayload = null
   let uiPayload: AgentUiPayload | null = null
   let fullText = ''
-  let step2Status: Step2DoneStatus = 'ready'
+  let clarificationStatus: ClarificationDoneStatus = 'ready'
   let recommendationSessionId: string | null = null
   let buffer = ''
 
@@ -172,7 +176,7 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
         if (typeof event.text === 'string' && event.text.length > 0) {
           fullText = event.text
         }
-        step2Status = event.step2Status ?? 'ready'
+        clarificationStatus = event.clarificationStatus ?? 'ready'
         if (event.selected_tool !== undefined) {
           selectedTool = event.selected_tool
         }
@@ -201,7 +205,7 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
     text: fullText,
     selectedTool,
     uiPayload,
-    step2Status,
+    clarificationStatus,
     recommendationSessionId,
   }
 }

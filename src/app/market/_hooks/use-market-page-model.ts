@@ -1,8 +1,8 @@
 ﻿'use client'
 
 import { useMemo, useState } from 'react'
-import type { MarketReviewAggregate } from '@/shared/market-types'
-import { type ToolItem } from '@/shared/tool-registry'
+import type { MarketReviewAggregate } from '@/shared/market/market-types'
+import { type ToolItem } from '@/shared/market/tool-registry'
 import {
   buildMarketNavigation,
   resolveCurrentTools,
@@ -11,7 +11,7 @@ import {
   type MarketScope,
   type MarketSectionKey,
   type MarketToolCardItem,
-} from '@/shared/market-scope'
+} from '@/shared/market/market-scope'
 
 type Draft = {
   name: string
@@ -27,7 +27,11 @@ export const EMPTY_MARKET_DRAFT: Draft = {
   tags: '',
 }
 
-export type { MarketScope, MarketSectionKey, MarketToolCardItem } from '@/shared/market-scope'
+export type {
+  MarketScope,
+  MarketSectionKey,
+  MarketToolCardItem,
+} from '@/shared/market/market-scope'
 
 type DiscoverSectionKey = Exclude<MarketSectionKey, 'pocket'>
 

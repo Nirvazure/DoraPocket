@@ -13,8 +13,8 @@ import {
   resolveStarterDisplayGoal,
   type StarterIntake,
   type StarterWizardStep,
-} from '@/shared/starter-intake'
-import { PAGE_COPY } from '@/shared/ui-copy'
+} from '@/shared/discovery/starter-intake'
+import { PAGE_COPY } from '@/shared/copy/ui-copy'
 
 export type AnalysisInteractionDockProps = {
   activePanelStep: 1 | 2 | 3 | null

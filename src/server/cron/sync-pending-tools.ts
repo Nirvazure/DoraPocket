@@ -2,7 +2,7 @@ import 'server-only'
 
 import { syncToolArtifacts } from '@/server/cron/sync-tool-artifacts'
 import { prisma } from '@/server/db/prisma'
-import { isSupabaseMarketAssetUrl } from '@/shared/market-asset-url'
+import { isSupabaseMarketAssetUrl } from '@/shared/market/market-asset-url'
 
 export type SyncPendingToolsResult = {
   scanned: number

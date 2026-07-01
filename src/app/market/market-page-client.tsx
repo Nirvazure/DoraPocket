@@ -41,9 +41,9 @@ import {
   useSaveToolToPocketMutation,
 } from '@/lib/query/pocket'
 import { cn } from '@/lib/utils'
-import type { MarketSectionKey } from '@/shared/market-scope'
-import { buildActivePocketToolIds } from '@/shared/market-scope'
-import { APP_BRAND_TITLE, PAGE_COPY } from '@/shared/ui-copy'
+import type { MarketSectionKey } from '@/shared/market/market-scope'
+import { buildActivePocketToolIds } from '@/shared/market/market-scope'
+import { APP_BRAND_TITLE, PAGE_COPY } from '@/shared/copy/ui-copy'
 
 type MarketPageClientProps = {
   initialSection?: MarketSectionKey | null

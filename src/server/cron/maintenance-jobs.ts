@@ -2,7 +2,7 @@ import 'server-only'
 
 import { SESSION_RETENTION_DAYS } from '@/constant'
 import { prisma } from '@/server/db/prisma'
-import type { ToolRatingSummary } from '@/shared/tool-registry'
+import type { ToolRatingSummary } from '@/shared/market/tool-registry'
 
 export type RefreshToolRatingsResult = {
   updated: number

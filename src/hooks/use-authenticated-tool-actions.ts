@@ -3,7 +3,7 @@
 import { useCallback } from 'react'
 import { openToolById, saveToolById } from '@/lib/tool-actions'
 import { redirectToLoginUnlessAuthenticated } from '@/lib/query/auth-session'
-import type { ToolLookupFn } from '@/shared/tool-lookup'
+import type { ToolLookupFn } from '@/shared/market/tool-lookup'
 
 type SaveToolToPocketFn = (input: {
   toolId: string

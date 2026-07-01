@@ -7,7 +7,7 @@ import type {
   ToolRatingSummary,
   ToolTrustSignals,
   ToolUsageStats,
-} from '@/shared/tool-registry'
+} from '@/shared/market/tool-registry'
 
 function defaultRatingSummary(): ToolRatingSummary {
   return {

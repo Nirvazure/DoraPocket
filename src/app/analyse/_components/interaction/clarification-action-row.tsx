@@ -1,9 +1,12 @@
-export type Step2ActionRowProps = {
+export type ClarificationActionRowProps = {
   quickReplies: string[]
   onQuickReply: (text: string) => void
 }
 
-export function Step2ActionRow({ quickReplies, onQuickReply }: Step2ActionRowProps) {
+export function ClarificationActionRow({
+  quickReplies,
+  onQuickReply,
+}: ClarificationActionRowProps) {
   if (quickReplies.length === 0) return null
 
   return (

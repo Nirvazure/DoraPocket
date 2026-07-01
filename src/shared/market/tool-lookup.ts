@@ -1,4 +1,4 @@
-import type { ToolItem } from '@/shared/tool-registry'
+import type { ToolItem } from '@/shared/market/tool-registry'
 
 export type ToolLookupFn = (id: string | null | undefined) => ToolItem | null
 

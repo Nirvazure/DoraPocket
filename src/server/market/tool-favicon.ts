@@ -4,7 +4,7 @@ import {
   buildMarketAssetPublicUrl,
   isSupabaseMarketAssetUrl,
   marketIconKeyForImportedTool,
-} from '@/shared/market-asset-url'
+} from '@/shared/market/market-asset-url'
 
 const FETCH_TIMEOUT_MS = 8_000
 const MIN_FAVICON_BYTES = 64

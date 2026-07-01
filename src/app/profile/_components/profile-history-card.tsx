@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { BookmarkCheck, CheckCircle2, ChevronDown, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { resolveTaskDirection, type RecommendationHistoryItem } from '@/shared/profile-memory'
+import { resolveTaskDirection, type RecommendationHistoryItem } from '@/shared/user/profile-memory'
 
 type ProfileHistoryCardProps = {
   item: RecommendationHistoryItem

@@ -7,7 +7,7 @@ import {
   startSpeechSession,
   stopAudioPlayback,
 } from '@/lib/client/audio'
-import { VOICE_COPY } from '@/shared/ui-copy'
+import { VOICE_COPY } from '@/shared/copy/ui-copy'
 import type { AppState } from '@/store'
 import { useStore } from '@/store'
 

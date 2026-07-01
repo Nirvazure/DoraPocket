@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 
 import { buildTaskFrame } from '@/server/agent/task-frame'
-import { composeStarterPrompt } from '@/shared/starter-intake'
+import { composeStarterPrompt } from '@/shared/discovery/starter-intake'
 
 test('buildTaskFrame ignores discovery keywords in cold-start boilerplate', () => {
   const prompt = composeStarterPrompt({

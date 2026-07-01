@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { prisma } from '@/server/db/prisma'
-import type { RecommendationEvaluationInput } from '@/shared/recommendation-evaluation'
+import type { RecommendationEvaluationInput } from '@/shared/discovery/recommendation-evaluation'
 
 export async function listRecommendationEvaluations(userId: string) {
   return prisma.recommendationEvaluation.findMany({
