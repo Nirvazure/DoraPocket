@@ -1,5 +1,5 @@
 import { SUPABASE_STORAGE_BUCKET_AVATARS } from '@/constant'
-import { getMarketAssetsBucketName } from '@/shared/market-asset-url'
+import { getMarketAssetsBucketName } from '@/shared/market/market-asset-url'
 
 export function getSupabaseUrl() {
   const value = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()

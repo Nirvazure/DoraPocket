@@ -2,7 +2,7 @@
 
 import { MarketToolCard } from '@/app/market/_components/market-tool-card'
 import { MarketUnavailableToolCard } from '@/app/market/_components/market-unavailable-tool-card'
-import type { MarketToolCardItem } from '@/shared/market-scope'
+import type { MarketToolCardItem } from '@/shared/market/market-scope'
 
 type MarketToolGridProps = {
   tools: MarketToolCardItem[]

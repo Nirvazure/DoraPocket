@@ -3,7 +3,7 @@ import 'server-only'
 import { syncToolFavicon } from '@/server/market/tool-favicon'
 import { prisma } from '@/server/db/prisma'
 import { syncToolEmbedding } from '@/server/retrieval/tool-embedding'
-import { isSupabaseMarketAssetUrl } from '@/shared/market-asset-url'
+import { isSupabaseMarketAssetUrl } from '@/shared/market/market-asset-url'
 
 type ToolArtifactRecord = {
   id: string

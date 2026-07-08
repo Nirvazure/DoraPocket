@@ -1,7 +1,7 @@
 import { listActiveToolItems } from '@/server/market/tool-catalog'
 import { embedQuery, searchToolsByEmbedding } from '@/server/retrieval/tool-embedding'
-import { rankToolItems, type ToolItem, type ToolMatch } from '@/shared/tool-registry'
-import type { RecallSummary } from '@/shared/market-types'
+import { rankToolItems, type ToolItem, type ToolMatch } from '@/shared/market/tool-registry'
+import type { RecallSummary } from '@/shared/market/market-types'
 
 const VECTOR_LIMIT = 40
 const KEYWORD_LIMIT = 20

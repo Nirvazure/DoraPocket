@@ -3,7 +3,7 @@
 import { CheckCircle2, ThumbsDown, Wand2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useSaveRecommendationEvaluationMutation } from '@/lib/query/recommendation-evaluation'
-import type { RecommendationEvaluationTag } from '@/shared/recommendation-evaluation'
+import type { RecommendationEvaluationTag } from '@/shared/discovery/recommendation-evaluation'
 
 type RecommendationEvaluationBarProps = {
   recommendationSessionId: string | null

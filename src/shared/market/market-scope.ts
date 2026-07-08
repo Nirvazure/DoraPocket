@@ -1,7 +1,7 @@
-import type { PocketInventoryItem } from '@/shared/pocket-types'
-import type { MarketReviewAggregate } from '@/shared/market-types'
-import { TOOL_CATEGORY_LABELS, TOOL_CATEGORY_ORDER } from '@/shared/tool-labels'
-import type { ToolCategory, ToolItem } from '@/shared/tool-registry'
+import type { PocketInventoryItem } from '@/shared/user/pocket-types'
+import type { MarketReviewAggregate } from '@/shared/market/market-types'
+import { TOOL_CATEGORY_LABELS, TOOL_CATEGORY_ORDER } from '@/shared/market/tool-labels'
+import type { ToolCategory, ToolItem } from '@/shared/market/tool-registry'
 
 export type MarketScope = 'discover' | 'pocket'
 export type MarketSectionKey = 'pocket' | ToolCategory

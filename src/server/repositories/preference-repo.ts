@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { prisma } from '@/server/db/prisma'
-import type { PreferenceProfileOverride } from '@/shared/market-types'
+import type { PreferenceProfileOverride } from '@/shared/market/market-types'
 
 export async function getPreferenceProfileOverride(
   userId: string,

@@ -1,5 +1,5 @@
-import type { AnalysisFlow } from '@/shared/analysis-stage-content'
-import { shouldPreserveTurnFlow } from '@/shared/analysis-stage-content'
+import type { AnalysisFlow } from '@/app/analyse/_domain/analysis-stage-content'
+import { shouldPreserveTurnFlow } from '@/app/analyse/_domain/analysis-stage-content'
 
 export type ShouldRestartAnalysisFlowParams = {
   previousPrompt: string | null
@@ -8,12 +8,12 @@ export type ShouldRestartAnalysisFlowParams = {
   anchorPrompt?: string | null
 }
 
-export function isStep2Continuation(
+export function isClarificationContinuation(
   currentFlow: AnalysisFlow,
   nextPrompt: string,
   anchorPrompt: string,
 ): boolean {
-  if (currentFlow.step2?.status !== 'clarifying') return false
+  if (currentFlow.clarification?.status !== 'clarifying') return false
   const next = nextPrompt.trim()
   const anchor = anchorPrompt.trim()
   return Boolean(next && anchor && next !== anchor)
@@ -28,6 +28,6 @@ export function shouldRestartAnalysisFlow({
   const previous = previousPrompt?.trim() ?? ''
   const next = nextPrompt?.trim() ?? ''
   if (!previous || !next || previous === next) return false
-  if (anchorPrompt && isStep2Continuation(currentFlow, next, anchorPrompt)) return false
+  if (anchorPrompt && isClarificationContinuation(currentFlow, next, anchorPrompt)) return false
   return shouldPreserveTurnFlow(currentFlow)
 }

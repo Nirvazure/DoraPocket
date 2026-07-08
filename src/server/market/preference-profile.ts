@@ -1,18 +1,18 @@
 import type { ToolModel as Tool } from '../../generated/prisma/models/Tool'
-import type { PocketInventoryItem } from '@/shared/pocket-types'
+import type { PocketInventoryItem } from '@/shared/user/pocket-types'
 import type {
   MarketFeedbackRecord,
   MarketSubscriptionRecord,
   PreferenceProfileOverride,
   UserPreferenceProfile,
-} from '@/shared/market-types'
+} from '@/shared/market/market-types'
 import type {
   ToolCategory,
   ToolExecutionMode,
   ToolPlatform,
   ToolPricingModel,
-} from '@/shared/tool-registry'
-import { MARKET_ACTIVITY_COPY } from '@/shared/ui-copy'
+} from '@/shared/market/tool-registry'
+import { MARKET_ACTIVITY_COPY } from '@/shared/copy/ui-copy'
 
 type ToolLookup = Map<string, Tool>
 type ToolUsageStatsMap = Record<string, { saves: number; opens: number; subscriptions: number }>

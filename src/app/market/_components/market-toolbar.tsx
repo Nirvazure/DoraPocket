@@ -2,7 +2,7 @@
 
 import { Plus, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { PAGE_COPY } from '@/shared/ui-copy'
+import { PAGE_COPY } from '@/shared/copy/ui-copy'
 
 type MarketToolbarProps = {
   query: string

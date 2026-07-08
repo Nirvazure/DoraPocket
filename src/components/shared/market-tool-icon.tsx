@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
-import type { ToolItem } from '@/shared/tool-registry'
+import type { ToolItem } from '@/shared/market/tool-registry'
 
 type MarketToolIconProps = {
   tool: ToolItem

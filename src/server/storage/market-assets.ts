@@ -1,6 +1,6 @@
 import { getMarketAssetsBucket } from '@/lib/supabase/config'
 import { createSupabaseAdminClient } from '@/lib/supabase/admin-client'
-import { buildMarketAssetPublicUrl } from '@/shared/market-asset-url'
+import { buildMarketAssetPublicUrl } from '@/shared/market/market-asset-url'
 
 export async function uploadMarketAsset(
   objectKey: string,

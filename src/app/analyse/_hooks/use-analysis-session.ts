@@ -4,19 +4,19 @@ import { useCallback, useEffect, useRef } from 'react'
 import { playAudioStream, playDoraPocketSfx, stopAudioPlayback } from '@/lib/client/audio'
 import { askQwen, type ChatToolPayload } from '@/lib/client/llm'
 import { buildTTSAudioUrl } from '@/lib/client/tts'
-import type { UserSettings } from '@/shared/user-settings'
-import { pickModeCardAfterTurn, type AssistantModeCard } from '@/shared/mode-registry'
-import type { AgentUiPayload } from '@/shared/market-types'
-import { SYSTEM_NOTICE_COPY } from '@/shared/ui-copy'
-import type { Step2Session } from '@/shared/step2-session-types'
-import { IDLE_ANALYSIS_FLOW } from '@/shared/analysis-stage-content'
-import { appendStep2Turn } from '@/shared/step2-session'
+import type { UserSettings } from '@/shared/user/user-settings'
+import { pickModeCardAfterTurn, type AssistantModeCard } from '@/shared/discovery/mode-registry'
+import type { AgentUiPayload } from '@/shared/market/market-types'
+import { SYSTEM_NOTICE_COPY } from '@/shared/copy/ui-copy'
+import type { ClarificationSession } from '@/shared/discovery/clarification-session-types'
+import { IDLE_ANALYSIS_FLOW } from '@/app/analyse/_domain/analysis-stage-content'
+import { appendClarificationTurn } from '@/shared/discovery/clarification-session'
 import {
   resolveAgentTurnRequest,
   resolveVoicePlaybackText,
   type AgentTurnReply,
   type RunTurnOptions,
-} from '@/shared/analysis-session'
+} from '@/app/analyse/_domain/analysis-session'
 import { useStore } from '@/store'
 
 type UseAnalysisSessionOptions = {
@@ -54,7 +54,7 @@ export function useAnalysisSession({
   const setSystemNotice = useStore((state) => state.setSystemNotice)
   const beginAgentTurn = useStore((state) => state.beginAgentTurn)
   const isAgentTurnActive = useStore((state) => state.isAgentTurnActive)
-  const setStep2Session = useStore((state) => state.setStep2Session)
+  const setClarificationSession = useStore((state) => state.setClarificationSession)
   const setCurrentPrompt = useStore((state) => state.setCurrentPrompt)
   const setAnalysisFlow = useStore((state) => state.setAnalysisFlow)
   const setProgressStage = useStore((state) => state.setProgressStage)
@@ -67,7 +67,7 @@ export function useAnalysisSession({
   const agentUiPayload = useStore((state) => state.agentUiPayload)
   const recommendationSessionId = useStore((state) => state.recommendationSessionId)
   const currentPrompt = useStore((state) => state.currentPrompt)
-  const step2Session = useStore((state) => state.step2Session)
+  const clarificationSession = useStore((state) => state.clarificationSession)
   const progressStage = useStore((state) => state.progressStage)
 
   const voicePlaybackMode = userSettings?.voicePlaybackMode ?? 'key-result'
@@ -190,7 +190,7 @@ export function useAnalysisSession({
       if (!isAgentTurnActive(turnId)) return
       stopAudioPlayback()
       resetAgentResponse()
-      setStep2Session(null)
+      setClarificationSession(null)
       setProgressStage(null)
       setAppState('idle')
       onAnalysisError?.()
@@ -205,15 +205,15 @@ export function useAnalysisSession({
       setAppState,
       setLastSpeechError,
       setProgressStage,
-      setStep2Session,
+      setClarificationSession,
       setSystemNotice,
     ],
   )
 
   const runAgentTurn = useCallback(
     async (text: string, options?: RunTurnOptions) => {
-      const priorStep2 = useStore.getState().step2Session
-      const request = resolveAgentTurnRequest({ text, options, priorStep2 })
+      const priorClarification = useStore.getState().clarificationSession
+      const request = resolveAgentTurnRequest({ text, options, priorClarification })
       if (!request) return
       const { safeText, isContinuation, session, requestMessage } = request
       onPrepareAgentTurn?.()
@@ -271,7 +271,7 @@ export function useAnalysisSession({
         recommendationCoverStartedRef.current = false
         clarifyQuickRepliesRef.current = []
         skipCoverRef.current =
-          isContinuation && priorStep2?.status === 'clarifying' && !options?.skipClarify
+          isContinuation && priorClarification?.status === 'clarifying' && !options?.skipClarify
         setLastSpeechError('')
         setBotResponse('')
         setAppState('thinking')
@@ -280,7 +280,7 @@ export function useAnalysisSession({
         if (!isContinuation) {
           latestUserPromptRef.current = session.anchorPrompt
           setCurrentPrompt(options?.displayPrompt?.trim() || session.anchorPrompt)
-          setStep2Session(session)
+          setClarificationSession(session)
         }
 
         const reply = await askQwen(requestMessage, {
@@ -312,23 +312,23 @@ export function useAnalysisSession({
           return
         }
 
-        if (reply.step2Status === 'clarifying') {
-          const updated: Step2Session = {
-            ...appendStep2Turn(session, {
+        if (reply.clarificationStatus === 'clarifying') {
+          const updated: ClarificationSession = {
+            ...appendClarificationTurn(session, {
               user: safeText || session.anchorPrompt,
               assistant: reply.text,
             }),
             status: 'clarifying',
             quickReplies: clarifyQuickRepliesRef.current,
           }
-          setStep2Session(updated)
+          setClarificationSession(updated)
           setProgressStage(null)
           setAppState('idle')
           setBotResponse(reply.text)
           return
         }
 
-        setStep2Session(null)
+        setClarificationSession(null)
         setProgressStage(null)
         skipCoverRef.current = false
         await handleReplySuccess(reply)
@@ -358,16 +358,16 @@ export function useAnalysisSession({
       setProgressStage,
       setRecommendationSessionId,
       setSelectedToolPayload,
-      setStep2Session,
+      setClarificationSession,
       releaseStaleTurn,
     ],
   )
 
   const toggleDialogueExpanded = useCallback(() => {
-    setStep2Session((session) =>
+    setClarificationSession((session) =>
       session ? { ...session, dialogueExpanded: !session.dialogueExpanded } : null,
     )
-  }, [setStep2Session])
+  }, [setClarificationSession])
 
   const revealNow = useCallback(() => {
     stopAudioPlayback()
@@ -384,7 +384,7 @@ export function useAnalysisSession({
     setBotResponse('')
     setTranscript('')
     setCurrentPrompt(null)
-    setStep2Session(null)
+    setClarificationSession(null)
     setProgressStage(null)
     setRecommendationSessionId(null)
     resetAgentResponse()
@@ -405,7 +405,7 @@ export function useAnalysisSession({
     setLastSpeechError,
     setProgressStage,
     setRecommendationSessionId,
-    setStep2Session,
+    setClarificationSession,
     setTranscript,
   ])
 
@@ -421,7 +421,7 @@ export function useAnalysisSession({
     agentUiPayload,
     recommendationSessionId,
     currentPrompt,
-    step2Session,
+    clarificationSession,
     progressStage,
     latestUserPromptRef,
     clearResponseState,

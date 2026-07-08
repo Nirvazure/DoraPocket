@@ -1,4 +1,4 @@
-import type { MarketReviewTag } from '@/shared/market-types'
+import type { MarketReviewTag } from '@/shared/market/market-types'
 
 export const POSITIVE_MARKET_REVIEW_TAGS = [
   'fast_to_start',

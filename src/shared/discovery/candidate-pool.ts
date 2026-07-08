@@ -1,5 +1,5 @@
-import type { AgentCandidate } from '@/shared/market-types'
-import type { ToolMatch } from '@/shared/tool-registry'
+import type { AgentCandidate } from '@/shared/market/market-types'
+import type { ToolMatch } from '@/shared/market/tool-registry'
 
 export const HUB_WEAK_SCORE_THRESHOLD = 45
 export const EXTERNAL_CONFIDENCE_DEFAULT = 0.72

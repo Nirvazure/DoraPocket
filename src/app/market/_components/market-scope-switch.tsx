@@ -1,8 +1,8 @@
 'use client'
 
-import type { MarketScope } from '@/shared/market-scope'
+import type { MarketScope } from '@/shared/market/market-scope'
 import { cn } from '@/lib/utils'
-import { PAGE_COPY } from '@/shared/ui-copy'
+import { PAGE_COPY } from '@/shared/copy/ui-copy'
 
 type MarketScopeSwitchProps = {
   scope: MarketScope

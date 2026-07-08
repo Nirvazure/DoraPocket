@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 
 import { __pocketCacheTestUtils } from '@/lib/query/pocket'
-import type { PocketInventoryItem } from '@/shared/pocket-types'
+import type { PocketInventoryItem } from '@/shared/user/pocket-types'
 
 const {
   createOptimisticPocketItem,

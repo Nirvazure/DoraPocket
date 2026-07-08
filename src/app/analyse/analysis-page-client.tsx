@@ -14,8 +14,11 @@ import { PocketGadgetModal } from '@/app/analyse/_components/pocket-gadget-modal
 import { useAnalysisPageController } from '@/app/analyse/_hooks/use-analysis-page-controller'
 import { usePrefersCompactStage } from '@/app/analyse/_hooks/use-prefers-compact-stage'
 import { stopAudioPlayback } from '@/lib/client/audio'
-import { resolveCurrentStep, resolveMaxVisibleStep } from '@/shared/analysis-stage-content'
-import { PAGE_COPY } from '@/shared/ui-copy'
+import {
+  resolveCurrentStep,
+  resolveMaxVisibleStep,
+} from '@/app/analyse/_domain/analysis-stage-content'
+import { PAGE_COPY } from '@/shared/copy/ui-copy'
 import { useCallback, useMemo, useRef, useState } from 'react'
 
 export function AnalysisPageClient() {
@@ -52,7 +55,7 @@ export function AnalysisPageClient() {
     holdToTalkEnd,
     cancelVoiceInput,
     revealNow,
-    step2Session,
+    clarificationSession,
     toggleDialogueExpanded,
     handleQuickReply,
   } = useAnalysisPageController({ workspaceRef })
@@ -84,7 +87,7 @@ export function AnalysisPageClient() {
       analysisFlow,
       appState,
       botResponse,
-      step2Session,
+      clarificationSession,
       canSkipVoice,
       inputMode,
       textFallback,
@@ -121,7 +124,7 @@ export function AnalysisPageClient() {
       setInputMode,
       setTextFallback,
       submitTextMessage,
-      step2Session,
+      clarificationSession,
       textFallback,
       toggleDialogueExpanded,
     ],

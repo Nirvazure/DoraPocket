@@ -4,7 +4,7 @@ import {
   DEFAULT_USER_NICKNAME,
   getDefaultUserProfile,
   type UserProfile,
-} from '@/shared/user-profile'
+} from '@/shared/user/user-profile'
 
 export const USER_PROFILE_STORAGE_KEY = 'dp-user-profile-v1'
 

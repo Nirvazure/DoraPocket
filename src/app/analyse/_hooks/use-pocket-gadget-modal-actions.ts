@@ -1,10 +1,10 @@
 'use client'
 
 import { useCallback } from 'react'
-import type { AssistantModeCard } from '@/shared/mode-registry'
+import type { AssistantModeCard } from '@/shared/discovery/mode-registry'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import { useAuthenticatedToolActions } from '@/hooks/use-authenticated-tool-actions'
-import type { ToolLookupFn } from '@/shared/tool-lookup'
+import type { ToolLookupFn } from '@/shared/market/tool-lookup'
 
 type UsePocketGadgetModalActionsOptions = {
   authPending: boolean

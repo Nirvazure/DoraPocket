@@ -10,7 +10,7 @@ import type {
   StarterOutcomeId,
   StarterRoleId,
   StarterWizardStep,
-} from '@/shared/starter-intake'
+} from '@/shared/discovery/starter-intake'
 
 const WIZARD_STEPS: StarterWizardStep[] = [1, 2, 3]
 

@@ -3,18 +3,18 @@ import {
   isRecommendationRevealing,
   resolveAlternativeCandidates,
   type AnalysisFlow,
-} from '@/shared/analysis-stage-content'
+} from '@/app/analyse/_domain/analysis-stage-content'
 import { CandidateMatchScore } from '@/app/analyse/_components/discovery/candidate-match-score'
 import { CandidateOriginBadge } from '@/app/analyse/_components/discovery/candidate-origin-badge'
 import { shouldShowCandidateScore } from '@/app/analyse/_components/discovery/candidate-score'
 import { MarketToolIcon } from '@/components/shared/market-tool-icon'
 import { ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import type { ToolLookupFn } from '@/shared/tool-lookup'
+import type { ToolLookupFn } from '@/shared/market/tool-lookup'
 import type { ChatToolPayload } from '@/lib/client/llm'
-import type { AgentUiPayload } from '@/shared/market-types'
+import type { AgentUiPayload } from '@/shared/market/market-types'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { UserSettings } from '@/shared/user-settings'
+import type { UserSettings } from '@/shared/user/user-settings'
 import { cn } from '@/lib/utils'
 
 const ALTERNATIVE_SLOT_LABELS = ['A', 'B', 'C'] as const

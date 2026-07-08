@@ -2,8 +2,8 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 
 import { buildAgentUiPayload } from '@/server/agent/ui-payload'
-import type { AgentCandidate, AgentTaskFrame, MarketContext } from '@/shared/market-types'
-import type { ToolItem } from '@/shared/tool-registry'
+import type { AgentCandidate, AgentTaskFrame, MarketContext } from '@/shared/market/market-types'
+import type { ToolItem } from '@/shared/market/tool-registry'
 
 const taskFrame: AgentTaskFrame = {
   goal: '压缩 PDF',

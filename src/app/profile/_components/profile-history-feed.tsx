@@ -7,7 +7,7 @@ import {
   filterProfileHistory,
   type ProfileHistoryStatusFilter,
   type RecommendationHistoryItem,
-} from '@/shared/profile-memory'
+} from '@/shared/user/profile-memory'
 
 type ProfileHistoryFeedProps = {
   className?: string

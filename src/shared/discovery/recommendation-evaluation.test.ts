@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { recommendationEvaluationInputSchema } from '@/shared/recommendation-evaluation'
+import { recommendationEvaluationInputSchema } from '@/shared/discovery/recommendation-evaluation'
 
 test('recommendationEvaluationInputSchema accepts a lightweight helpful evaluation', () => {
   const parsed = recommendationEvaluationInputSchema.parse({

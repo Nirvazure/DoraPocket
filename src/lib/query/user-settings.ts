@@ -4,7 +4,7 @@ import { useAuthenticatedQueryEnabled } from '@/lib/query/auth-session'
 import { apiFetch } from '@/lib/query/api-client'
 import { queryKeys } from '@/lib/query/query-keys'
 import { applyUserSettingsToDocument } from '@/lib/client/user-settings-document'
-import { getDefaultUserSettings, type UserSettings } from '@/shared/user-settings'
+import { getDefaultUserSettings, type UserSettings } from '@/shared/user/user-settings'
 
 const DEFAULT_USER_SETTINGS = getDefaultUserSettings()
 

@@ -1,8 +1,8 @@
 import 'server-only'
 
 import { prisma } from '@/server/db/prisma'
-import type { AgentUiPayload } from '@/shared/market-types'
-import type { RecommendationHistoryItem } from '@/shared/profile-memory'
+import type { AgentUiPayload } from '@/shared/market/market-types'
+import type { RecommendationHistoryItem } from '@/shared/user/profile-memory'
 
 function toRecommendationHistoryItem(item: {
   id: string

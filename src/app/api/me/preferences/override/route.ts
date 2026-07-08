@@ -5,7 +5,7 @@ import {
   resetPreferenceProfileOverride,
   savePreferenceProfileOverride,
 } from '@/server/repositories/preference-repo'
-import type { PreferenceProfileOverride } from '@/shared/market-types'
+import type { PreferenceProfileOverride } from '@/shared/market/market-types'
 
 export async function GET() {
   const session = await verifySession()

@@ -11,14 +11,14 @@ import {
   DisplayPanelTitle,
 } from '@/components/ui/display-shell'
 import { SectionLabel } from '@/components/ui/section-label'
-import type { MarketToolCardItem } from '@/shared/market-scope'
+import type { MarketToolCardItem } from '@/shared/market/market-scope'
 import {
   NEGATIVE_MARKET_REVIEW_TAGS,
   POSITIVE_MARKET_REVIEW_TAGS,
-} from '@/shared/market-review-tags'
-import type { MarketReviewTag, ToolVote } from '@/shared/market-types'
+} from '@/shared/market/market-review-tags'
+import type { MarketReviewTag, ToolVote } from '@/shared/market/market-types'
 import { cn } from '@/lib/utils'
-import { MARKET_ACTIVITY_COPY, PAGE_COPY } from '@/shared/ui-copy'
+import { MARKET_ACTIVITY_COPY, PAGE_COPY } from '@/shared/copy/ui-copy'
 
 type MarketReviewDrawerProps = {
   open: boolean

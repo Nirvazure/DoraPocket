@@ -2,7 +2,7 @@
 
 import { readStorageJson } from '@/lib/storage'
 import { loadUserProfile, USER_PROFILE_STORAGE_KEY } from '@/lib/client/user-profile'
-import type { ChatHistoryEntry } from '@/shared/chat-history-types'
+import type { ChatHistoryEntry } from '@/shared/legacy/chat-history-types'
 import type {
   MarketFeedbackRecord,
   MarketReviewTag,
@@ -10,8 +10,8 @@ import type {
   MarketSubscriptionRecord,
   PreferenceProfileOverride,
   ToolVote,
-} from '@/shared/market-types'
-import type { PocketInventoryItem } from '@/shared/pocket-types'
+} from '@/shared/market/market-types'
+import type { PocketInventoryItem } from '@/shared/user/pocket-types'
 import {
   getDefaultUserSettings,
   type ExplanationMode,
@@ -19,7 +19,7 @@ import {
   type InputModePreference,
   type UserSettings,
   type VoicePlaybackMode,
-} from '@/shared/user-settings'
+} from '@/shared/user/user-settings'
 
 export const POCKET_INVENTORY_STORAGE_KEY = 'dp-pocket-inventory-v1'
 export const CHAT_HISTORY_STORAGE_KEY = 'dp-chat-history-v1'

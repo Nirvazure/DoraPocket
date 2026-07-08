@@ -4,7 +4,7 @@ import test from 'node:test'
 import {
   normalizeMarketSearchQuery,
   resolveCategoryKeysMatchingQuery,
-} from '@/shared/market-search-query'
+} from '@/shared/market/market-search-query'
 
 test('normalizeMarketSearchQuery trims and rejects short queries', () => {
   assert.equal(normalizeMarketSearchQuery(''), null)

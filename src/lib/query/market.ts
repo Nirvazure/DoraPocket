@@ -8,9 +8,9 @@ import type {
   MarketReviewTag,
   MarketSubmission,
   ToolVote,
-} from '@/shared/market-types'
-import type { ToolItem } from '@/shared/tool-registry'
-import { normalizeMarketSearchQuery } from '@/shared/market-search-query'
+} from '@/shared/market/market-types'
+import type { ToolItem } from '@/shared/market/tool-registry'
+import { normalizeMarketSearchQuery } from '@/shared/market/market-search-query'
 
 type SaveFeedbackInput = {
   toolId: string

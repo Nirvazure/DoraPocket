@@ -6,7 +6,7 @@ import {
   filterProfileHistory,
   resolveTaskDirection,
   type RecommendationHistoryItem,
-} from '@/shared/profile-memory'
+} from '@/shared/user/profile-memory'
 
 function historyItem(
   input: Partial<RecommendationHistoryItem> & {

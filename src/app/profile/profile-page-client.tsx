@@ -16,8 +16,8 @@ import { useAuthSessionQuery, resolveSettingsReadOnly } from '@/lib/query/auth-s
 import { useRecommendationHistoryQuery } from '@/lib/query/recommendation-history'
 import { useSaveUserSettingsMutation, useUserSettingsQuery } from '@/lib/query/user-settings'
 import { cn } from '@/lib/utils'
-import type { ProfileHistoryStatusFilter } from '@/shared/profile-memory'
-import { APP_BRAND_TITLE, PAGE_COPY } from '@/shared/ui-copy'
+import type { ProfileHistoryStatusFilter } from '@/shared/user/profile-memory'
+import { APP_BRAND_TITLE, PAGE_COPY } from '@/shared/copy/ui-copy'
 
 const EMPTY_HISTORY_ITEMS: NonNullable<
   ReturnType<typeof useRecommendationHistoryQuery>['data']

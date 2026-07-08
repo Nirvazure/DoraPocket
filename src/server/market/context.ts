@@ -1,7 +1,7 @@
 import 'server-only'
 
-import type { MarketContext } from '@/shared/market-types'
-import { createEmptyMarketContext } from '@/shared/market-defaults'
+import type { MarketContext } from '@/shared/market/market-types'
+import { createEmptyMarketContext } from '@/shared/market/market-defaults'
 import { listMarketFeedback } from '@/server/repositories/market-feedback-repo'
 import { listMarketSubmissions } from '@/server/repositories/market-submission-repo'
 import { listMarketSubscriptions } from '@/server/repositories/market-subscription-repo'

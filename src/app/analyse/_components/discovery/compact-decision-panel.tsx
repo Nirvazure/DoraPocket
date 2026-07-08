@@ -1,10 +1,10 @@
-import { type AnalysisFlow } from '@/shared/analysis-stage-content'
+import { type AnalysisFlow } from '@/app/analyse/_domain/analysis-stage-content'
 import { CandidateAlternativesCard } from '@/app/analyse/_components/discovery/candidate-alternatives-card'
 import { PrimaryRecommendationCard } from '@/app/analyse/_components/discovery/primary-recommendation-card'
 import type { ChatToolPayload } from '@/lib/client/llm'
-import type { AgentUiPayload } from '@/shared/market-types'
-import type { ToolLookupFn } from '@/shared/tool-lookup'
-import type { UserSettings } from '@/shared/user-settings'
+import type { AgentUiPayload } from '@/shared/market/market-types'
+import type { ToolLookupFn } from '@/shared/market/tool-lookup'
+import type { UserSettings } from '@/shared/user/user-settings'
 
 type CompactDecisionPanelProps = {
   payload: AgentUiPayload | null

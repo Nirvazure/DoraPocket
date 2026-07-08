@@ -6,7 +6,7 @@ import type {
   MarketReviewAggregate,
   MarketReviewTag,
   ToolVote,
-} from '@/shared/market-types'
+} from '@/shared/market/market-types'
 
 function toFeedbackRecord(item: {
   toolId: string

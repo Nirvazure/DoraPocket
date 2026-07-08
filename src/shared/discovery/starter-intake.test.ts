@@ -10,7 +10,7 @@ import {
   createEmptyStarterIntake,
   extractColdStartTaskLine,
   resolveStarterDisplayGoal,
-} from '@/shared/starter-intake'
+} from '@/shared/discovery/starter-intake'
 
 test('canStartStructuredAnalysis requires outcome or custom task length', () => {
   assert.equal(canStartStructuredAnalysis(createEmptyStarterIntake()), false)

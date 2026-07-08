@@ -1,7 +1,7 @@
 import 'server-only'
 
 import type { AppUser } from '@/server/auth/user-sync'
-import { getDefaultUserSettings, type UserSettings } from '@/shared/user-settings'
+import { getDefaultUserSettings, type UserSettings } from '@/shared/user/user-settings'
 
 export const DEV_MOCK_USER_ID = 'dev-mock-user'
 

@@ -1,8 +1,11 @@
-import type { ToolLookupFn } from '@/shared/tool-lookup'
-import type { ToolItem } from '@/shared/tool-registry'
+import type { ToolLookupFn } from '@/shared/market/tool-lookup'
+import type { ToolItem } from '@/shared/market/tool-registry'
 import type { ChatToolPayload } from '@/lib/client/llm'
-import type { AgentCandidate, AgentUiPayload } from '@/shared/market-types'
-import type { ProgressStage, Step2Session } from '@/shared/step2-session-types'
+import type { AgentCandidate, AgentUiPayload } from '@/shared/market/market-types'
+import type {
+  ProgressStage,
+  ClarificationSession,
+} from '@/shared/discovery/clarification-session-types'
 import type { AppState } from '@/store'
 
 export type AnalysisPhase = 'idle' | 'analyzing' | 'revealed'
@@ -11,7 +14,7 @@ export type AnalysisBeat = 'working' | 'cover' | 'reveal'
 export type AnalysisFlow = {
   phase: AnalysisPhase
   beat: AnalysisBeat
-  step2?: Step2Session
+  clarification?: ClarificationSession
 }
 
 export const IDLE_ANALYSIS_FLOW: AnalysisFlow = { phase: 'idle', beat: 'working' }
@@ -24,12 +27,12 @@ export function resolveAnalysisFlowAfterError(): AnalysisFlow {
   return { phase: 'idle', beat: 'working' }
 }
 
-export function isStep2Clarifying(flow: AnalysisFlow): boolean {
-  return flow.step2?.status === 'clarifying'
+export function isClarificationActive(flow: AnalysisFlow): boolean {
+  return flow.clarification?.status === 'clarifying'
 }
 
 export function isInputLockedFlow(flow: AnalysisFlow): boolean {
-  if (isStep2Clarifying(flow)) return false
+  if (isClarificationActive(flow)) return false
   return flow.phase === 'analyzing'
 }
 

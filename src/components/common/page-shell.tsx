@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { PAGE_SHELL_CONTENT_X_CLASS, PAGE_SHELL_MAX_WIDTH_CLASS } from '@/shared/page-layout'
+import { PAGE_SHELL_CONTENT_X_CLASS, PAGE_SHELL_MAX_WIDTH_CLASS } from '@/shared/layout/page-layout'
 import { cn } from '@/lib/utils'
 
 type PageShellProps = {

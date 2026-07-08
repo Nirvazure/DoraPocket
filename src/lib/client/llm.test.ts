@@ -23,7 +23,7 @@ test('askQwen returns recommendationSessionId from stream event', async () => {
         {
           type: 'done',
           text: 'done',
-          step2Status: 'ready',
+          clarificationStatus: 'ready',
           selected_tool: null,
           ui_payload: null,
         },

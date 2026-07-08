@@ -1,4 +1,4 @@
-import type { MarketContext, UserPreferenceProfile } from '@/shared/market-types'
+import type { MarketContext, UserPreferenceProfile } from '@/shared/market/market-types'
 
 export function createEmptyPreferenceProfile(): UserPreferenceProfile {
   return {

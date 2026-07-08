@@ -192,7 +192,7 @@ export const SETTINGS_COPY = {
   },
 } as const
 
-export const STEP2_COPY = {
+export const CLARIFICATION_COPY = {
   expandEarlier: '展开 earlier ▾',
   lowConfidenceHint: '部分条件未确认，推荐置信度偏低。你可以返回 Step 2 补充。',
 } as const

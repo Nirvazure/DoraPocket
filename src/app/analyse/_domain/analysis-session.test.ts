@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { resolveAgentTurnRequest, resolveVoicePlaybackText } from '@/shared/analysis-session'
-import { createStep2Session } from '@/shared/step2-session'
-import type { AgentUiPayload } from '@/shared/market-types'
+import {
+  resolveAgentTurnRequest,
+  resolveVoicePlaybackText,
+} from '@/app/analyse/_domain/analysis-session'
+import { createClarificationSession } from '@/shared/discovery/clarification-session'
+import type { AgentUiPayload } from '@/shared/market/market-types'
 
 const reply = (text: string, selectionReason?: string) => ({
   text,
@@ -16,11 +19,14 @@ const reply = (text: string, selectionReason?: string) => ({
 })
 
 test('resolveAgentTurnRequest returns null for empty text without skip clarify', () => {
-  assert.equal(resolveAgentTurnRequest({ text: '   ', priorStep2: null }), null)
+  assert.equal(resolveAgentTurnRequest({ text: '   ', priorClarification: null }), null)
 })
 
 test('resolveAgentTurnRequest creates a new session for a fresh task', () => {
-  const request = resolveAgentTurnRequest({ text: '  find a writing tool  ', priorStep2: null })
+  const request = resolveAgentTurnRequest({
+    text: '  find a writing tool  ',
+    priorClarification: null,
+  })
 
   assert.ok(request)
   assert.equal(request.safeText, 'find a writing tool')
@@ -31,11 +37,11 @@ test('resolveAgentTurnRequest creates a new session for a fresh task', () => {
 
 test('resolveAgentTurnRequest reuses a clarifying session for continuation text', () => {
   const prior = {
-    ...createStep2Session('find a writing tool'),
+    ...createClarificationSession('find a writing tool'),
     status: 'clarifying' as const,
   }
 
-  const request = resolveAgentTurnRequest({ text: ' free first ', priorStep2: prior })
+  const request = resolveAgentTurnRequest({ text: ' free first ', priorClarification: prior })
 
   assert.ok(request)
   assert.equal(request.safeText, 'free first')
@@ -46,14 +52,14 @@ test('resolveAgentTurnRequest reuses a clarifying session for continuation text'
 
 test('resolveAgentTurnRequest uses skip text for empty skipped clarification', () => {
   const prior = {
-    ...createStep2Session('find a writing tool'),
+    ...createClarificationSession('find a writing tool'),
     status: 'clarifying' as const,
   }
 
   const request = resolveAgentTurnRequest({
     text: '   ',
     options: { skipClarify: true },
-    priorStep2: prior,
+    priorClarification: prior,
   })
 
   assert.ok(request)
@@ -67,7 +73,7 @@ test('resolveAgentTurnRequest creates a session when continuation is requested w
   const request = resolveAgentTurnRequest({
     text: ' use the browser ',
     options: { isContinuation: true },
-    priorStep2: null,
+    priorClarification: null,
   })
 
   assert.ok(request)

@@ -2,8 +2,8 @@ import { useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { AssistantModeCard } from '@/shared/mode-registry'
-import { modeImageSrc } from '@/shared/mode-registry'
+import type { AssistantModeCard } from '@/shared/discovery/mode-registry'
+import { modeImageSrc } from '@/shared/discovery/mode-registry'
 type PocketGadgetModalProps = {
   open: boolean
   gadget: AssistantModeCard | null

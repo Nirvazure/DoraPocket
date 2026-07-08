@@ -1,4 +1,4 @@
-import type { AgentCandidate } from '@/shared/market-types'
+import type { AgentCandidate } from '@/shared/market/market-types'
 
 export function getCandidateScoreValue(candidate: AgentCandidate): number {
   return Math.max(0, Math.round(candidate.score))

@@ -1,8 +1,8 @@
-import type { AnalysisFlow } from '@/shared/analysis-stage-content'
+import type { AnalysisFlow } from '@/app/analyse/_domain/analysis-stage-content'
 import {
   resolveAnalysisStatusDetail,
   shouldShowAnalysisLoadingDots,
-} from '@/shared/analysis-stage-content'
+} from '@/app/analyse/_domain/analysis-stage-content'
 import { cn } from '@/lib/utils'
 import type { AppState } from '@/store'
 

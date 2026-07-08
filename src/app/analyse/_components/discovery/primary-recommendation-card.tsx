@@ -18,12 +18,12 @@ import {
   isRecommendationCovered,
   isRecommendationRevealing,
   type AnalysisFlow,
-} from '@/shared/analysis-stage-content'
+} from '@/app/analyse/_domain/analysis-stage-content'
 import type { ChatToolPayload } from '@/lib/client/llm'
-import type { AgentUiPayload } from '@/shared/market-types'
-import { STEP2_COPY } from '@/shared/ui-copy'
-import type { ToolLookupFn } from '@/shared/tool-lookup'
-import type { UserSettings } from '@/shared/user-settings'
+import type { AgentUiPayload } from '@/shared/market/market-types'
+import { CLARIFICATION_COPY } from '@/shared/copy/ui-copy'
+import type { ToolLookupFn } from '@/shared/market/tool-lookup'
+import type { UserSettings } from '@/shared/user/user-settings'
 
 type PrimaryRecommendationCardProps = {
   payload: AgentUiPayload | null
@@ -137,7 +137,7 @@ export function PrimaryRecommendationCard({
       <DisplayPanelContent className="relative z-10 flex flex-wrap gap-2 px-4 pb-4 pt-0 sm:px-5">
         {payload?.confidenceLevel === 'low' ? (
           <p className="w-full rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-            {STEP2_COPY.lowConfidenceHint}
+            {CLARIFICATION_COPY.lowConfidenceHint}
           </p>
         ) : null}
         {leaderExternalUrl ? (

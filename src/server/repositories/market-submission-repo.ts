@@ -2,7 +2,7 @@ import 'server-only'
 
 import { prisma } from '@/server/db/prisma'
 import { createImportedToolId } from '@/server/repositories/tool-repo'
-import type { MarketSubmission } from '@/shared/market-types'
+import type { MarketSubmission } from '@/shared/market/market-types'
 
 function toMarketSubmission(item: {
   id: string

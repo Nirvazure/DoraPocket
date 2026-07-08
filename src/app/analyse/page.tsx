@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { AnalysisPageClient } from './analysis-page-client'
-import { PAGE_COPY } from '@/shared/ui-copy'
+import { PAGE_COPY } from '@/shared/copy/ui-copy'
 
 export const metadata: Metadata = {
   title: '分析 | DoraPocket',

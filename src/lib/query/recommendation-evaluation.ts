@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { apiFetch } from '@/lib/query/api-client'
-import type { RecommendationEvaluationInput } from '@/shared/recommendation-evaluation'
+import type { RecommendationEvaluationInput } from '@/shared/discovery/recommendation-evaluation'
 
 export function useSaveRecommendationEvaluationMutation() {
   return useMutation({

@@ -1,4 +1,4 @@
-import type { AgentCandidate, AgentTaskFrame } from '@/shared/market-types'
+import type { AgentCandidate, AgentTaskFrame } from '@/shared/market/market-types'
 
 export type ProfileTaskDirectionId =
   | 'all'

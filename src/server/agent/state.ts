@@ -3,8 +3,8 @@ import type {
   AgentTaskFrame,
   AgentUiPayload,
   MarketContext,
-} from '@/shared/market-types'
-import type { ExplanationMode } from '@/shared/user-settings'
+} from '@/shared/market/market-types'
+import type { ExplanationMode } from '@/shared/user/user-settings'
 
 export type PocketIntent = 'chat' | 'discover'
 

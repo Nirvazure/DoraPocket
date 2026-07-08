@@ -2,8 +2,8 @@
 
 import { StarterWizardContent } from '@/app/analyse/_components/discovery/starter-wizard/starter-wizard-content'
 import { SectionLabel } from '@/components/ui/section-label'
-import { PAGE_COPY } from '@/shared/ui-copy'
-import type { StarterIntake, StarterWizardStep } from '@/shared/starter-intake'
+import { PAGE_COPY } from '@/shared/copy/ui-copy'
+import type { StarterIntake, StarterWizardStep } from '@/shared/discovery/starter-intake'
 import type { StarterWizardContentProps } from '@/app/analyse/_components/discovery/starter-wizard/starter-wizard-content'
 
 type WhereToStartSectionProps = {

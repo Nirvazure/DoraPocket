@@ -10,7 +10,7 @@ import {
   resolveLiveTrackActiveIndex,
   resolveAnalysisFlowAfterError,
   shouldPreserveTurnFlow,
-} from '@/shared/analysis-stage-content'
+} from '@/app/analyse/_domain/analysis-stage-content'
 
 test('resolveAnalysisFlowAfterError unlocks input and stops analyzing UI', () => {
   const flow = resolveAnalysisFlowAfterError()
@@ -59,7 +59,7 @@ test('isInputLockedFlow returns false when step2 status is clarifying', () => {
     isInputLockedFlow({
       phase: 'analyzing',
       beat: 'working',
-      step2: {
+      clarification: {
         turn: 1,
         anchorPrompt: '???',
         messages: [],
