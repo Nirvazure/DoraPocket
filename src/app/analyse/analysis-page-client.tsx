@@ -31,7 +31,6 @@ export function AnalysisPageClient() {
     pocketGadget,
     userSettings,
     currentPrompt,
-    progressStage,
     analysisFlow,
     selectedToolPayload,
     agentUiPayload,
@@ -166,9 +165,7 @@ export function AnalysisPageClient() {
           <DiscoveryWorkspace
             ref={workspaceRef}
             currentPrompt={currentPrompt}
-            appState={appState}
             analysisFlow={analysisFlow}
-            progressStage={progressStage}
             agentPayload={agentUiPayload}
             selectedToolPayload={selectedToolPayload}
             getTool={getTool}

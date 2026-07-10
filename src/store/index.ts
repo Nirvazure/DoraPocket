@@ -3,10 +3,7 @@ import { IDLE_ANALYSIS_FLOW, type AnalysisFlow } from '@/app/analyse/_domain/ana
 import { createClientId } from '@/lib/id'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market/market-types'
-import type {
-  ProgressStage,
-  ClarificationSession,
-} from '@/shared/discovery/clarification-session-types'
+import type { ClarificationSession } from '@/shared/discovery/clarification-session-types'
 
 export type AppState = 'idle' | 'listening' | 'thinking' | 'speaking'
 export type SystemNoticeLevel = 'critical' | 'task' | 'ambient' | 'silent'
@@ -42,7 +39,6 @@ interface DoraStore {
   analysisFlow: AnalysisFlow
   clarificationSession: ClarificationSession | null
   currentPrompt: string | null
-  progressStage: ProgressStage | null
   selectedToolPayload: ChatToolPayload
   agentUiPayload: AgentUiPayload | null
   recommendationSessionId: string | null
@@ -57,7 +53,6 @@ interface DoraStore {
       | ((prev: ClarificationSession | null) => ClarificationSession | null),
   ) => void
   setCurrentPrompt: (prompt: string | null) => void
-  setProgressStage: (stage: ProgressStage | null) => void
   setSelectedToolPayload: (payload: ChatToolPayload) => void
   setAgentUiPayload: (payload: AgentUiPayload | null) => void
   setRecommendationSessionId: (id: string | null) => void
@@ -90,7 +85,6 @@ export const useStore = create<DoraStore>((set, get) => ({
   analysisFlow: IDLE_ANALYSIS_FLOW,
   clarificationSession: null,
   currentPrompt: null,
-  progressStage: null,
   selectedToolPayload: null,
   agentUiPayload: null,
   recommendationSessionId: null,
@@ -112,7 +106,6 @@ export const useStore = create<DoraStore>((set, get) => ({
         typeof session === 'function' ? session(state.clarificationSession) : session,
     })),
   setCurrentPrompt: (prompt) => set({ currentPrompt: prompt }),
-  setProgressStage: (stage) => set({ progressStage: stage }),
   setSelectedToolPayload: (payload) => set({ selectedToolPayload: payload }),
   setAgentUiPayload: (payload) => set({ agentUiPayload: payload }),
   setRecommendationSessionId: (id) => set({ recommendationSessionId: id }),

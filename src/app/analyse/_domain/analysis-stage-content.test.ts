@@ -5,9 +5,7 @@ import {
   IDLE_ANALYSIS_FLOW,
   isAnalyzingFlow,
   isInputLockedFlow,
-  resolveActiveTrackIndexFromProgress,
   resolveCurrentStep,
-  resolveLiveTrackActiveIndex,
   resolveAnalysisFlowAfterError,
   shouldPreserveTurnFlow,
 } from '@/app/analyse/_domain/analysis-stage-content'
@@ -26,24 +24,13 @@ test('shouldPreserveTurnFlow keeps cover and reveal beats but not working', () =
   assert.equal(shouldPreserveTurnFlow({ phase: 'revealed', beat: 'working' }), true)
 })
 
-test('resolveActiveTrackIndexFromProgress marks constraining active during clarifying', () => {
-  assert.equal(resolveActiveTrackIndexFromProgress('clarifying'), 1)
+test('resolveCurrentStep opens recommendation panel during recommendation analysis', () => {
+  assert.equal(resolveCurrentStep({ phase: 'analyzing', beat: 'working' }, true, false), 3)
+  assert.equal(resolveCurrentStep({ phase: 'analyzing', beat: 'cover' }, true, true), 3)
 })
 
-test('resolveLiveTrackActiveIndex starts on understanding before progress arrives', () => {
-  assert.equal(
-    resolveLiveTrackActiveIndex({
-      progressStage: null,
-      analysisFlow: { phase: 'analyzing', beat: 'working' },
-      appState: 'thinking',
-      hasPayload: false,
-    }),
-    0,
-  )
-})
-
-test('resolveCurrentStep stays on analysis panel during cover beat', () => {
-  assert.equal(resolveCurrentStep({ phase: 'analyzing', beat: 'cover' }, true, true), 2)
+test('resolveCurrentStep stays on analysis panel when prompt exists before result', () => {
+  assert.equal(resolveCurrentStep(IDLE_ANALYSIS_FLOW, true, false), 2)
 })
 
 test('resolveCurrentStep opens recommendation panel at reveal beat', () => {

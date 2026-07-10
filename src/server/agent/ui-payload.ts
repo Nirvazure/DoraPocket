@@ -291,7 +291,10 @@ export async function buildRankedCandidates(
   const { recallToolMatchesFromCatalog } = await import('@/server/retrieval/tool-recall')
   const { matches: initialMatches, recallSummary } = await recallToolMatchesFromCatalog(userText, {
     ...marketSignalsFromContext(marketContext),
-  })
+  }).catch(() => ({
+    matches: [],
+    recallSummary: null,
+  }))
   const judgement =
     taskFrame?.mode === 'discover'
       ? await import('@/server/agent/tool-rerank')

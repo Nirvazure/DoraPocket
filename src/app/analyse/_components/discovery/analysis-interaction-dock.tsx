@@ -7,24 +7,24 @@ import {
 } from '@/app/analyse/_components/interaction/dora-bottom-interaction-zone'
 import { cn } from '@/lib/utils'
 import {
-  canAdvanceStarterStep,
   canStartStarterAnalysis,
   composeStarterPrompt,
   resolveStarterDisplayGoal,
   type StarterIntake,
-  type StarterWizardStep,
+  type StarterIntentStatus,
 } from '@/shared/discovery/starter-intake'
 import { PAGE_COPY } from '@/shared/copy/ui-copy'
 
 export type AnalysisInteractionDockProps = {
   activePanelStep: 1 | 2 | 3 | null
   starterActionsEnabled: boolean
-  wizardSubStep: StarterWizardStep
   intake: StarterIntake
+  hasPrompt: boolean
+  naturalDescription: string
+  intentStatus: StarterIntentStatus
   wizardDisabled?: boolean
-  onWizardBack: () => void
-  onWizardNext: () => void
-  onCustomTaskChange: (value: string) => void
+  onApplyNaturalDescription: (value: string) => void | Promise<void>
+  onReviewBackToInput: () => void
   onStartAnalysis: (prompt: string, displayPrompt: string) => void | Promise<void>
   onStartNewTask: () => void
   sessionZone: DoraBottomInteractionZoneProps | null
@@ -33,12 +33,13 @@ export type AnalysisInteractionDockProps = {
 export function AnalysisInteractionDock({
   activePanelStep,
   starterActionsEnabled,
-  wizardSubStep,
   intake,
+  hasPrompt,
+  naturalDescription,
+  intentStatus,
   wizardDisabled = false,
-  onWizardBack,
-  onWizardNext,
-  onCustomTaskChange,
+  onApplyNaturalDescription,
+  onReviewBackToInput,
   onStartAnalysis,
   onStartNewTask,
   sessionZone,
@@ -46,9 +47,9 @@ export function AnalysisInteractionDock({
   const copy = PAGE_COPY.analysis.starter
   const startingRef = useRef(false)
 
-  const canAdvance = canAdvanceStarterStep(intake, wizardSubStep)
   const canStart = canStartStarterAnalysis(intake) && !wizardDisabled
-  const showTaskInput = activePanelStep === 1 && starterActionsEnabled && wizardSubStep === 2
+  const canApplyNaturalDescription = naturalDescription.trim().length >= 4 && !wizardDisabled
+  const analyzingIntent = intentStatus === 'analyzing'
 
   const handleStart = async () => {
     if (startingRef.current || !canStart) return
@@ -61,17 +62,23 @@ export function AnalysisInteractionDock({
     }
   }
 
-  const nextLabel = wizardSubStep === 1 ? copy.nextToOutcome : copy.nextToConstraints
+  const handleAnalyzeInput = () => {
+    if (!canApplyNaturalDescription) return
+    void onApplyNaturalDescription(naturalDescription)
+  }
 
-  const showNewTaskOnly = activePanelStep === 3 || (activePanelStep === 1 && !starterActionsEnabled)
+  const showSessionZone = activePanelStep === 3 && hasPrompt && sessionZone
+  const showNewTaskOnly =
+    (activePanelStep === 3 && !hasPrompt) || (activePanelStep === 1 && !starterActionsEnabled)
 
   return (
     <div className="shrink-0 border-t border-border/45 bg-white/90 backdrop-blur-md">
-      {activePanelStep === 2 && sessionZone ? (
+      {showSessionZone ? <DoraBottomInteractionZone {...sessionZone} hideVoiceToggle /> : null}
+      {activePanelStep === 2 && hasPrompt && sessionZone ? (
         <DoraBottomInteractionZone {...sessionZone} hideVoiceToggle />
       ) : null}
 
-      {showNewTaskOnly ? (
+      {showSessionZone ? null : showNewTaskOnly ? (
         <div className="px-3 py-2.5 sm:px-4 sm:py-3">
           <button
             type="button"
@@ -82,66 +89,44 @@ export function AnalysisInteractionDock({
           </button>
         </div>
       ) : activePanelStep === 1 && starterActionsEnabled ? (
-        <div className="flex flex-col gap-2.5 px-3 py-2.5 sm:px-4 sm:py-3">
-          {showTaskInput ? (
-            <textarea
-              id="starter-task-input"
-              value={intake.customTask}
-              disabled={wizardDisabled}
-              rows={3}
-              aria-label={copy.dockTaskLabel}
-              placeholder={copy.customTaskPlaceholder}
-              className={cn(
-                'w-full resize-none rounded-2xl border border-border/70 bg-white px-3 py-2.5 font-sans text-sm text-foreground outline-none ring-primary/30 placeholder:text-muted-foreground focus-visible:ring-2',
-                wizardDisabled && 'cursor-not-allowed opacity-50',
-              )}
-              onChange={(event) => onCustomTaskChange(event.target.value)}
-            />
-          ) : null}
-
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            {wizardSubStep > 1 ? (
-              <button
-                type="button"
-                disabled={wizardDisabled}
-                onClick={onWizardBack}
-                className={cn(
-                  'rounded-full border border-border/60 bg-white px-4 py-2.5 text-[11px] font-semibold text-foreground/80 transition-colors hover:bg-slate-50 sm:mr-auto',
-                  wizardDisabled && 'cursor-not-allowed opacity-50',
-                )}
-              >
-                {copy.backAction}
-              </button>
-            ) : (
-              <span className="hidden sm:mr-auto sm:block" />
+        <div className="px-3 py-2.5 sm:px-4 sm:py-3">
+          <button
+            type="button"
+            disabled={!canApplyNaturalDescription || analyzingIntent}
+            onClick={handleAnalyzeInput}
+            className={cn(
+              'flex w-full items-center justify-center rounded-full border-2 border-primary/30 bg-primary px-4 py-2.5 text-sm font-black text-primary-foreground shadow-sm transition-colors hover:bg-primary/90',
+              (!canApplyNaturalDescription || analyzingIntent) && 'cursor-not-allowed opacity-45',
             )}
-            {wizardSubStep < 3 ? (
-              <button
-                type="button"
-                disabled={!canAdvance || wizardDisabled}
-                onClick={onWizardNext}
-                className={cn(
-                  'flex flex-1 items-center justify-center rounded-full border-2 border-primary/30 bg-primary px-4 py-2.5 text-sm font-black text-primary-foreground shadow-sm transition-colors hover:bg-primary/90',
-                  (!canAdvance || wizardDisabled) && 'cursor-not-allowed opacity-45',
-                )}
-              >
-                {nextLabel} →
-              </button>
-            ) : (
-              <button
-                type="button"
-                data-starter-path="wizard"
-                disabled={!canStart}
-                onClick={handleStart}
-                className={cn(
-                  'flex flex-1 items-center justify-center rounded-full border-2 border-primary/30 bg-primary px-4 py-2.5 text-sm font-black text-primary-foreground shadow-sm transition-colors hover:bg-primary/90',
-                  !canStart && 'cursor-not-allowed opacity-45',
-                )}
-              >
-                {copy.startAction}
-              </button>
+          >
+            {analyzingIntent ? copy.naturalDraftLoadingAction : copy.naturalDraftAction}
+          </button>
+        </div>
+      ) : activePanelStep === 2 && starterActionsEnabled && !hasPrompt ? (
+        <div className="flex flex-col gap-2 px-3 py-2.5 sm:flex-row sm:px-4 sm:py-3">
+          <button
+            type="button"
+            disabled={wizardDisabled}
+            onClick={onReviewBackToInput}
+            className={cn(
+              'rounded-full border border-border/60 bg-white px-4 py-2.5 text-[11px] font-semibold text-foreground/80 transition-colors hover:bg-slate-50 sm:w-40',
+              wizardDisabled && 'cursor-not-allowed opacity-50',
             )}
-          </div>
+          >
+            {copy.backToInputAction}
+          </button>
+          <button
+            type="button"
+            data-starter-path="understanding-review"
+            disabled={!canStart}
+            onClick={handleStart}
+            className={cn(
+              'flex flex-1 items-center justify-center rounded-full border-2 border-primary/30 bg-primary px-4 py-2.5 text-sm font-black text-primary-foreground shadow-sm transition-colors hover:bg-primary/90',
+              !canStart && 'cursor-not-allowed opacity-45',
+            )}
+          >
+            {copy.confirmUnderstandingAction}
+          </button>
         </div>
       ) : null}
     </div>

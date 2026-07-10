@@ -29,10 +29,6 @@ import type { AssistantModeCard } from '@/shared/discovery/mode-registry'
 import { PAGE_COPY, SYSTEM_NOTICE_COPY } from '@/shared/copy/ui-copy'
 import { mergeClarificationIntoAnalysisFlow, useStore } from '@/store'
 import { shouldRestartAnalysisFlow } from '@/app/analyse/_domain/analysis-stage-restart'
-import {
-  composeStarterPromptFromVoice,
-  createEmptyStarterIntake,
-} from '@/shared/discovery/starter-intake'
 import type { DiscoveryWorkspaceHandle } from '@/app/analyse/_components/discovery/discovery-workspace'
 
 type InputMode = 'text' | 'voice'
@@ -52,6 +48,7 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
   const setSystemNotice = useStore((state) => state.setSystemNotice)
   const clearSystemNotice = useStore((state) => state.clearSystemNotice)
   const setAnalysisFlow = useStore((state) => state.setAnalysisFlow)
+  const setAppState = useStore((state) => state.setAppState)
 
   const saveToolToPocketMutation = useSaveToolToPocketMutation()
   const markToolUsedMutation = useMarkToolUsedMutation()
@@ -85,7 +82,6 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     agentUiPayload,
     recommendationSessionId,
     currentPrompt,
-    progressStage,
     latestUserPromptRef,
     clearResponseState,
     resetAnalysisForNewTask,
@@ -106,15 +102,13 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
       const trimmed = text.trim()
       if (!trimmed) return
       if (!currentPrompt?.trim()) {
-        if (appState !== 'idle') return
-        const intake = workspaceRef?.current?.getStarterIntake() ?? createEmptyStarterIntake()
-        const prompt = composeStarterPromptFromVoice(intake, trimmed)
-        await runAgentTurn(prompt, { displayPrompt: trimmed })
+        await workspaceRef?.current?.applyNaturalDescription(trimmed)
+        setAppState('idle')
         return
       }
       await runAgentTurn(trimmed, { isContinuation: true })
     },
-    [appState, currentPrompt, runAgentTurn, workspaceRef],
+    [currentPrompt, runAgentTurn, setAppState, workspaceRef],
   )
 
   const { holdToTalkStart, holdToTalkEnd, cancelVoiceInput, submitTextMessage } = useVoiceInput({
@@ -314,7 +308,6 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     settingsReadOnly,
     currentPrompt,
     clarificationSession,
-    progressStage,
     analysisFlow: resolvedAnalysisFlow,
     selectedToolPayload,
     agentUiPayload,
