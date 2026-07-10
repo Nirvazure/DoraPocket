@@ -45,6 +45,7 @@ export function AnalysisPageClient() {
     pocketGadgetModalActions,
     handleStartStructuredAnalysis,
     handleStartNewTask,
+    handleReturnToUnderstanding,
     starterActionsEnabled,
     setPocketModalOpen,
     setInputMode,
@@ -176,6 +177,7 @@ export function AnalysisPageClient() {
             recommendationSessionId={recommendationSessionId}
             onStartAnalysis={handleStartStructuredAnalysis}
             onStartNewTask={handleStartNewTask}
+            onReturnToUnderstanding={handleReturnToUnderstanding}
             starterActionsEnabled={starterActionsEnabled}
             onReachRecommendationStep={handleReachRecommendationStep}
             scrollOnReachRecommendation={prefersCompactStage}

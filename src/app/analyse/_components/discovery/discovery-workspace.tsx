@@ -48,6 +48,7 @@ type DiscoveryWorkspaceProps = {
   recommendationSessionId?: string | null
   onStartAnalysis?: (prompt: string, displayPrompt: string) => void | Promise<void>
   onStartNewTask?: () => void
+  onReturnToUnderstanding?: () => void
   starterActionsEnabled?: boolean
   onReachRecommendationStep?: () => void
   scrollOnReachRecommendation?: boolean
@@ -69,6 +70,7 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
       recommendationSessionId = null,
       onStartAnalysis,
       onStartNewTask,
+      onReturnToUnderstanding,
       starterActionsEnabled = true,
       onReachRecommendationStep,
       scrollOnReachRecommendation = false,
@@ -81,6 +83,7 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
 
     const hasPrompt = Boolean(currentPrompt?.trim())
     const hasResult = Boolean(agentPayload || selectedToolPayload?.toolId)
+    const showRecommendationActions = hasResult && analysisFlow.phase === 'revealed'
     const hasUnderstandingDraft = wizard.lastDraftSource.trim().length > 0
     const reviewingUnderstanding = !hasPrompt && hasUnderstandingDraft
     const currentStep = useMemo(() => {
@@ -126,6 +129,11 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
       wizard.reset()
       onStartNewTask?.()
     }, [onStartNewTask, wizard])
+
+    const handleReturnToUnderstanding = useCallback(() => {
+      setManualExpandedStep(null)
+      onReturnToUnderstanding?.()
+    }, [onReturnToUnderstanding])
 
     return (
       <section ref={sectionRef} className="scroll-mt-3 flex h-full min-h-0 flex-1 flex-col">
@@ -183,6 +191,7 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
             starterActionsEnabled={starterActionsEnabled}
             intake={wizard.intake}
             hasPrompt={hasPrompt}
+            showRecommendationActions={showRecommendationActions}
             naturalDescription={wizard.naturalDescription}
             wizardDisabled={!starterActionsEnabled || wizard.intentStatus === 'analyzing'}
             intentStatus={wizard.intentStatus}
@@ -194,6 +203,7 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
             onReviewBackToInput={() => setManualExpandedStep(1)}
             onStartAnalysis={(prompt, displayPrompt) => onStartAnalysis?.(prompt, displayPrompt)}
             onStartNewTask={handleStartNewTask}
+            onReturnToUnderstanding={handleReturnToUnderstanding}
             sessionZone={sessionDock}
           />
         </DisplayPanel>

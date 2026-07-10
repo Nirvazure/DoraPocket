@@ -364,7 +364,7 @@ export function useAnalysisSession({
 
   const cancelActiveAgentTurn = useStore((state) => state.cancelActiveAgentTurn)
 
-  const resetAnalysisForNewTask = useCallback(() => {
+  const resetAnalysisSession = useCallback(() => {
     stopAudioPlayback()
     cancelActiveAgentTurn()
     setLastSpeechError('')
@@ -409,7 +409,8 @@ export function useAnalysisSession({
     clarificationSession,
     latestUserPromptRef,
     clearResponseState,
-    resetAnalysisForNewTask,
+    resetAnalysisForNewTask: resetAnalysisSession,
+    resetRecommendationForReview: resetAnalysisSession,
     runAgentTurn,
     revealNow,
     toggleDialogueExpanded,

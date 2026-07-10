@@ -85,6 +85,7 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     latestUserPromptRef,
     clearResponseState,
     resetAnalysisForNewTask,
+    resetRecommendationForReview,
     runAgentTurn,
     revealNow,
     toggleDialogueExpanded,
@@ -268,6 +269,13 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     setAnalysisFlow(IDLE_ANALYSIS_FLOW)
   }, [clearRevealTimers, resetAnalysisForNewTask, setAnalysisFlow])
 
+  const handleReturnToUnderstanding = useCallback(() => {
+    resetRecommendationForReview()
+    setTextFallback('')
+    clearRevealTimers()
+    setAnalysisFlow(IDLE_ANALYSIS_FLOW)
+  }, [clearRevealTimers, resetRecommendationForReview, setAnalysisFlow])
+
   const handleQuickReply = useCallback(
     (text: string) => {
       void runAgentTurn(text, { isContinuation: true })
@@ -322,6 +330,7 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     pocketGadgetModalActions,
     handleStartStructuredAnalysis,
     handleStartNewTask,
+    handleReturnToUnderstanding,
     starterActionsEnabled: !currentPrompt?.trim() && appState === 'idle',
     setPocketModalOpen,
     saveUserSettings,

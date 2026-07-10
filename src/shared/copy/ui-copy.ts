@@ -33,6 +33,7 @@ export const PAGE_COPY = {
       confirmUnderstandingAction: '确认并生成推荐',
       confirmingUnderstandingAction: '正在生成推荐…',
       backToInputAction: '返回修改输入',
+      returnToUnderstandingAction: '返回修改理解',
       step1Title: '什么身份最接近你？',
       step1Hint: '我们会按你的日常分工来收束推荐。',
       step2Title: '这次想完成什么？',
