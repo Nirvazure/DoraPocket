@@ -7,6 +7,7 @@ import {
   isInputLockedFlow,
   resolveCurrentStep,
   resolveAnalysisFlowAfterError,
+  shouldShowRecommendationWaiting,
   shouldPreserveTurnFlow,
 } from '@/app/analyse/_domain/analysis-stage-content'
 
@@ -39,6 +40,16 @@ test('resolveCurrentStep opens recommendation panel at reveal beat', () => {
 
 test('resolveCurrentStep opens recommendation panel after revealed', () => {
   assert.equal(resolveCurrentStep({ phase: 'revealed', beat: 'working' }, true, true), 3)
+})
+
+test('shouldShowRecommendationWaiting keeps pocket scene until recommendation is revealed', () => {
+  assert.equal(
+    shouldShowRecommendationWaiting({ phase: 'analyzing', beat: 'working' }, false),
+    true,
+  )
+  assert.equal(shouldShowRecommendationWaiting({ phase: 'analyzing', beat: 'cover' }, true), true)
+  assert.equal(shouldShowRecommendationWaiting({ phase: 'analyzing', beat: 'reveal' }, true), true)
+  assert.equal(shouldShowRecommendationWaiting({ phase: 'revealed', beat: 'working' }, true), false)
 })
 
 test('isInputLockedFlow returns false when step2 status is clarifying', () => {

@@ -1,5 +1,4 @@
 import {
-  isRecommendationCovered,
   isRecommendationRevealing,
   resolveAlternativeCandidates,
   type AnalysisFlow,
@@ -13,7 +12,6 @@ import { Button } from '@/components/ui/button'
 import type { ToolLookupFn } from '@/shared/market/tool-lookup'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market/market-types'
-import { Skeleton } from '@/components/ui/skeleton'
 import type { UserSettings } from '@/shared/user/user-settings'
 import { cn } from '@/lib/utils'
 
@@ -28,24 +26,6 @@ type CandidateAlternativesCardProps = {
   onOpenExternalCandidate?: (url: string) => void
 }
 
-function AlternativeCardSkeleton() {
-  return (
-    <div className="dp-gadget-alt-card flex flex-col p-2.5">
-      <div className="flex items-center justify-between gap-2">
-        <Skeleton className="h-3 w-10 bg-primary/10" />
-        <Skeleton className="h-7 w-14 rounded-full bg-primary/10" />
-      </div>
-      <div className="mt-2 flex gap-2.5">
-        <Skeleton className="h-11 w-11 shrink-0 rounded-xl bg-slate-100" />
-        <div className="flex-1 space-y-2">
-          <Skeleton className="h-3.5 w-full bg-slate-200" />
-          <Skeleton className="h-3 w-4/5 bg-slate-200" />
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export function CandidateAlternativesCard({
   payload,
   selectedToolPayload,
@@ -56,18 +36,7 @@ export function CandidateAlternativesCard({
 }: CandidateAlternativesCardProps) {
   const alternatives = resolveAlternativeCandidates(payload, selectedToolPayload)
   const showScore = shouldShowCandidateScore(explanationMode)
-  const covered = isRecommendationCovered(analysisFlow)
   const revealing = isRecommendationRevealing(analysisFlow)
-
-  if (covered) {
-    return (
-      <div className="grid w-full gap-2.5 md:grid-cols-3">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <AlternativeCardSkeleton key={index} />
-        ))}
-      </div>
-    )
-  }
 
   return (
     <div className={cn('w-full', revealing && 'animate-in fade-in duration-300')}>

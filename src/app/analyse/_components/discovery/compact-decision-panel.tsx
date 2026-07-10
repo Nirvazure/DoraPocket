@@ -1,4 +1,5 @@
 import { type AnalysisFlow } from '@/app/analyse/_domain/analysis-stage-content'
+import { shouldShowRecommendationWaiting } from '@/app/analyse/_domain/analysis-stage-content'
 import { CandidateAlternativesCard } from '@/app/analyse/_components/discovery/candidate-alternatives-card'
 import { PrimaryRecommendationCard } from '@/app/analyse/_components/discovery/primary-recommendation-card'
 import { RecommendationWaitingPanel } from '@/app/analyse/_components/discovery/recommendation-waiting-panel'
@@ -32,7 +33,7 @@ export function CompactDecisionPanel({
 }: CompactDecisionPanelProps) {
   const hasResult = Boolean(payload || selectedToolPayload?.toolId)
 
-  if (!hasResult) {
+  if (shouldShowRecommendationWaiting(analysisFlow, hasResult)) {
     return <RecommendationWaitingPanel analysisFlow={analysisFlow} />
   }
 

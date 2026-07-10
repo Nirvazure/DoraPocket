@@ -184,6 +184,97 @@
   }
 }
 
+@keyframes dp-pocket-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+}
+
+@keyframes dp-pocket-breathe {
+  0%,
+  100% {
+    transform: scale(0.96);
+    opacity: 0.62;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 0.9;
+  }
+}
+
+@keyframes dp-pocket-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(10px, -12px, 0);
+  }
+}
+
+@keyframes dp-pocket-drift-slow {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-12px, 10px, 0);
+  }
+}
+
+@keyframes dp-pocket-spark {
+  0%,
+  100% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0.36;
+  }
+  50% {
+    transform: translateY(-18px) scale(1.15);
+    opacity: 0.95;
+  }
+}
+
+@keyframes dp-pocket-line-roll {
+  0%,
+  18% {
+    transform: translateY(0);
+  }
+  27%,
+  45% {
+    transform: translateY(-2.25rem);
+  }
+  54%,
+  72% {
+    transform: translateY(-4.5rem);
+  }
+  81%,
+  100% {
+    transform: translateY(-6.75rem);
+  }
+}
+
+@keyframes dp-pocket-conveyor {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+@keyframes dp-pocket-conveyor-reverse {
+  0% {
+    transform: translateY(-50%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
 @layer components {
   .dp-mesh-page-bg {
     @apply relative overflow-hidden bg-transparent;
@@ -677,6 +768,38 @@
   .animate-dp-thinking-dot:nth-child(3) {
     animation-delay: 0.32s;
   }
+
+  .animate-dp-pocket-float {
+    animation: dp-pocket-float 3.8s ease-in-out infinite;
+  }
+
+  .animate-dp-pocket-breathe {
+    animation: dp-pocket-breathe 3.4s ease-in-out infinite;
+  }
+
+  .animate-dp-pocket-drift {
+    animation: dp-pocket-drift 5.2s ease-in-out infinite;
+  }
+
+  .animate-dp-pocket-drift-slow {
+    animation: dp-pocket-drift-slow 6.4s ease-in-out infinite;
+  }
+
+  .animate-dp-pocket-spark {
+    animation: dp-pocket-spark 4.4s ease-in-out infinite;
+  }
+
+  .animate-dp-pocket-line-roll {
+    animation: dp-pocket-line-roll 8s ease-in-out infinite;
+  }
+
+  .animate-dp-pocket-conveyor {
+    animation: dp-pocket-conveyor 11s linear infinite;
+  }
+
+  .animate-dp-pocket-conveyor-reverse {
+    animation: dp-pocket-conveyor-reverse 13s linear infinite;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -690,6 +813,19 @@
   .animate-dp-thinking-dot {
     animation: none;
     opacity: 0.85;
+    transform: none;
+  }
+
+  .animate-dp-pocket-float,
+  .animate-dp-pocket-breathe,
+  .animate-dp-pocket-drift,
+  .animate-dp-pocket-drift-slow,
+  .animate-dp-pocket-spark,
+  .animate-dp-pocket-line-roll,
+  .animate-dp-pocket-conveyor,
+  .animate-dp-pocket-conveyor-reverse {
+    animation: none;
+    opacity: 1;
     transform: none;
   }
 }
