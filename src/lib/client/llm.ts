@@ -1,6 +1,5 @@
 import type { AgentUiPayload } from '@/shared/market/market-types'
 import type {
-  ProgressStage,
   ClarificationDoneStatus,
   ClarificationMessage,
 } from '@/shared/discovery/clarification-session-types'
@@ -13,7 +12,6 @@ export type AskQwenOptions = {
   anchorPrompt?: string
   priorMessages?: ClarificationMessage[]
   skipClarify?: boolean
-  onProgress?: (stage: ProgressStage) => void
   onClarify?: (payload: {
     question: string
     missingInputs: string[]
@@ -42,7 +40,7 @@ export type ChatReply = {
 
 type StreamProgressEvent = {
   type: 'progress'
-  stage?: ProgressStage
+  stage?: unknown
 }
 
 type StreamClarifyEvent = {
@@ -149,7 +147,6 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
       const event = parseStreamLine(line)
       if (!event) continue
       if (event.type === 'progress') {
-        if (event.stage) opts?.onProgress?.(event.stage)
         continue
       }
       if (event.type === 'clarify') {

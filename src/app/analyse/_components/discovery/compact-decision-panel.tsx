@@ -1,6 +1,7 @@
 import { type AnalysisFlow } from '@/app/analyse/_domain/analysis-stage-content'
 import { CandidateAlternativesCard } from '@/app/analyse/_components/discovery/candidate-alternatives-card'
 import { PrimaryRecommendationCard } from '@/app/analyse/_components/discovery/primary-recommendation-card'
+import { RecommendationWaitingPanel } from '@/app/analyse/_components/discovery/recommendation-waiting-panel'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market/market-types'
 import type { ToolLookupFn } from '@/shared/market/tool-lookup'
@@ -29,6 +30,12 @@ export function CompactDecisionPanel({
   onOpenExternalCandidate,
   recommendationSessionId = null,
 }: CompactDecisionPanelProps) {
+  const hasResult = Boolean(payload || selectedToolPayload?.toolId)
+
+  if (!hasResult) {
+    return <RecommendationWaitingPanel analysisFlow={analysisFlow} />
+  }
+
   return (
     <div className="flex w-full flex-col gap-3">
       <PrimaryRecommendationCard

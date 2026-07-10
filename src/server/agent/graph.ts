@@ -71,7 +71,13 @@ const classifierNode = async (state: PocketState): Promise<Partial<PocketState>>
 
 const responseNode = async (state: PocketState): Promise<Partial<PocketState>> => {
   const promptInput = buildDiscoveryResponsePrompt(state)
-  const finalText = await invokeModel(promptInput, DORA_PROMPT, 0.35)
+  const finalText = await invokeModel(promptInput, DORA_PROMPT, 0.35).catch(() => {
+    const candidate = state.ui_payload.candidates[0]
+    if (candidate) {
+      return `我先把候选收束到「${candidate.title}」。${state.selection_reason} 你可以先按这个方向试一次，再根据结果继续校准。`
+    }
+    return '这次已经完成任务理解，但当前本地环境缺少可用的模型或工具库配置，暂时无法生成稳定推荐。你可以补充工具库或模型配置后再试。'
+  })
   return { final_text: finalText }
 }
 

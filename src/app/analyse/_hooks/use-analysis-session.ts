@@ -57,7 +57,6 @@ export function useAnalysisSession({
   const setClarificationSession = useStore((state) => state.setClarificationSession)
   const setCurrentPrompt = useStore((state) => state.setCurrentPrompt)
   const setAnalysisFlow = useStore((state) => state.setAnalysisFlow)
-  const setProgressStage = useStore((state) => state.setProgressStage)
   const setSelectedToolPayload = useStore((state) => state.setSelectedToolPayload)
   const setAgentUiPayload = useStore((state) => state.setAgentUiPayload)
   const setRecommendationSessionId = useStore((state) => state.setRecommendationSessionId)
@@ -68,7 +67,6 @@ export function useAnalysisSession({
   const recommendationSessionId = useStore((state) => state.recommendationSessionId)
   const currentPrompt = useStore((state) => state.currentPrompt)
   const clarificationSession = useStore((state) => state.clarificationSession)
-  const progressStage = useStore((state) => state.progressStage)
 
   const voicePlaybackMode = userSettings?.voicePlaybackMode ?? 'key-result'
   const voicePlaybackEnabled =
@@ -125,10 +123,9 @@ export function useAnalysisSession({
       if (agentTurnId > turnId) return
       if (appState === 'thinking' || appState === 'speaking') {
         setAppState('idle')
-        setProgressStage(null)
       }
     },
-    [isAgentTurnActive, setAppState, setProgressStage],
+    [isAgentTurnActive, setAppState],
   )
 
   const finishReplyPlayback = useCallback(
@@ -191,7 +188,6 @@ export function useAnalysisSession({
       stopAudioPlayback()
       resetAgentResponse()
       setClarificationSession(null)
-      setProgressStage(null)
       setAppState('idle')
       onAnalysisError?.()
       const message = error instanceof Error ? error.message : SYSTEM_NOTICE_COPY.analysisFailed
@@ -204,7 +200,6 @@ export function useAnalysisSession({
       resetAgentResponse,
       setAppState,
       setLastSpeechError,
-      setProgressStage,
       setClarificationSession,
       setSystemNotice,
     ],
@@ -275,7 +270,6 @@ export function useAnalysisSession({
         setLastSpeechError('')
         setBotResponse('')
         setAppState('thinking')
-        setProgressStage(null)
 
         if (!isContinuation) {
           latestUserPromptRef.current = session.anchorPrompt
@@ -290,10 +284,6 @@ export function useAnalysisSession({
           priorMessages: session.messages,
           skipClarify: options?.skipClarify,
           explanationMode,
-          onProgress: (stage) => {
-            if (!isActive()) return
-            setProgressStage(stage)
-          },
           onClarify: (payload) => {
             if (!isActive()) return
             skipCoverRef.current = true
@@ -322,14 +312,12 @@ export function useAnalysisSession({
             quickReplies: clarifyQuickRepliesRef.current,
           }
           setClarificationSession(updated)
-          setProgressStage(null)
           setAppState('idle')
           setBotResponse(reply.text)
           return
         }
 
         setClarificationSession(null)
-        setProgressStage(null)
         skipCoverRef.current = false
         await handleReplySuccess(reply)
       } catch (error) {
@@ -355,7 +343,6 @@ export function useAnalysisSession({
       setBotResponse,
       setCurrentPrompt,
       setLastSpeechError,
-      setProgressStage,
       setRecommendationSessionId,
       setSelectedToolPayload,
       setClarificationSession,
@@ -385,7 +372,6 @@ export function useAnalysisSession({
     setTranscript('')
     setCurrentPrompt(null)
     setClarificationSession(null)
-    setProgressStage(null)
     setRecommendationSessionId(null)
     resetAgentResponse()
     setAnalysisFlow(IDLE_ANALYSIS_FLOW)
@@ -403,7 +389,6 @@ export function useAnalysisSession({
     setBotResponse,
     setCurrentPrompt,
     setLastSpeechError,
-    setProgressStage,
     setRecommendationSessionId,
     setClarificationSession,
     setTranscript,
@@ -422,7 +407,6 @@ export function useAnalysisSession({
     recommendationSessionId,
     currentPrompt,
     clarificationSession,
-    progressStage,
     latestUserPromptRef,
     clearResponseState,
     resetAnalysisForNewTask,

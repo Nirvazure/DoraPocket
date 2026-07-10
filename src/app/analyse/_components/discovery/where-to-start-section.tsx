@@ -1,52 +1,88 @@
 'use client'
 
-import { StarterWizardContent } from '@/app/analyse/_components/discovery/starter-wizard/starter-wizard-content'
 import { SectionLabel } from '@/components/ui/section-label'
+import { cn } from '@/lib/utils'
 import { PAGE_COPY } from '@/shared/copy/ui-copy'
-import type { StarterIntake, StarterWizardStep } from '@/shared/discovery/starter-intake'
-import type { StarterWizardContentProps } from '@/app/analyse/_components/discovery/starter-wizard/starter-wizard-content'
+import { STARTER_PROMPT_TEMPLATES } from '@/shared/discovery/starter-intake'
 
 type WhereToStartSectionProps = {
   actionsEnabled?: boolean
-  wizardStep: StarterWizardStep
-  intake: StarterIntake
   wizardDisabled?: boolean
-  onSelectRole: StarterWizardContentProps['onSelectRole']
-  onSelectOutcome: StarterWizardContentProps['onSelectOutcome']
-  onToggleConstraint: StarterWizardContentProps['onToggleConstraint']
+  naturalDescription: string
+  onNaturalDescriptionChange: (value: string) => void
 }
 
 export function WhereToStartSection({
   actionsEnabled = true,
-  wizardStep,
-  intake,
   wizardDisabled,
-  onSelectRole,
-  onSelectOutcome,
-  onToggleConstraint,
+  naturalDescription,
+  onNaturalDescriptionChange,
 }: WhereToStartSectionProps) {
   const copy = PAGE_COPY.analysis.starter
 
   return (
-    <section className="flex min-h-full w-full flex-1 flex-col">
+    <section className="flex min-h-full w-full flex-1 flex-col gap-4">
       <div className="shrink-0">
         <SectionLabel>{copy.wizardEyebrow}</SectionLabel>
+        <div className="mt-3">
+          <p className="text-xl font-black text-foreground sm:text-2xl">{copy.naturalDraftTitle}</p>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+            {copy.naturalDraftHint}
+          </p>
+        </div>
       </div>
 
       {!actionsEnabled ? (
-        <div className="mt-3 shrink-0">
+        <div className="shrink-0">
           <p className="text-sm text-muted-foreground">{copy.actionsDisabledHint}</p>
         </div>
       ) : (
-        <div className="mt-3 min-h-0 flex-1">
-          <StarterWizardContent
-            wizardStep={wizardStep}
-            intake={intake}
+        <div className="flex min-h-0 flex-1 flex-col gap-4">
+          <textarea
+            value={naturalDescription}
             disabled={wizardDisabled}
-            onSelectRole={onSelectRole}
-            onSelectOutcome={onSelectOutcome}
-            onToggleConstraint={onToggleConstraint}
+            rows={8}
+            aria-label={copy.naturalDraftTitle}
+            placeholder={copy.naturalDraftPlaceholder}
+            className={cn(
+              'min-h-[13rem] w-full resize-none rounded-[1.35rem] border border-border/70 bg-white px-4 py-3.5 font-sans text-base leading-7 text-foreground outline-none ring-primary/30 placeholder:text-muted-foreground focus-visible:ring-2',
+              wizardDisabled && 'cursor-not-allowed opacity-50',
+            )}
+            onChange={(event) => onNaturalDescriptionChange(event.target.value)}
           />
+
+          <section className="min-h-0">
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <p className="text-sm font-black text-foreground">{copy.templateSectionTitle}</p>
+            </div>
+            <div className="grid gap-2.5 lg:grid-cols-3">
+              {STARTER_PROMPT_TEMPLATES.map((template) => (
+                <button
+                  key={template.id}
+                  type="button"
+                  disabled={wizardDisabled}
+                  onClick={() => onNaturalDescriptionChange(template.prompt)}
+                  className={cn(
+                    'rounded-[1.15rem] border border-border/70 bg-white p-3 text-left transition-colors hover:border-primary/25 hover:bg-primary/[0.03]',
+                    wizardDisabled && 'cursor-not-allowed opacity-50',
+                  )}
+                >
+                  <span className="flex items-center justify-between gap-2">
+                    <span className="text-sm font-black text-foreground">{template.title}</span>
+                    <span className="rounded-full border border-primary/15 bg-primary/[0.06] px-2 py-0.5 text-[11px] font-semibold text-primary">
+                      {copy.templateUseAction}
+                    </span>
+                  </span>
+                  <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+                    {template.description}
+                  </span>
+                  <span className="mt-2 block text-xs leading-relaxed text-foreground/80">
+                    {template.prompt}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </section>
         </div>
       )}
     </section>

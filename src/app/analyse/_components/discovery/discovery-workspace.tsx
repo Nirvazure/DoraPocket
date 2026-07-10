@@ -11,9 +11,8 @@ import {
   resolveMaxVisibleStep,
   type AnalysisFlow,
 } from '@/app/analyse/_domain/analysis-stage-content'
-import { canAdvanceStarterStep } from '@/shared/discovery/starter-intake'
 import { DecisionProgressSteps } from '@/app/analyse/_components/discovery/decision-progress-steps'
-import { LiveAnalysisTrackCard } from '@/app/analyse/_components/discovery/live-analysis-track-card'
+import { StarterUnderstandingReview } from '@/app/analyse/_components/discovery/starter-understanding-review'
 import { WhereToStartSectionSkeleton } from '@/app/analyse/_components/discovery/where-to-start-section-skeleton'
 import { DisplayPanel } from '@/components/ui/display-shell'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -23,10 +22,8 @@ import {
 } from '@/app/analyse/_hooks/use-starter-wizard-state'
 import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market/market-types'
-import type { ProgressStage } from '@/shared/discovery/clarification-session-types'
 import type { UserSettings } from '@/shared/user/user-settings'
 import type { ToolLookupFn } from '@/shared/market/tool-lookup'
-import type { AppState } from '@/store'
 
 const WhereToStartSection = dynamic(
   () =>
@@ -40,9 +37,7 @@ export type DiscoveryWorkspaceHandle = StarterWizardStateHandle
 
 type DiscoveryWorkspaceProps = {
   currentPrompt: string | null
-  appState: AppState
   analysisFlow: AnalysisFlow
-  progressStage?: ProgressStage | null
   agentPayload: AgentUiPayload | null
   selectedToolPayload: ChatToolPayload
   getTool: ToolLookupFn
@@ -63,9 +58,7 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
   function DiscoveryWorkspace(
     {
       currentPrompt,
-      appState,
       analysisFlow,
-      progressStage = null,
       agentPayload,
       selectedToolPayload,
       getTool,
@@ -88,14 +81,16 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
 
     const hasPrompt = Boolean(currentPrompt?.trim())
     const hasResult = Boolean(agentPayload || selectedToolPayload?.toolId)
-    const currentStep = useMemo(
-      () => resolveCurrentStep(analysisFlow, hasPrompt, hasResult),
-      [analysisFlow, hasPrompt, hasResult],
-    )
-    const maxVisibleStep = useMemo(
-      () => resolveMaxVisibleStep(analysisFlow, hasPrompt, hasResult),
-      [analysisFlow, hasPrompt, hasResult],
-    )
+    const hasUnderstandingDraft = wizard.lastDraftSource.trim().length > 0
+    const reviewingUnderstanding = !hasPrompt && hasUnderstandingDraft
+    const currentStep = useMemo(() => {
+      if (reviewingUnderstanding) return 2
+      return resolveCurrentStep(analysisFlow, hasPrompt, hasResult)
+    }, [analysisFlow, hasPrompt, hasResult, reviewingUnderstanding])
+    const maxVisibleStep = useMemo(() => {
+      if (reviewingUnderstanding) return 2
+      return resolveMaxVisibleStep(analysisFlow, hasPrompt, hasResult)
+    }, [analysisFlow, hasPrompt, hasResult, reviewingUnderstanding])
     const [manualExpandedStep, setManualExpandedStep] = useState<number | null>(null)
     const previousStepRef = useRef(currentStep)
     const expandedStep =
@@ -132,12 +127,6 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
       onStartNewTask?.()
     }, [onStartNewTask, wizard])
 
-    const handleWizardNext = useCallback(() => {
-      if (!canAdvanceStarterStep(wizard.intake, wizard.wizardStep)) return
-      if (wizard.wizardStep >= 3) return
-      wizard.goNext()
-    }, [wizard])
-
     return (
       <section ref={sectionRef} className="scroll-mt-3 flex h-full min-h-0 flex-1 flex-col">
         <DisplayPanel className="pointer-events-auto flex h-full min-h-0 flex-col overflow-hidden">
@@ -167,22 +156,22 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
               ) : activePanelStep === 1 ? (
                 <WhereToStartSection
                   actionsEnabled={starterActionsEnabled}
-                  wizardStep={wizard.wizardStep}
-                  intake={wizard.intake}
                   wizardDisabled={!starterActionsEnabled}
-                  onSelectRole={wizard.selectRole}
-                  onSelectOutcome={wizard.selectOutcome}
-                  onToggleConstraint={wizard.toggleConstraint}
+                  naturalDescription={wizard.naturalDescription}
+                  onNaturalDescriptionChange={wizard.handleNaturalDescriptionChange}
                 />
               ) : activePanelStep === 2 ? (
                 <section className="dp-secondary-surface overflow-hidden p-3 sm:p-4">
-                  <LiveAnalysisTrackCard
-                    currentPrompt={currentPrompt}
-                    payload={agentPayload}
-                    appState={appState}
-                    analysisFlow={analysisFlow}
-                    progressStage={progressStage}
-                    starterIntake={wizard.intake}
+                  <StarterUnderstandingReview
+                    intake={wizard.intake}
+                    sourceText={wizard.lastDraftSource}
+                    intentStatus={wizard.intentStatus}
+                    intentNote={wizard.intentNote}
+                    disabled={!starterActionsEnabled}
+                    onSelectRole={wizard.selectRole}
+                    onSelectOutcome={wizard.selectOutcome}
+                    onToggleConstraint={wizard.toggleConstraint}
+                    onCustomTaskChange={wizard.handleCustomTaskChange}
                   />
                 </section>
               ) : null}
@@ -192,12 +181,17 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
           <AnalysisInteractionDock
             activePanelStep={activePanelStep}
             starterActionsEnabled={starterActionsEnabled}
-            wizardSubStep={wizard.wizardStep}
             intake={wizard.intake}
-            wizardDisabled={!starterActionsEnabled}
-            onWizardBack={wizard.goBack}
-            onWizardNext={handleWizardNext}
-            onCustomTaskChange={wizard.handleCustomTaskChange}
+            hasPrompt={hasPrompt}
+            naturalDescription={wizard.naturalDescription}
+            wizardDisabled={!starterActionsEnabled || wizard.intentStatus === 'analyzing'}
+            intentStatus={wizard.intentStatus}
+            onApplyNaturalDescription={async (value) => {
+              const draft = await wizard.applyNaturalDescription(value)
+              if (!draft) return
+              setManualExpandedStep(null)
+            }}
+            onReviewBackToInput={() => setManualExpandedStep(1)}
             onStartAnalysis={(prompt, displayPrompt) => onStartAnalysis?.(prompt, displayPrompt)}
             onStartNewTask={handleStartNewTask}
             sessionZone={sessionDock}

@@ -1,6 +1,7 @@
 import 'server-only'
 
 import type { User as SupabaseUser } from '@supabase/supabase-js'
+import { isSupabasePublicConfigAvailable } from '@/lib/supabase/config'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
 export type DoraSessionPayload = {
@@ -18,6 +19,7 @@ function toSessionPayload(user: SupabaseUser): DoraSessionPayload {
 }
 
 export async function getSupabaseSessionPayload(): Promise<DoraSessionPayload | null> {
+  if (!isSupabasePublicConfigAvailable()) return null
   const supabase = await createSupabaseServerClient()
   const { data, error } = await supabase.auth.getUser()
   if (error || !data.user) return null
@@ -25,6 +27,7 @@ export async function getSupabaseSessionPayload(): Promise<DoraSessionPayload | 
 }
 
 export async function getSupabaseCurrentUser(): Promise<SupabaseUser | null> {
+  if (!isSupabasePublicConfigAvailable()) return null
   const supabase = await createSupabaseServerClient()
   const { data, error } = await supabase.auth.getUser()
   if (error || !data.user) return null
@@ -32,6 +35,7 @@ export async function getSupabaseCurrentUser(): Promise<SupabaseUser | null> {
 }
 
 export async function clearSupabaseSession() {
+  if (!isSupabasePublicConfigAvailable()) return
   const supabase = await createSupabaseServerClient()
   await supabase.auth.signOut()
 }

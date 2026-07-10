@@ -20,6 +20,10 @@ let dataArray: Uint8Array | null = null
 let currentAudio: HTMLAudioElement | null = null
 let currentSource: MediaElementAudioSourceNode | null = null
 
+function isAutoplayBlocked(error: unknown): boolean {
+  return error instanceof DOMException && error.name === 'NotAllowedError'
+}
+
 export function initAudioContext() {
   if (!audioContext) {
     const webkitCtor = (window as Window & { webkitAudioContext?: typeof AudioContext })
@@ -52,7 +56,9 @@ export function playAudioStream(audioUrl: string, onEnded: () => void) {
     stopAudioPlayback()
   }
   void currentAudio.play().catch((error) => {
-    console.error('Audio playback failed', error)
+    if (!isAutoplayBlocked(error)) {
+      console.error('Audio playback failed', error)
+    }
     stopAudioPlayback()
     onEnded()
   })
@@ -80,10 +86,14 @@ export function playDoraPocketSfx(): Promise<void> {
       .play()
       .then(() => undefined)
       .catch((error) => {
-        console.warn('Dora pocket sfx failed', error)
+        if (!isAutoplayBlocked(error)) {
+          console.warn('Dora pocket sfx failed', error)
+        }
       })
   } catch (error) {
-    console.warn('Dora pocket sfx failed', error)
+    if (!isAutoplayBlocked(error)) {
+      console.warn('Dora pocket sfx failed', error)
+    }
     return Promise.resolve()
   }
 }

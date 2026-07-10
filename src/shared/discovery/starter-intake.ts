@@ -40,8 +40,6 @@ export type StarterOutcomeId =
   | 'support_email'
   | 'knowledge_learning'
 
-export type StarterWizardStep = 1 | 2 | 3
-
 export type StarterOutcome = {
   id: StarterOutcomeId
   title: string
@@ -54,6 +52,23 @@ export type StarterIntake = {
   outcomeId: StarterOutcomeId | null
   customTask: string
   constraintIds: StarterConstraintId[]
+}
+
+export type StarterIntakeDraft = StarterIntake & {
+  sourceText: string
+  missingInputs?: string[]
+  confidence?: Partial<Record<'role' | 'goal' | 'constraints', number>>
+  reasoningSummary?: string
+  source?: 'model' | 'fallback'
+}
+
+export type StarterIntentStatus = 'idle' | 'analyzing' | 'ready' | 'fallback'
+
+export type StarterPromptTemplate = {
+  id: string
+  title: string
+  description: string
+  prompt: string
 }
 
 export const STARTER_ROLES: Array<{ id: StarterRoleId; label: string; emoji: string }> = [
@@ -196,8 +211,36 @@ export const STARTER_OUTCOMES: StarterOutcome[] = [
   },
 ]
 
+export const STARTER_PROMPT_TEMPLATES: StarterPromptTemplate[] = [
+  {
+    id: 'research-table',
+    title: '资料整理',
+    description: '角色、输出格式和可追溯要求都说清楚。',
+    prompt:
+      '我是运营，想找一个工具帮我整理竞品资料，要求中文友好、能导出表格，并且最好带来源引用。',
+  },
+  {
+    id: 'automation-api',
+    title: '自动化接入',
+    description: '适合需要 API、流程串联或工程落地的任务。',
+    prompt:
+      '我是开发，想找一个可以接入 API 的工具，把重复流程自动化，要求文档清楚、稳定、方便集成。',
+  },
+  {
+    id: 'quick-office',
+    title: '轻量办公',
+    description: '适合快速处理文件、图片或低摩擦小任务。',
+    prompt: '我是个人用户，想快速处理 PDF 或图片，最好免费、不用注册、中文体验好，能马上开始用。',
+  },
+]
+
 const MIN_CUSTOM_TASK_LENGTH = 4
 const COLD_START_TASK_PATTERN = /任务：(.+)/
+const STARTER_ROLE_IDS = new Set<StarterRoleId>(STARTER_ROLES.map((role) => role.id))
+const STARTER_OUTCOME_IDS = new Set<StarterOutcomeId>(STARTER_OUTCOMES.map((outcome) => outcome.id))
+const STARTER_CONSTRAINT_IDS = new Set<StarterConstraintId>(
+  STARTER_CONSTRAINTS.map((constraint) => constraint.id),
+)
 
 export function getStarterOutcomeById(id: StarterOutcomeId): StarterOutcome | undefined {
   return STARTER_OUTCOMES.find((outcome) => outcome.id === id)
@@ -229,27 +272,6 @@ export function canStartStarterAnalysis(intake: StarterIntake): boolean {
   return canStartStructuredAnalysis(intake)
 }
 
-export function canAdvanceStarterStep(intake: StarterIntake, step: StarterWizardStep): boolean {
-  switch (step) {
-    case 1:
-      return true
-    case 2:
-      return canStartStructuredAnalysis(intake)
-    case 3:
-      return true
-    default:
-      return false
-  }
-}
-
-export function composeStarterPromptFromVoice(intake: StarterIntake, voiceText: string): string {
-  return composeStarterPrompt({
-    ...intake,
-    outcomeId: null,
-    customTask: voiceText.trim(),
-  })
-}
-
 export function composeStarterPrompt(intake: StarterIntake): string {
   const roleLabel = STARTER_ROLES.find((role) => role.id === intake.roleId)?.label ?? '未指定'
   const constraintLabels = STARTER_CONSTRAINTS.filter((item) =>
@@ -266,6 +288,155 @@ export function composeStarterPrompt(intake: StarterIntake): string {
     '',
     '请根据以上信息，判断这次最值得先试的工具或路径，并说明理由与下一步。',
   ].join('\n')
+}
+
+function includesAny(text: string, keywords: string[]): boolean {
+  return keywords.some((keyword) => text.includes(keyword))
+}
+
+function inferRoleId(text: string): StarterRoleId | null {
+  if (includesAny(text, ['创始', '老板', '负责人', '创业', '公司'])) return 'founder'
+  if (includesAny(text, ['市场', '运营', '增长', '投放', '社媒', '营销'])) return 'marketer'
+  if (includesAny(text, ['开发', '代码', '程序', '接口', 'api', 'API', '工程'])) return 'developer'
+  if (includesAny(text, ['设计', '海报', '视觉', '图片', '产品图', '素材'])) return 'designer'
+  if (includesAny(text, ['销售', '客户', '线索', '成交'])) return 'sales'
+  if (includesAny(text, ['招聘', '人力', '候选人', '简历'])) return 'hr'
+  if (includesAny(text, ['财务', '报销', '预算', '发票'])) return 'finance'
+  if (includesAny(text, ['流程', '协作', '自动化', '工单'])) return 'operations'
+  return null
+}
+
+function inferOutcomeId(text: string): StarterOutcomeId | null {
+  if (includesAny(text, ['资料', '引用', '来源', '调研', '搜索', '查找', '竞品']))
+    return 'research_citations'
+  if (includesAny(text, ['整理', '总结', '摘要', '会议纪要', '结构化'])) return 'structure_content'
+  if (includesAny(text, ['PDF', 'pdf', '翻译', '压缩', '去背景', '格式转换'])) return 'office_tools'
+  if (includesAny(text, ['文案', '文章', '脚本', '小红书', '公众号', '邮件'])) return 'writing'
+  if (includesAny(text, ['做图', '海报', '设计', '视觉', '产品图', '图片'])) return 'design_assets'
+  if (includesAny(text, ['数据', '表格', '报表', '分析', '可视化'])) return 'data_analytics'
+  if (includesAny(text, ['自动化', '重复', '批量', '流程', '连接'])) return 'workflow_automation'
+  if (includesAny(text, ['视频', '音频', '剪辑', '转写', '配音'])) return 'video_audio'
+  if (includesAny(text, ['客服', '客户回复', '工单', '邮件回复'])) return 'support_email'
+  if (includesAny(text, ['学习', '笔记', '知识库', '复习', '读书'])) return 'knowledge_learning'
+  return null
+}
+
+function inferConstraintIds(text: string): StarterConstraintId[] {
+  const constraints: StarterConstraintId[] = []
+  const add = (id: StarterConstraintId) => {
+    if (!constraints.includes(id)) constraints.push(id)
+  }
+
+  if (includesAny(text, ['个人', '自己', '独立', '一个人'])) add('solo')
+  if (includesAny(text, ['小团队', '团队'])) add('small_team')
+  if (includesAny(text, ['企业', '公司内部', '权限'])) add('enterprise')
+  if (includesAny(text, ['免费', '不要钱', '低成本'])) add('free_first')
+  if (includesAny(text, ['订阅', '付费'])) add('subscription_ok')
+  if (includesAny(text, ['无广告', '不要广告'])) add('no_ads')
+  if (includesAny(text, ['隐私', '敏感', '保密'])) add('privacy_sensitive')
+  if (includesAny(text, ['免注册', '不用登录', '不登录'])) add('no_signup')
+  if (includesAny(text, ['来源', '引用', '可追溯', '可核验'])) add('citations')
+  if (includesAny(text, ['快', '马上', '立刻', '简单', '上手'])) add('fast_start')
+  if (includesAny(text, ['中文', '国内'])) add('chinese')
+  if (includesAny(text, ['API', 'api', '接口', '集成'])) add('api_needed')
+  if (includesAny(text, ['手机', '移动端'])) add('mobile_first')
+
+  return constraints
+}
+
+export function inferStarterIntakeFromText(text: string): StarterIntakeDraft {
+  const sourceText = text.trim()
+  return {
+    roleId: inferRoleId(sourceText),
+    outcomeId: inferOutcomeId(sourceText),
+    customTask: sourceText,
+    constraintIds: inferConstraintIds(sourceText),
+    sourceText,
+    source: 'fallback',
+  }
+}
+
+function normalizeString(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : ''
+}
+
+function normalizeConfidenceValue(value: unknown): number | undefined {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return undefined
+  return Math.max(0, Math.min(1, value))
+}
+
+function normalizeStringArray(value: unknown, limit: number): string[] {
+  if (!Array.isArray(value)) return []
+  return value
+    .map((item) => normalizeString(item))
+    .filter(Boolean)
+    .slice(0, limit)
+}
+
+function extractJsonObject(text: string): string {
+  const trimmed = text.trim()
+  if (trimmed.startsWith('{') && trimmed.endsWith('}')) return trimmed
+  const start = trimmed.indexOf('{')
+  const end = trimmed.lastIndexOf('}')
+  if (start < 0 || end <= start) {
+    throw new Error('intent response did not include a JSON object')
+  }
+  return trimmed.slice(start, end + 1)
+}
+
+export function normalizeStarterIntakeDraft(
+  value: unknown,
+  sourceText: string,
+  source: StarterIntakeDraft['source'] = 'model',
+): StarterIntakeDraft {
+  const record = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
+  const roleId = normalizeString(record.roleId)
+  const outcomeId = normalizeString(record.outcomeId)
+  const constraintIds = Array.isArray(record.constraintIds)
+    ? record.constraintIds
+        .map((item) => normalizeString(item))
+        .filter((id): id is StarterConstraintId =>
+          STARTER_CONSTRAINT_IDS.has(id as StarterConstraintId),
+        )
+    : []
+  const confidenceRecord =
+    record.confidence && typeof record.confidence === 'object'
+      ? (record.confidence as Record<string, unknown>)
+      : {}
+  const confidence: StarterIntakeDraft['confidence'] = {}
+  const roleConfidence = normalizeConfidenceValue(confidenceRecord.role)
+  const goalConfidence = normalizeConfidenceValue(confidenceRecord.goal)
+  const constraintsConfidence = normalizeConfidenceValue(confidenceRecord.constraints)
+
+  if (roleConfidence != null) confidence.role = roleConfidence
+  if (goalConfidence != null) confidence.goal = goalConfidence
+  if (constraintsConfidence != null) confidence.constraints = constraintsConfidence
+
+  const safeSourceText = sourceText.trim()
+  const customTask = normalizeString(record.customTask) || safeSourceText
+
+  return {
+    roleId: STARTER_ROLE_IDS.has(roleId as StarterRoleId) ? (roleId as StarterRoleId) : null,
+    outcomeId: STARTER_OUTCOME_IDS.has(outcomeId as StarterOutcomeId)
+      ? (outcomeId as StarterOutcomeId)
+      : null,
+    customTask,
+    constraintIds: [...new Set(constraintIds)],
+    sourceText: normalizeString(record.sourceText) || safeSourceText,
+    missingInputs: normalizeStringArray(record.missingInputs, 3),
+    confidence: Object.keys(confidence).length > 0 ? confidence : undefined,
+    reasoningSummary: normalizeString(record.reasoningSummary) || undefined,
+    source,
+  }
+}
+
+export function parseStarterIntakeDraftJson(
+  text: string,
+  sourceText: string,
+  source: StarterIntakeDraft['source'] = 'model',
+): StarterIntakeDraft {
+  const json = extractJsonObject(text)
+  return normalizeStarterIntakeDraft(JSON.parse(json) as unknown, sourceText, source)
 }
 
 export function createEmptyStarterIntake(): StarterIntake {
