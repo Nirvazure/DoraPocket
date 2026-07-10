@@ -20,6 +20,7 @@ export type AnalysisInteractionDockProps = {
   starterActionsEnabled: boolean
   intake: StarterIntake
   hasPrompt: boolean
+  showRecommendationActions: boolean
   naturalDescription: string
   intentStatus: StarterIntentStatus
   wizardDisabled?: boolean
@@ -27,6 +28,7 @@ export type AnalysisInteractionDockProps = {
   onReviewBackToInput: () => void
   onStartAnalysis: (prompt: string, displayPrompt: string) => void | Promise<void>
   onStartNewTask: () => void
+  onReturnToUnderstanding: () => void
   sessionZone: DoraBottomInteractionZoneProps | null
 }
 
@@ -35,6 +37,7 @@ export function AnalysisInteractionDock({
   starterActionsEnabled,
   intake,
   hasPrompt,
+  showRecommendationActions,
   naturalDescription,
   intentStatus,
   wizardDisabled = false,
@@ -42,6 +45,7 @@ export function AnalysisInteractionDock({
   onReviewBackToInput,
   onStartAnalysis,
   onStartNewTask,
+  onReturnToUnderstanding,
   sessionZone,
 }: AnalysisInteractionDockProps) {
   const copy = PAGE_COPY.analysis.starter
@@ -67,7 +71,8 @@ export function AnalysisInteractionDock({
     void onApplyNaturalDescription(naturalDescription)
   }
 
-  const showSessionZone = activePanelStep === 3 && hasPrompt && sessionZone
+  const showSessionZone =
+    activePanelStep === 3 && hasPrompt && !showRecommendationActions && sessionZone
   const showNewTaskOnly =
     (activePanelStep === 3 && !hasPrompt) || (activePanelStep === 1 && !starterActionsEnabled)
 
@@ -78,7 +83,24 @@ export function AnalysisInteractionDock({
         <DoraBottomInteractionZone {...sessionZone} hideVoiceToggle />
       ) : null}
 
-      {showSessionZone ? null : showNewTaskOnly ? (
+      {activePanelStep === 3 && showRecommendationActions ? (
+        <div className="flex flex-col gap-2 px-3 py-2.5 sm:flex-row sm:px-4 sm:py-3">
+          <button
+            type="button"
+            onClick={onReturnToUnderstanding}
+            className="rounded-full border border-border/60 bg-white px-4 py-2.5 text-[11px] font-semibold text-foreground/80 transition-colors hover:bg-slate-50 sm:w-40"
+          >
+            {copy.returnToUnderstandingAction}
+          </button>
+          <button
+            type="button"
+            onClick={onStartNewTask}
+            className="flex flex-1 items-center justify-center rounded-full border-2 border-primary/30 bg-primary px-4 py-2.5 text-sm font-black text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+          >
+            {copy.newTaskAction}
+          </button>
+        </div>
+      ) : showSessionZone ? null : showNewTaskOnly ? (
         <div className="px-3 py-2.5 sm:px-4 sm:py-3">
           <button
             type="button"
