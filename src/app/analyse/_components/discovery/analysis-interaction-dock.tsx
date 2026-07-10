@@ -71,14 +71,15 @@ export function AnalysisInteractionDock({
     void onApplyNaturalDescription(naturalDescription)
   }
 
-  const showSessionZone =
-    activePanelStep === 3 && hasPrompt && !showRecommendationActions && sessionZone
   const showNewTaskOnly =
     (activePanelStep === 3 && !hasPrompt) || (activePanelStep === 1 && !starterActionsEnabled)
 
+  if (activePanelStep === 3 && hasPrompt && !showRecommendationActions) {
+    return null
+  }
+
   return (
     <div className="shrink-0 border-t border-border/45 bg-white/90 backdrop-blur-md">
-      {showSessionZone ? <DoraBottomInteractionZone {...sessionZone} hideVoiceToggle /> : null}
       {activePanelStep === 2 && hasPrompt && sessionZone ? (
         <DoraBottomInteractionZone {...sessionZone} hideVoiceToggle />
       ) : null}
@@ -100,7 +101,7 @@ export function AnalysisInteractionDock({
             {copy.newTaskAction}
           </button>
         </div>
-      ) : showSessionZone ? null : showNewTaskOnly ? (
+      ) : showNewTaskOnly ? (
         <div className="px-3 py-2.5 sm:px-4 sm:py-3">
           <button
             type="button"

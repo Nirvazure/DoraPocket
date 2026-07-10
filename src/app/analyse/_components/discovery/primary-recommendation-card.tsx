@@ -1,7 +1,6 @@
 import { ExternalLink, FolderOpenDot } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { MarketToolIcon } from '@/components/shared/market-tool-icon'
-import { Skeleton } from '@/components/ui/skeleton'
 import {
   DisplayPanel,
   DisplayPanelContent,
@@ -15,7 +14,6 @@ import { shouldShowCandidateScore } from '@/app/analyse/_components/discovery/ca
 import { RecommendationEvaluationBar } from '@/app/analyse/_components/discovery/recommendation-evaluation-bar'
 import {
   buildPrimaryRecommendation,
-  isRecommendationCovered,
   isRecommendationRevealing,
   type AnalysisFlow,
 } from '@/app/analyse/_domain/analysis-stage-content'
@@ -56,38 +54,6 @@ export function PrimaryRecommendationCard({
   const leaderExternalUrl =
     leader?.candidateType === 'external_suggestion' ? (leader.url ?? null) : null
   const revealing = isRecommendationRevealing(analysisFlow)
-  const covered = isRecommendationCovered(analysisFlow)
-
-  if (covered) {
-    return (
-      <DisplayPanel className="relative w-full overflow-hidden rounded-xl border-sky-200/80 bg-white shadow-xl shadow-sky-900/8">
-        <div
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.94),rgba(240,249,255,0.88))]"
-          aria-hidden
-        />
-        <DisplayPanelHeader className="relative overflow-hidden p-4 sm:p-5">
-          <Skeleton
-            className="pointer-events-none absolute -right-8 top-1/2 h-40 w-40 -translate-y-1/2 rounded-[1.5rem] bg-sky-100/60 sm:h-48 sm:w-48"
-            aria-hidden
-          />
-          <div className="relative z-10 flex items-start justify-between gap-4">
-            <div className="min-w-0 max-w-[68%] space-y-3 sm:max-w-[62%]">
-              <div className="flex flex-wrap items-end gap-3">
-                <Skeleton className="h-9 w-40 bg-sky-100" />
-                <Skeleton className="mb-1 h-5 w-24 rounded-full bg-slate-200" />
-              </div>
-              <Skeleton className="h-4 w-4/5 bg-slate-200" />
-            </div>
-            <Skeleton className="h-16 w-16 shrink-0 rounded-xl bg-sky-100" />
-          </div>
-        </DisplayPanelHeader>
-        <DisplayPanelContent className="relative z-10 flex flex-wrap gap-2 px-4 pb-4 pt-0 sm:px-5">
-          <Skeleton className="h-10 w-24 rounded-full bg-sky-100" />
-          <Skeleton className="h-10 w-24 rounded-full bg-slate-200" />
-        </DisplayPanelContent>
-      </DisplayPanel>
-    )
-  }
 
   return (
     <DisplayPanel className="relative w-full overflow-hidden rounded-xl border-primary/15 bg-slate-950 shadow-xl shadow-primary/5">

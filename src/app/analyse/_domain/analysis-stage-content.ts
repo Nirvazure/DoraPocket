@@ -70,6 +70,10 @@ export function isRecommendationRevealing(flow: AnalysisFlow) {
   return flow.phase === 'analyzing' && flow.beat === 'reveal'
 }
 
+export function shouldShowRecommendationWaiting(flow: AnalysisFlow, hasResult: boolean) {
+  return flow.phase === 'analyzing' || !hasResult
+}
+
 export function resolvePocketBarCopy(flow: AnalysisFlow) {
   if (flow.phase !== 'analyzing') {
     return { title: '翻口袋中', detail: '正在收敛方向' }

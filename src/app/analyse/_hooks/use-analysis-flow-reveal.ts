@@ -7,7 +7,7 @@ import {
   type AnalysisFlow,
 } from '@/app/analyse/_domain/analysis-stage-content'
 
-const COVER_DURATION_MS = 2600
+const COVER_DURATION_MS = 3800
 const REVEAL_DURATION_MS = 420
 
 const WORKING_FLOW: AnalysisFlow = { phase: 'analyzing', beat: 'working' }
