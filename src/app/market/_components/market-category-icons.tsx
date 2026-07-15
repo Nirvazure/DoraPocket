@@ -9,13 +9,15 @@ import {
   Palette,
   PenSquare,
   Search,
+  Sparkles,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { ToolCategory } from '@/shared/market/tool-registry'
 
-export type MarketCategoryKey = 'pocket' | ToolCategory
+export type MarketCategoryKey = 'discover_home' | 'pocket' | ToolCategory
 
 const CATEGORY_ICON_MAP: Record<MarketCategoryKey, LucideIcon> = {
+  discover_home: Sparkles,
   pocket: FolderHeart,
   ai_assistant: Bot,
   search: Search,

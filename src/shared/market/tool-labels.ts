@@ -46,5 +46,5 @@ export const TOOL_PREFERENCE_LABELS: Record<
   native_card: '站内卡片',
   external_link: '外部工具',
   workflow: '流程方案',
-  reference_only: '仅参考资料',
+  reference_only: '仅供参考',
 }

@@ -331,11 +331,11 @@
   }
 
   .dp-tool-chip {
-    @apply rounded-full border border-white/80 bg-white/85 shadow-sm backdrop-blur-sm transition-colors duration-200;
+    @apply rounded-full border border-white/80 bg-white/90 shadow-sm backdrop-blur-sm transition-colors duration-200;
   }
 
   .dp-tool-chip:hover {
-    @apply border-primary/15 bg-white;
+    @apply border-primary/20 bg-white;
   }
 
   .dp-tool-cta {
@@ -370,19 +370,20 @@
 
   /* 道具库侧栏分类导航 */
   .dp-market-sidebar {
-    @apply relative flex min-h-0 w-full flex-col overflow-hidden rounded-[1.65rem] border border-white/80 p-3 backdrop-blur-xl;
+    @apply relative flex min-h-0 w-full flex-col overflow-hidden rounded-[2rem] border border-white/85 p-3 backdrop-blur-xl xl:sticky xl:top-6 xl:h-[calc(100dvh-9rem)] xl:min-h-[42rem];
     background-image: linear-gradient(
-      165deg,
-      hsl(0 0% 100% / 0.92) 0%,
-      hsl(199 45% 98% / 0.84) 38%,
-      hsl(199 55% 96% / 0.8) 100%
+      180deg,
+      hsl(0 0% 100% / 0.95) 0%,
+      hsl(201 53% 98% / 0.92) 42%,
+      hsl(202 58% 96% / 0.88) 100%
     );
     box-shadow:
-      0 10px 32px -12px rgba(15, 23, 42, 0.14),
+      0 22px 48px -24px rgba(15, 23, 42, 0.18),
       inset 0 1px 0 rgba(255, 255, 255, 0.95);
   }
 
-  .dp-market-sidebar::before {
+  .dp-market-sidebar::before,
+  .dp-market-content-shell::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -391,16 +392,127 @@
     background: linear-gradient(180deg, hsl(var(--primary) / 0.07) 0%, transparent 38%);
   }
 
-  .dp-market-sidebar-header {
-    @apply relative z-[1] shrink-0 border-b border-primary/10 pb-3;
+  .dp-market-sidebar-collapsed {
+    @apply px-2.5 py-3 xl:w-[5.2rem];
   }
 
-  .dp-market-sidebar-list {
-    @apply relative z-[1] mt-3 space-y-1.5 pb-1;
+  .dp-market-sidebar-icon-btn {
+    @apply relative inline-flex size-11 items-center justify-center rounded-[1.2rem] border border-white/90 bg-white/80 text-slate-700 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.18)] backdrop-blur-md transition-[border-color,box-shadow,transform,color] duration-200;
+  }
+
+  .dp-market-sidebar-icon-btn:hover,
+  .dp-market-sidebar-section-btn:hover,
+  .dp-market-sidebar-home-btn:hover {
+    @apply border-primary/20 text-primary shadow-[0_14px_28px_-16px_hsl(var(--primary)/0.22)];
+    transform: translateY(-1px);
+  }
+
+  .dp-market-sidebar-btn-active {
+    background-image: linear-gradient(
+      145deg,
+      hsl(var(--primary) / 0.14) 0%,
+      hsl(0 0% 100% / 0.96) 100%
+    );
+    border-color: hsl(var(--primary) / 0.24);
+    color: hsl(var(--primary));
+  }
+
+  .dp-market-sidebar-scroll {
+    @apply relative z-[1] flex min-h-0 flex-1 flex-col overflow-hidden;
+  }
+
+  .dp-market-sidebar-home-shell {
+    @apply relative flex items-stretch overflow-hidden rounded-[1.5rem] border border-white/85 bg-white/80 shadow-[0_12px_30px_-18px_rgba(15,23,42,0.18)] backdrop-blur-xl transition-[border-color,box-shadow,transform] duration-200;
+  }
+
+  .dp-market-sidebar-home-shell:hover {
+    @apply border-primary/20 shadow-[0_18px_34px_-18px_hsl(var(--primary)/0.24)];
+    transform: translateY(-1px);
+  }
+
+  .dp-market-sidebar-home-main {
+    @apply relative z-[1] min-w-0 flex-1 bg-transparent p-3 text-left;
+  }
+
+  .dp-market-sidebar-home-toggle {
+    @apply relative z-[1] inline-flex w-[4.25rem] shrink-0 items-center justify-center border-l border-white/75 bg-white/30 text-slate-600 transition-[background-color,color] duration-200;
+  }
+
+  .dp-market-sidebar-home-toggle:hover {
+    @apply bg-white/60 text-primary;
+  }
+
+  .dp-market-sidebar-home-btn {
+    @apply relative z-[1] flex w-full items-center gap-3 rounded-[1.5rem] border border-white/85 bg-white/80 p-3 text-left shadow-[0_12px_30px_-18px_rgba(15,23,42,0.18)] backdrop-blur-xl transition-[border-color,box-shadow,transform] duration-200;
+  }
+
+  .dp-market-sidebar-section-btn {
+    @apply relative z-[1] flex w-full items-center gap-3 rounded-[1.35rem] border border-white/80 bg-white/75 p-3 text-left shadow-[0_8px_22px_-16px_rgba(15,23,42,0.16)] backdrop-blur-md transition-[border-color,box-shadow,transform] duration-200;
+  }
+
+  .dp-market-sidebar-icon-wrap {
+    @apply flex size-9 shrink-0 items-center justify-center rounded-[1rem] border border-white/90 bg-white text-slate-700 shadow-sm;
+  }
+
+  .dp-market-sidebar-icon-wrap-collapsed {
+    @apply flex size-9 items-center justify-center rounded-[0.95rem];
+  }
+
+  .dp-market-sidebar-home-icon {
+    @apply size-12 rounded-[1.15rem];
+  }
+
+  .dp-market-sidebar-rail-control {
+    @apply mt-2 self-start;
+  }
+
+  .dp-market-sidebar-rail-control:hover {
+    @apply border-primary/20 text-primary shadow-[0_14px_28px_-16px_hsl(var(--primary)/0.22)];
+    transform: translateY(-1px);
+  }
+
+  .dp-market-sidebar-pill {
+    @apply shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold tabular-nums text-slate-500;
+  }
+
+  .dp-market-sidebar-pill-active {
+    @apply bg-primary/10 text-primary;
+  }
+
+  .dp-market-workbench {
+    @apply grid min-h-0 w-full gap-4 xl:grid-cols-[18.5rem_minmax(0,1fr)] xl:items-start;
+  }
+
+  .dp-market-workbench-collapsed {
+    @apply xl:grid-cols-[5.4rem_minmax(0,1fr)];
+  }
+
+  .dp-market-content-shell {
+    @apply relative grid min-h-0 w-full content-start items-start gap-4 rounded-[2rem] border border-white/80 p-3.5 backdrop-blur-2xl sm:p-4;
+    grid-template-rows: auto minmax(0, 1fr);
+    background-image: linear-gradient(
+      180deg,
+      hsl(0 0% 100% / 0.95) 0%,
+      hsl(202 52% 99% / 0.92) 38%,
+      hsl(202 58% 96% / 0.88) 100%
+    );
+    box-shadow:
+      0 22px 54px -26px rgba(15, 23, 42, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  }
+
+  @media (min-width: 1280px) {
+    .dp-market-content-shell {
+      min-height: calc(100dvh - 9rem);
+    }
+  }
+
+  .dp-market-body-slot {
+    @apply min-h-0 self-start content-start;
   }
 
   .dp-market-scope-switch {
-    @apply flex w-full min-h-11 min-w-0 items-stretch rounded-full border border-white/75 bg-white/50 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-md;
+    @apply flex w-full min-h-11 min-w-0 items-stretch rounded-full border border-white/75 bg-white/60 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.84)] backdrop-blur-md;
   }
 
   .dp-market-scope-tab {
@@ -458,7 +570,7 @@
   }
 
   .dp-market-nav-icon-active {
-    @apply border-primary/15 text-primary-foreground shadow-[0_6px_16px_-6px_hsl(var(--primary)/0.4)];
+    @apply border-primary/20 text-primary-foreground shadow-[0_6px_16px_-6px_hsl(var(--primary)/0.4)];
     background-image: linear-gradient(
       135deg,
       hsl(var(--primary)) 0%,
@@ -484,7 +596,7 @@
   }
 
   .dp-market-chip:hover {
-    @apply border-primary/15 bg-white shadow-[0_8px_20px_-12px_rgba(15,23,42,0.12)];
+    @apply border-primary/20 bg-white shadow-[0_8px_20px_-12px_rgba(15,23,42,0.12)];
   }
 
   .dp-market-chip-active {
@@ -497,12 +609,128 @@
   }
 
   /* 全站顶栏 — Egloo 式浮动胶囊（静态玻璃） */
+  .dp-market-toolbar-shell {
+    @apply relative z-[1] flex flex-col gap-2.5 rounded-[1.5rem] p-2.5  backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between sm:p-3;
+  }
+
+  .dp-market-search-shell {
+    @apply relative min-w-0 flex-1;
+  }
+
+  .dp-market-showcase-shell {
+    @apply rounded-[1.95rem] border border-white/85 bg-white/70 p-4 shadow-[0_18px_40px_-22px_rgba(15,23,42,0.14),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-2xl sm:p-5;
+  }
+
+  .dp-market-pocket-fab {
+    @apply fixed bottom-7 right-7 z-40 inline-flex h-16 items-center gap-2 rounded-full border border-white/85 px-3 pr-4 text-sm font-bold text-slate-800 shadow-[0_20px_42px_-18px_rgba(15,23,42,0.24),inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-2xl transition-[transform,box-shadow,border-color] duration-200 hover:border-primary/20 hover:shadow-[0_22px_46px_-18px_hsl(var(--primary)/0.28)] hover:-translate-y-0.5 sm:bottom-8 sm:right-8;
+    background-image: linear-gradient(
+      145deg,
+      hsl(0 0% 100% / 0.92) 0%,
+      hsl(199 48% 97% / 0.86) 100%
+    );
+  }
+
+  .dp-market-pocket-fab-image {
+    @apply relative inline-flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/90 bg-white/90 shadow-sm;
+  }
+
+  .dp-market-pocket-fab-glyph {
+    @apply size-5 text-primary;
+  }
+
+  .dp-market-pocket-fab-label {
+    @apply hidden whitespace-nowrap sm:inline;
+  }
+
+  .dp-market-pocket-fab-skeleton {
+    @apply fixed bottom-7 right-7 z-30 hidden xl:block sm:bottom-8 sm:right-8;
+  }
+
+  .dp-market-showcase-head {
+    @apply mb-5 flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between;
+  }
+
+  .dp-market-section-heading {
+    @apply flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between;
+  }
+
+  .dp-market-section-eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.24em] text-primary/60;
+  }
+
+  .dp-market-section-title {
+    @apply mt-1 text-xl font-black tracking-tight text-slate-950 sm:text-2xl;
+  }
+
+  .dp-market-section-description {
+    @apply max-w-2xl text-sm leading-6 text-slate-600;
+  }
+
+  .dp-market-featured-card {
+    @apply rounded-[1.85rem] border border-white/85 bg-white/80 p-5 shadow-[0_18px_46px_-18px_rgba(15,23,42,0.18)] backdrop-blur-xl;
+    background-image: linear-gradient(
+      145deg,
+      hsl(0 0% 100% / 0.97) 0%,
+      hsl(200 48% 98% / 0.9) 55%,
+      hsl(202 55% 96% / 0.86) 100%
+    );
+  }
+
+  .dp-market-featured-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(180deg, hsl(var(--primary) / 0.08) 0%, transparent 40%);
+  }
+
+  .dp-market-featured-kicker {
+    @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-primary/70;
+  }
+
+  .dp-market-featured-action {
+    @apply inline-flex h-10 items-center gap-1.5 rounded-full border border-white/80 bg-white/90 px-4 text-xs font-bold text-slate-700 shadow-sm transition hover:border-primary/20 hover:text-primary;
+  }
+
+  .dp-market-featured-action-active {
+    @apply text-primary;
+  }
+
+  .dp-market-metric-pill {
+    @apply rounded-[1.2rem] border border-white/80 bg-white/80 px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.88)] backdrop-blur-sm;
+  }
+
+  .dp-market-metric-label {
+    @apply block text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400;
+  }
+
+  .dp-market-metric-value {
+    @apply mt-1 block text-sm font-black text-slate-900;
+  }
+
+  .dp-market-mini-card {
+    @apply rounded-[1.45rem] border border-white/80 bg-white/80 p-3.5 shadow-[0_14px_28px_-18px_rgba(15,23,42,0.14),inset_0_1px_0_rgba(255,255,255,0.88)] backdrop-blur-lg;
+  }
+
+  .dp-market-mini-save {
+    @apply inline-flex size-8 items-center justify-center rounded-full border border-white/90 bg-white text-slate-500 shadow-sm transition hover:border-primary/20 hover:text-primary;
+  }
+
+  .dp-market-mini-save-active {
+    @apply text-primary;
+  }
+
+  .dp-market-skeleton-card {
+    @apply border border-white/75 bg-white/75 shadow-[0_14px_32px_-16px_rgba(15,23,42,0.12)] backdrop-blur-xl;
+  }
+
   .dp-top-bar-shell {
     @apply w-full;
   }
 
   .dp-top-bar {
-    @apply relative overflow-visible rounded-[1.85rem] border border-white/85 p-1 shadow-[0_16px_48px_-16px_rgba(15,23,42,0.16)] backdrop-blur-2xl sm:rounded-[2rem];
+    @apply relative overflow-visible rounded-[1.85rem] border border-white/90 p-1 shadow-[0_16px_48px_-16px_rgba(15,23,42,0.16)] backdrop-blur-2xl sm:rounded-[2rem];
     background-image: linear-gradient(
       165deg,
       hsl(0 0% 100% / 0.94) 0%,
@@ -562,7 +790,7 @@
   }
 
   .dp-top-nav-tab:hover:not(.dp-top-nav-tab-active) {
-    @apply bg-white/85 text-slate-900;
+    @apply bg-white/90 text-slate-900;
   }
 
   .dp-top-nav-tab-active {
@@ -575,7 +803,7 @@
   }
 
   .dp-top-profile-pill {
-    @apply inline-flex h-10 cursor-pointer items-center gap-2 rounded-full border border-white/85 px-2 pr-3 shadow-[0_8px_22px_-12px_rgba(15,23,42,0.14)] backdrop-blur-sm transition-[border-color,box-shadow,background-color] duration-200;
+    @apply inline-flex h-10 cursor-pointer items-center gap-2 rounded-full border border-white/90 px-2 pr-3 shadow-[0_8px_22px_-12px_rgba(15,23,42,0.14)] backdrop-blur-sm transition-[border-color,box-shadow,background-color] duration-200;
     background-image: linear-gradient(
       145deg,
       hsl(0 0% 100% / 0.92) 0%,
@@ -584,7 +812,7 @@
   }
 
   .dp-top-profile-pill:hover {
-    @apply border-primary/15 shadow-[0_10px_26px_-12px_hsl(var(--primary)/0.2)];
+    @apply border-primary/20 shadow-[0_10px_26px_-12px_hsl(var(--primary)/0.2)];
   }
 
   .dp-top-profile-pill-active {
@@ -605,11 +833,11 @@
   }
 
   .dp-glass-nav-outer {
-    @apply rounded-[2rem] border border-white/80 bg-white/55 p-1.5 shadow-[0_14px_40px_-12px_rgba(15,23,42,0.14)] backdrop-blur-2xl;
+    @apply rounded-[2rem] border border-white/80 bg-white/50 p-1.5 shadow-[0_14px_40px_-12px_rgba(15,23,42,0.14)] backdrop-blur-2xl;
   }
 
   .dp-nav-pill {
-    @apply inline-flex items-center rounded-full border border-white/70 bg-white/55 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] backdrop-blur-md;
+    @apply inline-flex items-center rounded-full border border-white/70 bg-white/50 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] backdrop-blur-md;
   }
 
   .dp-pocket-surface {
@@ -666,7 +894,7 @@
   }
 
   .dp-match-score-hero {
-    @apply flex min-w-[4.25rem] flex-col items-center justify-center gap-1 rounded-2xl border border-primary/15 bg-primary/5 px-3 py-3.5;
+    @apply flex min-w-[4.25rem] flex-col items-center justify-center gap-1 rounded-2xl border border-primary/20 bg-primary/5 px-3 py-3.5;
   }
 
   .dp-match-score-hero-dark {
@@ -687,7 +915,7 @@
   }
 
   .dp-match-score-hero-dark .dp-match-score-hero-label {
-    @apply text-white/55;
+    @apply text-white/50;
   }
 
   /* 分析页备选道具卡 — 独立卡片，无外层货架 */
@@ -723,7 +951,7 @@
   }
 
   .dp-match-score-chip {
-    @apply inline-flex items-baseline gap-1.5 rounded-full border border-primary/15 bg-primary/5 px-3 py-1;
+    @apply inline-flex items-baseline gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1;
   }
 
   .dp-match-score-chip-dark {

@@ -5,9 +5,12 @@ import type { MarketReviewAggregate } from '@/shared/market/market-types'
 import { type ToolItem } from '@/shared/market/tool-registry'
 import {
   buildMarketNavigation,
+  DISCOVER_HOME_SECTION_KEY,
+  DISCOVER_HOME_SECTION_LABEL,
   resolveCurrentTools,
   resolveMarketSection,
   resolveScopedTools,
+  type MarketDiscoverSectionKey,
   type MarketScope,
   type MarketSectionKey,
   type MarketToolCardItem,
@@ -33,8 +36,6 @@ export type {
   MarketToolCardItem,
 } from '@/shared/market/market-scope'
 
-type DiscoverSectionKey = Exclude<MarketSectionKey, 'pocket'>
-
 type UseMarketPageModelOptions = {
   pocketToolIds: Set<string>
   initialSection?: MarketSectionKey | null
@@ -59,7 +60,9 @@ export function useMarketPageModel(
   const [marketScope, setMarketScope] = useState<MarketScope>(
     initialSection === 'pocket' ? 'pocket' : 'discover',
   )
-  const [selectedSection, setSelectedSection] = useState<MarketSectionKey>('ai_assistant')
+  const [selectedSection, setSelectedSection] = useState<MarketSectionKey>(
+    initialSection && initialSection !== 'pocket' ? initialSection : DISCOVER_HOME_SECTION_KEY,
+  )
   const [reviewToolId, setReviewToolId] = useState<string | null>(null)
 
   const discoverCount = toolsSource.length
@@ -83,14 +86,21 @@ export function useMarketPageModel(
     () => buildMarketNavigation({ scopedTools, pocketToolIds, allTools: tools }),
     [pocketToolIds, scopedTools, tools],
   )
+  const navigationEntries =
+    marketScope === 'discover'
+      ? ([
+          [DISCOVER_HOME_SECTION_KEY, DISCOVER_HOME_SECTION_LABEL],
+          ...navigation.categoryEntries,
+        ] as const)
+      : navigation.categoryEntries
 
   const resolvedSection = useMemo(
     () =>
       resolveMarketSection({
         selectedSection,
-        categoryEntries: navigation.categoryEntries,
+        categoryEntries: navigationEntries,
       }),
-    [navigation.categoryEntries, selectedSection],
+    [navigationEntries, selectedSection],
   )
 
   const currentCategoryTools = useMemo(
@@ -106,9 +116,12 @@ export function useMarketPageModel(
   const setScope = (scope: MarketScope) => {
     if (scope === marketScope) return
     setMarketScope(scope)
+    if (scope === 'discover') {
+      setSelectedSection(DISCOVER_HOME_SECTION_KEY)
+    }
   }
 
-  const selectSection = (key: DiscoverSectionKey) => {
+  const selectSection = (key: MarketDiscoverSectionKey) => {
     setSelectedSection(key)
   }
 
@@ -128,9 +141,8 @@ export function useMarketPageModel(
   }
 
   const discoverCategoryEntries = navigation.categoryEntries as ReadonlyArray<
-    readonly [DiscoverSectionKey, string]
+    readonly [Exclude<MarketDiscoverSectionKey, typeof DISCOVER_HOME_SECTION_KEY>, string]
   >
-
   return {
     query,
     setQuery: onQueryChange,
@@ -142,6 +154,7 @@ export function useMarketPageModel(
     setScope,
     selectedSection: resolvedSection,
     selectSection,
+    navigationEntries,
     categoryEntries: discoverCategoryEntries,
     categoryCounts: navigation.categoryCounts,
     discoverCount,
