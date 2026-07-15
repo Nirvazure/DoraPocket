@@ -1,12 +1,14 @@
 'use client'
 
+import Image from 'next/image'
 import { useMemo, useState, useSyncExternalStore } from 'react'
-import { LogIn } from 'lucide-react'
+import { LogIn, Store } from 'lucide-react'
 import { LoginEntryButton } from '@/components/auth/login-entry-button'
 import { PageShell } from '@/components/common/page-shell'
 import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
 import { MarketCategoryNav } from '@/app/market/_components/market-category-nav'
+import { MarketCuratedHome } from '@/app/market/_components/market-curated-home'
 import {
   MarketPageSkeleton,
   MarketToolGridSkeleton,
@@ -22,16 +24,15 @@ import {
   DisplayPanelDescription,
   DisplayPanelTitle,
 } from '@/components/ui/display-shell'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
 import { useMarketPageModel } from '@/app/market/_hooks/use-market-page-model'
 import { useToolCardActions } from '@/hooks/use-tool-card-actions'
 import { useAuthSessionQuery } from '@/lib/query/auth-session'
 import {
   useMarketReviewAggregatesQuery,
-  useSaveMarketFeedbackMutation,
   useMarketToolsByIdsQuery,
   useMarketToolsQuery,
+  useSaveMarketFeedbackMutation,
   useSubmitMarketToolMutation,
 } from '@/lib/query/market'
 import {
@@ -42,15 +43,37 @@ import {
 } from '@/lib/query/pocket'
 import { cn } from '@/lib/utils'
 import type { MarketSectionKey } from '@/shared/market/market-scope'
-import { buildActivePocketToolIds } from '@/shared/market/market-scope'
+import {
+  buildActivePocketToolIds,
+  DISCOVER_HOME_SECTION_KEY,
+  type MarketDiscoverSectionKey,
+  type MarketToolCardItem,
+} from '@/shared/market/market-scope'
 import { APP_BRAND_TITLE, PAGE_COPY } from '@/shared/copy/ui-copy'
 
 type MarketPageClientProps = {
   initialSection?: MarketSectionKey | null
 }
 
+function rankFeaturedTool(tool: {
+  reviewAggregate: { averageStar: number | null; reviewCount: number } | null
+  ratingSummary: { score: number }
+  usageStats: { saves: number }
+  tags: string[]
+}) {
+  const aggregate = tool.reviewAggregate
+  return (
+    (aggregate?.averageStar ?? 0) * 24 +
+    (aggregate?.reviewCount ?? 0) * 4 +
+    Math.max(0, tool.ratingSummary.score) * 3 +
+    tool.usageStats.saves * 0.5 +
+    tool.tags.length * 1.5
+  )
+}
+
 export function MarketPageClient({ initialSection = null }: MarketPageClientProps) {
   const [query, setQuery] = useState('')
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const debouncedQuery = useDebouncedValue(query, 300)
   const { data: authSession, isPending: authPending } = useAuthSessionQuery()
   const { data: pocketInventory = [] } = usePocketInventoryQuery()
@@ -103,8 +126,7 @@ export function MarketPageClient({ initialSection = null }: MarketPageClientProp
     isAuthenticated,
     markToolUsed: markToolUsedMutation.mutate,
     saveToolToPocket: saveToolToPocketMutation.mutate,
-    getSourceQuestion: () =>
-      initialSection === 'pocket' ? '从我的口袋打开' : '从道具库收进我的口袋',
+    getSourceQuestion: () => (initialSection === 'pocket' ? '从我的口袋打开' : '从道具库收进口袋'),
   })
 
   const marketModel = useMarketPageModel(
@@ -112,6 +134,26 @@ export function MarketPageClient({ initialSection = null }: MarketPageClientProp
     reviewAggregates,
     submitMarketToolMutation.mutate,
     { pocketToolIds, initialSection, query, onQueryChange: setQuery },
+  )
+
+  const hasQuery = marketModel.query.trim().length > 0
+  const showDiscoverHomepage =
+    marketModel.marketScope === 'discover' &&
+    !hasQuery &&
+    marketModel.selectedSection === DISCOVER_HOME_SECTION_KEY
+
+  const featuredMarketTools = useMemo(
+    () =>
+      mergedMarketTools
+        .map(
+          (tool): MarketToolCardItem => ({
+            ...tool,
+            reviewAggregate: reviewAggregates[tool.id] ?? null,
+          }),
+        )
+        .sort((a, b) => rankFeaturedTool(b) - rankFeaturedTool(a))
+        .slice(0, 6),
+    [mergedMarketTools, reviewAggregates],
   )
 
   const showPocketLoginState = marketModel.marketScope === 'pocket' && !isAuthenticated
@@ -124,7 +166,8 @@ export function MarketPageClient({ initialSection = null }: MarketPageClientProp
   return (
     <PageShell
       className="overflow-hidden"
-      contentClassName="pb-5 pt-5 sm:pt-6 lg:pt-6"
+      contentClassName="pb-5 pt-4 sm:pt-5 lg:pt-6"
+      contentMaxWidthClassName="max-w-[min(100%,132rem)]"
       header={
         <UnifiedTopBar
           title={APP_BRAND_TITLE}
@@ -141,26 +184,30 @@ export function MarketPageClient({ initialSection = null }: MarketPageClientProp
       {showInitialSkeleton ? (
         <MarketPageSkeleton />
       ) : (
-        <div className="grid min-h-0 gap-5 xl:grid-cols-[15rem_minmax(0,1fr)]">
+        <div
+          className={cn('dp-market-workbench', sidebarCollapsed && 'dp-market-workbench-collapsed')}
+        >
           <MarketCategoryNav
-            categoryEntries={marketModel.categoryEntries}
+            navigationEntries={
+              marketModel.navigationEntries as ReadonlyArray<
+                readonly [MarketDiscoverSectionKey, string]
+              >
+            }
             categoryCounts={marketModel.categoryCounts}
             selectedSection={marketModel.selectedSection}
-            marketScope={marketModel.marketScope}
-            discoverCount={marketModel.discoverCount}
-            pocketCount={marketModel.totalPocketCount}
-            onScopeChange={marketModel.setScope}
+            collapsed={sidebarCollapsed}
+            onToggleCollapsed={() => setSidebarCollapsed((value) => !value)}
             onSelect={marketModel.selectSection}
           />
 
-          <div className="grid min-h-0 gap-4 xl:grid-rows-[auto_minmax(0,1fr)]">
+          <div className="dp-market-content-shell">
             <MarketToolbar
               query={marketModel.query}
               onQueryChange={marketModel.setQuery}
               onOpenSubmit={() => marketModel.setSubmitOpen(true)}
             />
 
-            <ScrollArea className="min-h-0 px-1">
+            <div className="dp-market-body-slot px-1 pb-1">
               {showGridSkeleton ? (
                 <MarketToolGridSkeleton />
               ) : showPocketLoginState ? (
@@ -170,7 +217,7 @@ export function MarketPageClient({ initialSection = null }: MarketPageClientProp
                       先登录，再管理口袋里的工具
                     </DisplayPanelTitle>
                     <DisplayPanelDescription className="text-sm text-slate-600">
-                      登录后，DoraPocket 才能替你同步收藏。
+                      登录后，DoraPocket 才能为你同步收藏和使用记录。
                     </DisplayPanelDescription>
                     <a
                       href="/login"
@@ -214,23 +261,56 @@ export function MarketPageClient({ initialSection = null }: MarketPageClientProp
                     </DisplayPanelDescription>
                   </DisplayPanelContent>
                 </DisplayPanel>
-              ) : (
-                <MarketToolGrid
-                  tools={marketModel.currentCategoryTools}
+              ) : showDiscoverHomepage ? (
+                <MarketCuratedHome
+                  featuredTools={featuredMarketTools}
                   savedToolIds={pocketToolIds}
-                  unavailableToolIds={
-                    marketModel.marketScope === 'pocket' ? unavailablePocketToolIds : []
-                  }
                   onSaveTool={toolCardActions.saveTool}
                   onRemoveTool={(toolId) => removeToolFromPocketMutation.mutate({ toolId })}
                   onOpenTool={toolCardActions.openTool}
                   onReviewTool={marketModel.openReviewTool}
                 />
+              ) : (
+                <section>
+                  <MarketToolGrid
+                    tools={marketModel.currentCategoryTools}
+                    savedToolIds={pocketToolIds}
+                    unavailableToolIds={
+                      marketModel.marketScope === 'pocket' ? unavailablePocketToolIds : []
+                    }
+                    onSaveTool={toolCardActions.saveTool}
+                    onRemoveTool={(toolId) => removeToolFromPocketMutation.mutate({ toolId })}
+                    onOpenTool={toolCardActions.openTool}
+                    onReviewTool={marketModel.openReviewTool}
+                  />
+                </section>
               )}
-            </ScrollArea>
+            </div>
           </div>
         </div>
       )}
+
+      {!showInitialSkeleton ? (
+        <button
+          type="button"
+          className="dp-market-pocket-fab"
+          aria-label={marketModel.marketScope === 'discover' ? '打开我的口袋' : '返回道具市场'}
+          onClick={() =>
+            marketModel.setScope(marketModel.marketScope === 'discover' ? 'pocket' : 'discover')
+          }
+        >
+          <span className="dp-market-pocket-fab-image">
+            {marketModel.marketScope === 'discover' ? (
+              <Image src="/images/pocket.png" alt="" fill sizes="64px" className="object-contain" />
+            ) : (
+              <Store className="dp-market-pocket-fab-glyph" />
+            )}
+          </span>
+          <span className="dp-market-pocket-fab-label">
+            {marketModel.marketScope === 'discover' ? '我的口袋' : '道具市场'}
+          </span>
+        </button>
+      ) : null}
 
       <MarketSubmitModal
         open={marketModel.submitOpen}

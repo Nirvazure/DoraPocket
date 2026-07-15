@@ -4,7 +4,7 @@ import type { MarketSectionKey } from '@/shared/market/market-scope'
 
 export const metadata: Metadata = {
   title: '道具库 | DoraPocket',
-  description: '发现好工具、提交好工具，帮助 DoraPocket 长出更好的工具知识库。',
+  description: '发现好工具、提交好工具，帮 DoraPocket 长出更好的工具知识库。',
 }
 
 type MarketRoutePageProps = {

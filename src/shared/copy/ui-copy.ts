@@ -13,18 +13,18 @@ export const PAGE_COPY = {
     starter: {
       wizardEyebrow: '快速出手',
       naturalDraftTitle: '先说你想做什么',
-      naturalDraftHint: '可以直接写一段完整需求，也可以先套用一个模板再改。',
+      naturalDraftHint: '可以直接写完整需求，也可以先套一个模板再改。',
       naturalDraftPlaceholder:
         '例如：我是运营，想找一个免费、中文友好的工具，把竞品资料整理成带来源的表格。',
       naturalDraftAction: '分析我的需求',
       naturalDraftLoadingAction: '正在理解需求…',
       naturalDraftSourceLabel: '原始描述',
-      draftFallbackHint: '已先用快速理解结果，你可以继续修改。',
+      draftFallbackHint: '已经先用快速理解结果填好，你可以继续修改。',
       templateSectionTitle: '从模板开始',
       templateUseAction: '套用',
       reviewTitle: '确认 AI 的理解',
       reviewHint:
-        'DoraPocket 先把你的描述拆成角色、目标和限制。确认无误后，再基于这份理解生成推荐。',
+        'DoraPocket 会先把你的描述拆成角色、目标和限制。确认无误后，再基于这份理解生成推荐。',
       editRoleAction: '修改角色',
       editGoalAction: '修改目标',
       editConstraintsAction: '修改限制',
@@ -35,11 +35,11 @@ export const PAGE_COPY = {
       backToInputAction: '返回修改输入',
       returnToUnderstandingAction: '返回修改理解',
       step1Title: '什么身份最接近你？',
-      step1Hint: '我们会按你的日常分工来收束推荐。',
+      step1Hint: '我们会按你的日常分工来收窄推荐。',
       step2Title: '这次想完成什么？',
-      step2Hint: '先选一个结果导向的目标；具体任务在下方操作区补充。',
+      step2Hint: '先选一个结果导向的目标，具体任务在下方操作区补充。',
       step3Title: '这次在意什么？',
-      step3Hint: '从团队、收费、广告到上手体验，可多选，也可以先跳过。',
+      step3Hint: '可从团队、收费、广告到上手体验多选，也可以先跳过。',
       dockTaskLabel: '这次想完成什么？',
       customTaskPlaceholder: '用自己的话描述任务，至少 4 个字…',
       newTaskAction: '开始新任务',
@@ -63,7 +63,7 @@ export const PAGE_COPY = {
     updateReviewAction: '更新体验',
     pocketSection: '我的口袋',
     unavailableToolTitle: '工具已下架',
-    unavailableToolDescription: '这件道具已不在道具库中，可以从口袋移出。',
+    unavailableToolDescription: '这件道具已经不在道具库中，可以从口袋里移出。',
     removeUnavailableAction: '移出口袋',
     removeFromPocketAction: '移出口袋',
     pocketEmptyTitle: '口袋里还没有工具',
@@ -73,7 +73,7 @@ export const PAGE_COPY = {
     discoverSection: '发现',
     noSearchResult: '没有找到符合当前搜索条件的工具。',
     reviewDrawerTitle: '这次这个工具好用吗？',
-    reviewDrawerSubtitle: '告诉 DoraPocket 它为什么适合，或者为什么这次不该先掏出来。',
+    reviewDrawerSubtitle: '告诉 DoraPocket 它为什么适合，或者为什么这次不该优先拿出来。',
     reviewVoteTitle: '整体判断',
     reviewStarTitle: '这次打几分？',
     reviewTagsTitle: '这次最像什么体验？',
@@ -113,7 +113,7 @@ export const PAGE_COPY = {
   },
   pocket: {
     title: '我的口袋',
-    subtitle: '把账户信息、设置和我的工具都放回一个真正能用的“我的”页面。',
+    subtitle: '把账号信息、设置和我的工具都放回一个真正能用的“我的”页面。',
     searchPlaceholder: '搜索我的工具…',
     emptyTitle: '口袋里还没有工具',
     emptyDescription: '先去道具库看看，把你以后还想再打开的工具收进来。',
@@ -156,7 +156,7 @@ export const SETTINGS_COPY = {
     },
     reset: {
       title: '重置与清理',
-      description: '当你想重新开始时，控制权仍在你手里。',
+      description: '当你想重新开始时，控制权仍然在你手里。',
     },
   },
   items: {
@@ -198,7 +198,7 @@ export const SETTINGS_COPY = {
   },
   actions: {
     resetPreferenceTitle: '重置推荐偏好',
-    resetPreferenceDescription: '清空显式校准，让系统重新理解你的使用习惯。',
+    resetPreferenceDescription: '清空显式标准，让系统重新理解你的使用习惯。',
     resetPreferenceAction: '重置偏好',
     clearHistoryTitle: '清空对话历史',
     clearHistoryDescription: '删除已经保存的对话记录，但不会影响我的工具。',
@@ -207,7 +207,7 @@ export const SETTINGS_COPY = {
 } as const
 
 export const CLARIFICATION_COPY = {
-  expandEarlier: '展开 earlier ▾',
+  expandEarlier: '展开 earlier ▼',
   lowConfidenceHint: '部分条件未确认，推荐置信度偏低。你可以返回 Step 2 补充。',
 } as const
 

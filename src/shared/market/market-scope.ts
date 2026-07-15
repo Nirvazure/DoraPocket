@@ -1,18 +1,19 @@
-import type { PocketInventoryItem } from '@/shared/user/pocket-types'
 import type { MarketReviewAggregate } from '@/shared/market/market-types'
 import { TOOL_CATEGORY_LABELS, TOOL_CATEGORY_ORDER } from '@/shared/market/tool-labels'
 import type { ToolCategory, ToolItem } from '@/shared/market/tool-registry'
+import type { PocketInventoryItem } from '@/shared/user/pocket-types'
 
 export type MarketScope = 'discover' | 'pocket'
-export type MarketSectionKey = 'pocket' | ToolCategory
+export type MarketSectionKey = 'discover_home' | 'pocket' | ToolCategory
+export type MarketDiscoverSectionKey = Exclude<MarketSectionKey, 'pocket'>
 
 export type MarketToolCardItem = ToolItem & {
   reviewAggregate: MarketReviewAggregate | null
 }
 
 export type MarketNavEntry = readonly [MarketSectionKey, string]
-
-type DiscoverSectionKey = Exclude<MarketSectionKey, 'pocket'>
+export const DISCOVER_HOME_SECTION_KEY = 'discover_home' as const
+export const DISCOVER_HOME_SECTION_LABEL = '发现首页'
 
 function createToolGroups() {
   return {
@@ -54,7 +55,7 @@ export function buildMarketNavigation(args: {
 }): {
   pocketCount: number
   categoryEntries: ReadonlyArray<MarketNavEntry>
-  categoryCounts: Record<DiscoverSectionKey, number>
+  categoryCounts: Record<ToolCategory, number>
 } {
   const pocketCount = args.allTools.filter((tool) => args.pocketToolIds.has(tool.id)).length
   const grouped = groupTools(args.scopedTools)
@@ -68,14 +69,14 @@ export function buildMarketNavigation(args: {
     media: grouped.media.length,
     learning: grouped.learning.length,
     writing: grouped.writing.length,
-  } satisfies Record<DiscoverSectionKey, number>
+  } satisfies Record<ToolCategory, number>
 
   const discoverEntries: Array<MarketNavEntry> = TOOL_CATEGORY_ORDER.map(
     (category): MarketNavEntry => [category, TOOL_CATEGORY_LABELS[category]],
   )
 
   const filteredDiscoverEntries = discoverEntries.filter(
-    ([key]) => categoryCounts[key as DiscoverSectionKey] > 0,
+    ([key]) => categoryCounts[key as ToolCategory] > 0,
   )
 
   return {
@@ -91,14 +92,16 @@ export function resolveMarketSection(args: {
 }): MarketSectionKey {
   const validKeys = new Set(args.categoryEntries.map(([key]) => key))
   if (validKeys.has(args.selectedSection)) return args.selectedSection
-  return args.categoryEntries[0]?.[0] ?? 'ai_assistant'
+  return args.categoryEntries[0]?.[0] ?? DISCOVER_HOME_SECTION_KEY
 }
 
 export function resolveCurrentTools(args: {
   selectedSection: MarketSectionKey
   scopedTools: MarketToolCardItem[]
 }): MarketToolCardItem[] {
-  if (args.selectedSection === 'pocket') return args.scopedTools
+  if (args.selectedSection === 'pocket' || args.selectedSection === DISCOVER_HOME_SECTION_KEY) {
+    return args.scopedTools
+  }
   const grouped = groupTools(args.scopedTools)
   return grouped[args.selectedSection]
 }
