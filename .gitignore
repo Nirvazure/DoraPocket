@@ -58,6 +58,7 @@ next-env.d.ts
 
 # generated assets / temp
 /tmp/
+.pnpm-store/
 .tmp-edge-profile/
 /public/images/manifest.json
 .gstack/
