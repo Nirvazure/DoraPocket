@@ -55,24 +55,22 @@ export function MarketPageSkeleton() {
     <div className="dp-market-workbench" aria-busy="true" aria-label="市场内容加载中">
       <aside className="dp-market-sidebar hidden xl:flex xl:self-start">
         <div className="dp-market-sidebar-scroll">
-          <div className="rounded-[1.5rem] border border-white/85 bg-white/80 p-3">
-            <div className="flex items-center gap-3">
+          <div className="dp-market-sidebar-home-header">
+            <div className="dp-market-sidebar-home-main-card">
               <Skeleton className="size-12 rounded-[1.15rem]" />
-              <div className="flex-1 space-y-2">
+              <div className="min-w-0 flex-1 space-y-2">
                 <Skeleton className="h-4 w-20 rounded-full" />
                 <Skeleton className="h-3 w-24 rounded-full" />
               </div>
-              <Skeleton className="size-8 rounded-full" />
             </div>
+            <Skeleton className="absolute right-3 top-1/2 z-[2] size-10 -translate-y-1/2 rounded-[1rem]" />
           </div>
 
-          <div className="mt-4 px-1">
-            <Skeleton className="h-3 w-20 rounded-full" />
-          </div>
+          <div className="dp-market-sidebar-divider" aria-hidden />
 
           <div className="mt-3 flex flex-col gap-2">
             {Array.from({ length: CATEGORY_TILE_COUNT }).map((_, i) => (
-              <div key={i} className="rounded-[1.35rem] border border-white/80 bg-white/76 p-3">
+              <div key={i} className="rounded-[1.35rem] border border-white/80 bg-white/75 p-3">
                 <div className="flex items-center gap-3">
                   <Skeleton className="size-9 rounded-[1rem]" />
                   <div className="flex-1 space-y-2">
@@ -155,7 +153,7 @@ export function MarketPageSkeleton() {
       </div>
 
       <div className="dp-market-pocket-fab-skeleton" aria-hidden>
-        <Skeleton className="size-16 rounded-full" />
+        <Skeleton className="h-12 w-12 rounded-[1.125rem] sm:w-32" />
       </div>
     </div>
   )

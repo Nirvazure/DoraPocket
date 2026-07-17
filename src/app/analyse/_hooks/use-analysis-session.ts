@@ -7,6 +7,7 @@ import { buildTTSAudioUrl } from '@/lib/client/tts'
 import type { UserSettings } from '@/shared/user/user-settings'
 import { pickModeCardAfterTurn, type AssistantModeCard } from '@/shared/discovery/mode-registry'
 import type { AgentUiPayload } from '@/shared/market/market-types'
+import type { RandomDoorAnalysisPayload } from '@/shared/market/random-door'
 import { SYSTEM_NOTICE_COPY } from '@/shared/copy/ui-copy'
 import type { ClarificationSession } from '@/shared/discovery/clarification-session-types'
 import { IDLE_ANALYSIS_FLOW } from '@/app/analyse/_domain/analysis-stage-content'
@@ -364,6 +365,43 @@ export function useAnalysisSession({
 
   const cancelActiveAgentTurn = useStore((state) => state.cancelActiveAgentTurn)
 
+  const applyRandomDoorRecommendation = useCallback(
+    ({ selectedToolPayload, uiPayload }: RandomDoorAnalysisPayload) => {
+      stopAudioPlayback()
+      cancelActiveAgentTurn()
+      setLastSpeechError('')
+      setBotResponse('')
+      setTranscript('')
+      setClarificationSession(null)
+      setRecommendationSessionId(null)
+      setCurrentPrompt('任意门随机推荐')
+      setSelectedToolPayload(selectedToolPayload)
+      setAgentUiPayload(uiPayload)
+      setAnalysisFlow({ phase: 'revealed', beat: 'working' })
+      setAppState('idle')
+      latestUserPromptRef.current = '任意门随机推荐'
+      responseBufferRef.current = ''
+      recommendationCoverStartedRef.current = false
+      skipCoverRef.current = false
+      clarifyQuickRepliesRef.current = []
+      onPocketGadgetChange(pickModeCardAfterTurn(null, selectedToolPayload.toolId))
+    },
+    [
+      cancelActiveAgentTurn,
+      onPocketGadgetChange,
+      setAgentUiPayload,
+      setAnalysisFlow,
+      setAppState,
+      setBotResponse,
+      setClarificationSession,
+      setCurrentPrompt,
+      setLastSpeechError,
+      setRecommendationSessionId,
+      setSelectedToolPayload,
+      setTranscript,
+    ],
+  )
+
   const resetAnalysisSession = useCallback(() => {
     stopAudioPlayback()
     cancelActiveAgentTurn()
@@ -411,6 +449,7 @@ export function useAnalysisSession({
     clearResponseState,
     resetAnalysisForNewTask: resetAnalysisSession,
     resetRecommendationForReview: resetAnalysisSession,
+    applyRandomDoorRecommendation,
     runAgentTurn,
     revealNow,
     toggleDialogueExpanded,

@@ -12,8 +12,8 @@ export const PAGE_COPY = {
     ],
     starter: {
       wizardEyebrow: '快速出手',
-      naturalDraftTitle: '先说你想做什么',
-      naturalDraftHint: '可以直接写完整需求，也可以先套一个模板再改。',
+      naturalDraftTitle: '说说需求',
+      naturalDraftHint: '写一句话，或先套模板再改。',
       naturalDraftPlaceholder:
         '例如：我是运营，想找一个免费、中文友好的工具，把竞品资料整理成带来源的表格。',
       naturalDraftAction: '分析我的需求',
