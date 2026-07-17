@@ -24,9 +24,11 @@ import { usePocketGadgetModalActions } from '@/app/analyse/_hooks/use-pocket-gad
 import { useVoiceInput } from '@/app/analyse/_hooks/use-voice-input'
 import { useAuthSessionQuery, resolveSettingsReadOnly } from '@/lib/query/auth-session'
 import { useMarkToolUsedMutation, useSaveToolToPocketMutation } from '@/lib/query/pocket'
+import { useRandomDoorRecommendationMutation } from '@/lib/query/random-door'
 import { useSaveUserSettingsMutation, useUserSettingsQuery } from '@/lib/query/user-settings'
 import type { AssistantModeCard } from '@/shared/discovery/mode-registry'
 import { PAGE_COPY, SYSTEM_NOTICE_COPY } from '@/shared/copy/ui-copy'
+import { buildRandomDoorAnalysisPayload } from '@/shared/market/random-door'
 import { mergeClarificationIntoAnalysisFlow, useStore } from '@/store'
 import { shouldRestartAnalysisFlow } from '@/app/analyse/_domain/analysis-stage-restart'
 import type { DiscoveryWorkspaceHandle } from '@/app/analyse/_components/discovery/discovery-workspace'
@@ -52,6 +54,7 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
 
   const saveToolToPocketMutation = useSaveToolToPocketMutation()
   const markToolUsedMutation = useMarkToolUsedMutation()
+  const randomDoorRecommendationMutation = useRandomDoorRecommendationMutation()
   const { data: userSettings } = useUserSettingsQuery()
   const { data: authSession, isPending: authPending } = useAuthSessionQuery()
   const saveUserSettingsMutation = useSaveUserSettingsMutation()
@@ -86,6 +89,7 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     clearResponseState,
     resetAnalysisForNewTask,
     resetRecommendationForReview,
+    applyRandomDoorRecommendation,
     runAgentTurn,
     revealNow,
     toggleDialogueExpanded,
@@ -276,6 +280,28 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     setAnalysisFlow(IDLE_ANALYSIS_FLOW)
   }, [clearRevealTimers, resetRecommendationForReview, setAnalysisFlow])
 
+  const handleOpenRandomDoor = useCallback(async () => {
+    if (randomDoorRecommendationMutation.isPending) return
+    try {
+      clearRevealTimers()
+      setTextFallback('')
+      const recommendation = await randomDoorRecommendationMutation.mutateAsync()
+      applyRandomDoorRecommendation(buildRandomDoorAnalysisPayload(recommendation))
+    } catch (error) {
+      console.error('[random-door] failed to load recommendation', error)
+      setSystemNotice({
+        level: 'critical',
+        message: '任意门暂时打不开，请稍后再试。',
+        autoDismissMs: 2600,
+      })
+    }
+  }, [
+    applyRandomDoorRecommendation,
+    clearRevealTimers,
+    randomDoorRecommendationMutation,
+    setSystemNotice,
+  ])
+
   const handleQuickReply = useCallback(
     (text: string) => {
       void runAgentTurn(text, { isContinuation: true })
@@ -329,6 +355,8 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     workspaceActions,
     pocketGadgetModalActions,
     handleStartStructuredAnalysis,
+    handleOpenRandomDoor,
+    randomDoorPending: randomDoorRecommendationMutation.isPending,
     handleStartNewTask,
     handleReturnToUnderstanding,
     starterActionsEnabled: !currentPrompt?.trim() && appState === 'idle',

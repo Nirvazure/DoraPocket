@@ -44,6 +44,8 @@ export function AnalysisPageClient() {
     workspaceActions,
     pocketGadgetModalActions,
     handleStartStructuredAnalysis,
+    handleOpenRandomDoor,
+    randomDoorPending,
     handleStartNewTask,
     handleReturnToUnderstanding,
     starterActionsEnabled,
@@ -176,6 +178,8 @@ export function AnalysisPageClient() {
             onOpenExternalCandidate={workspaceActions.onOpenExternalCandidate}
             recommendationSessionId={recommendationSessionId}
             onStartAnalysis={handleStartStructuredAnalysis}
+            onOpenRandomDoor={handleOpenRandomDoor}
+            randomDoorPending={randomDoorPending}
             onStartNewTask={handleStartNewTask}
             onReturnToUnderstanding={handleReturnToUnderstanding}
             starterActionsEnabled={starterActionsEnabled}
