@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { Plus, Search, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { PAGE_COPY } from '@/shared/copy/ui-copy'
@@ -9,9 +10,15 @@ type MarketToolbarProps = {
   query: string
   onQueryChange: (value: string) => void
   onOpenSubmit: () => void
+  rightSlot?: ReactNode
 }
 
-export function MarketToolbar({ query, onQueryChange, onOpenSubmit }: MarketToolbarProps) {
+export function MarketToolbar({
+  query,
+  onQueryChange,
+  onOpenSubmit,
+  rightSlot,
+}: MarketToolbarProps) {
   const hasQuery = query.trim().length > 0
 
   return (
@@ -40,15 +47,18 @@ export function MarketToolbar({ query, onQueryChange, onOpenSubmit }: MarketTool
           ) : null}
         </div>
 
-        <Button
-          type="button"
-          size="sm"
-          className="h-11 shrink-0 rounded-full px-4 text-xs font-bold"
-          onClick={onOpenSubmit}
-        >
-          <Plus className="mr-1.5 size-3.5" />
-          {PAGE_COPY.market.submitAction}
-        </Button>
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          {rightSlot}
+          <Button
+            type="button"
+            size="sm"
+            className="h-11 shrink-0 rounded-full px-4 text-xs font-bold"
+            onClick={onOpenSubmit}
+          >
+            <Plus className="mr-1.5 size-3.5" />
+            {PAGE_COPY.market.submitAction}
+          </Button>
+        </div>
       </div>
     </section>
   )

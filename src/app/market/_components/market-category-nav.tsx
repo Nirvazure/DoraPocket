@@ -93,13 +93,16 @@ function SectionButton({
 
   if (showCollapseToggle && !collapsed && onToggleCollapsed) {
     return (
-      <div className={cn('dp-market-sidebar-home-shell', active && 'dp-market-sidebar-btn-active')}>
+      <div className="dp-market-sidebar-home-header">
         <button
           type="button"
           aria-label={label}
           aria-current={active ? 'true' : undefined}
           title={label}
-          className="dp-market-sidebar-home-main"
+          className={cn(
+            'dp-market-sidebar-home-main-card',
+            active && 'dp-market-sidebar-btn-active',
+          )}
           onClick={() => onSelect(categoryKey)}
         >
           {content}
@@ -167,13 +170,7 @@ export function MarketCategoryNav({
             </button>
           ) : null}
 
-          {!collapsed ? (
-            <div className="mt-3 px-1">
-              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary/70">
-                分类浏览
-              </span>
-            </div>
-          ) : null}
+          {!collapsed ? <div className="dp-market-sidebar-divider" aria-hidden /> : null}
 
           <div className={cn('mt-3 flex flex-col gap-2', collapsed && 'mt-2')}>
             {categoryEntries.map(([key, label]) => (

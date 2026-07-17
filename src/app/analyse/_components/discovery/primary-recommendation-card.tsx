@@ -84,7 +84,7 @@ export function PrimaryRecommendationCard({
                 />
               ) : null}
             </div>
-            <DisplayPanelDescription className="mt-3 line-clamp-2 text-sm leading-6 text-white/76">
+            <DisplayPanelDescription className="mt-3 line-clamp-2 text-sm leading-6 text-white/75">
               {content.description}
             </DisplayPanelDescription>
             {leader?.candidateType === 'external_suggestion' && leader.externalBoundary ? (
