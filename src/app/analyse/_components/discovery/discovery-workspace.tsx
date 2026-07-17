@@ -47,6 +47,8 @@ type DiscoveryWorkspaceProps = {
   onOpenExternalCandidate: (url: string) => void
   recommendationSessionId?: string | null
   onStartAnalysis?: (prompt: string, displayPrompt: string) => void | Promise<void>
+  onOpenRandomDoor?: () => void | Promise<void>
+  randomDoorPending?: boolean
   onStartNewTask?: () => void
   onReturnToUnderstanding?: () => void
   starterActionsEnabled?: boolean
@@ -69,6 +71,8 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
       onOpenExternalCandidate,
       recommendationSessionId = null,
       onStartAnalysis,
+      onOpenRandomDoor,
+      randomDoorPending = false,
       onStartNewTask,
       onReturnToUnderstanding,
       starterActionsEnabled = true,
@@ -195,6 +199,8 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
             naturalDescription={wizard.naturalDescription}
             wizardDisabled={!starterActionsEnabled || wizard.intentStatus === 'analyzing'}
             intentStatus={wizard.intentStatus}
+            onOpenRandomDoor={onOpenRandomDoor}
+            randomDoorPending={randomDoorPending}
             onApplyNaturalDescription={async (value) => {
               const draft = await wizard.applyNaturalDescription(value)
               if (!draft) return

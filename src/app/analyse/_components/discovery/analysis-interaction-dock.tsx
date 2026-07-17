@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import { DoorOpen } from 'lucide-react'
 import {
   DoraBottomInteractionZone,
   type DoraBottomInteractionZoneProps,
@@ -24,6 +25,8 @@ export type AnalysisInteractionDockProps = {
   naturalDescription: string
   intentStatus: StarterIntentStatus
   wizardDisabled?: boolean
+  onOpenRandomDoor?: () => void | Promise<void>
+  randomDoorPending?: boolean
   onApplyNaturalDescription: (value: string) => void | Promise<void>
   onReviewBackToInput: () => void
   onStartAnalysis: (prompt: string, displayPrompt: string) => void | Promise<void>
@@ -41,6 +44,8 @@ export function AnalysisInteractionDock({
   naturalDescription,
   intentStatus,
   wizardDisabled = false,
+  onOpenRandomDoor,
+  randomDoorPending = false,
   onApplyNaturalDescription,
   onReviewBackToInput,
   onStartAnalysis,
@@ -54,6 +59,7 @@ export function AnalysisInteractionDock({
   const canStart = canStartStarterAnalysis(intake) && !wizardDisabled
   const canApplyNaturalDescription = naturalDescription.trim().length >= 4 && !wizardDisabled
   const analyzingIntent = intentStatus === 'analyzing'
+  const randomDoorDisabled = wizardDisabled || randomDoorPending
 
   const handleStart = async () => {
     if (startingRef.current || !canStart) return
@@ -69,6 +75,11 @@ export function AnalysisInteractionDock({
   const handleAnalyzeInput = () => {
     if (!canApplyNaturalDescription) return
     void onApplyNaturalDescription(naturalDescription)
+  }
+
+  const handleOpenRandomDoor = () => {
+    if (!onOpenRandomDoor || randomDoorDisabled) return
+    void onOpenRandomDoor()
   }
 
   const showNewTaskOnly =
@@ -112,13 +123,27 @@ export function AnalysisInteractionDock({
           </button>
         </div>
       ) : activePanelStep === 1 && starterActionsEnabled ? (
-        <div className="px-3 py-2.5 sm:px-4 sm:py-3">
+        <div className="flex gap-2 px-3 py-2.5 sm:px-4 sm:py-3">
+          {onOpenRandomDoor ? (
+            <button
+              type="button"
+              disabled={randomDoorDisabled}
+              onClick={handleOpenRandomDoor}
+              className={cn(
+                'inline-flex w-28 items-center justify-center gap-1.5 rounded-full border border-primary/25 bg-white px-3 py-2.5 text-xs font-black text-primary shadow-sm transition-colors hover:bg-primary/[0.06] sm:w-40',
+                randomDoorDisabled && 'cursor-not-allowed opacity-45',
+              )}
+            >
+              <DoorOpen className="h-4 w-4" aria-hidden />
+              {randomDoorPending ? '开门中' : '任意门'}
+            </button>
+          ) : null}
           <button
             type="button"
             disabled={!canApplyNaturalDescription || analyzingIntent}
             onClick={handleAnalyzeInput}
             className={cn(
-              'flex w-full items-center justify-center rounded-full border-2 border-primary/30 bg-primary px-4 py-2.5 text-sm font-black text-primary-foreground shadow-sm transition-colors hover:bg-primary/90',
+              'flex min-w-0 flex-1 items-center justify-center rounded-full border-2 border-primary/30 bg-primary px-4 py-2.5 text-sm font-black text-primary-foreground shadow-sm transition-colors hover:bg-primary/90',
               (!canApplyNaturalDescription || analyzingIntent) && 'cursor-not-allowed opacity-45',
             )}
           >

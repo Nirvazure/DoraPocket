@@ -1,6 +1,5 @@
 'use client'
 
-import { SectionLabel } from '@/components/ui/section-label'
 import { cn } from '@/lib/utils'
 import { PAGE_COPY } from '@/shared/copy/ui-copy'
 import { STARTER_PROMPT_TEMPLATES } from '@/shared/discovery/starter-intake'
@@ -21,15 +20,17 @@ export function WhereToStartSection({
   const copy = PAGE_COPY.analysis.starter
 
   return (
-    <section className="flex min-h-full w-full flex-1 flex-col gap-4">
+    <section className="flex min-h-full w-full flex-1 flex-col gap-5">
       <div className="shrink-0">
-        <SectionLabel>{copy.wizardEyebrow}</SectionLabel>
-        <div className="mt-3">
-          <p className="text-xl font-black text-foreground sm:text-2xl">{copy.naturalDraftTitle}</p>
-          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-            {copy.naturalDraftHint}
-          </p>
-        </div>
+        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-primary/80">
+          TELL DORA WHAT YOU NEED
+        </p>
+        <p className="mt-1 text-2xl font-black text-foreground sm:text-3xl">
+          {copy.naturalDraftTitle}
+        </p>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground/85">
+          {copy.naturalDraftHint}
+        </p>
       </div>
 
       {!actionsEnabled ? (
@@ -38,23 +39,7 @@ export function WhereToStartSection({
         </div>
       ) : (
         <div className="flex min-h-0 flex-1 flex-col gap-4">
-          <textarea
-            value={naturalDescription}
-            disabled={wizardDisabled}
-            rows={8}
-            aria-label={copy.naturalDraftTitle}
-            placeholder={copy.naturalDraftPlaceholder}
-            className={cn(
-              'min-h-[13rem] w-full resize-none rounded-[1.35rem] border border-border/70 bg-white px-4 py-3.5 font-sans text-base leading-7 text-foreground outline-none ring-primary/30 placeholder:text-muted-foreground focus-visible:ring-2',
-              wizardDisabled && 'cursor-not-allowed opacity-50',
-            )}
-            onChange={(event) => onNaturalDescriptionChange(event.target.value)}
-          />
-
           <section className="min-h-0">
-            <div className="mb-2 flex items-center justify-between gap-2">
-              <p className="text-sm font-black text-foreground">{copy.templateSectionTitle}</p>
-            </div>
             <div className="grid gap-2.5 lg:grid-cols-3">
               {STARTER_PROMPT_TEMPLATES.map((template) => (
                 <button
@@ -83,6 +68,19 @@ export function WhereToStartSection({
               ))}
             </div>
           </section>
+
+          <textarea
+            value={naturalDescription}
+            disabled={wizardDisabled}
+            rows={5}
+            aria-label={copy.naturalDraftTitle}
+            placeholder={copy.naturalDraftPlaceholder}
+            className={cn(
+              'min-h-[14rem] w-full flex-1 resize-none rounded-[1.35rem] border border-border/70 bg-white px-4 py-3.5 font-sans text-base leading-7 text-foreground outline-none ring-primary/30 placeholder:text-muted-foreground focus-visible:ring-2',
+              wizardDisabled && 'cursor-not-allowed opacity-50',
+            )}
+            onChange={(event) => onNaturalDescriptionChange(event.target.value)}
+          />
         </div>
       )}
     </section>
