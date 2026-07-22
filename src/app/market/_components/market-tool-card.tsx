@@ -1,6 +1,6 @@
 'use client'
 
-import { ExternalLink, FolderHeart, PenLine, Star } from 'lucide-react'
+import { ExternalLink, FolderHeart, PenLine, Star, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { MarketToolIcon } from '@/components/shared/market-tool-icon'
 import { MarketToolTags } from '@/app/market/_components/market-tool-tags'
@@ -15,6 +15,7 @@ type MarketToolCardProps = {
   onRemoveTool: (toolId: string) => void
   onOpenTool: (toolId: string, url?: string | null) => void
   onReviewTool: (toolId: string) => void
+  onDeleteTool?: (toolId: string) => void
 }
 
 export function MarketToolCard({
@@ -24,8 +25,10 @@ export function MarketToolCard({
   onRemoveTool,
   onOpenTool,
   onReviewTool,
+  onDeleteTool,
 }: MarketToolCardProps) {
   const hasRating = tool.reviewAggregate?.averageStar != null
+  const canDelete = Boolean(tool.isOwnedByViewer && onDeleteTool)
 
   return (
     <article className="dp-tool-card group relative flex min-h-[11.5rem] flex-col">
@@ -93,31 +96,46 @@ export function MarketToolCard({
       </p>
 
       <footer className="dp-tool-card-footer relative z-[1] mt-auto flex items-center justify-between gap-2 pt-3">
-        {isSaved ? (
-          <Button
-            type="button"
-            variant="default"
-            size="icon-sm"
-            className="dp-tool-pocket-btn cursor-pointer rounded-full shadow-none"
-            aria-label={PAGE_COPY.market.removeFromPocketAction}
-            title={PAGE_COPY.market.removeFromPocketAction}
-            onClick={() => onRemoveTool(tool.id)}
-          >
-            <FolderHeart className="size-3.5 fill-primary-foreground/30" />
-          </Button>
-        ) : (
-          <Button
-            type="button"
-            variant="outline"
-            size="icon-sm"
-            className="dp-tool-pocket-btn dp-tool-pocket-btn-outline cursor-pointer rounded-full"
-            aria-label={PAGE_COPY.market.collectAction}
-            title={PAGE_COPY.market.collectAction}
-            onClick={() => onSaveTool(tool.id)}
-          >
-            <FolderHeart className="size-3.5" />
-          </Button>
-        )}
+        <div className="flex items-center gap-1.5">
+          {isSaved ? (
+            <Button
+              type="button"
+              variant="default"
+              size="icon-sm"
+              className="dp-tool-pocket-btn cursor-pointer rounded-full shadow-none"
+              aria-label={PAGE_COPY.market.removeFromPocketAction}
+              title={PAGE_COPY.market.removeFromPocketAction}
+              onClick={() => onRemoveTool(tool.id)}
+            >
+              <FolderHeart className="size-3.5 fill-primary-foreground/30" />
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              size="icon-sm"
+              className="dp-tool-pocket-btn dp-tool-pocket-btn-outline cursor-pointer rounded-full"
+              aria-label={PAGE_COPY.market.collectAction}
+              title={PAGE_COPY.market.collectAction}
+              onClick={() => onSaveTool(tool.id)}
+            >
+              <FolderHeart className="size-3.5" />
+            </Button>
+          )}
+          {canDelete ? (
+            <Button
+              type="button"
+              variant="outline"
+              className="h-8 cursor-pointer rounded-full px-2.5 text-[11px] font-bold text-red-600 hover:bg-red-50 hover:text-red-700"
+              aria-label={PAGE_COPY.market.deleteOwnedAction}
+              title={PAGE_COPY.market.deleteOwnedAction}
+              onClick={() => onDeleteTool?.(tool.id)}
+            >
+              <Trash2 className="size-3.5" />
+              {PAGE_COPY.market.deleteOwnedAction}
+            </Button>
+          ) : null}
+        </div>
         {tool.url ? (
           <Button
             type="button"

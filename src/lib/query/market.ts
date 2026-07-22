@@ -126,3 +126,18 @@ export function useSubmitMarketToolMutation() {
     },
   })
 }
+
+export function useDeleteMarketToolMutation() {
+  const queryClient = useQueryClient()
+
+  return useMutation<{ id: string }, Error, { toolId: string }>({
+    mutationFn: async ({ toolId }) =>
+      apiFetch<{ id: string }>(`/api/market/tools/${encodeURIComponent(toolId)}`, {
+        method: 'DELETE',
+      }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.marketTools.all })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.pocket.all })
+    },
+  })
+}

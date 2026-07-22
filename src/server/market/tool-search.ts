@@ -11,7 +11,7 @@ import {
 
 const SEARCH_LIMIT = 200
 
-export async function searchActiveTools(rawQuery: string) {
+export async function searchActiveTools(rawQuery: string, viewerUserId?: string | null) {
   const query = normalizeMarketSearchQuery(rawQuery)
   if (!query) {
     throw new Error('searchActiveTools requires normalized query length >= 2')
@@ -43,5 +43,5 @@ export async function searchActiveTools(rawQuery: string) {
     ...params,
   )
 
-  return rows.map(mapDbToolToToolItem)
+  return rows.map((tool) => mapDbToolToToolItem(tool, viewerUserId))
 }

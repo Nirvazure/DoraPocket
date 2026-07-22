@@ -9,6 +9,7 @@ import {
   type ToolPlatform,
   type ToolPricingModel,
 } from '@/shared/market/tool-registry'
+import { assertOwnedToolDeletable } from '@/shared/market/owned-tool-delete'
 
 export type ImportedToolInput = {
   name: string
@@ -123,4 +124,13 @@ export async function listActiveTools() {
 
 export async function findToolById(toolId: string) {
   return prisma.tool.findUnique({ where: { id: toolId } })
+}
+
+export async function deleteOwnedTool(userId: string, toolId: string) {
+  const tool = await prisma.tool.findUnique({
+    where: { id: toolId },
+    select: { id: true, createdByUserId: true },
+  })
+  assertOwnedToolDeletable({ tool, userId })
+  return prisma.tool.delete({ where: { id: toolId } })
 }

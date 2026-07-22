@@ -62,6 +62,8 @@ export type ToolItem = {
   defaultArgs?: Record<string, unknown>
   siteHostname?: string
   marketAssetOrigin?: 'registry' | 'bookmark_seed' | 'community'
+  createdByUserId?: string | null
+  isOwnedByViewer?: boolean
 }
 
 export type ToolMeta = {

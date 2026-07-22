@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowRight, ExternalLink, FolderHeart, Sparkles, Star } from 'lucide-react'
+import { ArrowRight, ExternalLink, FolderHeart, Sparkles, Star, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { MarketToolIcon } from '@/components/shared/market-tool-icon'
 import type { MarketReviewAggregate } from '@/shared/market/market-types'
@@ -15,6 +15,7 @@ type MarketCuratedHomeProps = {
   onRemoveTool: (toolId: string) => void
   onOpenTool: (toolId: string, url?: string | null) => void
   onReviewTool: (toolId: string) => void
+  onDeleteTool?: (toolId: string) => void
 }
 
 function getReviewSignal(tool: MarketToolCardItem) {
@@ -31,6 +32,7 @@ function MarketFeaturedCard({
   onRemoveTool,
   onOpenTool,
   onReviewTool,
+  onDeleteTool,
   isSaved,
 }: {
   tool: MarketToolCardItem
@@ -38,9 +40,11 @@ function MarketFeaturedCard({
   onRemoveTool: (toolId: string) => void
   onOpenTool: (toolId: string, url?: string | null) => void
   onReviewTool: (toolId: string) => void
+  onDeleteTool?: (toolId: string) => void
   isSaved: boolean
 }) {
   const aggregate = tool.reviewAggregate as MarketReviewAggregate | null
+  const canDelete = Boolean(tool.isOwnedByViewer && onDeleteTool)
 
   return (
     <article className="dp-market-featured-card relative overflow-hidden">
@@ -99,17 +103,30 @@ function MarketFeaturedCard({
         </div>
 
         <div className="mt-auto flex items-center justify-between gap-3 pt-1">
-          <button
-            type="button"
-            className={cn(
-              'dp-market-featured-action',
-              isSaved && 'dp-market-featured-action-active',
-            )}
-            onClick={() => (isSaved ? onRemoveTool(tool.id) : onSaveTool(tool.id))}
-          >
-            <Sparkles className="size-3.5" />
-            {isSaved ? PAGE_COPY.market.removeFromPocketAction : PAGE_COPY.market.collectAction}
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              className={cn(
+                'dp-market-featured-action',
+                isSaved && 'dp-market-featured-action-active',
+              )}
+              onClick={() => (isSaved ? onRemoveTool(tool.id) : onSaveTool(tool.id))}
+            >
+              <Sparkles className="size-3.5" />
+              {isSaved ? PAGE_COPY.market.removeFromPocketAction : PAGE_COPY.market.collectAction}
+            </button>
+            {canDelete ? (
+              <Button
+                type="button"
+                variant="outline"
+                className="h-10 rounded-full px-3 text-xs font-bold text-red-600 hover:bg-red-50 hover:text-red-700"
+                onClick={() => onDeleteTool?.(tool.id)}
+              >
+                <Trash2 className="mr-1 size-3.5" />
+                {PAGE_COPY.market.deleteOwnedAction}
+              </Button>
+            ) : null}
+          </div>
           {tool.url ? (
             <Button
               type="button"
@@ -131,14 +148,18 @@ function MarketMiniFeatureCard({
   onSaveTool,
   onRemoveTool,
   onOpenTool,
+  onDeleteTool,
   isSaved,
 }: {
   tool: MarketToolCardItem
   onSaveTool: (toolId: string) => void
   onRemoveTool: (toolId: string) => void
   onOpenTool: (toolId: string, url?: string | null) => void
+  onDeleteTool?: (toolId: string) => void
   isSaved: boolean
 }) {
+  const canDelete = Boolean(tool.isOwnedByViewer && onDeleteTool)
+
   return (
     <article className="dp-market-mini-card">
       <div className="flex items-start gap-3">
@@ -151,16 +172,29 @@ function MarketMiniFeatureCard({
         </div>
       </div>
       <div className="mt-3 flex items-center justify-between gap-2">
-        <button
-          type="button"
-          className={cn('dp-market-mini-save', isSaved && 'dp-market-mini-save-active')}
-          onClick={() => (isSaved ? onRemoveTool(tool.id) : onSaveTool(tool.id))}
-          aria-label={
-            isSaved ? PAGE_COPY.market.removeFromPocketAction : PAGE_COPY.market.collectAction
-          }
-        >
-          <FolderHeart className="size-3.5" />
-        </button>
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            className={cn('dp-market-mini-save', isSaved && 'dp-market-mini-save-active')}
+            onClick={() => (isSaved ? onRemoveTool(tool.id) : onSaveTool(tool.id))}
+            aria-label={
+              isSaved ? PAGE_COPY.market.removeFromPocketAction : PAGE_COPY.market.collectAction
+            }
+          >
+            <FolderHeart className="size-3.5" />
+          </button>
+          {canDelete ? (
+            <button
+              type="button"
+              className="dp-market-mini-save text-red-600"
+              onClick={() => onDeleteTool?.(tool.id)}
+              aria-label={PAGE_COPY.market.deleteOwnedAction}
+              title={PAGE_COPY.market.deleteOwnedAction}
+            >
+              <Trash2 className="size-3.5" />
+            </button>
+          ) : null}
+        </div>
         {tool.url ? (
           <Button
             type="button"
@@ -185,6 +219,7 @@ export function MarketCuratedHome({
   onRemoveTool,
   onOpenTool,
   onReviewTool,
+  onDeleteTool,
 }: MarketCuratedHomeProps) {
   const curatedFeaturedTools = [...featuredTools]
     .sort((a, b) => getReviewSignal(b) - getReviewSignal(a))
@@ -203,6 +238,7 @@ export function MarketCuratedHome({
             onRemoveTool={onRemoveTool}
             onOpenTool={onOpenTool}
             onReviewTool={onReviewTool}
+            onDeleteTool={onDeleteTool}
           />
         ) : null}
 
@@ -215,6 +251,7 @@ export function MarketCuratedHome({
               onSaveTool={onSaveTool}
               onRemoveTool={onRemoveTool}
               onOpenTool={onOpenTool}
+              onDeleteTool={onDeleteTool}
             />
           ))}
         </div>
