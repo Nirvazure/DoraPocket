@@ -14,6 +14,7 @@ import {
   MarketToolGridSkeleton,
 } from '@/app/market/_components/market-page-skeleton'
 import { MarketReviewDrawer } from '@/app/market/_components/market-review-drawer'
+import { MarketDeleteConfirmModal } from '@/app/market/_components/market-delete-confirm-modal'
 import { MarketSubmitModal } from '@/app/market/_components/market-submit-modal'
 import { MarketToolGrid } from '@/app/market/_components/market-tool-grid'
 import { MarketToolbar } from '@/app/market/_components/market-toolbar'
@@ -51,8 +52,22 @@ import {
   type MarketToolCardItem,
 } from '@/shared/market/market-scope'
 import { resolveIsOwnedByViewer } from '@/shared/market/owned-tool-delete'
-import { MARKET_OWNER_USER_ID } from '@/shared/market/market-owner'
 import { APP_BRAND_TITLE, PAGE_COPY } from '@/shared/copy/ui-copy'
+
+function resolveDeleteErrorMessage(error: unknown): string {
+  if (!(error instanceof Error) || !error.message.trim()) {
+    return PAGE_COPY.market.deleteOwnedError
+  }
+  try {
+    const parsed = JSON.parse(error.message) as { message?: unknown }
+    if (typeof parsed.message === 'string' && parsed.message.trim()) {
+      return parsed.message.trim()
+    }
+  } catch {
+    // apiFetch may throw plain text
+  }
+  return error.message.trim() || PAGE_COPY.market.deleteOwnedError
+}
 
 type MarketPageClientProps = {
   initialSection?: MarketSectionKey | null
@@ -77,6 +92,8 @@ function rankFeaturedTool(tool: {
 export function MarketPageClient({ initialSection = null }: MarketPageClientProps) {
   const [query, setQuery] = useState('')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [pendingDeleteToolId, setPendingDeleteToolId] = useState<string | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
   const debouncedQuery = useDebouncedValue(query, 300)
   const { data: authSession, isPending: authPending } = useAuthSessionQuery()
   const { data: pocketInventory = [] } = usePocketInventoryQuery()
@@ -118,8 +135,6 @@ export function MarketPageClient({ initialSection = null }: MarketPageClientProp
   const isAuthenticated = authUser != null
 
   const viewerUserId = authUser?.id ?? null
-  const isMarketOwnerViewer =
-    viewerUserId === MARKET_OWNER_USER_ID || authUser?.isMarketOwner === true
 
   const mergedMarketTools = useMemo(() => {
     const byId = new Map(marketTools.map((tool) => [tool.id, tool]))
@@ -128,14 +143,9 @@ export function MarketPageClient({ initialSection = null }: MarketPageClientProp
     }
     return [...byId.values()].map((tool) => ({
       ...tool,
-      // Market owner may delete any tool currently attributed to them (including seed backfill).
-      isOwnedByViewer: isMarketOwnerViewer
-        ? tool.createdByUserId == null ||
-          tool.createdByUserId === MARKET_OWNER_USER_ID ||
-          tool.createdByUserId === viewerUserId
-        : resolveIsOwnedByViewer(tool.createdByUserId, viewerUserId),
+      isOwnedByViewer: resolveIsOwnedByViewer(tool.createdByUserId, viewerUserId),
     }))
-  }, [marketTools, pocketResolvedTools, viewerUserId, isMarketOwnerViewer])
+  }, [marketTools, pocketResolvedTools, viewerUserId])
 
   const unavailablePocketToolIds = useMemo(() => {
     const resolved = new Set(pocketResolvedTools.map((tool) => tool.id))
@@ -149,9 +159,38 @@ export function MarketPageClient({ initialSection = null }: MarketPageClientProp
     getSourceQuestion: () => (initialSection === 'pocket' ? '从我的口袋打开' : '从道具库收进口袋'),
   })
 
+  const pendingDeleteTool = useMemo(
+    () => mergedMarketTools.find((tool) => tool.id === pendingDeleteToolId) ?? null,
+    [mergedMarketTools, pendingDeleteToolId],
+  )
+  const deletePending = deleteMarketToolMutation.isPending
+
   const handleDeleteOwnedTool = (toolId: string) => {
-    if (!window.confirm(PAGE_COPY.market.deleteOwnedConfirm)) return
-    deleteMarketToolMutation.mutate({ toolId })
+    setDeleteError(null)
+    setPendingDeleteToolId(toolId)
+  }
+
+  const handleCloseDeleteConfirm = () => {
+    if (deletePending) return
+    setPendingDeleteToolId(null)
+    setDeleteError(null)
+  }
+
+  const handleConfirmDeleteOwnedTool = () => {
+    if (!pendingDeleteToolId || deletePending) return
+    setDeleteError(null)
+    deleteMarketToolMutation.mutate(
+      { toolId: pendingDeleteToolId },
+      {
+        onSuccess: () => {
+          setPendingDeleteToolId(null)
+          setDeleteError(null)
+        },
+        onError: (error) => {
+          setDeleteError(resolveDeleteErrorMessage(error))
+        },
+      },
+    )
   }
 
   const marketModel = useMarketPageModel(
@@ -364,6 +403,28 @@ export function MarketPageClient({ initialSection = null }: MarketPageClientProp
         onDraftChange={marketModel.setDraft}
         onSubmit={marketModel.submitDraft}
       />
+
+      <MarketDeleteConfirmModal
+        open={pendingDeleteToolId != null}
+        toolName={pendingDeleteTool?.name}
+        error={deleteError}
+        pending={deletePending}
+        onClose={handleCloseDeleteConfirm}
+        onConfirm={handleConfirmDeleteOwnedTool}
+      />
+
+      {deletePending ? (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/50 px-4 backdrop-blur-[1px]"
+          role="status"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <p className="rounded-full bg-white px-5 py-3 text-sm font-bold text-foreground shadow-lg">
+            {PAGE_COPY.market.deleteOwnedPending}
+          </p>
+        </div>
+      ) : null}
 
       <MarketReviewDrawer
         key={marketModel.reviewTool?.id ?? 'closed'}

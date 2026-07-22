@@ -1,3 +1,5 @@
+import { MARKET_OWNER_USER_ID } from '@/shared/market/market-owner'
+
 export type OwnedToolDeleteFailure = 'NOT_FOUND' | 'FORBIDDEN'
 
 export class OwnedToolDeleteError extends Error {
@@ -10,6 +12,18 @@ export class OwnedToolDeleteError extends Error {
   }
 }
 
+/** Shared delete authz for API + market UI (keeps seed/null ownership aligned for market owner). */
+export function canDeleteOwnedTool(args: {
+  createdByUserId: string | null | undefined
+  userId: string | null | undefined
+}): boolean {
+  const { createdByUserId, userId } = args
+  if (!userId) return false
+  if (createdByUserId === userId) return true
+  if (userId !== MARKET_OWNER_USER_ID) return false
+  return createdByUserId == null || createdByUserId === MARKET_OWNER_USER_ID
+}
+
 export function assertOwnedToolDeletable(args: {
   tool: { createdByUserId: string | null } | null
   userId: string
@@ -17,7 +31,7 @@ export function assertOwnedToolDeletable(args: {
   if (!args.tool) {
     throw new OwnedToolDeleteError('NOT_FOUND')
   }
-  if (args.tool.createdByUserId !== args.userId) {
+  if (!canDeleteOwnedTool({ createdByUserId: args.tool.createdByUserId, userId: args.userId })) {
     throw new OwnedToolDeleteError('FORBIDDEN')
   }
 }
@@ -26,5 +40,5 @@ export function resolveIsOwnedByViewer(
   createdByUserId: string | null | undefined,
   viewerUserId: string | null | undefined,
 ): boolean {
-  return Boolean(viewerUserId && createdByUserId && createdByUserId === viewerUserId)
+  return canDeleteOwnedTool({ createdByUserId, userId: viewerUserId })
 }
