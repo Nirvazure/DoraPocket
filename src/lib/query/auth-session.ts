@@ -13,6 +13,7 @@ export type AuthSessionUser = {
   lastSignInAt?: string | null
   authRole?: string | null
   authProvider?: string | null
+  isMarketOwner?: boolean
 }
 
 export function useAuthSessionQuery() {

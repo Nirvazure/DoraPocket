@@ -29,6 +29,7 @@ import { useMarketPageModel } from '@/app/market/_hooks/use-market-page-model'
 import { useToolCardActions } from '@/hooks/use-tool-card-actions'
 import { useAuthSessionQuery } from '@/lib/query/auth-session'
 import {
+  useDeleteMarketToolMutation,
   useMarketReviewAggregatesQuery,
   useMarketToolsByIdsQuery,
   useMarketToolsQuery,
@@ -49,6 +50,8 @@ import {
   type MarketDiscoverSectionKey,
   type MarketToolCardItem,
 } from '@/shared/market/market-scope'
+import { resolveIsOwnedByViewer } from '@/shared/market/owned-tool-delete'
+import { MARKET_OWNER_USER_ID } from '@/shared/market/market-owner'
 import { APP_BRAND_TITLE, PAGE_COPY } from '@/shared/copy/ui-copy'
 
 type MarketPageClientProps = {
@@ -81,11 +84,14 @@ export function MarketPageClient({ initialSection = null }: MarketPageClientProp
   const removeToolFromPocketMutation = useRemoveToolFromPocketMutation()
   const markToolUsedMutation = useMarkToolUsedMutation()
   const submitMarketToolMutation = useSubmitMarketToolMutation()
+  const deleteMarketToolMutation = useDeleteMarketToolMutation()
   const saveMarketFeedbackMutation = useSaveMarketFeedbackMutation()
   const {
     data: marketTools = [],
     isPending: marketToolsPending,
     isFetching: marketToolsFetching,
+    isError: marketToolsError,
+    refetch: refetchMarketTools,
   } = useMarketToolsQuery(debouncedQuery)
   const { data: reviewAggregates = {}, isPending: reviewAggregatesPending } =
     useMarketReviewAggregatesQuery()
@@ -102,25 +108,39 @@ export function MarketPageClient({ initialSection = null }: MarketPageClientProp
   const pocketToolIdList = useMemo(() => [...pocketToolIds], [pocketToolIds])
   const { data: pocketResolvedTools = [] } = useMarketToolsByIdsQuery(pocketToolIdList)
 
+  const authUser =
+    authSession != null &&
+    authSession.authenticated === true &&
+    'user' in authSession &&
+    authSession.user != null
+      ? authSession.user
+      : null
+  const isAuthenticated = authUser != null
+
+  const viewerUserId = authUser?.id ?? null
+  const isMarketOwnerViewer =
+    viewerUserId === MARKET_OWNER_USER_ID || authUser?.isMarketOwner === true
+
   const mergedMarketTools = useMemo(() => {
     const byId = new Map(marketTools.map((tool) => [tool.id, tool]))
     for (const tool of pocketResolvedTools) {
       byId.set(tool.id, tool)
     }
-    return [...byId.values()]
-  }, [marketTools, pocketResolvedTools])
+    return [...byId.values()].map((tool) => ({
+      ...tool,
+      // Market owner may delete any tool currently attributed to them (including seed backfill).
+      isOwnedByViewer: isMarketOwnerViewer
+        ? tool.createdByUserId == null ||
+          tool.createdByUserId === MARKET_OWNER_USER_ID ||
+          tool.createdByUserId === viewerUserId
+        : resolveIsOwnedByViewer(tool.createdByUserId, viewerUserId),
+    }))
+  }, [marketTools, pocketResolvedTools, viewerUserId, isMarketOwnerViewer])
 
   const unavailablePocketToolIds = useMemo(() => {
     const resolved = new Set(pocketResolvedTools.map((tool) => tool.id))
     return pocketToolIdList.filter((id) => !resolved.has(id))
   }, [pocketResolvedTools, pocketToolIdList])
-
-  const isAuthenticated =
-    authSession != null &&
-    authSession.authenticated === true &&
-    'user' in authSession &&
-    authSession.user != null
-
   const toolCardActions = useToolCardActions({
     authPending,
     isAuthenticated,
@@ -128,6 +148,11 @@ export function MarketPageClient({ initialSection = null }: MarketPageClientProp
     saveToolToPocket: saveToolToPocketMutation.mutate,
     getSourceQuestion: () => (initialSection === 'pocket' ? '从我的口袋打开' : '从道具库收进口袋'),
   })
+
+  const handleDeleteOwnedTool = (toolId: string) => {
+    if (!window.confirm(PAGE_COPY.market.deleteOwnedConfirm)) return
+    deleteMarketToolMutation.mutate({ toolId })
+  }
 
   const marketModel = useMarketPageModel(
     mergedMarketTools,
@@ -210,6 +235,24 @@ export function MarketPageClient({ initialSection = null }: MarketPageClientProp
             <div className="dp-market-body-slot px-1 pb-1">
               {showGridSkeleton ? (
                 <MarketToolGridSkeleton />
+              ) : marketToolsError ? (
+                <DisplayPanel className="rounded-[1.8rem] border-dashed border-slate-200 bg-slate-50/80 shadow-none">
+                  <DisplayPanelContent className="space-y-3 p-6 text-center">
+                    <DisplayPanelTitle className="text-xl text-slate-950">
+                      {PAGE_COPY.market.loadFailedTitle}
+                    </DisplayPanelTitle>
+                    <DisplayPanelDescription className="text-sm text-slate-600">
+                      {PAGE_COPY.market.loadFailedDescription}
+                    </DisplayPanelDescription>
+                    <Button
+                      type="button"
+                      className="mt-2 h-10 rounded-full px-4 text-sm font-bold"
+                      onClick={() => void refetchMarketTools()}
+                    >
+                      {PAGE_COPY.market.loadRetryAction}
+                    </Button>
+                  </DisplayPanelContent>
+                </DisplayPanel>
               ) : showPocketLoginState ? (
                 <DisplayPanel className="rounded-[1.8rem] border-dashed border-slate-200 bg-slate-50/80 shadow-none">
                   <DisplayPanelContent className="space-y-3 p-6 text-center">
@@ -269,6 +312,7 @@ export function MarketPageClient({ initialSection = null }: MarketPageClientProp
                   onRemoveTool={(toolId) => removeToolFromPocketMutation.mutate({ toolId })}
                   onOpenTool={toolCardActions.openTool}
                   onReviewTool={marketModel.openReviewTool}
+                  onDeleteTool={handleDeleteOwnedTool}
                 />
               ) : (
                 <section>
@@ -282,6 +326,7 @@ export function MarketPageClient({ initialSection = null }: MarketPageClientProp
                     onRemoveTool={(toolId) => removeToolFromPocketMutation.mutate({ toolId })}
                     onOpenTool={toolCardActions.openTool}
                     onReviewTool={marketModel.openReviewTool}
+                    onDeleteTool={handleDeleteOwnedTool}
                   />
                 </section>
               )}

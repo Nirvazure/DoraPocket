@@ -8,6 +8,7 @@ import type {
   ToolTrustSignals,
   ToolUsageStats,
 } from '@/shared/market/tool-registry'
+import { resolveIsOwnedByViewer } from '@/shared/market/owned-tool-delete'
 
 function defaultRatingSummary(): ToolRatingSummary {
   return {
@@ -55,7 +56,7 @@ function toDefaultArgs(value: unknown): Record<string, unknown> | undefined {
     : undefined
 }
 
-export function mapDbToolToToolItem(tool: DbTool): ToolItem {
+export function mapDbToolToToolItem(tool: DbTool, viewerUserId?: string | null): ToolItem {
   return {
     id: tool.id,
     name: tool.name,
@@ -83,10 +84,12 @@ export function mapDbToolToToolItem(tool: DbTool): ToolItem {
     defaultArgs: toDefaultArgs(tool.defaultArgs),
     siteHostname: tool.siteHostname ?? undefined,
     marketAssetOrigin: (tool.marketAssetOrigin as ToolItem['marketAssetOrigin']) ?? undefined,
+    createdByUserId: tool.createdByUserId ?? null,
+    isOwnedByViewer: resolveIsOwnedByViewer(tool.createdByUserId, viewerUserId),
   }
 }
 
-export async function listActiveToolItems() {
+export async function listActiveToolItems(viewerUserId?: string | null) {
   const tools = await listActiveTools()
-  return tools.map(mapDbToolToToolItem)
+  return tools.map((tool) => mapDbToolToToolItem(tool, viewerUserId))
 }

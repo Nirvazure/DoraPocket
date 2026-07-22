@@ -12,6 +12,7 @@ type MarketToolGridProps = {
   onRemoveTool: (toolId: string) => void
   onOpenTool: (toolId: string, url?: string | null) => void
   onReviewTool: (toolId: string) => void
+  onDeleteTool?: (toolId: string) => void
 }
 
 export function MarketToolGrid({
@@ -22,6 +23,7 @@ export function MarketToolGrid({
   onRemoveTool,
   onOpenTool,
   onReviewTool,
+  onDeleteTool,
 }: MarketToolGridProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -34,6 +36,7 @@ export function MarketToolGrid({
           onRemoveTool={onRemoveTool}
           onOpenTool={onOpenTool}
           onReviewTool={onReviewTool}
+          onDeleteTool={onDeleteTool}
         />
       ))}
       {unavailableToolIds.map((toolId) => (
