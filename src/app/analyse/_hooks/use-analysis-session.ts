@@ -5,7 +5,6 @@ import { playAudioStream, playDoraPocketSfx, stopAudioPlayback } from '@/lib/cli
 import { askQwen, type ChatToolPayload } from '@/lib/client/llm'
 import { buildTTSAudioUrl } from '@/lib/client/tts'
 import type { UserSettings } from '@/shared/user/user-settings'
-import { pickModeCardAfterTurn, type AssistantModeCard } from '@/shared/discovery/mode-registry'
 import type { AgentUiPayload } from '@/shared/market/market-types'
 import type { RandomDoorAnalysisPayload } from '@/shared/market/random-door'
 import { SYSTEM_NOTICE_COPY } from '@/shared/copy/ui-copy'
@@ -23,7 +22,6 @@ import { useStore } from '@/store'
 type UseAnalysisSessionOptions = {
   userSettings?: UserSettings
   onPrepareAgentTurn?: () => void
-  onPocketGadgetChange: (gadget: AssistantModeCard) => void
   onCoverRecommendation: () => void
   onRevealRecommendation: (force?: boolean) => void
   onAnalysisError?: () => void
@@ -36,12 +34,10 @@ function isAbortError(error: unknown): boolean {
 export function useAnalysisSession({
   userSettings,
   onPrepareAgentTurn,
-  onPocketGadgetChange,
   onCoverRecommendation,
   onRevealRecommendation,
   onAnalysisError,
 }: UseAnalysisSessionOptions) {
-  const pocketReachTimerRef = useRef(0)
   const latestUserPromptRef = useRef('')
   const responseBufferRef = useRef('')
   const recommendationCoverStartedRef = useRef(false)
@@ -81,17 +77,6 @@ export function useAnalysisSession({
     setBotResponse('')
   }, [setAppState, setBotResponse, setTranscript])
 
-  const triggerPocketReveal = useCallback(
-    (gadget: AssistantModeCard) => {
-      onPocketGadgetChange(gadget)
-      window.clearTimeout(pocketReachTimerRef.current)
-      pocketReachTimerRef.current = window.setTimeout(() => {
-        pocketReachTimerRef.current = 0
-      }, 1050)
-    },
-    [onPocketGadgetChange],
-  )
-
   const applyFinalReplyState = useCallback(
     (reply: AgentTurnReply) => {
       setSelectedToolPayload(reply.selectedTool)
@@ -99,17 +84,6 @@ export function useAnalysisSession({
       setRecommendationSessionId(reply.recommendationSessionId ?? null)
     },
     [setAgentUiPayload, setRecommendationSessionId, setSelectedToolPayload],
-  )
-
-  const presentPocketGadget = useCallback(
-    (reply: AgentTurnReply) => {
-      const nextPocketGadget = pickModeCardAfterTurn(null, reply.selectedTool?.toolId)
-      onPocketGadgetChange(nextPocketGadget)
-      if (reply.selectedTool?.toolId) {
-        triggerPocketReveal(nextPocketGadget)
-      }
-    },
-    [onPocketGadgetChange, triggerPocketReveal],
   )
 
   const clearResponseState = useCallback(() => {
@@ -257,7 +231,6 @@ export function useAnalysisSession({
           onCoverRecommendation()
         }
 
-        presentPocketGadget(reply)
         await finishReplyPlayback(reply, turnId, isActive)
       }
 
@@ -338,7 +311,6 @@ export function useAnalysisSession({
       isAgentTurnActive,
       onPrepareAgentTurn,
       onCoverRecommendation,
-      presentPocketGadget,
       setAgentUiPayload,
       setAppState,
       setBotResponse,
@@ -384,11 +356,9 @@ export function useAnalysisSession({
       recommendationCoverStartedRef.current = false
       skipCoverRef.current = false
       clarifyQuickRepliesRef.current = []
-      onPocketGadgetChange(pickModeCardAfterTurn(null, selectedToolPayload.toolId))
     },
     [
       cancelActiveAgentTurn,
-      onPocketGadgetChange,
       setAgentUiPayload,
       setAnalysisFlow,
       setAppState,
@@ -435,7 +405,6 @@ export function useAnalysisSession({
   useEffect(() => {
     return () => {
       stopAudioPlayback()
-      window.clearTimeout(pocketReachTimerRef.current)
     }
   }, [])
 

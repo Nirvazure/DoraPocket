@@ -2,10 +2,11 @@
 
 import { useCallback, useEffect, useRef } from 'react'
 import {
-  IDLE_ANALYSIS_FLOW,
   resolveAnalysisFlowAfterError,
   type AnalysisFlow,
 } from '@/app/analyse/_domain/analysis-stage-content'
+
+import { selectAnalysisFlow, useStore } from '@/store'
 
 const COVER_DURATION_MS = 3800
 const REVEAL_DURATION_MS = 420
@@ -18,18 +19,9 @@ const COVER_FLOW: AnalysisFlow = { phase: 'analyzing', beat: 'cover' }
 type SetAnalysisFlow = (flow: AnalysisFlow) => void
 
 export function useAnalysisFlowReveal(setAnalysisFlow: SetAnalysisFlow) {
-  const analysisFlowRef = useRef<AnalysisFlow>(WORKING_FLOW)
   const revealTimerRef = useRef<number | null>(null)
   const coverTimerRef = useRef<number | null>(null)
   const revealQueuedAfterCoverRef = useRef(false)
-
-  const syncFlow = useCallback(
-    (flow: AnalysisFlow) => {
-      analysisFlowRef.current = flow
-      setAnalysisFlow(flow)
-    },
-    [setAnalysisFlow],
-  )
 
   const clearRevealTimers = useCallback(() => {
     if (revealTimerRef.current) {
@@ -44,24 +36,24 @@ export function useAnalysisFlowReveal(setAnalysisFlow: SetAnalysisFlow) {
   }, [])
 
   const enterRevealedBeat = useCallback(() => {
-    syncFlow(REVEALED_FLOW)
-  }, [syncFlow])
+    setAnalysisFlow(REVEALED_FLOW)
+  }, [setAnalysisFlow])
 
   const enterRevealBeat = useCallback(() => {
     if (revealTimerRef.current) {
       window.clearTimeout(revealTimerRef.current)
       revealTimerRef.current = null
     }
-    syncFlow(REVEAL_FLOW)
+    setAnalysisFlow(REVEAL_FLOW)
     revealTimerRef.current = window.setTimeout(() => {
       revealTimerRef.current = null
       enterRevealedBeat()
     }, REVEAL_DURATION_MS)
-  }, [enterRevealedBeat, syncFlow])
+  }, [enterRevealedBeat, setAnalysisFlow])
 
   const finishCoverBeat = useCallback(() => {
     coverTimerRef.current = null
-    const current = analysisFlowRef.current
+    const current = selectAnalysisFlow(useStore.getState())
     if (current.phase !== 'analyzing' || current.beat !== 'cover') return
     revealQueuedAfterCoverRef.current = false
     enterRevealBeat()
@@ -69,17 +61,17 @@ export function useAnalysisFlowReveal(setAnalysisFlow: SetAnalysisFlow) {
 
   const startCoverRecommendation = useCallback(() => {
     if (coverTimerRef.current || revealTimerRef.current) return
-    const current = analysisFlowRef.current
+    const current = selectAnalysisFlow(useStore.getState())
     if (current.phase === 'revealed' || current.beat === 'reveal') return
 
     revealQueuedAfterCoverRef.current = false
-    syncFlow(COVER_FLOW)
+    setAnalysisFlow(COVER_FLOW)
     coverTimerRef.current = window.setTimeout(finishCoverBeat, COVER_DURATION_MS)
-  }, [finishCoverBeat, syncFlow])
+  }, [finishCoverBeat, setAnalysisFlow])
 
   const requestRevealRecommendation = useCallback(
     (force = false) => {
-      const current = analysisFlowRef.current
+      const current = selectAnalysisFlow(useStore.getState())
 
       if (current.phase === 'revealed') return
       if (current.phase === 'analyzing' && current.beat === 'reveal') return
@@ -102,32 +94,25 @@ export function useAnalysisFlowReveal(setAnalysisFlow: SetAnalysisFlow) {
 
   const prepareNewAgentTurn = useCallback(() => {
     clearRevealTimers()
-    syncFlow(WORKING_FLOW)
-  }, [clearRevealTimers, syncFlow])
+    setAnalysisFlow(WORKING_FLOW)
+  }, [clearRevealTimers, setAnalysisFlow])
 
   const resetAnalysisFlowAfterError = useCallback(() => {
     clearRevealTimers()
     const nextFlow = resolveAnalysisFlowAfterError()
-    syncFlow(nextFlow)
-  }, [clearRevealTimers, syncFlow])
-
-  const bindAnalysisFlowRef = useCallback((flow: AnalysisFlow) => {
-    analysisFlowRef.current = flow
-  }, [])
+    setAnalysisFlow(nextFlow)
+  }, [clearRevealTimers, setAnalysisFlow])
 
   useEffect(() => {
     return () => clearRevealTimers()
   }, [clearRevealTimers])
 
   return {
-    analysisFlowRef,
-    bindAnalysisFlowRef,
     clearRevealTimers,
     startCoverRecommendation,
     requestRevealRecommendation,
     prepareNewAgentTurn,
     resetAnalysisFlowAfterError,
-    idleAnalysisFlow: IDLE_ANALYSIS_FLOW,
     workingFlow: WORKING_FLOW,
   }
 }

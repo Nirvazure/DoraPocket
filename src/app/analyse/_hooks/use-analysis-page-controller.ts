@@ -20,16 +20,14 @@ import { useAnalysisToolLookup } from '@/app/analyse/_hooks/use-analysis-tool-lo
 import { useAnalysisSession } from '@/app/analyse/_hooks/use-analysis-session'
 import { useAutoDismissSystemNotice } from '@/app/analyse/_hooks/use-auto-dismiss-system-notice'
 import { useDiscoveryWorkspaceActions } from '@/app/analyse/_hooks/use-discovery-workspace-actions'
-import { usePocketGadgetModalActions } from '@/app/analyse/_hooks/use-pocket-gadget-modal-actions'
 import { useVoiceInput } from '@/app/analyse/_hooks/use-voice-input'
-import { useAuthSessionQuery, resolveSettingsReadOnly } from '@/lib/query/auth-session'
+import { useAuthSessionQuery } from '@/lib/query/auth-session'
 import { useMarkToolUsedMutation, useSaveToolToPocketMutation } from '@/lib/query/pocket'
 import { useRandomDoorRecommendationMutation } from '@/lib/query/random-door'
-import { useSaveUserSettingsMutation, useUserSettingsQuery } from '@/lib/query/user-settings'
-import type { AssistantModeCard } from '@/shared/discovery/mode-registry'
+import { useUserSettingsQuery } from '@/lib/query/user-settings'
 import { PAGE_COPY, SYSTEM_NOTICE_COPY } from '@/shared/copy/ui-copy'
 import { buildRandomDoorAnalysisPayload } from '@/shared/market/random-door'
-import { mergeClarificationIntoAnalysisFlow, useStore } from '@/store'
+import { selectAnalysisFlow, useStore } from '@/store'
 import { shouldRestartAnalysisFlow } from '@/app/analyse/_domain/analysis-stage-restart'
 import type { DiscoveryWorkspaceHandle } from '@/app/analyse/_components/discovery/discovery-workspace'
 
@@ -57,20 +55,14 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
   const randomDoorRecommendationMutation = useRandomDoorRecommendationMutation()
   const { data: userSettings } = useUserSettingsQuery()
   const { data: authSession, isPending: authPending } = useAuthSessionQuery()
-  const saveUserSettingsMutation = useSaveUserSettingsMutation()
   const isAuthenticated = authSession?.authenticated === true
-  const settingsReadOnly = resolveSettingsReadOnly(authPending, authSession?.authenticated)
 
   const [inputModeOverride, setInputModeOverride] = useState<InputMode | null>(null)
   const [textFallback, setTextFallback] = useState('')
-  const [pocketModalOpen, setPocketModalOpen] = useState(false)
-  const [pocketGadget, setPocketGadget] = useState<AssistantModeCard | null>(null)
   const previousPromptRef = useRef<string | null>(null)
   const stageImmediateTimerRef = useRef<number | null>(null)
   const controllerMountedRef = useRef(false)
   const {
-    analysisFlowRef,
-    bindAnalysisFlowRef,
     clearRevealTimers,
     startCoverRecommendation,
     requestRevealRecommendation,
@@ -96,7 +88,6 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
   } = useAnalysisSession({
     userSettings,
     onPrepareAgentTurn: prepareNewAgentTurn,
-    onPocketGadgetChange: setPocketGadget,
     onAnalysisError: resetAnalysisFlowAfterError,
     onCoverRecommendation: startCoverRecommendation,
     onRevealRecommendation: requestRevealRecommendation,
@@ -157,16 +148,6 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     getRecommendationSessionId: () => useStore.getState().recommendationSessionId,
   })
 
-  const pocketGadgetModalActions = usePocketGadgetModalActions({
-    authPending,
-    isAuthenticated,
-    getTool,
-    selectedToolPayload,
-    getLatestUserPrompt: () => latestUserPromptRef.current,
-    saveToolToPocket,
-    markToolUsed: markToolUsedMutation.mutate,
-  })
-
   useLayoutEffect(() => {
     if (!userSettings?.fontPreset) return
     document.documentElement.dataset.fontPreset = userSettings.fontPreset
@@ -175,13 +156,9 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
   useAutoDismissSystemNotice({ systemNotice, clearSystemNotice })
 
   const resolvedAnalysisFlow = useMemo(
-    () => mergeClarificationIntoAnalysisFlow(analysisFlow, clarificationSession),
+    () => selectAnalysisFlow({ analysisFlow, clarificationSession }),
     [analysisFlow, clarificationSession],
   )
-
-  useEffect(() => {
-    bindAnalysisFlowRef(resolvedAnalysisFlow)
-  }, [bindAnalysisFlowRef, resolvedAnalysisFlow])
 
   useEffect(() => {
     controllerMountedRef.current = true
@@ -206,7 +183,6 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     }
     const scheduleFlow = (flow: AnalysisFlow) => {
       runAfterMount(() => {
-        analysisFlowRef.current = flow
         setAnalysisFlow(flow)
       })
     }
@@ -222,7 +198,7 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
       return clearTimers
     }
 
-    const currentFlow = analysisFlowRef.current
+    const currentFlow = selectAnalysisFlow(useStore.getState())
     const restartingForNewPrompt = shouldRestartAnalysisFlow({
       previousPrompt,
       nextPrompt: normalizedPrompt,
@@ -235,7 +211,7 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
 
     if (appState === 'thinking') {
       clearTimers()
-      if (shouldPreserveTurnFlow(analysisFlowRef.current)) {
+      if (shouldPreserveTurnFlow(currentFlow)) {
         return clearTimers
       }
       scheduleFlow(workingFlow)
@@ -248,7 +224,6 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
 
     return clearTimers
   }, [
-    analysisFlowRef,
     appState,
     clearRevealTimers,
     currentPrompt,
@@ -322,24 +297,12 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     [userSettings?.defaultInputMode],
   )
 
-  const saveUserSettings = useCallback(
-    (next: Parameters<typeof saveUserSettingsMutation.mutate>[0]) => {
-      if (authPending || !isAuthenticated) return
-      saveUserSettingsMutation.mutate(next)
-    },
-    [authPending, isAuthenticated, saveUserSettingsMutation],
-  )
-
   return {
     appState,
     transcript,
     botResponse,
     systemNotice,
-    pocketModalOpen,
-    pocketGadget,
     userSettings,
-    isAuthenticated,
-    settingsReadOnly,
     currentPrompt,
     clarificationSession,
     analysisFlow: resolvedAnalysisFlow,
@@ -353,15 +316,12 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     canSkipVoice,
     promptPlaceholder,
     workspaceActions,
-    pocketGadgetModalActions,
     handleStartStructuredAnalysis,
     handleOpenRandomDoor,
     randomDoorPending: randomDoorRecommendationMutation.isPending,
     handleStartNewTask,
     handleReturnToUnderstanding,
     starterActionsEnabled: !currentPrompt?.trim() && appState === 'idle',
-    setPocketModalOpen,
-    saveUserSettings,
     setInputMode,
     setTextFallback,
     submitTextMessage,

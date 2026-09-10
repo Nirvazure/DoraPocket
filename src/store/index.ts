@@ -124,10 +124,10 @@ export const useStore = create<DoraStore>((set, get) => ({
   },
 }))
 
-export function mergeClarificationIntoAnalysisFlow(
-  flow: AnalysisFlow,
-  clarification: ClarificationSession | null,
-): AnalysisFlow {
+export function selectAnalysisFlow({
+  analysisFlow: flow,
+  clarificationSession: clarification,
+}: Pick<DoraStore, 'analysisFlow' | 'clarificationSession'>): AnalysisFlow {
   if (clarification) return { ...flow, clarification }
   if (!flow.clarification) return flow
   return { phase: flow.phase, beat: flow.beat }

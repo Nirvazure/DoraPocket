@@ -10,14 +10,10 @@ import {
   type DiscoveryWorkspaceHandle,
 } from '@/app/analyse/_components/discovery/discovery-workspace'
 import { ListeningHud } from '@/app/analyse/_components/listening-hud'
-import { PocketGadgetModal } from '@/app/analyse/_components/pocket-gadget-modal'
 import { useAnalysisPageController } from '@/app/analyse/_hooks/use-analysis-page-controller'
 import { usePrefersCompactStage } from '@/app/analyse/_hooks/use-prefers-compact-stage'
 import { stopAudioPlayback } from '@/lib/client/audio'
-import {
-  resolveCurrentStep,
-  resolveMaxVisibleStep,
-} from '@/app/analyse/_domain/analysis-stage-content'
+import { resolveCurrentStep } from '@/app/analyse/_domain/analysis-stage-content'
 import { PAGE_COPY } from '@/shared/copy/ui-copy'
 import { useCallback, useMemo, useRef, useState } from 'react'
 
@@ -27,8 +23,6 @@ export function AnalysisPageClient() {
     appState,
     systemNotice,
     botResponse,
-    pocketModalOpen,
-    pocketGadget,
     userSettings,
     currentPrompt,
     analysisFlow,
@@ -42,14 +36,12 @@ export function AnalysisPageClient() {
     canSkipVoice,
     promptPlaceholder,
     workspaceActions,
-    pocketGadgetModalActions,
     handleStartStructuredAnalysis,
     handleOpenRandomDoor,
     randomDoorPending,
     handleStartNewTask,
     handleReturnToUnderstanding,
     starterActionsEnabled,
-    setPocketModalOpen,
     setInputMode,
     setTextFallback,
     submitTextMessage,
@@ -71,12 +63,7 @@ export function AnalysisPageClient() {
     () => resolveCurrentStep(analysisFlow, hasPrompt, hasResult),
     [analysisFlow, hasPrompt, hasResult],
   )
-  const maxVisibleStep = useMemo(
-    () => resolveMaxVisibleStep(analysisFlow, hasPrompt, hasResult),
-    [analysisFlow, hasPrompt, hasResult],
-  )
-  const showMobileCompactStage =
-    prefersCompactStage && recommendationStep === 3 && maxVisibleStep >= 3
+  const showMobileCompactStage = prefersCompactStage && recommendationStep === 3
 
   const handleReachRecommendationStep = useCallback(() => {
     if (prefersCompactStage) {
@@ -154,14 +141,6 @@ export function AnalysisPageClient() {
         />
       }
     >
-      <PocketGadgetModal
-        open={pocketModalOpen}
-        gadget={pocketGadget}
-        canOpenExternal={pocketGadget?.toolId != null && getTool(pocketGadget.toolId)?.url != null}
-        onClose={() => setPocketModalOpen(false)}
-        onOpenTool={pocketGadgetModalActions.onOpenTool}
-        onSaveToPocket={pocketGadgetModalActions.onSaveToPocket}
-      />
       {appState === 'listening' ? <ListeningHud /> : null}
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.52fr)_minmax(18rem,0.62fr)] lg:items-stretch">
         <div className="discovery-panel-lg-type flex h-full min-h-0 flex-col lg:text-[17px] lg:leading-relaxed">

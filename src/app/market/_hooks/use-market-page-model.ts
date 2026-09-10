@@ -94,14 +94,10 @@ export function useMarketPageModel(
         ] as const)
       : navigation.categoryEntries
 
-  const resolvedSection = useMemo(
-    () =>
-      resolveMarketSection({
-        selectedSection,
-        categoryEntries: navigationEntries,
-      }),
-    [navigationEntries, selectedSection],
-  )
+  const resolvedSection = resolveMarketSection({
+    selectedSection,
+    categoryEntries: navigationEntries,
+  })
 
   const currentCategoryTools = useMemo(
     () => resolveCurrentTools({ selectedSection: resolvedSection, scopedTools }),

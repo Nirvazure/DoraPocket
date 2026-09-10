@@ -5,6 +5,7 @@ import {
   IDLE_ANALYSIS_FLOW,
   isAnalyzingFlow,
   isInputLockedFlow,
+  isStepDone,
   resolveCurrentStep,
   resolveAnalysisFlowAfterError,
   shouldShowRecommendationWaiting,
@@ -34,6 +35,18 @@ test('resolveCurrentStep stays on analysis panel when prompt exists before resul
   assert.equal(resolveCurrentStep(IDLE_ANALYSIS_FLOW, true, false), 2)
 })
 
+test('new task resets to the first step even when an old result remains', () => {
+  assert.equal(resolveCurrentStep({ phase: 'revealed', beat: 'working' }, false, true), 1)
+})
+
+test('completed steps remain available for review during recommendation generation', () => {
+  const currentStep = resolveCurrentStep({ phase: 'analyzing', beat: 'cover' }, true, true)
+  assert.deepEqual(
+    [1, 2, 3].map((step) => isStepDone(step, currentStep)),
+    [true, true, false],
+  )
+})
+
 test('resolveCurrentStep opens recommendation panel at reveal beat', () => {
   assert.equal(resolveCurrentStep({ phase: 'analyzing', beat: 'reveal' }, true, true), 3)
 })
@@ -52,7 +65,7 @@ test('shouldShowRecommendationWaiting keeps pocket scene until recommendation is
   assert.equal(shouldShowRecommendationWaiting({ phase: 'revealed', beat: 'working' }, true), false)
 })
 
-test('isInputLockedFlow returns false when step2 status is clarifying', () => {
+test('isInputLockedFlow returns false while clarification is active', () => {
   assert.equal(
     isInputLockedFlow({
       phase: 'analyzing',

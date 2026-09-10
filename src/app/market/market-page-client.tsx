@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/display-shell'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
 import { useMarketPageModel } from '@/app/market/_hooks/use-market-page-model'
-import { useToolCardActions } from '@/hooks/use-tool-card-actions'
+import { useAuthenticatedToolActions } from '@/hooks/use-authenticated-tool-actions'
 import { useAuthSessionQuery } from '@/lib/query/auth-session'
 import {
   useDeleteMarketToolMutation,
@@ -151,7 +151,7 @@ export function MarketPageClient({ initialSection = null }: MarketPageClientProp
     const resolved = new Set(pocketResolvedTools.map((tool) => tool.id))
     return pocketToolIdList.filter((id) => !resolved.has(id))
   }, [pocketResolvedTools, pocketToolIdList])
-  const toolCardActions = useToolCardActions({
+  const toolCardActions = useAuthenticatedToolActions({
     authPending,
     isAuthenticated,
     markToolUsed: markToolUsedMutation.mutate,

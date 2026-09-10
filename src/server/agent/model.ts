@@ -1,6 +1,7 @@
 import { ChatOpenAI } from '@langchain/openai'
 
 import { QWEN_BASE_URL, QWEN_MODEL } from '@/constant'
+const MODEL_REQUEST_TIMEOUT_MS = 30_000
 
 export const DORA_PROMPT = [
   '你是 DoraPocket，一个哆啦A梦风格但极其务实的工具发现 Agent。',
@@ -17,6 +18,8 @@ export function createModel(temperature = 0.4) {
     apiKey,
     model: QWEN_MODEL,
     temperature,
+    timeout: MODEL_REQUEST_TIMEOUT_MS,
+    maxRetries: 0,
     configuration: {
       baseURL: QWEN_BASE_URL,
     },

@@ -8,7 +8,6 @@ import { CompactDecisionPanel } from '@/app/analyse/_components/discovery/compac
 import {
   isStepDone,
   resolveCurrentStep,
-  resolveMaxVisibleStep,
   type AnalysisFlow,
 } from '@/app/analyse/_domain/analysis-stage-content'
 import { DecisionProgressSteps } from '@/app/analyse/_components/discovery/decision-progress-steps'
@@ -94,16 +93,10 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
       if (reviewingUnderstanding) return 2
       return resolveCurrentStep(analysisFlow, hasPrompt, hasResult)
     }, [analysisFlow, hasPrompt, hasResult, reviewingUnderstanding])
-    const maxVisibleStep = useMemo(() => {
-      if (reviewingUnderstanding) return 2
-      return resolveMaxVisibleStep(analysisFlow, hasPrompt, hasResult)
-    }, [analysisFlow, hasPrompt, hasResult, reviewingUnderstanding])
     const [manualExpandedStep, setManualExpandedStep] = useState<number | null>(null)
     const previousStepRef = useRef(currentStep)
     const expandedStep =
-      manualExpandedStep != null &&
-      manualExpandedStep < currentStep &&
-      manualExpandedStep <= maxVisibleStep
+      manualExpandedStep != null && manualExpandedStep < currentStep
         ? manualExpandedStep
         : currentStep
 
@@ -117,7 +110,7 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
     }, [currentStep, onReachRecommendationStep, scrollOnReachRecommendation])
 
     const handleStepClick = (step: number) => {
-      if (step > maxVisibleStep) return
+      if (step > currentStep) return
       if (step === currentStep) {
         setManualExpandedStep(null)
         return
@@ -127,7 +120,7 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
       }
     }
 
-    const activePanelStep = expandedStep <= maxVisibleStep ? (expandedStep as 1 | 2 | 3) : null
+    const activePanelStep = expandedStep as 1 | 2 | 3
 
     const handleStartNewTask = useCallback(() => {
       wizard.reset()
@@ -145,7 +138,6 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
           <div className="shrink-0 border-b border-border/45 px-3 py-2 sm:px-4 sm:py-2.5">
             <DecisionProgressSteps
               currentStep={currentStep}
-              maxVisibleStep={maxVisibleStep}
               expandedStep={expandedStep}
               onStepClick={handleStepClick}
             />
