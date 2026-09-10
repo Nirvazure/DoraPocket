@@ -5,7 +5,6 @@ import { PAGE_COPY } from '@/shared/copy/ui-copy'
 
 type DecisionProgressStepsProps = {
   currentStep: number
-  maxVisibleStep: number
   expandedStep: number
   onStepClick: (step: number) => void
 }
@@ -14,7 +13,6 @@ const STEPS = PAGE_COPY.analysis.decisionSteps
 
 export function DecisionProgressSteps({
   currentStep,
-  maxVisibleStep,
   expandedStep,
   onStepClick,
 }: DecisionProgressStepsProps) {
@@ -24,7 +22,7 @@ export function DecisionProgressSteps({
         {STEPS.map((item) => {
           const selected = item.step === expandedStep
           const done = item.step < currentStep && !selected
-          const visible = item.step <= maxVisibleStep
+          const visible = item.step <= currentStep
 
           return (
             <button

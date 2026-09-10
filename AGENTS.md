@@ -1,148 +1,70 @@
-## Philosophy
+# DoraPocket Agent Instructions
 
-### Core Beliefs
+## Project source of truth
 
-- **Incremental progress over big bangs** - Small changes that compile and pass tests
-- **Learning from existing code** - Study and plan before implementing
-- **Pragmatic over dogmatic** - Adapt to project reality
-- **Clear intent over clever code** - Be boring and obvious
+- `README.md` is the source of truth for the product description, current capabilities, technology stack, project structure, runtime flow, and future direction.
+- `Todo.md` is the only long-lived backlog. Add an item only when it has a clear outcome and acceptance condition.
+- There is no permanent `IMPLEMENTATION_PLAN.md` or parallel documentation tree. Temporary plans belong in the conversation; durable follow-up work belongs in `Todo.md`.
+- `.specstory/history` is local, auto-saved history. It is read-only context and is not a source of truth for the current implementation.
 
-### Simplicity Means
+## Project facts
 
-- Single responsibility per function/class
-- Avoid premature abstractions
-- No clever tricks - choose the boring solution
-- If you need to explain it, it's too complex
+DoraPocket is a task-driven AI tool recommendation assistant. It helps a user narrow a concrete task to a tool worth trying first, then supports opening, saving, and evaluating that recommendation. It does not complete the task inside external tools.
 
-## Process
+The current stack is Next.js 16 App Router, React 19, TypeScript, Tailwind CSS, shadcn/ui, React Three Fiber, Three.js, Zustand, TanStack Query, LangChain, Qwen, Prisma 7, PostgreSQL, Supabase Auth/Storage/Realtime, optional Aliyun speech services, and Vercel Cron.
 
-### 1. Planning & Staging
+Use the current code layout as the authority:
 
-Break complex work into 3-5 stages. Document in `IMPLEMENTATION_PLAN.md`:
+- `src/app`: routes, pages, and API handlers.
+- `src/app/analyse`: analysis, clarification, recommendation, 3D stage, and voice interaction.
+- `src/app/market`: tool market, search, submission, review, and pocket views.
+- `src/app/profile`: user profile and settings.
+- `src/components`: shared UI, providers, and cross-route components.
+- `src/server`: server-only authentication, Agent logic, market services, repositories, retrieval, storage, webhooks, and cron jobs.
+- `src/shared`: cross-layer types, domain rules, market/discovery logic, and user models.
+- `src/lib`: client queries, Supabase clients, audio, speech, realtime, storage, and utilities.
+- `src/store`: client application state.
+- `prisma`: database schema and migrations.
+- `public`: 3D models, images, audio, and browser worklets.
 
-```markdown
-## Stage N: [Name]
+## Working rules
 
-**Goal**: [Specific deliverable]
-**Success Criteria**: [Testable outcomes]
-**Tests**: [Specific test cases]
-**Status**: [Not Started|In Progress|Complete]
+1. Read the relevant implementation and existing tests before changing behavior. Follow established patterns and verify assumptions against the repository.
+2. Prefer small, explicit changes. Use composition and dependency injection where a boundary needs to be testable; avoid speculative abstractions.
+3. For behavior changes, write or update deterministic tests first when practical. Test behavior and failure paths, not implementation details.
+4. Handle errors at the correct boundary with descriptive context. Do not silently swallow exceptions or expose unnecessary internal error details to users.
+5. Do not disable tests, bypass hooks with `--no-verify`, or use destructive Git commands unless the user explicitly requests that exact operation.
+6. Preserve unrelated user changes. Do not modify `.specstory/history`, generated output, database data, or deployment state as part of ordinary repository work.
+7. If the same issue fails after three distinct attempts, stop, record the concrete errors and alternatives, and reassess the approach before trying again.
+8. Do not commit changes unless the user asks for a commit. Before handing off, inspect the diff and run proportional verification.
+
+## Commands
+
+The repository uses Yarn 1.22.22. Common commands are:
+
+```bash
+yarn dev
+yarn build
+yarn start
+yarn lint
+yarn typecheck
+yarn prisma:generate
+yarn prisma:migrate
 ```
 
-- Update status as you progress
-- Remove file when all stages are done
+For a documentation-only change, at minimum run `git diff --check` and audit links and file references. For code changes, run the affected tests plus `yarn typecheck` and `yarn lint`; run a production build when the change affects deployment or route compilation.
 
-### 2. Implementation Flow
+## Documentation policy
 
-1. **Understand** - Study existing patterns in codebase
-2. **Test** - Write test first (red)
-3. **Implement** - Minimal code to pass (green)
-4. **Refactor** - Clean up with tests passing
-5. **Commit** - With clear message linking to plan
+- Keep durable project knowledge in the three root documents only.
+- Keep README claims aligned with the current code, not with old Specs, plans, or conversations.
+- Keep TODO items actionable, prioritized, and verifiable. Move stable product direction to README instead of duplicating it in TODO.
+- When a task is complete, remove or rewrite the corresponding TODO item rather than leaving a stale checklist.
 
-### 3. When Stuck (After 3 Attempts)
+## Definition of done
 
-**CRITICAL**: Maximum 3 attempts per issue, then STOP.
-
-1. **Document what failed**:
-   - What you tried
-   - Specific error messages
-   - Why you think it failed
-2. **Research alternatives**:
-   - Find 2-3 similar implementations
-   - Note different approaches used
-3. **Question fundamentals**:
-   - Is this the right abstraction level?
-   - Can this be split into smaller problems?
-   - Is there a simpler approach entirely?
-4. **Try different angle**:
-   - Different library/framework feature?
-   - Different architectural pattern?
-   - Remove abstraction instead of adding?
-
-## Technical Standards
-
-### Architecture Principles
-
-- **Composition over inheritance** - Use dependency injection
-- **Interfaces over singletons** - Enable testing and flexibility
-- **Explicit over implicit** - Clear data flow and dependencies
-- **Test-driven when possible** - Never disable tests, fix them
-
-### Code Quality
-
-- **Every commit must**:
-  - Compile successfully
-  - Pass all existing tests
-  - Include tests for new functionality
-  - Follow project formatting/linting
-- **Before committing**:
-  - Run formatters/linters
-  - Self-review changes
-  - Ensure commit message explains "why"
-
-### Error Handling
-
-- Fail fast with descriptive messages
-- Include context for debugging
-- Handle errors at appropriate level
-- Never silently swallow exceptions
-
-## Decision Framework
-
-When multiple valid approaches exist, choose based on:
-
-1. **Testability** - Can I easily test this?
-2. **Readability** - Will someone understand this in 6 months?
-3. **Consistency** - Does this match project patterns?
-4. **Simplicity** - Is this the simplest solution that works?
-5. **Reversibility** - How hard to change later?
-
-## Project Integration
-
-### Learning the Codebase
-
-- Find 3 similar features/components
-- Identify common patterns and conventions
-- Use same libraries/utilities when possible
-- Follow existing test patterns
-
-### Tooling
-
-- Use project's existing build system
-- Use project's test framework
-- Use project's formatter/linter settings
-- Don't introduce new tools without strong justification
-
-## Quality Gates
-
-### Definition of Done
-
-- [ ] Tests written and passing
-- [ ] Code follows project conventions
-- [ ] No linter/formatter warnings
-- [ ] Commit messages are clear
-- [ ] Implementation matches plan
-- [ ] No TODOs without issue numbers
-
-### Test Guidelines
-
-- Test behavior, not implementation
-- One assertion per test when possible
-- Clear test names describing scenario
-- Use existing test utilities/helpers
-- Tests should be deterministic
-
-## Important Reminders
-
-**NEVER**:
-
-- Use `--no-verify` to bypass commit hooks
-- Disable tests instead of fixing them
-- Commit code that doesn't compile
-- Make assumptions - verify with existing code
-  **ALWAYS**:
-- Commit working code incrementally
-- Update plan documentation as you go
-- Learn from existing implementations
-- Stop after 3 failed attempts and reassess
+- The requested behavior or document content is implemented.
+- Existing relevant tests pass; new behavior has appropriate coverage.
+- TypeScript and lint checks pass when applicable.
+- No stale paths, broken local links, accidental generated files, or unrelated changes remain.
+- The final response states what changed and what verification was run.

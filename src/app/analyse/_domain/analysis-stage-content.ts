@@ -34,28 +34,18 @@ export function isInputLockedFlow(flow: AnalysisFlow): boolean {
 }
 
 /** 顶栏 Step 1/2/3：Step 2 只确认理解；推荐生成与等待态都归到 Step 3。 */
-function resolveDecisionPanelStep(
+export function resolveCurrentStep(
   flow: AnalysisFlow,
   hasPrompt: boolean,
   hasResult: boolean,
 ): number {
   if (!hasPrompt) return 1
   if (flow.phase === 'idle') return hasResult ? 3 : 2
-  if (flow.phase === 'revealed') return 3
-  if (flow.phase === 'analyzing') return 3
   return 3
 }
 
 export function shouldPreserveTurnFlow(flow: AnalysisFlow) {
   return flow.phase === 'revealed' || (flow.phase === 'analyzing' && flow.beat !== 'working')
-}
-
-export function resolveCurrentStep(flow: AnalysisFlow, hasPrompt: boolean, hasResult: boolean) {
-  return resolveDecisionPanelStep(flow, hasPrompt, hasResult)
-}
-
-export function resolveMaxVisibleStep(flow: AnalysisFlow, hasPrompt: boolean, hasResult: boolean) {
-  return resolveDecisionPanelStep(flow, hasPrompt, hasResult)
 }
 
 export function isStepDone(step: number, currentStep: number) {

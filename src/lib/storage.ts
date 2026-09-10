@@ -8,12 +8,3 @@ export function readStorageJson<T>(key: string, fallback: T): T {
     return fallback
   }
 }
-
-export function writeStorageJson<T>(key: string, value: T) {
-  if (typeof window === 'undefined') return
-  try {
-    window.localStorage.setItem(key, JSON.stringify(value))
-  } catch {
-    /* ignore */
-  }
-}
