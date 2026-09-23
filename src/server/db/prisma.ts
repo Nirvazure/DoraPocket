@@ -5,13 +5,23 @@ const globalForPrisma = globalThis as typeof globalThis & {
   __prisma?: PrismaClient
 }
 
+const DEFAULT_DATABASE_POOL_MAX = 5
+
+export function getDatabasePoolMax(value = process.env.DATABASE_POOL_MAX): number {
+  const parsed = Number(value)
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : DEFAULT_DATABASE_POOL_MAX
+}
+
 function createPrismaClient(): PrismaClient {
   const connectionString = process.env.DATABASE_URL?.trim()
   if (!connectionString) {
     throw new Error('DATABASE_URL is required')
   }
 
-  const adapter = new PrismaPg({ connectionString })
+  const adapter = new PrismaPg({
+    connectionString,
+    max: getDatabasePoolMax(),
+  })
   return new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
@@ -21,9 +31,7 @@ function createPrismaClient(): PrismaClient {
 function getPrismaClient(): PrismaClient {
   if (globalForPrisma.__prisma) return globalForPrisma.__prisma
   const client = createPrismaClient()
-  if (process.env.NODE_ENV !== 'production') {
-    globalForPrisma.__prisma = client
-  }
+  globalForPrisma.__prisma = client
   return client
 }
 
