@@ -3,9 +3,8 @@
 import Image from 'next/image'
 import { useMemo, useState, useSyncExternalStore } from 'react'
 import { LogIn, Store } from 'lucide-react'
-import { LoginEntryButton } from '@/components/auth/login-entry-button'
+import { AppNav } from '@/components/common/app-nav'
 import { PageShell } from '@/components/common/page-shell'
-import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
 import { MarketCategoryNav } from '@/app/market/_components/market-category-nav'
 import { MarketCuratedHome } from '@/app/market/_components/market-curated-home'
@@ -231,17 +230,11 @@ export function MarketPageClient({ initialSection = null }: MarketPageClientProp
     <PageShell
       className="overflow-hidden"
       contentClassName="pb-5 pt-4 sm:pt-5 lg:pt-6"
-      contentMaxWidthClassName="max-w-[min(100%,132rem)]"
       header={
         <UnifiedTopBar
           title={APP_BRAND_TITLE}
           subtitle={PAGE_COPY.market.subtitle}
-          rightSlot={
-            <div className="flex items-center gap-1.5">
-              <TopNavSwitch current="market" />
-              <LoginEntryButton />
-            </div>
-          }
+          rightSlot={<AppNav current="market" />}
         />
       }
     >

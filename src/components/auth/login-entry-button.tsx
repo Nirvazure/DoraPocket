@@ -9,10 +9,15 @@ import { cn } from '@/lib/utils'
 
 type LoginEntryButtonProps = {
   active?: boolean
+  compactOnMobile?: boolean
   className?: string
 }
 
-export function LoginEntryButton({ active = false, className }: LoginEntryButtonProps) {
+export function LoginEntryButton({
+  active = false,
+  compactOnMobile = false,
+  className,
+}: LoginEntryButtonProps) {
   const { data, isPending } = useAuthSessionQuery()
   const [open, setOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -44,7 +49,14 @@ export function LoginEntryButton({ active = false, className }: LoginEntryButton
         className={cn('dp-top-profile-pill pointer-events-none opacity-80', className)}
       >
         <ProfileAvatar src="/images/assistant-avatar.svg" active={active} />
-        <span className="max-w-[7rem] truncate text-xs font-bold text-slate-500">我的</span>
+        <span
+          className={cn(
+            'max-w-[7rem] truncate text-xs font-bold text-slate-500',
+            compactOnMobile && 'hidden sm:inline',
+          )}
+        >
+          我的
+        </span>
       </span>
     )
   }
@@ -53,6 +65,7 @@ export function LoginEntryButton({ active = false, className }: LoginEntryButton
     return (
       <Link
         href="/login"
+        aria-label="我的"
         aria-current={active ? 'page' : undefined}
         className={cn('dp-top-profile-pill', active && 'dp-top-profile-pill-active', className)}
       >
@@ -61,6 +74,7 @@ export function LoginEntryButton({ active = false, className }: LoginEntryButton
           className={cn(
             'max-w-[7rem] truncate text-xs font-bold',
             active ? 'text-primary-foreground' : 'text-slate-800',
+            compactOnMobile && 'hidden sm:inline',
           )}
         >
           我的
@@ -74,6 +88,7 @@ export function LoginEntryButton({ active = false, className }: LoginEntryButton
   const labelClassName = cn(
     'max-w-[7rem] truncate text-xs font-bold',
     active ? 'text-primary-foreground' : 'text-slate-800',
+    compactOnMobile && 'hidden sm:inline',
   )
 
   return (

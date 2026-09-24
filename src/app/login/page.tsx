@@ -1,7 +1,7 @@
-import Link from 'next/link'
 import { Suspense } from 'react'
 import { LoginPocketStage } from '@/app/login/_components/login-pocket-stage'
 import { OAuthLoginForm } from '@/app/login/_components/oauth-login-form'
+import { AppNav } from '@/components/common/app-nav'
 import { PageShell } from '@/components/common/page-shell'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
 import { APP_BRAND_TITLE } from '@/shared/copy/ui-copy'
@@ -15,14 +15,7 @@ export default function LoginPage() {
         <UnifiedTopBar
           title={APP_BRAND_TITLE}
           subtitle="登录后，口袋才会跟着你走。"
-          rightSlot={
-            <Link
-              href="/analyse"
-              className="rounded-full px-3 py-2 text-sm font-medium text-foreground/60 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-            >
-              返回分析
-            </Link>
-          }
+          rightSlot={<AppNav variant="auth" />}
         />
       }
     >
