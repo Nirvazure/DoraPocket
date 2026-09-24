@@ -55,7 +55,7 @@ export function OAuthLoginForm() {
       <Button
         type="button"
         variant="default"
-        className="h-12 w-full rounded-full px-6 text-sm font-bold sm:h-14 sm:text-base"
+        className="h-12 w-full rounded-full bg-foreground px-6 text-sm font-bold text-background hover:bg-foreground/90 sm:h-14 sm:text-base"
         disabled={pending}
         onClick={() => void handleGitHubSignIn()}
       >

@@ -12,6 +12,10 @@ import type { ClarificationSession } from '@/shared/discovery/clarification-sess
 import { IDLE_ANALYSIS_FLOW } from '@/app/analyse/_domain/analysis-stage-content'
 import { appendClarificationTurn } from '@/shared/discovery/clarification-session'
 import {
+  DEFAULT_RECOMMENDATION_MODE,
+  type RecommendationMode,
+} from '@/shared/discovery/recommendation-mode'
+import {
   resolveAgentTurnRequest,
   resolveVoicePlaybackText,
   type AgentTurnReply,
@@ -43,6 +47,7 @@ export function useAnalysisSession({
   const recommendationCoverStartedRef = useRef(false)
   const skipCoverRef = useRef(false)
   const clarifyQuickRepliesRef = useRef<string[]>([])
+  const recommendationModeRef = useRef<RecommendationMode>(DEFAULT_RECOMMENDATION_MODE)
 
   const setAppState = useStore((state) => state.setAppState)
   const setTranscript = useStore((state) => state.setTranscript)
@@ -186,6 +191,10 @@ export function useAnalysisSession({
       const request = resolveAgentTurnRequest({ text, options, priorClarification })
       if (!request) return
       const { safeText, isContinuation, session, requestMessage } = request
+      const recommendationMode = isContinuation
+        ? recommendationModeRef.current
+        : (options?.recommendationMode ?? DEFAULT_RECOMMENDATION_MODE)
+      if (!isContinuation) recommendationModeRef.current = recommendationMode
       onPrepareAgentTurn?.()
       const { turnId, signal } = beginAgentTurn()
       const isActive = () => isAgentTurnActive(turnId)
@@ -258,6 +267,7 @@ export function useAnalysisSession({
           priorMessages: session.messages,
           skipClarify: options?.skipClarify,
           explanationMode,
+          recommendationMode,
           onClarify: (payload) => {
             if (!isActive()) return
             skipCoverRef.current = true
@@ -356,6 +366,7 @@ export function useAnalysisSession({
       recommendationCoverStartedRef.current = false
       skipCoverRef.current = false
       clarifyQuickRepliesRef.current = []
+      recommendationModeRef.current = DEFAULT_RECOMMENDATION_MODE
     },
     [
       cancelActiveAgentTurn,
@@ -389,6 +400,7 @@ export function useAnalysisSession({
     recommendationCoverStartedRef.current = false
     skipCoverRef.current = false
     clarifyQuickRepliesRef.current = []
+    recommendationModeRef.current = DEFAULT_RECOMMENDATION_MODE
   }, [
     cancelActiveAgentTurn,
     resetAgentResponse,

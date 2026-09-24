@@ -786,11 +786,11 @@
   }
 
   .dp-top-nav-switch {
-    @apply flex items-center rounded-full border border-white/75 bg-white/45 p-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-md;
+    @apply flex shrink-0 items-center rounded-full border border-white/75 bg-white/45 p-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-md;
   }
 
   .dp-top-nav-tab {
-    @apply inline-flex h-8 cursor-pointer items-center justify-center rounded-full px-3 text-xs font-bold text-slate-600 transition-[background-color,box-shadow,color] duration-200;
+    @apply inline-flex h-8 cursor-pointer items-center justify-center rounded-full px-2 text-[11px] font-bold text-slate-600 transition-[background-color,box-shadow,color] duration-200 sm:px-3 sm:text-xs;
   }
 
   .dp-top-nav-tab:hover:not(.dp-top-nav-tab-active) {

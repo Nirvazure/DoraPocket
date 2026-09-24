@@ -2,9 +2,8 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { LoginEntryButton } from '@/components/auth/login-entry-button'
+import { AppNav } from '@/components/common/app-nav'
 import { PageShell } from '@/components/common/page-shell'
-import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
 import { ProfilePersonaDemo } from '@/app/profile/_components/profile-persona-demo'
 import { useAuthSessionQuery } from '@/lib/query/auth-session'
@@ -36,12 +35,7 @@ export function ProfilePageClient() {
         <UnifiedTopBar
           title={APP_BRAND_TITLE}
           subtitle={PAGE_COPY.profile.subtitle}
-          rightSlot={
-            <div className="flex items-center gap-1.5">
-              <TopNavSwitch current="profile" />
-              <LoginEntryButton active />
-            </div>
-          }
+          rightSlot={<AppNav current="profile" />}
         />
       }
     >

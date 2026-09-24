@@ -4,6 +4,10 @@ import type {
   ClarificationMessage,
 } from '@/shared/discovery/clarification-session-types'
 import type { ExplanationMode } from '@/shared/user/user-settings'
+import {
+  DEFAULT_RECOMMENDATION_MODE,
+  type RecommendationMode,
+} from '@/shared/discovery/recommendation-mode'
 
 export type AskQwenOptions = {
   signal?: AbortSignal
@@ -12,6 +16,7 @@ export type AskQwenOptions = {
   anchorPrompt?: string
   priorMessages?: ClarificationMessage[]
   skipClarify?: boolean
+  recommendationMode?: RecommendationMode
   onClarify?: (payload: {
     question: string
     missingInputs: string[]
@@ -110,6 +115,7 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
       anchorPrompt: opts?.anchorPrompt,
       priorMessages: opts?.priorMessages ?? [],
       skipClarify: opts?.skipClarify === true,
+      recommendationMode: opts?.recommendationMode ?? DEFAULT_RECOMMENDATION_MODE,
     }),
   })
 

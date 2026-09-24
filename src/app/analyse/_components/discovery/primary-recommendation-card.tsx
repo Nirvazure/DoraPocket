@@ -87,6 +87,9 @@ export function PrimaryRecommendationCard({
             <DisplayPanelDescription className="mt-3 line-clamp-2 text-sm leading-6 text-white/75">
               {content.description}
             </DisplayPanelDescription>
+            <p className="mt-2 text-xs font-semibold text-white/60">
+              搜索范围：{payload?.recommendationMode === 'web' ? '全网找' : '库里找'}
+            </p>
             {leader?.candidateType === 'external_suggestion' && leader.externalBoundary ? (
               <p className="mt-3 rounded-xl border border-amber-200/30 bg-amber-500/10 px-3 py-2 text-xs leading-relaxed text-amber-100/90">
                 {leader.externalBoundary}

@@ -23,6 +23,7 @@ import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market/market-types'
 import type { UserSettings } from '@/shared/user/user-settings'
 import type { ToolLookupFn } from '@/shared/market/tool-lookup'
+import type { RecommendationMode } from '@/shared/discovery/recommendation-mode'
 
 const WhereToStartSection = dynamic(
   () =>
@@ -41,6 +42,8 @@ type DiscoveryWorkspaceProps = {
   selectedToolPayload: ChatToolPayload
   getTool: ToolLookupFn
   explanationMode?: UserSettings['explanationMode']
+  recommendationMode: RecommendationMode
+  onRecommendationModeChange: (mode: RecommendationMode) => void
   onSaveCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
   onOpenExternalCandidate: (url: string) => void
@@ -65,6 +68,8 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
       selectedToolPayload,
       getTool,
       explanationMode = 'standard',
+      recommendationMode,
+      onRecommendationModeChange,
       onSaveCandidate,
       onLaunchCandidate,
       onOpenExternalCandidate,
@@ -82,7 +87,9 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
     ref,
   ) {
     const wizard = useStarterWizardState(ref)
+    const { applyNaturalDescription } = wizard
     const sectionRef = useRef<HTMLElement>(null)
+    const confirmUnderstandingButtonRef = useRef<HTMLButtonElement>(null)
 
     const hasPrompt = Boolean(currentPrompt?.trim())
     const hasResult = Boolean(agentPayload || selectedToolPayload?.toolId)
@@ -132,6 +139,25 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
       onReturnToUnderstanding?.()
     }, [onReturnToUnderstanding])
 
+    const handleApplyNaturalDescription = useCallback(
+      async (value: string) => {
+        const draft = await applyNaturalDescription(value)
+        if (!draft) return
+        setManualExpandedStep(null)
+      },
+      [applyNaturalDescription],
+    )
+
+    const handleAnalyzeInput = useCallback(() => {
+      if (!starterActionsEnabled || wizard.intentStatus === 'analyzing') return
+      void handleApplyNaturalDescription(wizard.naturalDescription)
+    }, [
+      handleApplyNaturalDescription,
+      starterActionsEnabled,
+      wizard.intentStatus,
+      wizard.naturalDescription,
+    ])
+
     return (
       <section ref={sectionRef} className="scroll-mt-3 flex h-full min-h-0 flex-1 flex-col">
         <DisplayPanel className="pointer-events-auto flex h-full min-h-0 flex-col overflow-hidden">
@@ -161,8 +187,11 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
                 <WhereToStartSection
                   actionsEnabled={starterActionsEnabled}
                   wizardDisabled={!starterActionsEnabled}
+                  recommendationMode={recommendationMode}
+                  onRecommendationModeChange={onRecommendationModeChange}
                   naturalDescription={wizard.naturalDescription}
                   onNaturalDescriptionChange={wizard.handleNaturalDescriptionChange}
+                  onAnalyze={handleAnalyzeInput}
                 />
               ) : activePanelStep === 2 ? (
                 <section className="dp-secondary-surface overflow-hidden p-3 sm:p-4">
@@ -176,6 +205,7 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
                     onSelectOutcome={wizard.selectOutcome}
                     onToggleConstraint={wizard.toggleConstraint}
                     onCustomTaskChange={wizard.handleCustomTaskChange}
+                    onConfirm={() => confirmUnderstandingButtonRef.current?.click()}
                   />
                 </section>
               ) : null}
@@ -193,15 +223,12 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
             intentStatus={wizard.intentStatus}
             onOpenRandomDoor={onOpenRandomDoor}
             randomDoorPending={randomDoorPending}
-            onApplyNaturalDescription={async (value) => {
-              const draft = await wizard.applyNaturalDescription(value)
-              if (!draft) return
-              setManualExpandedStep(null)
-            }}
+            onApplyNaturalDescription={handleApplyNaturalDescription}
             onReviewBackToInput={() => setManualExpandedStep(1)}
             onStartAnalysis={(prompt, displayPrompt) => onStartAnalysis?.(prompt, displayPrompt)}
             onStartNewTask={handleStartNewTask}
             onReturnToUnderstanding={handleReturnToUnderstanding}
+            confirmUnderstandingButtonRef={confirmUnderstandingButtonRef}
             sessionZone={sessionDock}
           />
         </DisplayPanel>

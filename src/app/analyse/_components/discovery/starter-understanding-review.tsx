@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import type { ReactNode } from 'react'
+import type { KeyboardEvent, ReactNode } from 'react'
+import { Check, Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { StarterConstraintStep } from '@/app/analyse/_components/discovery/starter-wizard/starter-constraint-step'
 import { StarterOutcomeStep } from '@/app/analyse/_components/discovery/starter-wizard/starter-outcome-step'
@@ -29,6 +30,7 @@ type StarterUnderstandingReviewProps = {
   onSelectOutcome: (outcomeId: StarterOutcomeId) => void
   onToggleConstraint: (constraintId: StarterConstraintId) => void
   onCustomTaskChange: (value: string) => void
+  onConfirm: () => void
 }
 
 function UnderstandingSection({
@@ -56,7 +58,19 @@ function UnderstandingSection({
     >
       <div className="mb-3 flex items-center justify-between gap-2">
         <p className="text-sm font-black text-foreground">{title}</p>
-        <Button type="button" variant="outline" size="sm" disabled={disabled} onClick={onToggle}>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={disabled}
+          data-starter-understanding-edit
+          onClick={onToggle}
+        >
+          {active ? (
+            <Check className="mr-1.5 h-3.5 w-3.5" aria-hidden />
+          ) : (
+            <Pencil className="mr-1.5 h-3.5 w-3.5" aria-hidden />
+          )}
           {active ? copy.confirmEditAction : action}
         </Button>
       </div>
@@ -75,6 +89,7 @@ export function StarterUnderstandingReview({
   onSelectOutcome,
   onToggleConstraint,
   onCustomTaskChange,
+  onConfirm,
 }: StarterUnderstandingReviewProps) {
   const [editing, setEditing] = useState<EditPanel>(null)
   const copy = PAGE_COPY.analysis.starter
@@ -86,8 +101,23 @@ export function StarterUnderstandingReview({
     setEditing((current) => (current === panel ? null : panel))
   }
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key !== 'Enter' || event.shiftKey || event.nativeEvent.isComposing || disabled) {
+      return
+    }
+
+    const target = event.target as HTMLElement
+    if (target.closest('button[data-starter-understanding-edit]')) return
+
+    const selectionButton = target.closest('button[aria-pressed]')
+    if (selectionButton?.getAttribute('aria-pressed') === 'false') return
+
+    event.preventDefault()
+    onConfirm()
+  }
+
   return (
-    <section className="flex min-h-full flex-col gap-3">
+    <section className="flex min-h-full flex-col gap-3" onKeyDown={handleKeyDown}>
       <div className="rounded-[1.35rem] border border-primary/18 bg-primary/[0.04] p-3 sm:p-4">
         <p className="text-xl font-black text-foreground sm:text-2xl">{copy.reviewTitle}</p>
         <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{copy.reviewHint}</p>

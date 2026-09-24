@@ -1,4 +1,8 @@
 import { mergeCandidatePool } from '@/shared/discovery/candidate-pool'
+import {
+  DEFAULT_RECOMMENDATION_MODE,
+  type RecommendationMode,
+} from '@/shared/discovery/recommendation-mode'
 import { type ToolItem, type ToolMatch } from '@/shared/market/tool-registry'
 import type {
   AgentCandidate,
@@ -76,11 +80,16 @@ export function defaultSelectionReason(
   taskFrame: AgentTaskFrame,
   topTool: ToolItem | null,
   primaryCandidate?: AgentCandidate | null,
+  recommendationMode: RecommendationMode = DEFAULT_RECOMMENDATION_MODE,
 ): string {
   if (primaryCandidate?.candidateType === 'external_suggestion') {
     return `${primaryCandidate.title} 是 Hub 外建议：当前 Tool Hub 没有更贴合的沉淀工具，先试这个外部工具更直接。`
   }
-  if (!topTool) return '当前没有高置信度工具命中，先走解释型回答。'
+  if (!topTool) {
+    return recommendationMode === 'market'
+      ? '当前 Tool Hub 暂无足够可靠的匹配，先补充条件或换个说法再搜一轮。'
+      : '当前没有高置信度工具命中，先补充条件或换个说法再搜一轮。'
+  }
   if (taskFrame.mode === 'discover') {
     return `${topTool.name} 与当前任务较匹配，适合作为本次首选。`
   }
@@ -287,6 +296,7 @@ export async function buildRankedCandidates(
   userText: string,
   marketContext: MarketContext,
   taskFrame?: AgentTaskFrame,
+  recommendationMode: RecommendationMode = DEFAULT_RECOMMENDATION_MODE,
 ) {
   const { recallToolMatchesFromCatalog } = await import('@/server/retrieval/tool-recall')
   const { matches: initialMatches, recallSummary } = await recallToolMatchesFromCatalog(userText, {
@@ -299,7 +309,7 @@ export async function buildRankedCandidates(
     taskFrame?.mode === 'discover'
       ? await import('@/server/agent/tool-rerank')
           .then(({ judgeToolRecommendations }) =>
-            judgeToolRecommendations(userText, initialMatches),
+            judgeToolRecommendations(userText, initialMatches, recommendationMode),
           )
           .catch(() => ({
             matches: initialMatches,
@@ -318,13 +328,11 @@ export async function buildRankedCandidates(
   const hubCandidates = toCandidates(judgement.matches)
   const submissionCandidates = rankSubmissionCandidates(userText, marketContext)
   const externalCandidates = judgement.externalSuggestions ?? []
-  const candidates = mergeCandidatePool(
-    hubCandidates,
-    submissionCandidates,
-    externalCandidates,
-    judgement.preferExternal,
-    judgement.hubInsufficient,
-  )
+  const candidates = mergeCandidatePool(hubCandidates, submissionCandidates, externalCandidates, {
+    mode: recommendationMode,
+    preferExternal: judgement.preferExternal,
+    hubInsufficient: judgement.hubInsufficient,
+  })
   const primaryCandidate = candidates[0] ?? null
   const topTool =
     primaryCandidate?.candidateType === 'tool' && primaryCandidate.toolId
@@ -349,10 +357,12 @@ export function buildAgentUiPayload(
   marketContext: MarketContext,
   primaryCandidate?: AgentCandidate | null,
   recallSummary?: RecallSummary | null,
+  recommendationMode: RecommendationMode = DEFAULT_RECOMMENDATION_MODE,
 ): AgentUiPayload {
   const selectionSignals = buildSelectionSignals(topTool, marketContext, primaryCandidate)
   const preferenceSignals = buildPreferenceSignals(topTool, marketContext)
   return {
+    recommendationMode,
     stageLabel: stageLabelFor(taskFrame, topTool, primaryCandidate),
     stageTrail: stageTrailFor(taskFrame, topTool, primaryCandidate),
     taskFrame,

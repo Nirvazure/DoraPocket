@@ -80,6 +80,7 @@ export function buildRandomDoorAnalysisPayload({
       },
     },
     uiPayload: {
+      recommendationMode: 'market',
       stageLabel: '任意门',
       stageTrail: ['随机发现', CATEGORY_LABELS[tool.category], tool.name],
       taskFrame: {

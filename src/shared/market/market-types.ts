@@ -4,6 +4,7 @@ import type {
   ToolPlatform,
   ToolPricingModel,
 } from '@/shared/market/tool-registry'
+import type { RecommendationMode } from '@/shared/discovery/recommendation-mode'
 
 export type PocketSavedItem = {
   toolId: string
@@ -131,6 +132,7 @@ export type RecallSummary = {
 }
 
 export type AgentUiPayload = {
+  recommendationMode: RecommendationMode
   stageLabel: string
   stageTrail: string[]
   taskFrame: AgentTaskFrame

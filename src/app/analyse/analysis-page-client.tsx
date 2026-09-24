@@ -1,9 +1,8 @@
 'use client'
 
 import { AnalysisStagePanel } from '@/app/analyse/_components/stage/analysis-stage-panel'
-import { LoginEntryButton } from '@/components/auth/login-entry-button'
+import { AppNav } from '@/components/common/app-nav'
 import { PageShell } from '@/components/common/page-shell'
-import { TopNavSwitch } from '@/components/common/top-nav-switch'
 import { UnifiedTopBar } from '@/components/common/unified-top-bar'
 import {
   DiscoveryWorkspace,
@@ -37,6 +36,8 @@ export function AnalysisPageClient() {
     promptPlaceholder,
     workspaceActions,
     handleStartStructuredAnalysis,
+    recommendationMode,
+    setRecommendationMode,
     handleOpenRandomDoor,
     randomDoorPending,
     handleStartNewTask,
@@ -132,12 +133,7 @@ export function AnalysisPageClient() {
           statusSlot={
             systemNotice ? <span className="dp-top-bar-status">{systemNotice.message}</span> : null
           }
-          rightSlot={
-            <div className="flex items-center gap-2">
-              <TopNavSwitch current="analysis" />
-              <LoginEntryButton />
-            </div>
-          }
+          rightSlot={<AppNav current="analysis" />}
         />
       }
     >
@@ -152,6 +148,8 @@ export function AnalysisPageClient() {
             selectedToolPayload={selectedToolPayload}
             getTool={getTool}
             explanationMode={userSettings?.explanationMode ?? 'standard'}
+            recommendationMode={recommendationMode}
+            onRecommendationModeChange={setRecommendationMode}
             onSaveCandidate={workspaceActions.onSaveCandidate}
             onLaunchCandidate={workspaceActions.onLaunchCandidate}
             onOpenExternalCandidate={workspaceActions.onOpenExternalCandidate}

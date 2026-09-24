@@ -24,6 +24,7 @@ export function buildDiscoveryResponsePrompt({
   return [
     `用户问题：${message}`,
     `任务模式：${uiPayload.taskFrame.mode}`,
+    `推荐范围：${uiPayload.recommendationMode === 'web' ? '全网找' : '库里找'}`,
     `缺失参数：${uiPayload.taskFrame.missingInputs.join('、') || '无'}`,
     `推荐理由：${uiPayload.selectionReason}`,
     `决策摘要：${uiPayload.decisionSummary ?? '无'}`,
@@ -37,5 +38,6 @@ export function buildDiscoveryResponsePrompt({
     buildExplanationStyleInstruction(explanationMode),
     '请输出：一句结论 + 最值得先用的工具 + 简短理由 + 代价或边界 + 下一步动作。不要堆列表，不要暴露内部 ID。',
     '如果首选是 Hub 外建议，必须明确说它当前不在 Tool Hub，不能说成已收录、可评价、可自动沉淀；下一步只能建议先打开试用，确认有效后再手动提交到 Tool Hub。',
+    '如果出现 Hub 外建议，提醒用户 URL、价格和当前可用性需要自行核验。',
   ].join('\n')
 }
