@@ -1,4 +1,4 @@
-import { Keyboard, Mic, Square } from 'lucide-react'
+import { Keyboard, Mic, Send, Square } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { AppState } from '@/store'
@@ -84,6 +84,7 @@ export function AnalysisInputComposer({
               className="h-10 shrink-0 rounded-full border-2 border-primary/25 px-4 font-sans text-xs font-semibold shadow-sm disabled:cursor-not-allowed disabled:opacity-45"
               onClick={onSubmit}
             >
+              <Send className="mr-1.5 h-3.5 w-3.5" aria-hidden />
               发送
             </Button>
           </div>
@@ -107,6 +108,7 @@ export function AnalysisInputComposer({
               onPointerLeave={onHoldToTalkEnd}
               onPointerCancel={onHoldToTalkEnd}
             >
+              <Mic className="mr-1.5 h-4 w-4" aria-hidden />
               {appState === 'listening' ? '松开结束' : '按住说话'}
             </button>
             {appState === 'listening' ? (

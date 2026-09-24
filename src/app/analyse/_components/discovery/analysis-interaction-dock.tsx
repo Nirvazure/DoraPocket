@@ -1,7 +1,7 @@
 'use client'
 
-import { useRef } from 'react'
-import { DoorOpen } from 'lucide-react'
+import { useRef, type Ref } from 'react'
+import { ArrowLeft, Check, DoorOpen, Plus, Search } from 'lucide-react'
 import {
   DoraBottomInteractionZone,
   type DoraBottomInteractionZoneProps,
@@ -32,6 +32,7 @@ export type AnalysisInteractionDockProps = {
   onStartAnalysis: (prompt: string, displayPrompt: string) => void | Promise<void>
   onStartNewTask: () => void
   onReturnToUnderstanding: () => void
+  confirmUnderstandingButtonRef?: Ref<HTMLButtonElement>
   sessionZone: DoraBottomInteractionZoneProps | null
 }
 
@@ -51,6 +52,7 @@ export function AnalysisInteractionDock({
   onStartAnalysis,
   onStartNewTask,
   onReturnToUnderstanding,
+  confirmUnderstandingButtonRef,
   sessionZone,
 }: AnalysisInteractionDockProps) {
   const copy = PAGE_COPY.analysis.starter
@@ -100,8 +102,9 @@ export function AnalysisInteractionDock({
           <button
             type="button"
             onClick={onReturnToUnderstanding}
-            className="rounded-full border border-border/60 bg-white px-4 py-2.5 text-[11px] font-semibold text-foreground/80 transition-colors hover:bg-slate-50 sm:w-40"
+            className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border/60 bg-white px-4 py-2.5 text-[11px] font-semibold text-foreground/80 transition-colors hover:bg-slate-50 sm:w-40"
           >
+            <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
             {copy.returnToUnderstandingAction}
           </button>
           <button
@@ -109,6 +112,7 @@ export function AnalysisInteractionDock({
             onClick={onStartNewTask}
             className="flex flex-1 items-center justify-center rounded-full border-2 border-primary/30 bg-primary px-4 py-2.5 text-sm font-black text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
           >
+            <Plus className="mr-1.5 h-4 w-4" aria-hidden />
             {copy.newTaskAction}
           </button>
         </div>
@@ -119,6 +123,7 @@ export function AnalysisInteractionDock({
             onClick={onStartNewTask}
             className="flex w-full items-center justify-center rounded-full border-2 border-primary/30 bg-primary px-4 py-2.5 text-sm font-black text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
           >
+            <Plus className="mr-1.5 h-4 w-4" aria-hidden />
             {copy.newTaskAction}
           </button>
         </div>
@@ -147,6 +152,7 @@ export function AnalysisInteractionDock({
               (!canApplyNaturalDescription || analyzingIntent) && 'cursor-not-allowed opacity-45',
             )}
           >
+            <Search className="mr-1.5 h-4 w-4" aria-hidden />
             {analyzingIntent ? copy.naturalDraftLoadingAction : copy.naturalDraftAction}
           </button>
         </div>
@@ -157,15 +163,17 @@ export function AnalysisInteractionDock({
             disabled={wizardDisabled}
             onClick={onReviewBackToInput}
             className={cn(
-              'rounded-full border border-border/60 bg-white px-4 py-2.5 text-[11px] font-semibold text-foreground/80 transition-colors hover:bg-slate-50 sm:w-40',
+              'inline-flex items-center justify-center gap-1.5 rounded-full border border-border/60 bg-white px-4 py-2.5 text-[11px] font-semibold text-foreground/80 transition-colors hover:bg-slate-50 sm:w-40',
               wizardDisabled && 'cursor-not-allowed opacity-50',
             )}
           >
+            <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
             {copy.backToInputAction}
           </button>
           <button
             type="button"
             data-starter-path="understanding-review"
+            ref={confirmUnderstandingButtonRef}
             disabled={!canStart}
             onClick={handleStart}
             className={cn(
@@ -173,6 +181,7 @@ export function AnalysisInteractionDock({
               !canStart && 'cursor-not-allowed opacity-45',
             )}
           >
+            <Check className="mr-1.5 h-4 w-4" aria-hidden />
             {copy.confirmUnderstandingAction}
           </button>
         </div>

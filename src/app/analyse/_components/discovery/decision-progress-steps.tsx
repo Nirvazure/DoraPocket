@@ -23,7 +23,6 @@ export function DecisionProgressSteps({
           const selected = item.step === expandedStep
           const done = item.step < currentStep && !selected
           const visible = item.step <= currentStep
-
           return (
             <button
               key={item.step}

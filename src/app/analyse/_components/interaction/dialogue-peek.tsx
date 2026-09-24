@@ -1,5 +1,6 @@
 import { CLARIFICATION_COPY } from '@/shared/copy/ui-copy'
 import type { ClarificationMessage } from '@/shared/discovery/clarification-session-types'
+import { ChevronDown } from 'lucide-react'
 
 export type DialoguePeekProps = {
   messages: ClarificationMessage[]
@@ -23,8 +24,9 @@ export function DialoguePeek({
         <button
           type="button"
           onClick={onToggleExpand}
-          className="mb-1 text-[11px] font-semibold text-primary"
+          className="mb-1 inline-flex items-center gap-1 text-[11px] font-semibold text-primary"
         >
+          <ChevronDown className="h-3.5 w-3.5" aria-hidden />
           {CLARIFICATION_COPY.expandEarlier}
         </button>
       ) : null}

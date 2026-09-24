@@ -1,5 +1,6 @@
 'use client'
 
+import { CheckCircle2, Globe2, Library, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { PAGE_COPY } from '@/shared/copy/ui-copy'
 import { STARTER_PROMPT_TEMPLATES } from '@/shared/discovery/starter-intake'
@@ -10,6 +11,7 @@ type WhereToStartSectionProps = {
   wizardDisabled?: boolean
   naturalDescription: string
   onNaturalDescriptionChange: (value: string) => void
+  onAnalyze: () => void
   recommendationMode: RecommendationMode
   onRecommendationModeChange: (mode: RecommendationMode) => void
 }
@@ -19,6 +21,7 @@ export function WhereToStartSection({
   wizardDisabled,
   naturalDescription,
   onNaturalDescriptionChange,
+  onAnalyze,
   recommendationMode,
   onRecommendationModeChange,
 }: WhereToStartSectionProps) {
@@ -41,7 +44,10 @@ export function WhereToStartSection({
       <div className="shrink-0 rounded-[1.15rem] border border-border/70 bg-white p-3">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm font-black text-foreground">推荐范围</p>
+            <p className="flex items-center gap-1.5 text-sm font-black text-foreground">
+              <Search className="h-4 w-4 text-primary" aria-hidden />
+              推荐范围
+            </p>
             <p className="mt-0.5 text-xs text-muted-foreground">只影响本次推荐，不会写入个人设置</p>
           </div>
           <div
@@ -64,13 +70,30 @@ export function WhereToStartSection({
                   aria-pressed={selected}
                   onClick={() => onRecommendationModeChange(value)}
                   className={cn(
-                    'min-w-20 rounded-lg px-3 py-2 text-xs font-black transition-colors',
+                    'inline-flex min-w-20 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-black leading-none transition-colors',
                     selected
-                      ? 'bg-foreground text-background shadow-sm'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
                       : 'text-muted-foreground hover:bg-background hover:text-foreground',
                     (wizardDisabled || !actionsEnabled) && 'cursor-not-allowed opacity-50',
                   )}
                 >
+                  {value === 'market' ? (
+                    <Library
+                      className={cn(
+                        'h-3.5 w-3.5 shrink-0',
+                        selected ? 'text-primary-foreground' : 'text-muted-foreground',
+                      )}
+                      aria-hidden
+                    />
+                  ) : (
+                    <Globe2
+                      className={cn(
+                        'h-3.5 w-3.5 shrink-0',
+                        selected ? 'text-primary-foreground' : 'text-muted-foreground',
+                      )}
+                      aria-hidden
+                    />
+                  )}
                   {label}
                 </button>
               )
@@ -87,31 +110,47 @@ export function WhereToStartSection({
         <div className="flex min-h-0 flex-1 flex-col gap-4">
           <section className="min-h-0">
             <div className="grid gap-2.5 lg:grid-cols-3">
-              {STARTER_PROMPT_TEMPLATES.map((template) => (
-                <button
-                  key={template.id}
-                  type="button"
-                  disabled={wizardDisabled}
-                  onClick={() => onNaturalDescriptionChange(template.prompt)}
-                  className={cn(
-                    'rounded-[1.15rem] border border-border/70 bg-white p-3 text-left transition-colors hover:border-primary/25 hover:bg-primary/[0.03]',
-                    wizardDisabled && 'cursor-not-allowed opacity-50',
-                  )}
-                >
-                  <span className="flex items-center justify-between gap-2">
-                    <span className="text-sm font-black text-foreground">{template.title}</span>
-                    <span className="rounded-full border border-primary/15 bg-primary/[0.06] px-2 py-0.5 text-[11px] font-semibold text-primary">
-                      {copy.templateUseAction}
+              {STARTER_PROMPT_TEMPLATES.map((template) => {
+                const selected = naturalDescription === template.prompt
+
+                return (
+                  <button
+                    key={template.id}
+                    type="button"
+                    disabled={wizardDisabled}
+                    aria-pressed={selected}
+                    onClick={() => onNaturalDescriptionChange(template.prompt)}
+                    className={cn(
+                      'rounded-[1.15rem] border p-3 text-left transition-[background-color,border-color,box-shadow] hover:border-primary/25 hover:bg-primary/[0.03]',
+                      selected
+                        ? 'border-primary/40 bg-primary/[0.06] shadow-[0_10px_24px_-18px_hsl(var(--primary)/0.65)] ring-1 ring-primary/20'
+                        : 'border-border/70 bg-white',
+                      wizardDisabled && 'cursor-not-allowed opacity-50',
+                    )}
+                  >
+                    <span className="flex items-center justify-between gap-2">
+                      <span className="text-sm font-black text-foreground">{template.title}</span>
+                      <span
+                        className={cn(
+                          'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold',
+                          selected
+                            ? 'border-primary/25 bg-primary text-primary-foreground'
+                            : 'border-primary/15 bg-primary/[0.06] text-primary',
+                        )}
+                      >
+                        {selected ? <CheckCircle2 className="h-3.5 w-3.5" aria-hidden /> : null}
+                        {selected ? '已套用' : copy.templateUseAction}
+                      </span>
                     </span>
-                  </span>
-                  <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
-                    {template.description}
-                  </span>
-                  <span className="mt-2 block text-xs leading-relaxed text-foreground/80">
-                    {template.prompt}
-                  </span>
-                </button>
-              ))}
+                    <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+                      {template.description}
+                    </span>
+                    <span className="mt-2 block text-xs leading-relaxed text-foreground/80">
+                      {template.prompt}
+                    </span>
+                  </button>
+                )
+              })}
             </div>
           </section>
 
@@ -126,6 +165,21 @@ export function WhereToStartSection({
               wizardDisabled && 'cursor-not-allowed opacity-50',
             )}
             onChange={(event) => onNaturalDescriptionChange(event.target.value)}
+            onKeyDown={(event) => {
+              if (
+                event.key !== 'Enter' ||
+                event.shiftKey ||
+                event.nativeEvent.isComposing ||
+                wizardDisabled ||
+                !actionsEnabled ||
+                naturalDescription.trim().length < 4
+              ) {
+                return
+              }
+
+              event.preventDefault()
+              onAnalyze()
+            }}
           />
         </div>
       )}
