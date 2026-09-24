@@ -3,6 +3,11 @@ import {
   DEFAULT_RECOMMENDATION_MODE,
   type RecommendationMode,
 } from '@/shared/discovery/recommendation-mode'
+import {
+  DEFAULT_RECOMMENDATION_PREFERENCES,
+  normalizeRecommendationPreferences,
+  type RecommendationPreferences,
+} from '@/shared/discovery/recommendation-preferences'
 import { type ToolItem, type ToolMatch } from '@/shared/market/tool-registry'
 import type {
   AgentCandidate,
@@ -35,7 +40,7 @@ export function marketSignalsFromContext(marketContext: MarketContext) {
 }
 
 export function toCandidates(matches: ToolMatch[]): AgentCandidate[] {
-  return matches.slice(0, 5).map((match) => ({
+  return matches.slice(0, 10).map((match) => ({
     toolId: match.tool.id,
     title: match.tool.name,
     url: match.tool.url,
@@ -44,6 +49,27 @@ export function toCandidates(matches: ToolMatch[]): AgentCandidate[] {
     sourceLabel: match.sourceLabel,
     reason: match.reason,
   }))
+}
+
+export function applyRecommendationPreferences(
+  candidates: AgentCandidate[],
+  preferences: RecommendationPreferences = DEFAULT_RECOMMENDATION_PREFERENCES,
+): AgentCandidate[] {
+  if (candidates.length === 0) return []
+  const normalized = normalizeRecommendationPreferences(preferences)
+  const highestScore = Math.max(...candidates.map((candidate) => candidate.score), 0)
+  const withRelativeScores = candidates.map((candidate, index) => ({
+    ...candidate,
+    score:
+      highestScore > 0
+        ? Math.min(100, Math.max(0, Math.round((candidate.score / highestScore) * 100)))
+        : index === 0
+          ? 100
+          : 0,
+  }))
+  return withRelativeScores
+    .filter((candidate) => candidate.score >= normalized.minMatchScore)
+    .slice(0, normalized.recommendationLimit)
 }
 
 export function rankSubmissionCandidates(
@@ -183,7 +209,7 @@ function buildWhyThisFirst(
 function buildWhyNotAlternatives(candidates: AgentCandidate[]): Record<string, string> {
   return Object.fromEntries(
     candidates
-      .slice(1, 4)
+      .slice(1, 10)
       .map((candidate) => [
         candidate.toolId ?? candidate.title,
         candidate.reason || '这次适合作为备选，但不是最先试的方向。',
@@ -297,6 +323,7 @@ export async function buildRankedCandidates(
   marketContext: MarketContext,
   taskFrame?: AgentTaskFrame,
   recommendationMode: RecommendationMode = DEFAULT_RECOMMENDATION_MODE,
+  recommendationPreferences: RecommendationPreferences = DEFAULT_RECOMMENDATION_PREFERENCES,
 ) {
   const { recallToolMatchesFromCatalog } = await import('@/server/retrieval/tool-recall')
   const { matches: initialMatches, recallSummary } = await recallToolMatchesFromCatalog(userText, {
@@ -333,7 +360,8 @@ export async function buildRankedCandidates(
     preferExternal: judgement.preferExternal,
     hubInsufficient: judgement.hubInsufficient,
   })
-  const primaryCandidate = candidates[0] ?? null
+  const filteredCandidates = applyRecommendationPreferences(candidates, recommendationPreferences)
+  const primaryCandidate = filteredCandidates[0] ?? null
   const topTool =
     primaryCandidate?.candidateType === 'tool' && primaryCandidate.toolId
       ? (judgement.matches.find((match) => match.tool.id === primaryCandidate.toolId)?.tool ?? null)
@@ -341,7 +369,7 @@ export async function buildRankedCandidates(
 
   return {
     matches: judgement.matches,
-    candidates,
+    candidates: filteredCandidates,
     topTool,
     primaryCandidate,
     selectionReason: judgement.selectionReason,

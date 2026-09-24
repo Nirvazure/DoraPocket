@@ -24,6 +24,7 @@ import type { AgentUiPayload } from '@/shared/market/market-types'
 import type { UserSettings } from '@/shared/user/user-settings'
 import type { ToolLookupFn } from '@/shared/market/tool-lookup'
 import type { RecommendationMode } from '@/shared/discovery/recommendation-mode'
+import type { RecommendationPreferences } from '@/shared/discovery/recommendation-preferences'
 
 const WhereToStartSection = dynamic(
   () =>
@@ -44,6 +45,8 @@ type DiscoveryWorkspaceProps = {
   explanationMode?: UserSettings['explanationMode']
   recommendationMode: RecommendationMode
   onRecommendationModeChange: (mode: RecommendationMode) => void
+  recommendationPreferences: RecommendationPreferences
+  onRecommendationPreferencesChange: (preferences: RecommendationPreferences) => void
   onSaveCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
   onOpenExternalCandidate: (url: string) => void
@@ -70,6 +73,8 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
       explanationMode = 'standard',
       recommendationMode,
       onRecommendationModeChange,
+      recommendationPreferences,
+      onRecommendationPreferencesChange,
       onSaveCandidate,
       onLaunchCandidate,
       onOpenExternalCandidate,
@@ -189,6 +194,8 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
                   wizardDisabled={!starterActionsEnabled}
                   recommendationMode={recommendationMode}
                   onRecommendationModeChange={onRecommendationModeChange}
+                  recommendationPreferences={recommendationPreferences}
+                  onRecommendationPreferencesChange={onRecommendationPreferencesChange}
                   naturalDescription={wizard.naturalDescription}
                   onNaturalDescriptionChange={wizard.handleNaturalDescriptionChange}
                   onAnalyze={handleAnalyzeInput}

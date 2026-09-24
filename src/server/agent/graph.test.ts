@@ -152,6 +152,17 @@ test('graph carries web recommendation mode through ranking and UI payload', asy
   assert.equal(done.ui_payload.recommendationMode, 'web')
 })
 
+test('graph carries recommendation preferences through ranking', async () => {
+  await collect('压缩 PDF', marketContext, 'standard', undefined, 'market', {
+    minMatchScore: 85,
+    recommendationLimit: 3,
+  })
+  assert.deepEqual(rank.mock.calls[0].arguments[4], {
+    minMatchScore: 85,
+    recommendationLimit: 3,
+  })
+})
+
 test('graph normalizes an invalid recommendation mode to market', async () => {
   const events = await collect('压缩 PDF', marketContext, 'standard', undefined, 'invalid' as never)
   const done = events.at(-1)

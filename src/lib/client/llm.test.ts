@@ -70,3 +70,33 @@ test('askQwen sends the selected recommendation mode', async () => {
     globalThis.fetch = originalFetch
   }
 })
+
+test('askQwen sends recommendation preferences', async () => {
+  const originalFetch = globalThis.fetch
+  const requestBodyRef: { value?: Record<string, unknown> } = {}
+  globalThis.fetch = async (_input, init) => {
+    requestBodyRef.value = JSON.parse(String(init?.body)) as Record<string, unknown>
+    return new Response(
+      streamFromLines([
+        {
+          type: 'done',
+          text: 'ok',
+          clarificationStatus: 'ready',
+          selected_tool: null,
+          ui_payload: null,
+        },
+      ]),
+      { status: 200 },
+    )
+  }
+
+  try {
+    await askQwen('hello', {
+      recommendationPreferences: { minMatchScore: 85, recommendationLimit: 3 },
+    })
+    assert.equal(requestBodyRef.value?.minMatchScore, 85)
+    assert.equal(requestBodyRef.value?.recommendationLimit, 3)
+  } finally {
+    globalThis.fetch = originalFetch
+  }
+})

@@ -57,7 +57,7 @@ test('mergeCandidatePool ranks web candidates together when hub is insufficient'
   assert.equal(externalCount, 3)
   assert.ok(merged.some((item) => item.title === 'External A'))
   assert.ok(merged.some((item) => item.title === 'hub-a'))
-  assert.equal(merged.length, 5)
+  assert.equal(merged.length, 6)
 })
 
 test('mergeCandidatePool boosts first external when preferExternal is true', () => {

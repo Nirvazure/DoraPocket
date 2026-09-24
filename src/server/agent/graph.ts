@@ -9,6 +9,11 @@ import {
   normalizeRecommendationMode,
   type RecommendationMode,
 } from '@/shared/discovery/recommendation-mode'
+import {
+  DEFAULT_RECOMMENDATION_PREFERENCES,
+  normalizeRecommendationPreferences,
+  type RecommendationPreferences,
+} from '@/shared/discovery/recommendation-preferences'
 import { buildClarifyQuestion, resolveClarifyOutcome } from '@/server/agent/clarify'
 import { resolveQuickReplies } from '@/server/agent/quick-replies'
 import { DORA_PROMPT, invokeModel } from '@/server/agent/model'
@@ -27,6 +32,7 @@ async function classifyTask(
   message: string,
   marketContext: MarketContext,
   recommendationMode: RecommendationMode,
+  recommendationPreferences: RecommendationPreferences,
 ) {
   const taskFrame = buildTaskFrame(message)
   const {
@@ -35,7 +41,13 @@ async function classifyTask(
     primaryCandidate,
     selectionReason: judgedSelectionReason,
     recallSummary,
-  } = await buildRankedCandidates(message, marketContext, taskFrame, recommendationMode)
+  } = await buildRankedCandidates(
+    message,
+    marketContext,
+    taskFrame,
+    recommendationMode,
+    recommendationPreferences,
+  )
 
   const selectedTool: SelectedTool =
     topTool && primaryCandidate?.candidateType !== 'external_suggestion'
@@ -88,10 +100,13 @@ export async function* streamPocketGraph(
   explanationMode: ExplanationMode = 'standard',
   clarificationInput?: ClarificationGraphInput,
   recommendationMode: RecommendationMode = DEFAULT_RECOMMENDATION_MODE,
+  recommendationPreferences: RecommendationPreferences = DEFAULT_RECOMMENDATION_PREFERENCES,
 ): AsyncGenerator<PocketStreamEvent> {
   const sessionTurn = clarificationInput?.sessionTurn ?? 1
   const skipClarify = clarificationInput?.skipClarify === true
   const normalizedRecommendationMode = normalizeRecommendationMode(recommendationMode)
+  const normalizedRecommendationPreferences =
+    normalizeRecommendationPreferences(recommendationPreferences)
 
   yield { type: 'progress', stage: 'understanding' }
 
@@ -99,6 +114,7 @@ export async function* streamPocketGraph(
     message,
     marketContext,
     normalizedRecommendationMode,
+    normalizedRecommendationPreferences,
   )
   const { missingInputs } = classifiedUi.taskFrame
 
