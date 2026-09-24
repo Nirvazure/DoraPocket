@@ -3,6 +3,7 @@ import type { AgentUiPayload } from '@/shared/market/market-types'
 import { createClarificationSession } from '@/shared/discovery/clarification-session'
 import type { ClarificationSession } from '@/shared/discovery/clarification-session-types'
 import type { VoicePlaybackMode } from '@/shared/user/user-settings'
+import type { RecommendationMode } from '@/shared/discovery/recommendation-mode'
 
 const KEY_RESULT_MAX_CHARS = 120
 
@@ -10,6 +11,7 @@ export type RunTurnOptions = {
   skipClarify?: boolean
   isContinuation?: boolean
   displayPrompt?: string
+  recommendationMode?: RecommendationMode
 }
 
 export type AgentTurnReply = {

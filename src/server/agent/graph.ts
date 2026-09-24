@@ -4,6 +4,11 @@ import type {
   ClarificationDoneStatus,
 } from '@/shared/discovery/clarification-session-types'
 import type { ExplanationMode } from '@/shared/user/user-settings'
+import {
+  DEFAULT_RECOMMENDATION_MODE,
+  normalizeRecommendationMode,
+  type RecommendationMode,
+} from '@/shared/discovery/recommendation-mode'
 import { buildClarifyQuestion, resolveClarifyOutcome } from '@/server/agent/clarify'
 import { resolveQuickReplies } from '@/server/agent/quick-replies'
 import { DORA_PROMPT, invokeModel } from '@/server/agent/model'
@@ -18,7 +23,11 @@ import { buildTaskFrame } from '@/server/agent/task-frame'
 
 type SelectedTool = { toolId: string; args: Record<string, unknown> } | null
 
-async function classifyTask(message: string, marketContext: MarketContext) {
+async function classifyTask(
+  message: string,
+  marketContext: MarketContext,
+  recommendationMode: RecommendationMode,
+) {
   const taskFrame = buildTaskFrame(message)
   const {
     candidates,
@@ -26,14 +35,15 @@ async function classifyTask(message: string, marketContext: MarketContext) {
     primaryCandidate,
     selectionReason: judgedSelectionReason,
     recallSummary,
-  } = await buildRankedCandidates(message, marketContext, taskFrame)
+  } = await buildRankedCandidates(message, marketContext, taskFrame, recommendationMode)
 
   const selectedTool: SelectedTool =
     topTool && primaryCandidate?.candidateType !== 'external_suggestion'
       ? { toolId: topTool.id, args: topTool.defaultArgs ?? {} }
       : null
   const selectionReason =
-    judgedSelectionReason ?? defaultSelectionReason(taskFrame, topTool, primaryCandidate)
+    judgedSelectionReason ??
+    defaultSelectionReason(taskFrame, topTool, primaryCandidate, recommendationMode)
   const uiPayload = buildAgentUiPayload(
     taskFrame,
     topTool,
@@ -42,6 +52,7 @@ async function classifyTask(message: string, marketContext: MarketContext) {
     marketContext,
     primaryCandidate,
     recallSummary,
+    recommendationMode,
   )
   return { selectedTool, uiPayload }
 }
@@ -76,13 +87,19 @@ export async function* streamPocketGraph(
   marketContext: MarketContext,
   explanationMode: ExplanationMode = 'standard',
   clarificationInput?: ClarificationGraphInput,
+  recommendationMode: RecommendationMode = DEFAULT_RECOMMENDATION_MODE,
 ): AsyncGenerator<PocketStreamEvent> {
   const sessionTurn = clarificationInput?.sessionTurn ?? 1
   const skipClarify = clarificationInput?.skipClarify === true
+  const normalizedRecommendationMode = normalizeRecommendationMode(recommendationMode)
 
   yield { type: 'progress', stage: 'understanding' }
 
-  const { selectedTool, uiPayload: classifiedUi } = await classifyTask(message, marketContext)
+  const { selectedTool, uiPayload: classifiedUi } = await classifyTask(
+    message,
+    marketContext,
+    normalizedRecommendationMode,
+  )
   const { missingInputs } = classifiedUi.taskFrame
 
   yield { type: 'progress', stage: 'constraining' }

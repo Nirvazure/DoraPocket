@@ -30,6 +30,10 @@ import { buildRandomDoorAnalysisPayload } from '@/shared/market/random-door'
 import { selectAnalysisFlow, useStore } from '@/store'
 import { shouldRestartAnalysisFlow } from '@/app/analyse/_domain/analysis-stage-restart'
 import type { DiscoveryWorkspaceHandle } from '@/app/analyse/_components/discovery/discovery-workspace'
+import {
+  DEFAULT_RECOMMENDATION_MODE,
+  type RecommendationMode,
+} from '@/shared/discovery/recommendation-mode'
 
 type InputMode = 'text' | 'voice'
 
@@ -59,6 +63,9 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
 
   const [inputModeOverride, setInputModeOverride] = useState<InputMode | null>(null)
   const [textFallback, setTextFallback] = useState('')
+  const [recommendationMode, setRecommendationMode] = useState<RecommendationMode>(
+    DEFAULT_RECOMMENDATION_MODE,
+  )
   const previousPromptRef = useRef<string | null>(null)
   const stageImmediateTimerRef = useRef<number | null>(null)
   const controllerMountedRef = useRef(false)
@@ -236,13 +243,14 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     async (prompt: string, displayPrompt: string) => {
       if (appState !== 'idle') return
       setTextFallback('')
-      await runAgentTurn(prompt, { displayPrompt })
+      await runAgentTurn(prompt, { displayPrompt, recommendationMode })
     },
-    [appState, runAgentTurn],
+    [appState, recommendationMode, runAgentTurn],
   )
 
   const handleStartNewTask = useCallback(() => {
     resetAnalysisForNewTask()
+    setRecommendationMode(DEFAULT_RECOMMENDATION_MODE)
     setTextFallback('')
     clearRevealTimers()
     setAnalysisFlow(IDLE_ANALYSIS_FLOW)
@@ -317,6 +325,8 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     promptPlaceholder,
     workspaceActions,
     handleStartStructuredAnalysis,
+    recommendationMode,
+    setRecommendationMode,
     handleOpenRandomDoor,
     randomDoorPending: randomDoorRecommendationMutation.isPending,
     handleStartNewTask,

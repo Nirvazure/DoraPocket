@@ -43,3 +43,30 @@ test('askQwen returns recommendationSessionId from stream event', async () => {
     globalThis.fetch = originalFetch
   }
 })
+
+test('askQwen sends the selected recommendation mode', async () => {
+  const originalFetch = globalThis.fetch
+  const requestBodyRef = { value: null as Record<string, unknown> | null }
+  globalThis.fetch = async (_input, init) => {
+    requestBodyRef.value = JSON.parse(String(init?.body)) as Record<string, unknown>
+    return new Response(
+      streamFromLines([
+        {
+          type: 'done',
+          text: 'done',
+          clarificationStatus: 'ready',
+          selected_tool: null,
+          ui_payload: null,
+        },
+      ]),
+      { status: 200 },
+    )
+  }
+
+  try {
+    await askQwen('hello', { recommendationMode: 'web' })
+    assert.equal(requestBodyRef.value?.recommendationMode, 'web')
+  } finally {
+    globalThis.fetch = originalFetch
+  }
+})

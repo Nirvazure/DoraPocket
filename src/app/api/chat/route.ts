@@ -3,6 +3,10 @@ import { verifySession } from '@/server/auth/dal'
 import { buildMarketContextForUser } from '@/server/market/context'
 import { createRecommendationSession } from '@/server/repositories/recommendation-session-repo'
 import type { ExplanationMode } from '@/shared/user/user-settings'
+import {
+  normalizeRecommendationMode,
+  type RecommendationMode,
+} from '@/shared/discovery/recommendation-mode'
 import { createEmptyMarketContext } from '@/shared/market/market-defaults'
 import type { AgentUiPayload, MarketContext } from '@/shared/market/market-types'
 import type { ClarificationDoneStatus } from '@/shared/discovery/clarification-session-types'
@@ -14,6 +18,7 @@ type ChatRequestBody = {
   priorMessages?: Array<{ role: 'user' | 'assistant'; content: string }>
   skipClarify?: boolean
   explanationMode?: ExplanationMode
+  recommendationMode?: unknown
 }
 
 function normalizeExplanationMode(value: unknown): ExplanationMode {
@@ -29,6 +34,9 @@ export async function POST(request: Request) {
     const body = (await request.json()) as ChatRequestBody
     const message = body.message?.trim()
     const explanationMode = normalizeExplanationMode(body.explanationMode)
+    const recommendationMode: RecommendationMode = normalizeRecommendationMode(
+      body.recommendationMode,
+    )
     if (!message) {
       return new Response(JSON.stringify({ error: 'message is required' }), {
         status: 400,
@@ -61,6 +69,7 @@ export async function POST(request: Request) {
             marketContext,
             explanationMode,
             clarificationInput,
+            recommendationMode,
           )) {
             if (event.type === 'meta') {
               selectedToolId = event.selected_tool?.toolId ?? null

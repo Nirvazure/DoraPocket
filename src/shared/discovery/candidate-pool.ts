@@ -1,5 +1,6 @@
 import type { AgentCandidate } from '@/shared/market/market-types'
 import type { ToolMatch } from '@/shared/market/tool-registry'
+import type { RecommendationMode } from '@/shared/discovery/recommendation-mode'
 
 export const HUB_WEAK_SCORE_THRESHOLD = 45
 export const EXTERNAL_CONFIDENCE_DEFAULT = 0.72
@@ -7,7 +8,11 @@ export const EXTERNAL_CONFIDENCE_HUB_WEAK = 0.65
 export const EXTERNAL_CONFIDENCE_PREFER = 0.78
 export const MAX_EXTERNAL_SUGGESTIONS = 3
 
-const HUB_RESERVE_WHEN_WEAK = 2
+export type CandidatePoolOptions = {
+  mode: RecommendationMode
+  preferExternal: boolean
+  hubInsufficient?: boolean
+}
 
 function candidateKey(candidate: AgentCandidate): string {
   if (candidate.toolId) return `tool:${candidate.toolId}`
@@ -34,9 +39,15 @@ export function mergeCandidatePool(
   hubCandidates: AgentCandidate[],
   submissionCandidates: AgentCandidate[],
   externalCandidates: AgentCandidate[],
-  preferExternal: boolean,
-  hubInsufficient = false,
+  options: CandidatePoolOptions,
 ): AgentCandidate[] {
+  const { mode, preferExternal } = options
+  const hubPool = sortByScoreDesc([...hubCandidates, ...submissionCandidates])
+
+  if (mode === 'market') {
+    return hubPool.slice(0, 5)
+  }
+
   const externals = externalCandidates.map((candidate, index) => {
     if (preferExternal && index === 0) {
       return { ...candidate, score: candidate.score + 12 }
@@ -45,25 +56,10 @@ export function mergeCandidatePool(
   })
 
   if (externals.length === 0) {
-    return sortByScoreDesc([...hubCandidates, ...submissionCandidates]).slice(0, 5)
+    return hubPool.slice(0, 5)
   }
 
-  const hubWeak = hubInsufficient || preferExternal
-  if (!hubWeak) {
-    return sortByScoreDesc([...hubCandidates, ...submissionCandidates, ...externals]).slice(0, 5)
-  }
-
-  const hubPool = sortByScoreDesc([...hubCandidates, ...submissionCandidates])
-  const reservedHub = hubPool.slice(0, HUB_RESERVE_WHEN_WEAK)
-  const reservedExternals = sortByScoreDesc(externals).slice(0, MAX_EXTERNAL_SUGGESTIONS)
-  if (preferExternal && reservedExternals[0]) {
-    return dedupeCandidates([
-      reservedExternals[0],
-      ...reservedHub,
-      ...reservedExternals.slice(1),
-    ]).slice(0, 5)
-  }
-  return dedupeCandidates([...reservedHub, ...reservedExternals]).slice(0, 5)
+  return sortByScoreDesc(dedupeCandidates([...hubPool, ...externals])).slice(0, 5)
 }
 
 function normalizeExternalUrl(value: unknown): string | null {

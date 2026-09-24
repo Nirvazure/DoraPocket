@@ -140,9 +140,10 @@ export function buildPrimaryRecommendation(
 ) {
   const leader = resolveLeadingCandidate(payload, selectedToolPayload, getTool)
   const leaderTool = leader?.toolId ? resolveTool(getTool, leader.toolId) : null
+  const emptyTitle = payload?.recommendationMode === 'market' ? '暂无可靠库内推荐' : '暂无可靠推荐'
   return {
     leader,
-    title: leaderTool?.name ?? leader?.title ?? '等待 DoraPocket 正式出手',
+    title: leaderTool?.name ?? leader?.title ?? emptyTitle,
     description:
       leader?.reason?.trim() ??
       payload?.selectionReason?.trim() ??

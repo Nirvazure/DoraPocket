@@ -23,6 +23,7 @@ import type { ChatToolPayload } from '@/lib/client/llm'
 import type { AgentUiPayload } from '@/shared/market/market-types'
 import type { UserSettings } from '@/shared/user/user-settings'
 import type { ToolLookupFn } from '@/shared/market/tool-lookup'
+import type { RecommendationMode } from '@/shared/discovery/recommendation-mode'
 
 const WhereToStartSection = dynamic(
   () =>
@@ -41,6 +42,8 @@ type DiscoveryWorkspaceProps = {
   selectedToolPayload: ChatToolPayload
   getTool: ToolLookupFn
   explanationMode?: UserSettings['explanationMode']
+  recommendationMode: RecommendationMode
+  onRecommendationModeChange: (mode: RecommendationMode) => void
   onSaveCandidate: (toolId: string) => void
   onLaunchCandidate: (toolId: string) => void
   onOpenExternalCandidate: (url: string) => void
@@ -65,6 +68,8 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
       selectedToolPayload,
       getTool,
       explanationMode = 'standard',
+      recommendationMode,
+      onRecommendationModeChange,
       onSaveCandidate,
       onLaunchCandidate,
       onOpenExternalCandidate,
@@ -161,6 +166,8 @@ export const DiscoveryWorkspace = forwardRef<DiscoveryWorkspaceHandle, Discovery
                 <WhereToStartSection
                   actionsEnabled={starterActionsEnabled}
                   wizardDisabled={!starterActionsEnabled}
+                  recommendationMode={recommendationMode}
+                  onRecommendationModeChange={onRecommendationModeChange}
                   naturalDescription={wizard.naturalDescription}
                   onNaturalDescriptionChange={wizard.handleNaturalDescriptionChange}
                 />

@@ -9,6 +9,10 @@ import {
   EXTERNAL_CONFIDENCE_PREFER,
   normalizeExternalSuggestions,
 } from '@/shared/discovery/candidate-pool'
+import {
+  DEFAULT_RECOMMENDATION_MODE,
+  type RecommendationMode,
+} from '@/shared/discovery/recommendation-mode'
 import type { ToolMatch } from '@/shared/market/tool-registry'
 
 function extractJsonArray(text: string): unknown[] {
@@ -58,18 +62,24 @@ export {
 export async function judgeToolRecommendations(
   query: string,
   matches: ToolMatch[],
+  recommendationMode: RecommendationMode = DEFAULT_RECOMMENDATION_MODE,
 ): Promise<ToolRecommendationJudgement> {
   const rerankable = matches.slice(0, 10)
   const rest = matches.slice(10)
   const prompt = [
-    '你是 DoraPocket 的工具推荐裁决器。Tool Hub 是优先资产池，但不是推荐上限。',
+    `你是 DoraPocket 的工具推荐裁决器。当前推荐范围：${recommendationMode === 'web' ? '全网找' : '库里找'}。`,
+    'Tool Hub 是优先资产池，但不是推荐上限。',
     '目标：用户输入问题后，选出此刻最值得先用的帮助。',
     '你必须先重排给定 Hub 候选，不能新增 Hub 工具。',
-    '如果 Hub 候选明显不足或不相关，可以额外给出 1 到 3 个 externalSuggestions。',
+    recommendationMode === 'web'
+      ? '全网找模式允许额外给出 1 到 3 个 externalSuggestions，即使已有 Hub 候选；库内与库外候选之后会统一排序。'
+      : '库里找模式禁止生成 externalSuggestions，externalSuggestions 必须返回空数组。',
     '外部建议必须是用户可直接打开的真实 http/https URL；不确定就返回空数组。',
     '排序依据：适配度、可启动性、成功率、复用价值、信任感。不要只看热度。',
     '输出可解析 JSON，不要输出 Markdown。格式：{"ranking":[{"toolId":"...","reason":"..."}],"externalSuggestions":[{"title":"...","url":"https://...","reason":"...","externalBoundary":"...","externalConfidence":0.0}],"preferExternal":false,"hubInsufficient":false,"selectionReason":"..."}。',
-    '当 Hub 候选明显不相关时，hubInsufficient 设为 true，并尽量给出 2 到 3 个高质量外部建议。',
+    recommendationMode === 'web'
+      ? '当 Hub 候选明显不相关时，hubInsufficient 设为 true，并尽量给出 2 到 3 个高质量外部建议。'
+      : '库里找模式下即使 Hub 候选明显不相关，也只能返回空的 externalSuggestions。',
     '只有当外部建议明显比 Hub 首选更适合且 externalConfidence >= 0.78 时，preferExternal 才能为 true。',
     `用户问题：${query}`,
     `Hub 候选工具：${JSON.stringify(
@@ -130,13 +140,17 @@ export async function judgeToolRecommendations(
   const orderedMatches = [...next, ...rest]
   const hubInsufficient = parsed.hubInsufficient === true
   const minConfidence = hubInsufficient ? EXTERNAL_CONFIDENCE_HUB_WEAK : EXTERNAL_CONFIDENCE_DEFAULT
-  const externalSuggestions = normalizeExternalSuggestions(
-    collectExternalSuggestionRaw(parsed),
-    orderedMatches,
-    minConfidence,
-  )
+  const externalSuggestions =
+    recommendationMode === 'web'
+      ? normalizeExternalSuggestions(
+          collectExternalSuggestionRaw(parsed),
+          orderedMatches,
+          minConfidence,
+        )
+      : []
   const firstExternal = externalSuggestions[0] ?? null
   const preferExternal =
+    recommendationMode === 'web' &&
     firstExternal != null &&
     parsed.preferExternal === true &&
     (firstExternal.externalConfidence ?? 0) >= EXTERNAL_CONFIDENCE_PREFER

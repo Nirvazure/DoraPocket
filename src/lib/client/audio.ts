@@ -19,9 +19,14 @@ let analyser: AnalyserNode | null = null
 let dataArray: Uint8Array | null = null
 let currentAudio: HTMLAudioElement | null = null
 let currentSource: MediaElementAudioSourceNode | null = null
+let currentObjectUrl: string | null = null
 
 function isAutoplayBlocked(error: unknown): boolean {
   return error instanceof DOMException && error.name === 'NotAllowedError'
+}
+
+function isUnsupportedMedia(error: unknown): boolean {
+  return error instanceof DOMException && error.name === 'NotSupportedError'
 }
 
 export function initAudioContext() {
@@ -45,22 +50,31 @@ export function playAudioStream(audioUrl: string, onEnded: () => void) {
   stopAudioPlayback()
 
   currentAudio = new Audio(audioUrl)
+  currentObjectUrl = audioUrl.startsWith('blob:') ? audioUrl : null
   currentAudio.crossOrigin = 'anonymous'
   if (audioContext && analyser) {
     currentSource = audioContext.createMediaElementSource(currentAudio)
     currentSource.connect(analyser)
     analyser.connect(audioContext.destination)
   }
-  currentAudio.onended = () => {
-    onEnded()
+  let finished = false
+  const finish = () => {
+    if (finished) return
+    finished = true
     stopAudioPlayback()
+    onEnded()
+  }
+  currentAudio.onended = () => {
+    finish()
+  }
+  currentAudio.onerror = () => {
+    finish()
   }
   void currentAudio.play().catch((error) => {
-    if (!isAutoplayBlocked(error)) {
+    if (!isAutoplayBlocked(error) && !isUnsupportedMedia(error)) {
       console.error('Audio playback failed', error)
     }
-    stopAudioPlayback()
-    onEnded()
+    finish()
   })
 }
 
@@ -71,6 +85,10 @@ export function stopAudioPlayback() {
     currentAudio.src = ''
     currentAudio.load()
     currentAudio = null
+  }
+  if (currentObjectUrl) {
+    URL.revokeObjectURL(currentObjectUrl)
+    currentObjectUrl = null
   }
   if (currentSource) {
     currentSource.disconnect()

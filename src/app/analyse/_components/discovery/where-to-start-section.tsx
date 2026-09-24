@@ -3,12 +3,15 @@
 import { cn } from '@/lib/utils'
 import { PAGE_COPY } from '@/shared/copy/ui-copy'
 import { STARTER_PROMPT_TEMPLATES } from '@/shared/discovery/starter-intake'
+import type { RecommendationMode } from '@/shared/discovery/recommendation-mode'
 
 type WhereToStartSectionProps = {
   actionsEnabled?: boolean
   wizardDisabled?: boolean
   naturalDescription: string
   onNaturalDescriptionChange: (value: string) => void
+  recommendationMode: RecommendationMode
+  onRecommendationModeChange: (mode: RecommendationMode) => void
 }
 
 export function WhereToStartSection({
@@ -16,6 +19,8 @@ export function WhereToStartSection({
   wizardDisabled,
   naturalDescription,
   onNaturalDescriptionChange,
+  recommendationMode,
+  onRecommendationModeChange,
 }: WhereToStartSectionProps) {
   const copy = PAGE_COPY.analysis.starter
 
@@ -31,6 +36,47 @@ export function WhereToStartSection({
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground/85">
           {copy.naturalDraftHint}
         </p>
+      </div>
+
+      <div className="shrink-0 rounded-[1.15rem] border border-border/70 bg-white p-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-black text-foreground">推荐范围</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">只影响本次推荐，不会写入个人设置</p>
+          </div>
+          <div
+            className="grid grid-cols-2 rounded-xl border border-border/70 bg-muted/35 p-1"
+            role="group"
+            aria-label="推荐范围"
+          >
+            {(
+              [
+                ['market', '库里找'],
+                ['web', '全网找'],
+              ] as const
+            ).map(([value, label]) => {
+              const selected = recommendationMode === value
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  disabled={wizardDisabled || !actionsEnabled}
+                  aria-pressed={selected}
+                  onClick={() => onRecommendationModeChange(value)}
+                  className={cn(
+                    'min-w-20 rounded-lg px-3 py-2 text-xs font-black transition-colors',
+                    selected
+                      ? 'bg-foreground text-background shadow-sm'
+                      : 'text-muted-foreground hover:bg-background hover:text-foreground',
+                    (wizardDisabled || !actionsEnabled) && 'cursor-not-allowed opacity-50',
+                  )}
+                >
+                  {label}
+                </button>
+              )
+            })}
+          </div>
+        </div>
       </div>
 
       {!actionsEnabled ? (

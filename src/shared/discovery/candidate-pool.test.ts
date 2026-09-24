@@ -32,8 +32,7 @@ test('mergeCandidatePool sorts hub and external candidates by score when hub is 
     [hubCandidate('hub-a', 40), hubCandidate('hub-b', 55)],
     [],
     [externalCandidate('External A', 82), externalCandidate('External B', 70)],
-    false,
-    false,
+    { mode: 'web', preferExternal: false },
   )
 
   assert.equal(merged[0]?.title, 'External A')
@@ -42,17 +41,16 @@ test('mergeCandidatePool sorts hub and external candidates by score when hub is 
   assert.equal(merged.length, 4)
 })
 
-test('mergeCandidatePool reserves external slots when hub is insufficient', () => {
+test('mergeCandidatePool ranks web candidates together when hub is insufficient', () => {
   const merged = mergeCandidatePool(
-    [hubCandidate('hub-a', 150), hubCandidate('hub-b', 140), hubCandidate('hub-c', 130)],
+    [hubCandidate('hub-a', 40), hubCandidate('hub-b', 35), hubCandidate('hub-c', 30)],
     [],
     [
       externalCandidate('External A', 82),
       externalCandidate('External B', 78),
       externalCandidate('External C', 74),
     ],
-    false,
-    true,
+    { mode: 'web', preferExternal: false },
   )
 
   const externalCount = merged.filter((item) => item.candidateType === 'external_suggestion').length
@@ -67,11 +65,35 @@ test('mergeCandidatePool boosts first external when preferExternal is true', () 
     [hubCandidate('hub-a', 80)],
     [],
     [externalCandidate('External A', 78)],
-    true,
-    false,
+    { mode: 'web', preferExternal: true },
   )
 
   assert.equal(merged[0]?.candidateType, 'external_suggestion')
+})
+
+test('mergeCandidatePool excludes external candidates in market mode', () => {
+  const merged = mergeCandidatePool(
+    [hubCandidate('hub-a', 40)],
+    [],
+    [externalCandidate('External A', 82)],
+    { mode: 'market', preferExternal: true },
+  )
+
+  assert.deepEqual(
+    merged.map((item) => item.title),
+    ['hub-a'],
+  )
+})
+
+test('mergeCandidatePool does not reserve weak hub candidates in web mode', () => {
+  const merged = mergeCandidatePool(
+    [hubCandidate('hub-a', 40), hubCandidate('hub-b', 35)],
+    [],
+    [externalCandidate('External A', 75)],
+    { mode: 'web', preferExternal: false },
+  )
+
+  assert.equal(merged[0]?.title, 'External A')
 })
 
 test('normalizeExternalSuggestions accepts up to three unique externals', () => {
