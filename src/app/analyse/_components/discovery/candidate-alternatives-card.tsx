@@ -119,7 +119,9 @@ export function CandidateAlternativesCard({
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-primary/15 bg-white/50 px-4 py-3 text-center text-xs font-medium text-muted-foreground">
-          当前备选已压缩到最小集合，先试主推荐即可。
+          {payload?.candidates.length === 0
+            ? '没有候选达到当前最低匹配度，请调低阈值或补充任务条件。'
+            : '当前没有可展示的备选，先试主推荐即可。'}
         </div>
       )}
     </div>

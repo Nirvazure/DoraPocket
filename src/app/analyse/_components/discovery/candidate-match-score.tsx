@@ -23,9 +23,9 @@ export function CandidateMatchScore({
       <div
         className={cn('dp-match-score-pillar tabular-nums', className)}
         role="img"
-        aria-label={`匹配度 ${value}`}
+        aria-label={`匹配度 ${value}%`}
       >
-        <span className="dp-match-score-pillar-value">{value}</span>
+        <span className="dp-match-score-pillar-value">{value}%</span>
         <span className="dp-match-score-pillar-label">匹配</span>
       </div>
     )
@@ -40,9 +40,9 @@ export function CandidateMatchScore({
           className,
         )}
         role="img"
-        aria-label={`匹配度 ${value}`}
+        aria-label={`匹配度 ${value}%`}
       >
-        <span className="dp-match-score-hero-value">{value}</span>
+        <span className="dp-match-score-hero-value">{value}%</span>
         <span className="dp-match-score-hero-label">匹配</span>
       </div>
     )
@@ -57,9 +57,9 @@ export function CandidateMatchScore({
           className,
         )}
         role="img"
-        aria-label={`匹配度 ${value}`}
+        aria-label={`匹配度 ${value}%`}
       >
-        <span className="dp-match-score-chip-value">{value}</span>
+        <span className="dp-match-score-chip-value">{value}%</span>
         <span className="dp-match-score-chip-label">匹配</span>
       </div>
     )
@@ -69,12 +69,12 @@ export function CandidateMatchScore({
     <div
       className={cn('dp-match-score-inline tabular-nums', className)}
       role="img"
-      aria-label={`匹配度 ${value}`}
+      aria-label={`匹配度 ${value}%`}
     >
       <span
         className={cn('text-lg font-black leading-none', isDark ? 'text-white' : 'text-primary')}
       >
-        {value}
+        {value}%
       </span>
       <span
         className={cn(

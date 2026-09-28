@@ -34,6 +34,10 @@ import {
   DEFAULT_RECOMMENDATION_MODE,
   type RecommendationMode,
 } from '@/shared/discovery/recommendation-mode'
+import {
+  DEFAULT_RECOMMENDATION_PREFERENCES,
+  type RecommendationPreferences,
+} from '@/shared/discovery/recommendation-preferences'
 
 type InputMode = 'text' | 'voice'
 
@@ -66,6 +70,8 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
   const [recommendationMode, setRecommendationMode] = useState<RecommendationMode>(
     DEFAULT_RECOMMENDATION_MODE,
   )
+  const [recommendationPreferences, setRecommendationPreferences] =
+    useState<RecommendationPreferences>(DEFAULT_RECOMMENDATION_PREFERENCES)
   const previousPromptRef = useRef<string | null>(null)
   const stageImmediateTimerRef = useRef<number | null>(null)
   const controllerMountedRef = useRef(false)
@@ -243,14 +249,15 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     async (prompt: string, displayPrompt: string) => {
       if (appState !== 'idle') return
       setTextFallback('')
-      await runAgentTurn(prompt, { displayPrompt, recommendationMode })
+      await runAgentTurn(prompt, { displayPrompt, recommendationMode, recommendationPreferences })
     },
-    [appState, recommendationMode, runAgentTurn],
+    [appState, recommendationMode, recommendationPreferences, runAgentTurn],
   )
 
   const handleStartNewTask = useCallback(() => {
     resetAnalysisForNewTask()
     setRecommendationMode(DEFAULT_RECOMMENDATION_MODE)
+    setRecommendationPreferences(DEFAULT_RECOMMENDATION_PREFERENCES)
     setTextFallback('')
     clearRevealTimers()
     setAnalysisFlow(IDLE_ANALYSIS_FLOW)
@@ -327,6 +334,8 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
     handleStartStructuredAnalysis,
     recommendationMode,
     setRecommendationMode,
+    recommendationPreferences,
+    setRecommendationPreferences,
     handleOpenRandomDoor,
     randomDoorPending: randomDoorRecommendationMutation.isPending,
     handleStartNewTask,

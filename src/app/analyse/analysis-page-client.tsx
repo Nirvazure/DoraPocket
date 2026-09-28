@@ -38,6 +38,8 @@ export function AnalysisPageClient() {
     handleStartStructuredAnalysis,
     recommendationMode,
     setRecommendationMode,
+    recommendationPreferences,
+    setRecommendationPreferences,
     handleOpenRandomDoor,
     randomDoorPending,
     handleStartNewTask,
@@ -150,6 +152,8 @@ export function AnalysisPageClient() {
             explanationMode={userSettings?.explanationMode ?? 'standard'}
             recommendationMode={recommendationMode}
             onRecommendationModeChange={setRecommendationMode}
+            recommendationPreferences={recommendationPreferences}
+            onRecommendationPreferencesChange={setRecommendationPreferences}
             onSaveCandidate={workspaceActions.onSaveCandidate}
             onLaunchCandidate={workspaceActions.onLaunchCandidate}
             onOpenExternalCandidate={workspaceActions.onOpenExternalCandidate}

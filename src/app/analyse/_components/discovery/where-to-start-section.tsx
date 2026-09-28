@@ -4,7 +4,14 @@ import { CheckCircle2, Globe2, Library, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { PAGE_COPY } from '@/shared/copy/ui-copy'
 import { STARTER_PROMPT_TEMPLATES } from '@/shared/discovery/starter-intake'
+import { Button } from '@/components/ui/button'
+import { Slider } from '@/components/ui/slider'
 import type { RecommendationMode } from '@/shared/discovery/recommendation-mode'
+import {
+  RECOMMENDATION_LIMIT_OPTIONS,
+  type RecommendationLimit,
+  type RecommendationPreferences,
+} from '@/shared/discovery/recommendation-preferences'
 
 type WhereToStartSectionProps = {
   actionsEnabled?: boolean
@@ -14,6 +21,8 @@ type WhereToStartSectionProps = {
   onAnalyze: () => void
   recommendationMode: RecommendationMode
   onRecommendationModeChange: (mode: RecommendationMode) => void
+  recommendationPreferences: RecommendationPreferences
+  onRecommendationPreferencesChange: (preferences: RecommendationPreferences) => void
 }
 
 export function WhereToStartSection({
@@ -24,6 +33,8 @@ export function WhereToStartSection({
   onAnalyze,
   recommendationMode,
   onRecommendationModeChange,
+  recommendationPreferences,
+  onRecommendationPreferencesChange,
 }: WhereToStartSectionProps) {
   const copy = PAGE_COPY.analysis.starter
 
@@ -42,64 +53,105 @@ export function WhereToStartSection({
       </div>
 
       <div className="shrink-0 rounded-[1.15rem] border border-border/70 bg-white p-3">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="min-w-0">
             <p className="flex items-center gap-1.5 text-sm font-black text-foreground">
               <Search className="h-4 w-4 text-primary" aria-hidden />
               推荐范围
             </p>
-            <p className="mt-0.5 text-xs text-muted-foreground">只影响本次推荐，不会写入个人设置</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">本次有效</p>
+            <div
+              className="mt-2 grid grid-cols-2 gap-1 rounded-xl border border-border/70 bg-muted/35 p-1"
+              role="group"
+              aria-label="推荐范围"
+            >
+              {(
+                [
+                  ['market', '库里找', Library],
+                  ['web', '全网找', Globe2],
+                ] as const
+              ).map(([value, label, Icon]) => {
+                const selected = recommendationMode === value
+                return (
+                  <Button
+                    key={value}
+                    type="button"
+                    size="sm"
+                    variant={selected ? 'default' : 'ghost'}
+                    disabled={wizardDisabled || !actionsEnabled}
+                    aria-pressed={selected}
+                    onClick={() => onRecommendationModeChange(value)}
+                    className="min-w-0 gap-1 px-1.5 text-[11px] font-black"
+                  >
+                    <Icon className="size-3.5" aria-hidden />
+                    {label}
+                  </Button>
+                )
+              })}
+            </div>
           </div>
-          <div
-            className="grid grid-cols-2 rounded-xl border border-border/70 bg-muted/35 p-1"
-            role="group"
-            aria-label="推荐范围"
-          >
-            {(
-              [
-                ['market', '库里找'],
-                ['web', '全网找'],
-              ] as const
-            ).map(([value, label]) => {
-              const selected = recommendationMode === value
-              return (
-                <button
-                  key={value}
-                  type="button"
-                  disabled={wizardDisabled || !actionsEnabled}
-                  aria-pressed={selected}
-                  onClick={() => onRecommendationModeChange(value)}
-                  className={cn(
-                    'inline-flex min-w-20 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-black leading-none transition-colors',
-                    selected
-                      ? 'bg-primary text-primary-foreground shadow-sm'
-                      : 'text-muted-foreground hover:bg-background hover:text-foreground',
-                    (wizardDisabled || !actionsEnabled) && 'cursor-not-allowed opacity-50',
-                  )}
-                >
-                  {value === 'market' ? (
-                    <Library
-                      className={cn(
-                        'h-3.5 w-3.5 shrink-0',
-                        selected ? 'text-primary-foreground' : 'text-muted-foreground',
-                      )}
-                      aria-hidden
-                    />
-                  ) : (
-                    <Globe2
-                      className={cn(
-                        'h-3.5 w-3.5 shrink-0',
-                        selected ? 'text-primary-foreground' : 'text-muted-foreground',
-                      )}
-                      aria-hidden
-                    />
-                  )}
-                  {label}
-                </button>
-              )
-            })}
+
+          <div className="min-w-0">
+            <p className="text-sm font-black text-foreground">推荐数量</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">包含主推荐</p>
+            <div
+              className="mt-2 grid grid-cols-3 gap-1 rounded-xl border border-border/70 bg-muted/35 p-1"
+              role="group"
+              aria-label="推荐数量"
+            >
+              {RECOMMENDATION_LIMIT_OPTIONS.map((limit) => {
+                const selected = recommendationPreferences.recommendationLimit === limit
+                return (
+                  <Button
+                    key={limit}
+                    type="button"
+                    size="sm"
+                    variant={selected ? 'default' : 'ghost'}
+                    disabled={wizardDisabled || !actionsEnabled}
+                    aria-pressed={selected}
+                    onClick={() =>
+                      onRecommendationPreferencesChange({
+                        ...recommendationPreferences,
+                        recommendationLimit: limit as RecommendationLimit,
+                      })
+                    }
+                    className="min-w-0 px-1 text-[11px] font-black"
+                  >
+                    {limit} 个
+                  </Button>
+                )
+              })}
+            </div>
           </div>
         </div>
+      </div>
+
+      <div className="shrink-0 rounded-[1.15rem] border border-border/70 bg-white p-3">
+        <div className="flex items-center justify-between gap-3 text-sm font-black text-foreground">
+          <span>最低匹配度</span>
+          <span className="tabular-nums text-primary">
+            {recommendationPreferences.minMatchScore}%
+          </span>
+        </div>
+        <Slider
+          min={0}
+          max={100}
+          step={5}
+          value={recommendationPreferences.minMatchScore}
+          disabled={wizardDisabled || !actionsEnabled}
+          getAriaLabel={() => '最低匹配度'}
+          getAriaValueText={(value) => `${value}%`}
+          onValueChange={(value) =>
+            onRecommendationPreferencesChange({
+              ...recommendationPreferences,
+              minMatchScore: Number(value),
+            })
+          }
+          className="mt-3"
+        />
+        <p className="mt-2 text-[11px] text-muted-foreground">
+          只展示达到此匹配度的候选，按本次首选相对折算
+        </p>
       </div>
 
       {!actionsEnabled ? (

@@ -7,6 +7,7 @@ export const EXTERNAL_CONFIDENCE_DEFAULT = 0.72
 export const EXTERNAL_CONFIDENCE_HUB_WEAK = 0.65
 export const EXTERNAL_CONFIDENCE_PREFER = 0.78
 export const MAX_EXTERNAL_SUGGESTIONS = 3
+export const MAX_CANDIDATE_POOL_SIZE = 10
 
 export type CandidatePoolOptions = {
   mode: RecommendationMode
@@ -45,7 +46,7 @@ export function mergeCandidatePool(
   const hubPool = sortByScoreDesc([...hubCandidates, ...submissionCandidates])
 
   if (mode === 'market') {
-    return hubPool.slice(0, 5)
+    return hubPool.slice(0, MAX_CANDIDATE_POOL_SIZE)
   }
 
   const externals = externalCandidates.map((candidate, index) => {
@@ -56,10 +57,13 @@ export function mergeCandidatePool(
   })
 
   if (externals.length === 0) {
-    return hubPool.slice(0, 5)
+    return hubPool.slice(0, MAX_CANDIDATE_POOL_SIZE)
   }
 
-  return sortByScoreDesc(dedupeCandidates([...hubPool, ...externals])).slice(0, 5)
+  return sortByScoreDesc(dedupeCandidates([...hubPool, ...externals])).slice(
+    0,
+    MAX_CANDIDATE_POOL_SIZE,
+  )
 }
 
 function normalizeExternalUrl(value: unknown): string | null {

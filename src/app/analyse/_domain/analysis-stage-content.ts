@@ -127,7 +127,7 @@ export function resolveAlternativeCandidates(
   payload: AgentUiPayload | null,
   selectedToolPayload: ChatToolPayload,
 ) {
-  const candidates = payload?.candidates.slice(1, 4) ?? []
+  const candidates = payload?.candidates.slice(1, 10) ?? []
   if (candidates.length > 0) return candidates
   if (!selectedToolPayload?.toolId) return []
   return []

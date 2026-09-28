@@ -8,6 +8,7 @@ import {
   DEFAULT_RECOMMENDATION_MODE,
   type RecommendationMode,
 } from '@/shared/discovery/recommendation-mode'
+import type { RecommendationPreferences } from '@/shared/discovery/recommendation-preferences'
 
 export type AskQwenOptions = {
   signal?: AbortSignal
@@ -17,6 +18,7 @@ export type AskQwenOptions = {
   priorMessages?: ClarificationMessage[]
   skipClarify?: boolean
   recommendationMode?: RecommendationMode
+  recommendationPreferences?: RecommendationPreferences
   onClarify?: (payload: {
     question: string
     missingInputs: string[]
@@ -116,6 +118,8 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
       priorMessages: opts?.priorMessages ?? [],
       skipClarify: opts?.skipClarify === true,
       recommendationMode: opts?.recommendationMode ?? DEFAULT_RECOMMENDATION_MODE,
+      minMatchScore: opts?.recommendationPreferences?.minMatchScore,
+      recommendationLimit: opts?.recommendationPreferences?.recommendationLimit,
     }),
   })
 

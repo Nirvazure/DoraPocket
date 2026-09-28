@@ -5,7 +5,7 @@ export function getCandidateScoreValue(candidate: AgentCandidate): number {
 }
 
 export function formatCandidateScore(candidate: AgentCandidate): string {
-  return `匹配度 ${getCandidateScoreValue(candidate)}`
+  return `匹配度 ${getCandidateScoreValue(candidate)}%`
 }
 
 export function shouldShowCandidateScore(

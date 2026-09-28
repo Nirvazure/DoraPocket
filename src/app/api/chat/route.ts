@@ -10,6 +10,10 @@ import {
 import { createEmptyMarketContext } from '@/shared/market/market-defaults'
 import type { AgentUiPayload, MarketContext } from '@/shared/market/market-types'
 import type { ClarificationDoneStatus } from '@/shared/discovery/clarification-session-types'
+import {
+  normalizeRecommendationPreferences,
+  type RecommendationPreferences,
+} from '@/shared/discovery/recommendation-preferences'
 
 type ChatRequestBody = {
   message?: string
@@ -19,6 +23,8 @@ type ChatRequestBody = {
   skipClarify?: boolean
   explanationMode?: ExplanationMode
   recommendationMode?: unknown
+  minMatchScore?: unknown
+  recommendationLimit?: unknown
 }
 
 function normalizeExplanationMode(value: unknown): ExplanationMode {
@@ -36,6 +42,12 @@ export async function POST(request: Request) {
     const explanationMode = normalizeExplanationMode(body.explanationMode)
     const recommendationMode: RecommendationMode = normalizeRecommendationMode(
       body.recommendationMode,
+    )
+    const recommendationPreferences: RecommendationPreferences = normalizeRecommendationPreferences(
+      {
+        minMatchScore: body.minMatchScore,
+        recommendationLimit: body.recommendationLimit,
+      },
     )
     if (!message) {
       return new Response(JSON.stringify({ error: 'message is required' }), {
@@ -70,6 +82,7 @@ export async function POST(request: Request) {
             explanationMode,
             clarificationInput,
             recommendationMode,
+            recommendationPreferences,
           )) {
             if (event.type === 'meta') {
               selectedToolId = event.selected_tool?.toolId ?? null
