@@ -17,6 +17,7 @@ import {
 } from '@/shared/discovery/recommendation-mode'
 import {
   DEFAULT_RECOMMENDATION_PREFERENCES,
+  normalizeRecommendationPreferences,
   type RecommendationPreferences,
 } from '@/shared/discovery/recommendation-preferences'
 import {
@@ -203,7 +204,7 @@ export function useAnalysisSession({
         : (options?.recommendationMode ?? DEFAULT_RECOMMENDATION_MODE)
       const recommendationPreferences = isContinuation
         ? recommendationPreferencesRef.current
-        : (options?.recommendationPreferences ?? DEFAULT_RECOMMENDATION_PREFERENCES)
+        : normalizeRecommendationPreferences(options?.recommendationPreferences)
       if (!isContinuation) recommendationModeRef.current = recommendationMode
       if (!isContinuation) recommendationPreferencesRef.current = recommendationPreferences
       onPrepareAgentTurn?.()

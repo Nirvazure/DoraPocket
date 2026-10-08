@@ -1,15 +1,14 @@
 'use client'
 
-import { CheckCircle2, Globe2, Library, Search } from 'lucide-react'
+import { CheckCircle2, Globe2, Library, Target } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { PAGE_COPY } from '@/shared/copy/ui-copy'
 import { STARTER_PROMPT_TEMPLATES } from '@/shared/discovery/starter-intake'
 import { Button } from '@/components/ui/button'
-import { Slider } from '@/components/ui/slider'
 import type { RecommendationMode } from '@/shared/discovery/recommendation-mode'
 import {
   RECOMMENDATION_LIMIT_OPTIONS,
-  type RecommendationLimit,
+  normalizeRecommendationPreferences,
   type RecommendationPreferences,
 } from '@/shared/discovery/recommendation-preferences'
 
@@ -37,6 +36,12 @@ export function WhereToStartSection({
   onRecommendationPreferencesChange,
 }: WhereToStartSectionProps) {
   const copy = PAGE_COPY.analysis.starter
+  const preferences = normalizeRecommendationPreferences(recommendationPreferences)
+  const settingsDisabled = wizardDisabled || !actionsEnabled
+  const optionClassName =
+    'h-8 min-w-0 gap-1.5 rounded-full px-2 text-xs font-bold transition-colors focus-visible:ring-2 focus-visible:ring-primary/40 disabled:cursor-not-allowed'
+  const selectedClassName =
+    'border-primary/25 bg-primary/[0.06] text-primary hover:bg-primary/10 hover:text-primary'
 
   return (
     <section className="flex min-h-full w-full flex-1 flex-col gap-5">
@@ -52,23 +57,21 @@ export function WhereToStartSection({
         </p>
       </div>
 
-      <div className="shrink-0 rounded-[1.15rem] border border-border/70 bg-white p-3">
-        <div className="grid grid-cols-2 gap-3">
-          <div className="min-w-0">
-            <p className="flex items-center gap-1.5 text-sm font-black text-foreground">
-              <Search className="h-4 w-4 text-primary" aria-hidden />
-              推荐范围
-            </p>
-            <p className="mt-0.5 text-xs text-muted-foreground">本次有效</p>
+      <div className="shrink-0 border-y border-border/60 py-3 sm:grid sm:grid-cols-2 sm:gap-x-3 sm:[&>div:first-child]:col-span-2 sm:[&>div:last-child]:col-start-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)] sm:items-stretch sm:gap-0">
+          <div className="min-w-0 sm:pr-3">
+            <div className="flex items-baseline justify-between gap-2">
+              <p className="text-xs font-bold text-foreground">推荐范围</p>
+            </div>
             <div
-              className="mt-2 grid grid-cols-2 gap-1 rounded-xl border border-border/70 bg-muted/35 p-1"
+              className="mt-1.5 grid grid-cols-2 gap-1 rounded-full border border-border/60 bg-white/70 p-0.5"
               role="group"
               aria-label="推荐范围"
             >
               {(
                 [
-                  ['market', '库里找', Library],
-                  ['web', '全网找', Globe2],
+                  ['market', '仅找库中', Library],
+                  ['web', '混合模式', Globe2],
                 ] as const
               ).map(([value, label, Icon]) => {
                 const selected = recommendationMode === value
@@ -76,12 +79,14 @@ export function WhereToStartSection({
                   <Button
                     key={value}
                     type="button"
-                    size="sm"
-                    variant={selected ? 'default' : 'ghost'}
-                    disabled={wizardDisabled || !actionsEnabled}
+                    variant="ghost"
+                    disabled={settingsDisabled}
                     aria-pressed={selected}
                     onClick={() => onRecommendationModeChange(value)}
-                    className="min-w-0 gap-1 px-1.5 text-[11px] font-black"
+                    className={cn(
+                      optionClassName,
+                      selected ? selectedClassName : 'text-muted-foreground hover:bg-white/70',
+                    )}
                   >
                     <Icon className="size-3.5" aria-hidden />
                     {label}
@@ -91,31 +96,35 @@ export function WhereToStartSection({
             </div>
           </div>
 
-          <div className="min-w-0">
-            <p className="text-sm font-black text-foreground">推荐数量</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">包含主推荐</p>
+          <div className="hidden bg-border/60 sm:block" aria-hidden="true" />
+          <div className="min-w-0 sm:pl-3">
+            <div className="flex items-baseline justify-between gap-2">
+              <p className="text-xs font-bold text-foreground">推荐数量</p>
+            </div>
             <div
-              className="mt-2 grid grid-cols-3 gap-1 rounded-xl border border-border/70 bg-muted/35 p-1"
+              className="mt-1.5 grid grid-cols-3 gap-1 rounded-full border border-border/60 bg-white/70 p-0.5"
               role="group"
               aria-label="推荐数量"
             >
               {RECOMMENDATION_LIMIT_OPTIONS.map((limit) => {
-                const selected = recommendationPreferences.recommendationLimit === limit
+                const selected = preferences.recommendationLimit === limit
                 return (
                   <Button
                     key={limit}
                     type="button"
-                    size="sm"
-                    variant={selected ? 'default' : 'ghost'}
-                    disabled={wizardDisabled || !actionsEnabled}
+                    variant="ghost"
+                    disabled={settingsDisabled}
                     aria-pressed={selected}
                     onClick={() =>
-                      onRecommendationPreferencesChange({
-                        ...recommendationPreferences,
-                        recommendationLimit: limit as RecommendationLimit,
-                      })
+                      onRecommendationPreferencesChange(
+                        normalizeRecommendationPreferences({ recommendationLimit: limit }),
+                      )
                     }
-                    className="min-w-0 px-1 text-[11px] font-black"
+                    className={cn(
+                      optionClassName,
+                      'tabular-nums',
+                      selected ? selectedClassName : 'text-muted-foreground hover:bg-white/70',
+                    )}
                   >
                     {limit} 个
                   </Button>
@@ -124,34 +133,21 @@ export function WhereToStartSection({
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="shrink-0 rounded-[1.15rem] border border-border/70 bg-white p-3">
-        <div className="flex items-center justify-between gap-3 text-sm font-black text-foreground">
-          <span>最低匹配度</span>
-          <span className="tabular-nums text-primary">
-            {recommendationPreferences.minMatchScore}%
+        <div className="mt-2.5 flex min-h-7 items-center justify-between gap-3 border-t border-border/45 pt-2">
+          <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+            <Target className="size-3.5" aria-hidden />
+            最低匹配度
           </span>
+          <output
+            aria-label="最低匹配度"
+            aria-live="polite"
+            aria-atomic="true"
+            className="w-14 shrink-0 text-right text-lg font-bold leading-none tabular-nums text-primary"
+          >
+            {preferences.minMatchScore}
+            <span className="ml-0.5 text-xs">%</span>
+          </output>
         </div>
-        <Slider
-          min={0}
-          max={100}
-          step={5}
-          value={recommendationPreferences.minMatchScore}
-          disabled={wizardDisabled || !actionsEnabled}
-          getAriaLabel={() => '最低匹配度'}
-          getAriaValueText={(value) => `${value}%`}
-          onValueChange={(value) =>
-            onRecommendationPreferencesChange({
-              ...recommendationPreferences,
-              minMatchScore: Number(value),
-            })
-          }
-          className="mt-3"
-        />
-        <p className="mt-2 text-[11px] text-muted-foreground">
-          只展示达到此匹配度的候选，按本次首选相对折算
-        </p>
       </div>
 
       {!actionsEnabled ? (

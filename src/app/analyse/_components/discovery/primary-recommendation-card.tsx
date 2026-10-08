@@ -48,7 +48,7 @@ export function PrimaryRecommendationCard({
 }: PrimaryRecommendationCardProps) {
   const content = buildPrimaryRecommendation(payload, selectedToolPayload, getTool)
   const leader = content.leader
-  const showScore = shouldShowCandidateScore(explanationMode) && leader != null
+  const showScore = shouldShowCandidateScore(explanationMode, leader)
   const leaderToolId = leader?.toolId ?? null
   const leaderTool = getTool(leaderToolId)
   const leaderExternalUrl =
@@ -88,7 +88,7 @@ export function PrimaryRecommendationCard({
               {content.description}
             </DisplayPanelDescription>
             <p className="mt-2 text-xs font-semibold text-white/60">
-              搜索范围：{payload?.recommendationMode === 'web' ? '全网找' : '库里找'}
+              搜索范围：{payload?.recommendationMode === 'web' ? '混合模式' : '仅找库中'}
             </p>
             {leader?.candidateType === 'external_suggestion' && leader.externalBoundary ? (
               <p className="mt-3 rounded-xl border border-amber-200/30 bg-amber-500/10 px-3 py-2 text-xs leading-relaxed text-amber-100/90">
@@ -139,10 +139,12 @@ export function PrimaryRecommendationCard({
             </Button>
           </>
         ) : null}
-        <RecommendationEvaluationBar
-          recommendationSessionId={recommendationSessionId}
-          selectedToolId={leaderToolId}
-        />
+        {leader ? (
+          <RecommendationEvaluationBar
+            recommendationSessionId={recommendationSessionId}
+            selectedToolId={leaderToolId}
+          />
+        ) : null}
       </DisplayPanelContent>
     </DisplayPanel>
   )

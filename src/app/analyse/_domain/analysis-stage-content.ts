@@ -107,20 +107,17 @@ export function resolveLeadingCandidate(
   selectedToolPayload: ChatToolPayload,
   getTool?: ToolLookupFn,
 ) {
-  return (
-    payload?.candidates[0] ??
-    (selectedToolPayload?.toolId
-      ? ({
-          toolId: selectedToolPayload.toolId,
-          title:
-            resolveTool(getTool, selectedToolPayload.toolId)?.name ?? selectedToolPayload.toolId,
-          candidateType: 'tool',
-          score: 0,
-          sourceLabel: 'market',
-          reason: '',
-        } satisfies AgentCandidate)
-      : null)
-  )
+  if (payload) return payload.candidates[0] ?? null
+  return selectedToolPayload?.toolId
+    ? ({
+        toolId: selectedToolPayload.toolId,
+        title: resolveTool(getTool, selectedToolPayload.toolId)?.name ?? selectedToolPayload.toolId,
+        candidateType: 'tool',
+        score: 0,
+        sourceLabel: 'market',
+        reason: '',
+      } satisfies AgentCandidate)
+    : null
 }
 
 export function resolveAlternativeCandidates(

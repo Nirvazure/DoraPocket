@@ -1,6 +1,6 @@
-import type { AgentUiPayload, MarketContext } from '@/shared/market/market-types'
+import type { AgentUiPayload } from '@/shared/market/market-types'
 import type { ExplanationMode } from '@/shared/user/user-settings'
-import { formatCandidateLines, matchingSubmissionLines } from '@/server/agent/ui-payload'
+import { formatCandidateLines } from '@/server/agent/ui-payload'
 
 function buildExplanationStyleInstruction(explanationMode: ExplanationMode) {
   if (explanationMode === 'brief') {
@@ -13,18 +13,16 @@ function buildExplanationStyleInstruction(explanationMode: ExplanationMode) {
 export function buildDiscoveryResponsePrompt({
   message,
   uiPayload,
-  marketContext,
   explanationMode,
 }: {
   message: string
   uiPayload: AgentUiPayload
-  marketContext: MarketContext
   explanationMode: ExplanationMode
 }) {
   return [
     `用户问题：${message}`,
     `任务模式：${uiPayload.taskFrame.mode}`,
-    `推荐范围：${uiPayload.recommendationMode === 'web' ? '全网找' : '库里找'}`,
+    `推荐范围：${uiPayload.recommendationMode === 'web' ? '混合模式' : '仅找库中'}`,
     `缺失参数：${uiPayload.taskFrame.missingInputs.join('、') || '无'}`,
     `推荐理由：${uiPayload.selectionReason}`,
     `决策摘要：${uiPayload.decisionSummary ?? '无'}`,
@@ -34,7 +32,7 @@ export function buildDiscoveryResponsePrompt({
     `个人证据：${uiPayload.personalEvidence?.join('、') || '无'}`,
     `用户偏好画像：${uiPayload.preferenceSignals.join('、') || '无'}`,
     `候选工具：\n${formatCandidateLines(uiPayload.candidates)}`,
-    `用户提交的市场条目：\n${matchingSubmissionLines(message, marketContext)}`,
+    '只能解释上述已经通过评估的候选工具；不得从用户投稿、常识或外部知识新增推荐。数量不足时不得凑数。',
     buildExplanationStyleInstruction(explanationMode),
     '请输出：一句结论 + 最值得先用的工具 + 简短理由 + 代价或边界 + 下一步动作。不要堆列表，不要暴露内部 ID。',
     '如果首选是 Hub 外建议，必须明确说它当前不在 Tool Hub，不能说成已收录、可评价、可自动沉淀；下一步只能建议先打开试用，确认有效后再手动提交到 Tool Hub。',

@@ -60,7 +60,7 @@ test('mergeCandidatePool ranks web candidates together when hub is insufficient'
   assert.equal(merged.length, 6)
 })
 
-test('mergeCandidatePool boosts first external when preferExternal is true', () => {
+test('mergeCandidatePool cannot boost external task match scores', () => {
   const merged = mergeCandidatePool(
     [hubCandidate('hub-a', 80)],
     [],
@@ -68,7 +68,13 @@ test('mergeCandidatePool boosts first external when preferExternal is true', () 
     { mode: 'web', preferExternal: true },
   )
 
-  assert.equal(merged[0]?.candidateType, 'external_suggestion')
+  assert.deepEqual(
+    merged.map((item) => [item.candidateType, item.score]),
+    [
+      ['tool', 80],
+      ['external_suggestion', 78],
+    ],
+  )
 })
 
 test('mergeCandidatePool excludes external candidates in market mode', () => {
@@ -103,24 +109,36 @@ test('normalizeExternalSuggestions accepts up to three unique externals', () => 
       url: 'https://one.example.com',
       reason: 'best',
       externalConfidence: 0.8,
+      matchScore: 90,
+      coreTaskSatisfied: true,
+      requiredConstraintsSatisfied: true,
     },
     {
       title: 'Tool Two',
       url: 'https://two.example.com',
       reason: 'second',
       externalConfidence: 0.75,
+      matchScore: 85,
+      coreTaskSatisfied: true,
+      requiredConstraintsSatisfied: true,
     },
     {
       title: 'Tool Three',
       url: 'https://three.example.com',
       reason: 'third',
       externalConfidence: 0.72,
+      matchScore: 80,
+      coreTaskSatisfied: true,
+      requiredConstraintsSatisfied: true,
     },
     {
       title: 'Tool Four',
       url: 'https://four.example.com',
       reason: 'ignored',
       externalConfidence: 0.9,
+      matchScore: 95,
+      coreTaskSatisfied: true,
+      requiredConstraintsSatisfied: true,
     },
   ]
 
@@ -137,6 +155,9 @@ test('normalizeExternalSuggestions supports legacy singular payload item', () =>
         url: 'https://legacy.example.com',
         reason: 'legacy',
         externalConfidence: 0.74,
+        matchScore: 82,
+        coreTaskSatisfied: true,
+        requiredConstraintsSatisfied: true,
       },
     ],
     [],

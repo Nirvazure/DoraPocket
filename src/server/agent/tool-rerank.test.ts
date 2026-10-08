@@ -44,13 +44,24 @@ beforeEach(() => {
   invokeModel.mock.resetCalls()
   invokeModel.mock.mockImplementation(async () =>
     JSON.stringify({
-      ranking: [{ toolId: 'hub-tool', reason: 'hub' }],
+      ranking: [
+        {
+          toolId: 'hub-tool',
+          reason: 'hub',
+          matchScore: 95,
+          coreTaskSatisfied: true,
+          requiredConstraintsSatisfied: true,
+        },
+      ],
       externalSuggestions: [
         {
           title: 'Web Tool',
           url: 'https://web.example.com',
           reason: 'web',
           externalConfidence: 0.75,
+          matchScore: 93,
+          coreTaskSatisfied: true,
+          requiredConstraintsSatisfied: true,
         },
       ],
       preferExternal: false,
@@ -66,7 +77,7 @@ test('market mode filters model-generated external suggestions', async () => {
   assert.equal(result.preferExternal, false)
   assert.match(
     String(invokeModel.mock.calls[0].arguments[0]),
-    /库里找模式禁止生成 externalSuggestions/,
+    /仅找库中模式禁止生成 externalSuggestions/,
   )
 })
 
@@ -74,6 +85,41 @@ test('web mode keeps external candidates above the minimum below the preference 
   const result = await judgeToolRecommendations('task', [match], 'web')
 
   assert.equal(result.externalSuggestions[0]?.externalConfidence, 0.75)
-  assert.equal(result.externalSuggestions[0]?.score, 75)
+  assert.equal(result.externalSuggestions[0]?.score, 93)
   assert.equal(result.preferExternal, false)
+})
+
+test('cloud storage request never recommends unrelated recalled tools', async () => {
+  invokeModel.mock.mockImplementation(async () =>
+    JSON.stringify({
+      ranking: [
+        {
+          toolId: tool.id,
+          matchScore: 100,
+          coreTaskSatisfied: false,
+          requiredConstraintsSatisfied: true,
+          reason: 'Not a cloud drive',
+        },
+      ],
+      externalSuggestions: [],
+    }),
+  )
+  const result = await judgeToolRecommendations(
+    'Find a cloud storage tool',
+    [{ ...match, score: 10000 }],
+    'market',
+  )
+  assert.deepEqual(result.candidates, [])
+})
+
+test('invalid model JSON fails assessment rather than restoring retrieval candidates', async () => {
+  invokeModel.mock.mockImplementation(async () => 'not JSON')
+  await assert.rejects(judgeToolRecommendations('task', [match], 'market'), /无法完成工具适配评估/)
+})
+
+test('model outage fails assessment rather than restoring retrieval candidates', async () => {
+  invokeModel.mock.mockImplementation(async () => {
+    throw new Error('model unavailable')
+  })
+  await assert.rejects(judgeToolRecommendations('task', [match], 'market'), /无法完成工具适配评估/)
 })

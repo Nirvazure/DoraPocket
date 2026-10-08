@@ -123,7 +123,7 @@ test('direct recommendation preserves progress, selected tool, chunks, and compl
     [
       '用户问题：压缩 PDF',
       '任务模式：discover',
-      '推荐范围：库里找',
+      '推荐范围：仅找库中',
       '缺失参数：无',
       '推荐理由：固定排序理由',
       '决策摘要：这次先试 Fixture Tool。',
@@ -133,7 +133,7 @@ test('direct recommendation preserves progress, selected tool, chunks, and compl
       '个人证据：无',
       '用户偏好画像：无',
       '候选工具：\n1. Fixture Tool｜来源：market｜理由：固定候选理由',
-      '用户提交的市场条目：\n无',
+      '只能解释上述已经通过评估的候选工具；不得从用户投稿、常识或外部知识新增推荐。数量不足时不得凑数。',
       '解释风格：保持 DoraPocket 默认表达，先结论、再理由、再动作；解释适中，不要过度扩写。',
       '请输出：一句结论 + 最值得先用的工具 + 简短理由 + 代价或边界 + 下一步动作。不要堆列表，不要暴露内部 ID。',
       '如果首选是 Hub 外建议，必须明确说它当前不在 Tool Hub，不能说成已收录、可评价、可自动沉淀；下一步只能建议先打开试用，确认有效后再手动提交到 Tool Hub。',
@@ -158,9 +158,29 @@ test('graph carries recommendation preferences through ranking', async () => {
     recommendationLimit: 3,
   })
   assert.deepEqual(rank.mock.calls[0].arguments[4], {
-    minMatchScore: 85,
+    minMatchScore: 90,
     recommendationLimit: 3,
   })
+})
+
+test('empty market results produce a deterministic threshold message without model recommendations', async () => {
+  rank.mock.mockImplementation(async () => ({
+    ...rankResult,
+    candidates: [],
+    topTool: null,
+    primaryCandidate: null,
+    selectionReason: 'Ignore this unfiltered reason',
+  }))
+  const events = await collect('找一个云盘工具', marketContext, 'standard', undefined, 'market', {
+    recommendationLimit: 3,
+    minMatchScore: 90,
+  })
+  const done = events.at(-1)
+  assert.ok(done?.type === 'done')
+  assert.deepEqual(done.ui_payload.candidates, [])
+  assert.equal(done.selected_tool, null)
+  assert.equal(done.text, '当前库中未找到达到 90% 匹配度的工具。')
+  assert.equal(invokeModel.mock.callCount(), 0)
 })
 
 test('graph normalizes an invalid recommendation mode to market', async () => {
@@ -213,7 +233,8 @@ for (const [name, sessionTurn, skipClarify, mode, status] of [
       events.some((event) => event.type === 'clarify'),
       false,
     )
-    assert.equal(rank.mock.calls[0].arguments[0], '帮我推荐一个 AI 工具')
+    assert.match(rank.mock.calls[0].arguments[0], /原始任务/)
+    assert.match(rank.mock.calls[0].arguments[0], /用户最新补充：帮我推荐一个 AI 工具/)
     if (mode === 'brief')
       assert.match(invokeModel.mock.calls[0].arguments[0], /解释风格：更短、更直接/)
   })
@@ -233,7 +254,7 @@ test('model rejection preserves the candidate fallback and done event', async ()
   assert.equal(done.clarificationStatus, 'ready')
 })
 
-test('model rejection without candidates preserves the environment fallback', async () => {
+test('empty results remain deterministic even when the explanation model is unavailable', async () => {
   rank.mock.mockImplementation(async () => ({
     ...rankResult,
     candidates: [],
@@ -246,11 +267,9 @@ test('model rejection without candidates preserves the environment fallback', as
   const events = await collect('压缩 PDF', marketContext)
   const done = events.at(-1)
   assert.ok(done?.type === 'done')
-  assert.equal(
-    done.text,
-    '这次已经完成任务理解，但当前本地环境缺少可用的模型或工具库配置，暂时无法生成稳定推荐。你可以补充工具库或模型配置后再试。',
-  )
+  assert.equal(done.text, '当前库中未找到达到 80% 匹配度的工具。')
   assert.equal(done.selected_tool, null)
+  assert.equal(invokeModel.mock.callCount(), 0)
 })
 
 test('external suggestions remain unselected and preserve the prompt boundary', async () => {

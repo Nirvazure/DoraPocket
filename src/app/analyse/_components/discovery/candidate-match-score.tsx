@@ -1,4 +1,7 @@
-import { getCandidateScoreValue } from '@/app/analyse/_components/discovery/candidate-score'
+import {
+  getCandidateScoreValue,
+  shouldShowCandidateScore,
+} from '@/app/analyse/_components/discovery/candidate-score'
 import type { AgentCandidate } from '@/shared/market/market-types'
 import { cn } from '@/lib/utils'
 
@@ -15,6 +18,7 @@ export function CandidateMatchScore({
   tone = 'light',
   className,
 }: CandidateMatchScoreProps) {
+  if (!shouldShowCandidateScore('standard', candidate)) return null
   const value = getCandidateScoreValue(candidate)
   const isDark = tone === 'dark'
 
