@@ -110,6 +110,13 @@ export type AgentTaskFrame = {
   confidenceDrivers: string[]
 }
 
+export type MatchAssessment = {
+  matchScore: number
+  coreTaskSatisfied: boolean
+  requiredConstraintsSatisfied: boolean
+  reason: string
+}
+
 export type AgentCandidate = {
   toolId?: string
   title: string
@@ -119,6 +126,7 @@ export type AgentCandidate = {
   score: number
   sourceLabel: 'pocket' | 'market' | 'external'
   reason: string
+  matchAssessment?: MatchAssessment
   externalConfidence?: number
   externalBoundary?: string
 }

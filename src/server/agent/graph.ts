@@ -54,8 +54,14 @@ async function classifyTask(
       ? { toolId: topTool.id, args: topTool.defaultArgs ?? {} }
       : null
   const selectionReason =
-    judgedSelectionReason ??
-    defaultSelectionReason(taskFrame, topTool, primaryCandidate, recommendationMode)
+    (primaryCandidate ? judgedSelectionReason : undefined) ??
+    defaultSelectionReason(
+      taskFrame,
+      topTool,
+      primaryCandidate,
+      recommendationMode,
+      recommendationPreferences.minMatchScore,
+    )
   const uiPayload = buildAgentUiPayload(
     taskFrame,
     topTool,
@@ -74,6 +80,18 @@ export type ClarificationGraphInput = {
   anchorPrompt: string
   priorMessages: Array<{ role: 'user' | 'assistant'; content: string }>
   skipClarify?: boolean
+}
+
+function resolveTaskContext(message: string, input?: ClarificationGraphInput): string {
+  if (!input || (input.sessionTurn === 1 && input.priorMessages.length === 0)) return message
+  const latestMessage = input.skipClarify && message === '跳过' ? '' : message
+  return [
+    input.anchorPrompt,
+    `澄清对话（用户补充是需求，助手提问只作上下文）：${JSON.stringify(input.priorMessages)}`,
+    latestMessage ? `用户最新补充：${latestMessage}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n')
 }
 
 export type PocketStreamEvent =
@@ -111,7 +129,7 @@ export async function* streamPocketGraph(
   yield { type: 'progress', stage: 'understanding' }
 
   const { selectedTool, uiPayload: classifiedUi } = await classifyTask(
-    message,
+    resolveTaskContext(message, clarificationInput),
     marketContext,
     normalizedRecommendationMode,
     normalizedRecommendationPreferences,
@@ -151,19 +169,20 @@ export async function* streamPocketGraph(
   }
   yield { type: 'meta', selected_tool: selectedTool, ui_payload: uiPayload }
 
-  const promptInput = buildDiscoveryResponsePrompt({
-    message,
-    uiPayload,
-    marketContext,
-    explanationMode,
-  })
-  const text = await invokeModel(promptInput, DORA_PROMPT, 0.35).catch(() => {
-    const candidate = uiPayload.candidates[0]
-    if (candidate) {
+  let text: string
+  if (uiPayload.candidates.length === 0) {
+    text = uiPayload.selectionReason
+  } else {
+    const promptInput = buildDiscoveryResponsePrompt({
+      message,
+      uiPayload,
+      explanationMode,
+    })
+    text = await invokeModel(promptInput, DORA_PROMPT, 0.35).catch(() => {
+      const candidate = uiPayload.candidates[0]
       return `我先把候选收束到「${candidate.title}」。${uiPayload.selectionReason} 你可以先按这个方向试一次，再根据结果继续校准。`
-    }
-    return '这次已经完成任务理解，但当前本地环境缺少可用的模型或工具库配置，暂时无法生成稳定推荐。你可以补充工具库或模型配置后再试。'
-  })
+    })
+  }
 
   yield { type: 'progress', stage: 'ready' }
   for (const chunk of chunkResponseText(text)) {

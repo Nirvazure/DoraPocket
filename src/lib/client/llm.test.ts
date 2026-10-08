@@ -71,32 +71,42 @@ test('askQwen sends the selected recommendation mode', async () => {
   }
 })
 
-test('askQwen sends recommendation preferences', async () => {
-  const originalFetch = globalThis.fetch
-  const requestBodyRef: { value?: Record<string, unknown> } = {}
-  globalThis.fetch = async (_input, init) => {
-    requestBodyRef.value = JSON.parse(String(init?.body)) as Record<string, unknown>
-    return new Response(
-      streamFromLines([
-        {
-          type: 'done',
-          text: 'ok',
-          clarificationStatus: 'ready',
-          selected_tool: null,
-          ui_payload: null,
-        },
-      ]),
-      { status: 200 },
-    )
-  }
+for (const [recommendationLimit, minMatchScore] of [
+  [undefined, 80],
+  [3, 90],
+  [5, 80],
+  [10, 70],
+] as const) {
+  test(`askQwen sends normalized preferences for ${recommendationLimit ?? 'default'} recommendations`, async () => {
+    const originalFetch = globalThis.fetch
+    const requestBodyRef: { value?: Record<string, unknown> } = {}
+    globalThis.fetch = async (_input, init) => {
+      requestBodyRef.value = JSON.parse(String(init?.body)) as Record<string, unknown>
+      return new Response(
+        streamFromLines([
+          {
+            type: 'done',
+            text: 'ok',
+            clarificationStatus: 'ready',
+            selected_tool: null,
+            ui_payload: null,
+          },
+        ]),
+        { status: 200 },
+      )
+    }
 
-  try {
-    await askQwen('hello', {
-      recommendationPreferences: { minMatchScore: 85, recommendationLimit: 3 },
-    })
-    assert.equal(requestBodyRef.value?.minMatchScore, 85)
-    assert.equal(requestBodyRef.value?.recommendationLimit, 3)
-  } finally {
-    globalThis.fetch = originalFetch
-  }
-})
+    try {
+      await askQwen('hello', {
+        recommendationPreferences:
+          recommendationLimit === undefined
+            ? undefined
+            : { minMatchScore: 85, recommendationLimit },
+      })
+      assert.equal(requestBodyRef.value?.minMatchScore, minMatchScore)
+      assert.equal(requestBodyRef.value?.recommendationLimit, recommendationLimit ?? 5)
+    } finally {
+      globalThis.fetch = originalFetch
+    }
+  })
+}

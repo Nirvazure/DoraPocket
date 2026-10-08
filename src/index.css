@@ -32,8 +32,7 @@
     --radius: 0.625rem;
     --dora-red: 0 72% 52%;
     --bell: 45 96% 58%;
-    --font-sans:
-      var(--font-quicksand), var(--font-noto-sans-sc), 'Noto Sans SC', system-ui, sans-serif;
+    --font-sans: 'Quicksand', 'Noto Sans SC', system-ui, -apple-system, 'Segoe UI', sans-serif;
     --surface-strong: 0 0% 100%;
     --surface-soft: 210 30% 98%;
     --surface-float: 0 0% 100% / 0.76;
@@ -55,12 +54,11 @@
     --sidebar-ring: 199 100% 46%;
   }
 
-  /* preset b/d：暂与 c 共用 next/font 加载的 Quicksand + Noto Sans SC */
+  /* Keep the same font stack across presets without a build-time font download. */
   html[data-font-preset='b'],
   html[data-font-preset='c'],
   html[data-font-preset='d'] {
-    --font-sans:
-      var(--font-quicksand), var(--font-noto-sans-sc), 'Noto Sans SC', system-ui, sans-serif;
+    --font-sans: 'Quicksand', 'Noto Sans SC', system-ui, -apple-system, 'Segoe UI', sans-serif;
   }
 
   * {

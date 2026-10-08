@@ -1,8 +1,14 @@
-export const DEFAULT_MIN_MATCH_SCORE = 70
 export const DEFAULT_RECOMMENDATION_LIMIT = 5
 export const RECOMMENDATION_LIMIT_OPTIONS = [3, 5, 10] as const
 
 export type RecommendationLimit = (typeof RECOMMENDATION_LIMIT_OPTIONS)[number]
+
+export const MIN_MATCH_SCORE_BY_LIMIT: Record<RecommendationLimit, number> = {
+  3: 90,
+  5: 80,
+  10: 70,
+}
+export const DEFAULT_MIN_MATCH_SCORE = MIN_MATCH_SCORE_BY_LIMIT[DEFAULT_RECOMMENDATION_LIMIT]
 
 export type RecommendationPreferences = {
   minMatchScore: number
@@ -12,12 +18,6 @@ export type RecommendationPreferences = {
 export const DEFAULT_RECOMMENDATION_PREFERENCES: RecommendationPreferences = {
   minMatchScore: DEFAULT_MIN_MATCH_SCORE,
   recommendationLimit: DEFAULT_RECOMMENDATION_LIMIT,
-}
-
-export function normalizeMinMatchScore(value: unknown): number {
-  const parsed = typeof value === 'number' ? value : Number(value)
-  if (!Number.isFinite(parsed)) return DEFAULT_MIN_MATCH_SCORE
-  return Math.min(100, Math.max(0, Math.round(parsed / 5) * 5))
 }
 
 export function normalizeRecommendationLimit(value: unknown): RecommendationLimit {
@@ -35,8 +35,9 @@ export function normalizeRecommendationPreferences(
     | null
     | undefined,
 ): RecommendationPreferences {
+  const recommendationLimit = normalizeRecommendationLimit(value?.recommendationLimit)
   return {
-    minMatchScore: normalizeMinMatchScore(value?.minMatchScore),
-    recommendationLimit: normalizeRecommendationLimit(value?.recommendationLimit),
+    minMatchScore: MIN_MATCH_SCORE_BY_LIMIT[recommendationLimit],
+    recommendationLimit,
   }
 }

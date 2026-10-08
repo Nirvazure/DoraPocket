@@ -10,13 +10,29 @@ import {
   resolveAnalysisFlowAfterError,
   shouldShowRecommendationWaiting,
   shouldPreserveTurnFlow,
+  resolveLeadingCandidate,
 } from '@/app/analyse/_domain/analysis-stage-content'
+import type { AgentUiPayload } from '@/shared/market/market-types'
 
 test('resolveAnalysisFlowAfterError unlocks input and stops analyzing UI', () => {
   const flow = resolveAnalysisFlowAfterError()
   assert.deepEqual(flow, IDLE_ANALYSIS_FLOW)
   assert.equal(isAnalyzingFlow(flow), false)
   assert.equal(isInputLockedFlow(flow), false)
+})
+
+test('an authoritative empty payload cannot restore a stale selected tool', () => {
+  assert.equal(
+    resolveLeadingCandidate({ candidates: [] } as unknown as AgentUiPayload, {
+      toolId: 'stale',
+      args: {},
+    }),
+    null,
+  )
+})
+
+test('legacy selected-tool-only payloads remain readable', () => {
+  assert.equal(resolveLeadingCandidate(null, { toolId: 'legacy', args: {} })?.toolId, 'legacy')
 })
 
 test('shouldPreserveTurnFlow keeps cover and reveal beats but not working', () => {

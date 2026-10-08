@@ -3,7 +3,6 @@ import { AuthBootstrap } from '@/components/providers/auth-bootstrap'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { RealtimeSyncProvider } from '@/components/providers/realtime-sync'
 import './globals.css'
-import { fontSans } from '@/lib/fonts'
 import { cn } from '@/lib/utils'
 
 export const metadata: Metadata = {
@@ -23,7 +22,7 @@ export default function RootLayout({
   return (
     <html
       lang="zh-CN"
-      className={cn('h-full antialiased font-sans', fontSans.variable)}
+      className={cn('h-full antialiased font-sans')}
       data-font-preset="c"
       suppressHydrationWarning
     >

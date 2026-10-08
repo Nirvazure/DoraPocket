@@ -8,7 +8,10 @@ import {
   DEFAULT_RECOMMENDATION_MODE,
   type RecommendationMode,
 } from '@/shared/discovery/recommendation-mode'
-import type { RecommendationPreferences } from '@/shared/discovery/recommendation-preferences'
+import {
+  normalizeRecommendationPreferences,
+  type RecommendationPreferences,
+} from '@/shared/discovery/recommendation-preferences'
 
 export type AskQwenOptions = {
   signal?: AbortSignal
@@ -106,6 +109,7 @@ function parseStreamLine(line: string): StreamEvent | null {
 }
 
 export async function askQwen(message: string, opts?: AskQwenOptions): Promise<ChatReply> {
+  const preferences = normalizeRecommendationPreferences(opts?.recommendationPreferences)
   const response = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -118,8 +122,8 @@ export async function askQwen(message: string, opts?: AskQwenOptions): Promise<C
       priorMessages: opts?.priorMessages ?? [],
       skipClarify: opts?.skipClarify === true,
       recommendationMode: opts?.recommendationMode ?? DEFAULT_RECOMMENDATION_MODE,
-      minMatchScore: opts?.recommendationPreferences?.minMatchScore,
-      recommendationLimit: opts?.recommendationPreferences?.recommendationLimit,
+      minMatchScore: preferences.minMatchScore,
+      recommendationLimit: preferences.recommendationLimit,
     }),
   })
 

@@ -1,6 +1,7 @@
 import type { AgentCandidate } from '@/shared/market/market-types'
 import type { ToolMatch } from '@/shared/market/tool-registry'
 import type { RecommendationMode } from '@/shared/discovery/recommendation-mode'
+import { normalizeMatchAssessment } from '@/shared/discovery/task-match'
 
 export const HUB_WEAK_SCORE_THRESHOLD = 45
 export const EXTERNAL_CONFIDENCE_DEFAULT = 0.72
@@ -42,25 +43,18 @@ export function mergeCandidatePool(
   externalCandidates: AgentCandidate[],
   options: CandidatePoolOptions,
 ): AgentCandidate[] {
-  const { mode, preferExternal } = options
+  const { mode } = options
   const hubPool = sortByScoreDesc([...hubCandidates, ...submissionCandidates])
 
   if (mode === 'market') {
     return hubPool.slice(0, MAX_CANDIDATE_POOL_SIZE)
   }
 
-  const externals = externalCandidates.map((candidate, index) => {
-    if (preferExternal && index === 0) {
-      return { ...candidate, score: candidate.score + 12 }
-    }
-    return candidate
-  })
-
-  if (externals.length === 0) {
+  if (externalCandidates.length === 0) {
     return hubPool.slice(0, MAX_CANDIDATE_POOL_SIZE)
   }
 
-  return sortByScoreDesc(dedupeCandidates([...hubPool, ...externals])).slice(
+  return sortByScoreDesc(dedupeCandidates([...hubPool, ...externalCandidates])).slice(
     0,
     MAX_CANDIDATE_POOL_SIZE,
   )
@@ -112,6 +106,9 @@ function normalizeExternalSuggestionItem(
     externalBoundary?: unknown
     externalConfidence?: unknown
   }
+  const matchAssessment = normalizeMatchAssessment(raw)
+  if (!matchAssessment?.coreTaskSatisfied || !matchAssessment.requiredConstraintsSatisfied)
+    return null
   if (typeof item.title !== 'string' || !item.title.trim()) return null
   const url = normalizeExternalUrl(item.url)
   if (!url) return null
@@ -119,17 +116,15 @@ function normalizeExternalSuggestionItem(
     typeof item.externalConfidence === 'number'
       ? item.externalConfidence
       : Number(item.externalConfidence)
-  if (!Number.isFinite(confidence) || confidence < minConfidence) return null
+  if (!Number.isFinite(confidence) || confidence < minConfidence || confidence > 1) return null
   const suggestion: AgentCandidate = {
     title: item.title.trim(),
     url,
     candidateType: 'external_suggestion',
-    score: Math.round(confidence * 100),
+    score: matchAssessment.matchScore,
+    matchAssessment,
     sourceLabel: 'external',
-    reason:
-      typeof item.reason === 'string' && item.reason.trim()
-        ? item.reason.trim()
-        : 'Tool Hub 当前没有足够贴合的候选，这是一个 Hub 外建议。',
+    reason: matchAssessment.reason,
     externalBoundary:
       typeof item.externalBoundary === 'string' && item.externalBoundary.trim()
         ? item.externalBoundary.trim()

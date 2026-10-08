@@ -1,4 +1,5 @@
 import { mergeCandidatePool } from '@/shared/discovery/candidate-pool'
+import { hasSatisfiedTaskMatch } from '@/shared/discovery/task-match'
 import {
   DEFAULT_RECOMMENDATION_MODE,
   type RecommendationMode,
@@ -8,7 +9,7 @@ import {
   normalizeRecommendationPreferences,
   type RecommendationPreferences,
 } from '@/shared/discovery/recommendation-preferences'
-import { type ToolItem, type ToolMatch } from '@/shared/market/tool-registry'
+import { type ToolItem } from '@/shared/market/tool-registry'
 import type {
   AgentCandidate,
   AgentTaskFrame,
@@ -39,36 +40,17 @@ export function marketSignalsFromContext(marketContext: MarketContext) {
   }
 }
 
-export function toCandidates(matches: ToolMatch[]): AgentCandidate[] {
-  return matches.slice(0, 10).map((match) => ({
-    toolId: match.tool.id,
-    title: match.tool.name,
-    url: match.tool.url,
-    candidateType: 'tool',
-    score: match.score,
-    sourceLabel: match.sourceLabel,
-    reason: match.reason,
-  }))
-}
-
 export function applyRecommendationPreferences(
   candidates: AgentCandidate[],
   preferences: RecommendationPreferences = DEFAULT_RECOMMENDATION_PREFERENCES,
 ): AgentCandidate[] {
   if (candidates.length === 0) return []
   const normalized = normalizeRecommendationPreferences(preferences)
-  const highestScore = Math.max(...candidates.map((candidate) => candidate.score), 0)
-  const withRelativeScores = candidates.map((candidate, index) => ({
-    ...candidate,
-    score:
-      highestScore > 0
-        ? Math.min(100, Math.max(0, Math.round((candidate.score / highestScore) * 100)))
-        : index === 0
-          ? 100
-          : 0,
-  }))
-  return withRelativeScores
+  return candidates
+    .filter(hasSatisfiedTaskMatch)
+    .map((candidate) => ({ ...candidate, score: candidate.matchAssessment!.matchScore }))
     .filter((candidate) => candidate.score >= normalized.minMatchScore)
+    .sort((a, b) => b.score - a.score)
     .slice(0, normalized.recommendationLimit)
 }
 
@@ -107,14 +89,15 @@ export function defaultSelectionReason(
   topTool: ToolItem | null,
   primaryCandidate?: AgentCandidate | null,
   recommendationMode: RecommendationMode = DEFAULT_RECOMMENDATION_MODE,
+  minMatchScore = DEFAULT_RECOMMENDATION_PREFERENCES.minMatchScore,
 ): string {
   if (primaryCandidate?.candidateType === 'external_suggestion') {
     return `${primaryCandidate.title} 是 Hub 外建议：当前 Tool Hub 没有更贴合的沉淀工具，先试这个外部工具更直接。`
   }
   if (!topTool) {
     return recommendationMode === 'market'
-      ? '当前 Tool Hub 暂无足够可靠的匹配，先补充条件或换个说法再搜一轮。'
-      : '当前没有高置信度工具命中，先补充条件或换个说法再搜一轮。'
+      ? `当前库中未找到达到 ${minMatchScore}% 匹配度的工具。`
+      : `当前未找到达到 ${minMatchScore}% 匹配度的工具。`
   }
   if (taskFrame.mode === 'discover') {
     return `${topTool.name} 与当前任务较匹配，适合作为本次首选。`
@@ -328,34 +311,20 @@ export async function buildRankedCandidates(
   const { recallToolMatchesFromCatalog } = await import('@/server/retrieval/tool-recall')
   const { matches: initialMatches, recallSummary } = await recallToolMatchesFromCatalog(userText, {
     ...marketSignalsFromContext(marketContext),
-  }).catch(() => ({
-    matches: [],
-    recallSummary: null,
-  }))
-  const judgement =
-    taskFrame?.mode === 'discover'
-      ? await import('@/server/agent/tool-rerank')
-          .then(({ judgeToolRecommendations }) =>
-            judgeToolRecommendations(userText, initialMatches, recommendationMode),
-          )
-          .catch(() => ({
-            matches: initialMatches,
-            externalSuggestions: [],
-            preferExternal: false,
-            hubInsufficient: false,
-            selectionReason: undefined,
-          }))
-      : {
-          matches: initialMatches,
-          externalSuggestions: [],
-          preferExternal: false,
-          hubInsufficient: false,
-          selectionReason: undefined,
-        }
-  const hubCandidates = toCandidates(judgement.matches)
+  }).catch((error: unknown) => {
+    throw new Error('本次无法读取工具库，请稍后重试。', { cause: error })
+  })
   const submissionCandidates = rankSubmissionCandidates(userText, marketContext)
+  const submissionIds = new Set(submissionCandidates.map((candidate) => candidate.toolId))
+  const { judgeToolRecommendations } = await import('@/server/agent/tool-rerank')
+  const judgement = await judgeToolRecommendations(
+    userText,
+    initialMatches,
+    recommendationMode,
+    marketContext.submissions.filter((submission) => submissionIds.has(submission.id)),
+  )
   const externalCandidates = judgement.externalSuggestions ?? []
-  const candidates = mergeCandidatePool(hubCandidates, submissionCandidates, externalCandidates, {
+  const candidates = mergeCandidatePool(judgement.candidates, [], externalCandidates, {
     mode: recommendationMode,
     preferExternal: judgement.preferExternal,
     hubInsufficient: judgement.hubInsufficient,
@@ -372,7 +341,7 @@ export async function buildRankedCandidates(
     candidates: filteredCandidates,
     topTool,
     primaryCandidate,
-    selectionReason: judgement.selectionReason,
+    selectionReason: primaryCandidate?.reason,
     recallSummary,
   }
 }
@@ -396,14 +365,16 @@ export function buildAgentUiPayload(
     taskFrame,
     candidates,
     selectionReason,
-    decisionSummary: buildDecisionSummary(primaryCandidate, topTool),
+    decisionSummary:
+      candidates.length > 0 ? buildDecisionSummary(primaryCandidate, topTool) : selectionReason,
     whyThisFirst: buildWhyThisFirst(selectionReason, primaryCandidate),
     whyNotAlternatives: buildWhyNotAlternatives(candidates),
     riskNotes: buildRiskNotes(taskFrame, topTool),
     trustEvidence: selectionSignals,
     communityEvidence: buildCommunityEvidence(topTool, marketContext),
     personalEvidence: buildPersonalEvidence(topTool, marketContext),
-    evaluationPrompt: '试完后告诉我这次推荐准不准，我会用它校准下一次。',
+    evaluationPrompt:
+      candidates.length > 0 ? '试完后告诉我这次推荐准不准，我会用它校准下一次。' : undefined,
     selectionSignals,
     preferenceSignals,
     recommendedActions: buildRecommendedActions(taskFrame, topTool, primaryCandidate),

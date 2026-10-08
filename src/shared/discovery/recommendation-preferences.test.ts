@@ -3,7 +3,6 @@ import test from 'node:test'
 
 import {
   DEFAULT_RECOMMENDATION_PREFERENCES,
-  normalizeMinMatchScore,
   normalizeRecommendationLimit,
   normalizeRecommendationPreferences,
 } from '@/shared/discovery/recommendation-preferences'
@@ -17,38 +16,94 @@ function candidate(title: string, score: number): AgentCandidate {
     score,
     sourceLabel: 'market',
     reason: title,
+    matchAssessment: {
+      matchScore: score,
+      coreTaskSatisfied: true,
+      requiredConstraintsSatisfied: true,
+      reason: title,
+    },
   }
 }
 
 test('normalizes invalid recommendation preferences to safe defaults', () => {
-  assert.equal(normalizeMinMatchScore('not a number'), 70)
-  assert.equal(normalizeMinMatchScore(92), 90)
-  assert.equal(normalizeMinMatchScore(101), 100)
   assert.equal(normalizeRecommendationLimit(4), 5)
-  assert.deepEqual(normalizeRecommendationPreferences({}), DEFAULT_RECOMMENDATION_PREFERENCES)
+  for (const value of [undefined, null, {}, { recommendationLimit: 4, minMatchScore: 100 }]) {
+    assert.deepEqual(normalizeRecommendationPreferences(value), {
+      recommendationLimit: 5,
+      minMatchScore: 80,
+    })
+  }
+  assert.deepEqual(DEFAULT_RECOMMENDATION_PREFERENCES, {
+    recommendationLimit: 5,
+    minMatchScore: 80,
+  })
 })
 
-test('applies relative percentage scores, threshold, and total result limit', () => {
-  const results = applyRecommendationPreferences(
-    [
-      candidate('first', 200),
-      candidate('second', 150),
-      candidate('third', 80),
-      candidate('fourth', 20),
-    ],
-    { minMatchScore: 70, recommendationLimit: 3 },
-  )
+for (const [recommendationLimit, minMatchScore] of [
+  [3, 90],
+  [5, 80],
+  [10, 70],
+] as const) {
+  test(`${recommendationLimit} recommendations derive a ${minMatchScore} percent threshold`, () => {
+    for (const legacyScore of [undefined, 0, 100, 'invalid']) {
+      assert.deepEqual(
+        normalizeRecommendationPreferences({ recommendationLimit, minMatchScore: legacyScore }),
+        { recommendationLimit, minMatchScore },
+      )
+    }
+    assert.deepEqual(
+      normalizeRecommendationPreferences({ recommendationLimit: String(recommendationLimit) }),
+      {
+        recommendationLimit,
+        minMatchScore,
+      },
+    )
+  })
 
+  test(`${recommendationLimit} recommendations include the threshold boundary without filling lower matches`, () => {
+    const results = applyRecommendationPreferences(
+      [
+        candidate('first', 97),
+        candidate('boundary', minMatchScore),
+        candidate('below', minMatchScore - 1),
+      ],
+      { recommendationLimit, minMatchScore: 0 },
+    )
+    assert.deepEqual(
+      results.map((item) => [item.title, item.score]),
+      [
+        ['first', 97],
+        ['boundary', minMatchScore],
+      ],
+    )
+  })
+
+  test(`${recommendationLimit} recommendations cap the total including the primary`, () => {
+    const results = applyRecommendationPreferences(
+      Array.from({ length: 12 }, (_, index) => candidate(String(index), 100 - index)),
+      { recommendationLimit, minMatchScore },
+    )
+    assert.deepEqual(
+      results.map((item) => item.title),
+      Array.from({ length: recommendationLimit }, (_, index) => String(index)),
+    )
+  })
+}
+
+test('keeps an empty candidate pool empty', () => {
+  assert.deepEqual(applyRecommendationPreferences([]), [])
+})
+
+test('default preferences filter candidates below 80 percent', () => {
   assert.deepEqual(
-    results.map((item) => [item.title, item.score]),
-    [
-      ['first', 100],
-      ['second', 75],
-    ],
+    applyRecommendationPreferences([candidate('first', 100), candidate('second', 75)]).map(
+      (item) => item.title,
+    ),
+    ['first'],
   )
 })
 
-test('keeps the first candidate at 100 percent when all raw scores are zero', () => {
+test('keeps zero scores empty instead of assigning the first candidate 100 percent', () => {
   const results = applyRecommendationPreferences([candidate('first', 0), candidate('second', 0)], {
     minMatchScore: 100,
     recommendationLimit: 10,
@@ -56,6 +111,46 @@ test('keeps the first candidate at 100 percent when all raw scores are zero', ()
 
   assert.deepEqual(
     results.map((item) => item.score),
-    [100],
+    [],
+  )
+})
+
+test('cloud storage request excludes unrelated tools even with high retrieval scores', () => {
+  const candidates = ['Tauri', 'Sniffnet', 'Search'].map((title) => ({
+    ...candidate(title, 100),
+    matchAssessment: {
+      matchScore: 100,
+      coreTaskSatisfied: false,
+      requiredConstraintsSatisfied: true,
+      reason: 'Does not provide cloud storage',
+    },
+  }))
+  assert.deepEqual(
+    applyRecommendationPreferences(candidates, { recommendationLimit: 3, minMatchScore: 90 }),
+    [],
+  )
+})
+
+test('excludes unmet required constraints and unassessed legacy scores', () => {
+  const required = candidate('paid only', 99)
+  required.matchAssessment!.requiredConstraintsSatisfied = false
+  const legacy = candidate('legacy', 1000)
+  delete legacy.matchAssessment
+  assert.deepEqual(applyRecommendationPreferences([required, legacy]), [])
+})
+
+test('sorts absolute match scores and preserves input order for ties', () => {
+  const candidates = [
+    candidate('first tie', 92),
+    candidate('best', 95),
+    candidate('second tie', 92),
+  ]
+  assert.deepEqual(
+    applyRecommendationPreferences(candidates).map((item) => [item.title, item.score]),
+    [
+      ['best', 95],
+      ['first tie', 92],
+      ['second tie', 92],
+    ],
   )
 })

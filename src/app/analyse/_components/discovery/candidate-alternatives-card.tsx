@@ -35,8 +35,8 @@ export function CandidateAlternativesCard({
   onOpenExternalCandidate,
 }: CandidateAlternativesCardProps) {
   const alternatives = resolveAlternativeCandidates(payload, selectedToolPayload)
-  const showScore = shouldShowCandidateScore(explanationMode)
   const revealing = isRecommendationRevealing(analysisFlow)
+  if (payload?.candidates.length === 0) return null
 
   return (
     <div className={cn('w-full', revealing && 'animate-in fade-in duration-300')}>
@@ -59,7 +59,7 @@ export function CandidateAlternativesCard({
                   <span className="rounded-full border border-primary/12 bg-primary/[0.06] px-2 py-0.5 text-[10px] font-bold tracking-wide text-primary/75">
                     备选 {slotLabel}
                   </span>
-                  {showScore ? (
+                  {shouldShowCandidateScore(explanationMode, candidate) ? (
                     <CandidateMatchScore candidate={candidate} layout="chip" className="shrink-0" />
                   ) : null}
                 </div>
@@ -120,7 +120,7 @@ export function CandidateAlternativesCard({
       ) : (
         <div className="rounded-xl border border-dashed border-primary/15 bg-white/50 px-4 py-3 text-center text-xs font-medium text-muted-foreground">
           {payload?.candidates.length === 0
-            ? '没有候选达到当前最低匹配度，请调低阈值或补充任务条件。'
+            ? '没有候选达到当前最低匹配度，请增加推荐数量或补充任务条件后重试。'
             : '当前没有可展示的备选，先试主推荐即可。'}
         </div>
       )}
