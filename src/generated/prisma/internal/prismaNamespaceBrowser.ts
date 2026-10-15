@@ -54,16 +54,15 @@ export const ModelName = {
   User: 'User',
   UserSettings: 'UserSettings',
   Tool: 'Tool',
+  ToolIndex: 'ToolIndex',
   PocketItem: 'PocketItem',
   MarketFeedback: 'MarketFeedback',
-  MarketSubscription: 'MarketSubscription',
   MarketSubmission: 'MarketSubmission',
   ToolActivity: 'ToolActivity',
   ChatHistoryEntry: 'ChatHistoryEntry',
   PreferenceProfileOverride: 'PreferenceProfileOverride',
   RecommendationSession: 'RecommendationSession',
-  RecommendationEvaluation: 'RecommendationEvaluation',
-  DataMigrationState: 'DataMigrationState'
+  RecommendationEvaluation: 'RecommendationEvaluation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -122,39 +121,32 @@ export type UserSettingsScalarFieldEnum = (typeof UserSettingsScalarFieldEnum)[k
 export const ToolScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  icon: 'icon',
-  iconType: 'iconType',
-  iconText: 'iconText',
-  iconImageUrl: 'iconImageUrl',
-  iconImageLocalPath: 'iconImageLocalPath',
   url: 'url',
   description: 'description',
   category: 'category',
   tags: 'tags',
-  source: 'source',
+  iconUrl: 'iconUrl',
   status: 'status',
-  executionMode: 'executionMode',
   pricingModel: 'pricingModel',
   requiresAuth: 'requiresAuth',
   platform: 'platform',
-  capabilities: 'capabilities',
-  recommendedFor: 'recommendedFor',
-  sourceNote: 'sourceNote',
-  trustSignals: 'trustSignals',
-  subscriptionSupport: 'subscriptionSupport',
-  defaultArgs: 'defaultArgs',
-  siteHostname: 'siteHostname',
-  marketAssetOrigin: 'marketAssetOrigin',
-  seedSource: 'seedSource',
   createdByUserId: 'createdByUserId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  embeddingModel: 'embeddingModel',
-  embeddingContentHash: 'embeddingContentHash',
-  embeddedAt: 'embeddedAt'
+  updatedAt: 'updatedAt'
 } as const
 
 export type ToolScalarFieldEnum = (typeof ToolScalarFieldEnum)[keyof typeof ToolScalarFieldEnum]
+
+
+export const ToolIndexScalarFieldEnum = {
+  toolId: 'toolId',
+  content: 'content',
+  contentHash: 'contentHash',
+  embeddingModel: 'embeddingModel',
+  embeddedAt: 'embeddedAt'
+} as const
+
+export type ToolIndexScalarFieldEnum = (typeof ToolIndexScalarFieldEnum)[keyof typeof ToolIndexScalarFieldEnum]
 
 
 export const PocketItemScalarFieldEnum = {
@@ -167,8 +159,7 @@ export const PocketItemScalarFieldEnum = {
   pinned: 'pinned',
   purchased: 'purchased',
   archived: 'archived',
-  sourceQuestion: 'sourceQuestion',
-  presetArgs: 'presetArgs'
+  sourceQuestion: 'sourceQuestion'
 } as const
 
 export type PocketItemScalarFieldEnum = (typeof PocketItemScalarFieldEnum)[keyof typeof PocketItemScalarFieldEnum]
@@ -185,17 +176,6 @@ export const MarketFeedbackScalarFieldEnum = {
 } as const
 
 export type MarketFeedbackScalarFieldEnum = (typeof MarketFeedbackScalarFieldEnum)[keyof typeof MarketFeedbackScalarFieldEnum]
-
-
-export const MarketSubscriptionScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  toolId: 'toolId',
-  active: 'active',
-  subscribedAt: 'subscribedAt'
-} as const
-
-export type MarketSubscriptionScalarFieldEnum = (typeof MarketSubscriptionScalarFieldEnum)[keyof typeof MarketSubscriptionScalarFieldEnum]
 
 
 export const MarketSubmissionScalarFieldEnum = {
@@ -220,8 +200,7 @@ export const ToolActivityScalarFieldEnum = {
   userId: 'userId',
   toolId: 'toolId',
   saves: 'saves',
-  opens: 'opens',
-  subscriptions: 'subscriptions'
+  opens: 'opens'
 } as const
 
 export type ToolActivityScalarFieldEnum = (typeof ToolActivityScalarFieldEnum)[keyof typeof ToolActivityScalarFieldEnum]
@@ -246,9 +225,7 @@ export const PreferenceProfileOverrideScalarFieldEnum = {
   preferredTags: 'preferredTags',
   preferredPlatforms: 'preferredPlatforms',
   preferredPricing: 'preferredPricing',
-  preferredExecutionModes: 'preferredExecutionModes',
   avoidAuthWall: 'avoidAuthWall',
-  prefersSubscriptionTools: 'prefersSubscriptionTools',
   updatedAt: 'updatedAt'
 } as const
 
@@ -298,15 +275,6 @@ export const RecommendationEvaluationScalarFieldEnum = {
 export type RecommendationEvaluationScalarFieldEnum = (typeof RecommendationEvaluationScalarFieldEnum)[keyof typeof RecommendationEvaluationScalarFieldEnum]
 
 
-export const DataMigrationStateScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  localDataImportedAt: 'localDataImportedAt'
-} as const
-
-export type DataMigrationStateScalarFieldEnum = (typeof DataMigrationStateScalarFieldEnum)[keyof typeof DataMigrationStateScalarFieldEnum]
-
-
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -320,14 +288,6 @@ export const JsonNullValueInput = {
 } as const
 
 export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
-
-
-export const NullableJsonNullValueInput = {
-  DbNull: DbNull,
-  JsonNull: JsonNull
-} as const
-
-export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {

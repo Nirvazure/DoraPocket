@@ -71,7 +71,6 @@ export type PocketItemCountAggregateOutputType = {
   purchased: number
   archived: number
   sourceQuestion: number
-  presetArgs: number
   _all: number
 }
 
@@ -121,7 +120,6 @@ export type PocketItemCountAggregateInputType = {
   purchased?: true
   archived?: true
   sourceQuestion?: true
-  presetArgs?: true
   _all?: true
 }
 
@@ -222,7 +220,6 @@ export type PocketItemGroupByOutputType = {
   purchased: boolean
   archived: boolean
   sourceQuestion: string | null
-  presetArgs: runtime.JsonValue | null
   _count: PocketItemCountAggregateOutputType | null
   _avg: PocketItemAvgAggregateOutputType | null
   _sum: PocketItemSumAggregateOutputType | null
@@ -259,7 +256,6 @@ export type PocketItemWhereInput = {
   purchased?: Prisma.BoolFilter<"PocketItem"> | boolean
   archived?: Prisma.BoolFilter<"PocketItem"> | boolean
   sourceQuestion?: Prisma.StringNullableFilter<"PocketItem"> | string | null
-  presetArgs?: Prisma.JsonNullableFilter<"PocketItem">
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   tool?: Prisma.XOR<Prisma.ToolScalarRelationFilter, Prisma.ToolWhereInput>
 }
@@ -275,7 +271,6 @@ export type PocketItemOrderByWithRelationInput = {
   purchased?: Prisma.SortOrder
   archived?: Prisma.SortOrder
   sourceQuestion?: Prisma.SortOrderInput | Prisma.SortOrder
-  presetArgs?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   tool?: Prisma.ToolOrderByWithRelationInput
 }
@@ -295,7 +290,6 @@ export type PocketItemWhereUniqueInput = Prisma.AtLeast<{
   purchased?: Prisma.BoolFilter<"PocketItem"> | boolean
   archived?: Prisma.BoolFilter<"PocketItem"> | boolean
   sourceQuestion?: Prisma.StringNullableFilter<"PocketItem"> | string | null
-  presetArgs?: Prisma.JsonNullableFilter<"PocketItem">
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   tool?: Prisma.XOR<Prisma.ToolScalarRelationFilter, Prisma.ToolWhereInput>
 }, "id" | "userId_toolId">
@@ -311,7 +305,6 @@ export type PocketItemOrderByWithAggregationInput = {
   purchased?: Prisma.SortOrder
   archived?: Prisma.SortOrder
   sourceQuestion?: Prisma.SortOrderInput | Prisma.SortOrder
-  presetArgs?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.PocketItemCountOrderByAggregateInput
   _avg?: Prisma.PocketItemAvgOrderByAggregateInput
   _max?: Prisma.PocketItemMaxOrderByAggregateInput
@@ -333,7 +326,6 @@ export type PocketItemScalarWhereWithAggregatesInput = {
   purchased?: Prisma.BoolWithAggregatesFilter<"PocketItem"> | boolean
   archived?: Prisma.BoolWithAggregatesFilter<"PocketItem"> | boolean
   sourceQuestion?: Prisma.StringNullableWithAggregatesFilter<"PocketItem"> | string | null
-  presetArgs?: Prisma.JsonNullableWithAggregatesFilter<"PocketItem">
 }
 
 export type PocketItemCreateInput = {
@@ -345,7 +337,6 @@ export type PocketItemCreateInput = {
   purchased?: boolean
   archived?: boolean
   sourceQuestion?: string | null
-  presetArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user: Prisma.UserCreateNestedOneWithoutPocketItemsInput
   tool: Prisma.ToolCreateNestedOneWithoutPocketItemsInput
 }
@@ -361,7 +352,6 @@ export type PocketItemUncheckedCreateInput = {
   purchased?: boolean
   archived?: boolean
   sourceQuestion?: string | null
-  presetArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type PocketItemUpdateInput = {
@@ -373,7 +363,6 @@ export type PocketItemUpdateInput = {
   purchased?: Prisma.BoolFieldUpdateOperationsInput | boolean
   archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sourceQuestion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  presetArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user?: Prisma.UserUpdateOneRequiredWithoutPocketItemsNestedInput
   tool?: Prisma.ToolUpdateOneRequiredWithoutPocketItemsNestedInput
 }
@@ -389,7 +378,6 @@ export type PocketItemUncheckedUpdateInput = {
   purchased?: Prisma.BoolFieldUpdateOperationsInput | boolean
   archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sourceQuestion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  presetArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type PocketItemCreateManyInput = {
@@ -403,7 +391,6 @@ export type PocketItemCreateManyInput = {
   purchased?: boolean
   archived?: boolean
   sourceQuestion?: string | null
-  presetArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type PocketItemUpdateManyMutationInput = {
@@ -415,7 +402,6 @@ export type PocketItemUpdateManyMutationInput = {
   purchased?: Prisma.BoolFieldUpdateOperationsInput | boolean
   archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sourceQuestion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  presetArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type PocketItemUncheckedUpdateManyInput = {
@@ -429,7 +415,6 @@ export type PocketItemUncheckedUpdateManyInput = {
   purchased?: Prisma.BoolFieldUpdateOperationsInput | boolean
   archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sourceQuestion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  presetArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type PocketItemListRelationFilter = {
@@ -458,7 +443,6 @@ export type PocketItemCountOrderByAggregateInput = {
   purchased?: Prisma.SortOrder
   archived?: Prisma.SortOrder
   sourceQuestion?: Prisma.SortOrder
-  presetArgs?: Prisma.SortOrder
 }
 
 export type PocketItemAvgOrderByAggregateInput = {
@@ -596,7 +580,6 @@ export type PocketItemCreateWithoutUserInput = {
   purchased?: boolean
   archived?: boolean
   sourceQuestion?: string | null
-  presetArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tool: Prisma.ToolCreateNestedOneWithoutPocketItemsInput
 }
 
@@ -610,7 +593,6 @@ export type PocketItemUncheckedCreateWithoutUserInput = {
   purchased?: boolean
   archived?: boolean
   sourceQuestion?: string | null
-  presetArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type PocketItemCreateOrConnectWithoutUserInput = {
@@ -653,7 +635,6 @@ export type PocketItemScalarWhereInput = {
   purchased?: Prisma.BoolFilter<"PocketItem"> | boolean
   archived?: Prisma.BoolFilter<"PocketItem"> | boolean
   sourceQuestion?: Prisma.StringNullableFilter<"PocketItem"> | string | null
-  presetArgs?: Prisma.JsonNullableFilter<"PocketItem">
 }
 
 export type PocketItemCreateWithoutToolInput = {
@@ -665,7 +646,6 @@ export type PocketItemCreateWithoutToolInput = {
   purchased?: boolean
   archived?: boolean
   sourceQuestion?: string | null
-  presetArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user: Prisma.UserCreateNestedOneWithoutPocketItemsInput
 }
 
@@ -679,7 +659,6 @@ export type PocketItemUncheckedCreateWithoutToolInput = {
   purchased?: boolean
   archived?: boolean
   sourceQuestion?: string | null
-  presetArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type PocketItemCreateOrConnectWithoutToolInput = {
@@ -718,7 +697,6 @@ export type PocketItemCreateManyUserInput = {
   purchased?: boolean
   archived?: boolean
   sourceQuestion?: string | null
-  presetArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type PocketItemUpdateWithoutUserInput = {
@@ -730,7 +708,6 @@ export type PocketItemUpdateWithoutUserInput = {
   purchased?: Prisma.BoolFieldUpdateOperationsInput | boolean
   archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sourceQuestion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  presetArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tool?: Prisma.ToolUpdateOneRequiredWithoutPocketItemsNestedInput
 }
 
@@ -744,7 +721,6 @@ export type PocketItemUncheckedUpdateWithoutUserInput = {
   purchased?: Prisma.BoolFieldUpdateOperationsInput | boolean
   archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sourceQuestion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  presetArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type PocketItemUncheckedUpdateManyWithoutUserInput = {
@@ -757,7 +733,6 @@ export type PocketItemUncheckedUpdateManyWithoutUserInput = {
   purchased?: Prisma.BoolFieldUpdateOperationsInput | boolean
   archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sourceQuestion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  presetArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type PocketItemCreateManyToolInput = {
@@ -770,7 +745,6 @@ export type PocketItemCreateManyToolInput = {
   purchased?: boolean
   archived?: boolean
   sourceQuestion?: string | null
-  presetArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type PocketItemUpdateWithoutToolInput = {
@@ -782,7 +756,6 @@ export type PocketItemUpdateWithoutToolInput = {
   purchased?: Prisma.BoolFieldUpdateOperationsInput | boolean
   archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sourceQuestion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  presetArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user?: Prisma.UserUpdateOneRequiredWithoutPocketItemsNestedInput
 }
 
@@ -796,7 +769,6 @@ export type PocketItemUncheckedUpdateWithoutToolInput = {
   purchased?: Prisma.BoolFieldUpdateOperationsInput | boolean
   archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sourceQuestion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  presetArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type PocketItemUncheckedUpdateManyWithoutToolInput = {
@@ -809,7 +781,6 @@ export type PocketItemUncheckedUpdateManyWithoutToolInput = {
   purchased?: Prisma.BoolFieldUpdateOperationsInput | boolean
   archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sourceQuestion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  presetArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 
@@ -825,7 +796,6 @@ export type PocketItemSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   purchased?: boolean
   archived?: boolean
   sourceQuestion?: boolean
-  presetArgs?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tool?: boolean | Prisma.ToolDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pocketItem"]>
@@ -841,7 +811,6 @@ export type PocketItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   purchased?: boolean
   archived?: boolean
   sourceQuestion?: boolean
-  presetArgs?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tool?: boolean | Prisma.ToolDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pocketItem"]>
@@ -857,7 +826,6 @@ export type PocketItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   purchased?: boolean
   archived?: boolean
   sourceQuestion?: boolean
-  presetArgs?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tool?: boolean | Prisma.ToolDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pocketItem"]>
@@ -873,10 +841,9 @@ export type PocketItemSelectScalar = {
   purchased?: boolean
   archived?: boolean
   sourceQuestion?: boolean
-  presetArgs?: boolean
 }
 
-export type PocketItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "toolId" | "savedAt" | "lastUsedAt" | "useCount" | "pinned" | "purchased" | "archived" | "sourceQuestion" | "presetArgs", ExtArgs["result"]["pocketItem"]>
+export type PocketItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "toolId" | "savedAt" | "lastUsedAt" | "useCount" | "pinned" | "purchased" | "archived" | "sourceQuestion", ExtArgs["result"]["pocketItem"]>
 export type PocketItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tool?: boolean | Prisma.ToolDefaultArgs<ExtArgs>
@@ -907,7 +874,6 @@ export type $PocketItemPayload<ExtArgs extends runtime.Types.Extensions.Internal
     purchased: boolean
     archived: boolean
     sourceQuestion: string | null
-    presetArgs: runtime.JsonValue | null
   }, ExtArgs["result"]["pocketItem"]>
   composites: {}
 }
@@ -1343,7 +1309,6 @@ export interface PocketItemFieldRefs {
   readonly purchased: Prisma.FieldRef<"PocketItem", 'Boolean'>
   readonly archived: Prisma.FieldRef<"PocketItem", 'Boolean'>
   readonly sourceQuestion: Prisma.FieldRef<"PocketItem", 'String'>
-  readonly presetArgs: Prisma.FieldRef<"PocketItem", 'Json'>
 }
     
 

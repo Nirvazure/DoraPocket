@@ -26,7 +26,7 @@ import { chunkResponseText } from '@/server/agent/stream'
 import { buildDiscoveryResponsePrompt } from '@/server/agent/prompts'
 import { buildTaskFrame } from '@/server/agent/task-frame'
 
-type SelectedTool = { toolId: string; args: Record<string, unknown> } | null
+type SelectedTool = { toolId: string } | null
 
 async function classifyTask(
   message: string,
@@ -51,7 +51,7 @@ async function classifyTask(
 
   const selectedTool: SelectedTool =
     topTool && primaryCandidate?.candidateType !== 'external_suggestion'
-      ? { toolId: topTool.id, args: topTool.defaultArgs ?? {} }
+      ? { toolId: topTool.id }
       : null
   const selectionReason =
     (primaryCandidate ? judgedSelectionReason : undefined) ??

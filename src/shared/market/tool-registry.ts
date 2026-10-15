@@ -1,5 +1,3 @@
-import { z } from 'zod'
-
 export type ToolCategory =
   | 'ai_assistant'
   | 'search'
@@ -9,19 +7,11 @@ export type ToolCategory =
   | 'media'
   | 'learning'
   | 'writing'
+  | 'other'
 
-export type ToolSource = 'market' | 'submitted' | 'external_resource' | 'official'
-export type ToolStatus = 'active' | 'review' | 'blocked'
-export type ToolExecutionMode = 'native_card' | 'external_link' | 'workflow' | 'reference_only'
-export type ToolPlatform = 'web' | 'desktop' | 'mobile' | 'api' | 'mixed'
-export type ToolPricingModel = 'free' | 'freemium' | 'paid' | 'subscription'
-
-export type ToolTrustSignals = {
-  curated: boolean
-  official: boolean
-  communityVerified: boolean
-  riskNote?: string
-}
+export type ToolStatus = 'active' | 'inactive'
+export type ToolPlatform = 'web' | 'desktop' | 'mobile' | 'api' | 'mixed' | 'unknown'
+export type ToolPricingModel = 'free' | 'freemium' | 'paid' | 'subscription' | 'unknown'
 
 export type ToolRatingSummary = {
   upvotes: number
@@ -32,45 +22,24 @@ export type ToolRatingSummary = {
 export type ToolUsageStats = {
   saves: number
   opens: number
-  subscriptions: number
 }
 
 export type ToolItem = {
   id: string
   name: string
-  icon: string
-  iconType?: 'emoji' | 'favicon'
-  iconText?: string
-  iconImageUrl?: string | null
-  url: string | null
+  iconUrl: string | null
+  url: string
   description: string
   category: ToolCategory
   tags: string[]
-  source: ToolSource
   status: ToolStatus
-  executionMode: ToolExecutionMode
   pricingModel: ToolPricingModel
-  requiresAuth: boolean
+  requiresAuth: boolean | null
   platform: ToolPlatform
-  capabilities: string[]
-  recommendedFor: string[]
-  sourceNote?: string
-  trustSignals: ToolTrustSignals
   ratingSummary: ToolRatingSummary
   usageStats: ToolUsageStats
-  subscriptionSupport: boolean
-  defaultArgs?: Record<string, unknown>
-  siteHostname?: string
-  marketAssetOrigin?: 'registry' | 'bookmark_seed' | 'community'
   createdByUserId?: string | null
   isOwnedByViewer?: boolean
-}
-
-export type ToolMeta = {
-  toolId: string
-  name: string
-  description: string
-  inputSchema: z.ZodType<Record<string, unknown>>
 }
 
 export type ToolMatch = {
@@ -117,10 +86,6 @@ export function scoreToolMatch(query: string, tool: ToolItem): number {
     if (lower.includes(tag.toLowerCase()) || tag.toLowerCase().includes(lower)) score += 22
   }
 
-  for (const capability of tool.capabilities) {
-    if (lower.includes(capability.toLowerCase())) score += 18
-  }
-
   if (includesAny(lower, ['搜索', '调研', '资料']) && tool.id === TOOL_ID_PERPLEXITY) score += 58
   if (includesAny(lower, ['翻译', '中译英', '英译中']) && tool.id === TOOL_ID_FANYI) score += 58
   if (includesAny(lower, ['pdf', '合并', '压缩', '拆分']) && tool.id === TOOL_ID_PDF24) score += 58
@@ -131,7 +96,6 @@ export function scoreToolMatch(query: string, tool: ToolItem): number {
   if (includesAny(lower, ['图标', 'icon']) && tool.id === TOOL_ID_FLATICON) score += 58
   if (includesAny(lower, ['长文', '总结', '长上下文']) && tool.id === TOOL_ID_KIMI) score += 52
 
-  if (tool.executionMode === 'external_link') score += 4
   return score
 }
 
@@ -140,30 +104,25 @@ export function rankToolItems(
   query: string,
   opts?: {
     savedToolIds?: string[]
-    subscribedToolIds?: string[]
     upvotedToolIds?: string[]
     downvotedToolIds?: string[]
     preferredCategories?: string[]
     preferredTags?: string[]
     preferredPlatforms?: string[]
     preferredPricing?: string[]
-    preferredExecutionModes?: string[]
     avoidAuthWall?: boolean
-    prefersSubscriptionTools?: boolean
     includeToolIds?: Set<string>
     vectorSimilarity?: Map<string, number>
     vectorBoost?: number
   },
 ): ToolMatch[] {
   const saved = new Set(opts?.savedToolIds ?? [])
-  const subscribed = new Set(opts?.subscribedToolIds ?? [])
   const upvoted = new Set(opts?.upvotedToolIds ?? [])
   const downvoted = new Set(opts?.downvotedToolIds ?? [])
   const preferredCategories = new Set(opts?.preferredCategories ?? [])
   const preferredTags = new Set(opts?.preferredTags ?? [])
   const preferredPlatforms = new Set(opts?.preferredPlatforms ?? [])
   const preferredPricing = new Set(opts?.preferredPricing ?? [])
-  const preferredExecutionModes = new Set(opts?.preferredExecutionModes ?? [])
   const includeToolIds = opts?.includeToolIds
   const vectorSimilarity = opts?.vectorSimilarity
   const vectorBoost = opts?.vectorBoost ?? 0
@@ -177,16 +136,13 @@ export function rankToolItems(
         score += 26
         sourceLabel = 'pocket'
       }
-      if (subscribed.has(tool.id)) score += 16
       if (upvoted.has(tool.id)) score += 12
       if (downvoted.has(tool.id)) score -= 18
       if (preferredCategories.has(tool.category)) score += 14
       if (preferredPlatforms.has(tool.platform)) score += 8
       if (preferredPricing.has(tool.pricingModel)) score += 8
-      if (preferredExecutionModes.has(tool.executionMode)) score += 8
       if (tool.tags.some((tag) => preferredTags.has(tag))) score += 12
-      if (opts?.avoidAuthWall && !tool.requiresAuth) score += 6
-      if (opts?.prefersSubscriptionTools && tool.subscriptionSupport) score += 6
+      if (opts?.avoidAuthWall && tool.requiresAuth === false) score += 6
       score += Math.max(0, tool.ratingSummary.score)
       const similarity = vectorSimilarity?.get(tool.id)
       if (similarity != null) score += similarity * vectorBoost

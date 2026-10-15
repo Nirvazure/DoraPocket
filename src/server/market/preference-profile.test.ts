@@ -10,9 +10,7 @@ const tools = [
     tags: ['copywriting'],
     platform: 'web',
     pricingModel: 'free',
-    executionMode: 'web',
     requiresAuth: false,
-    subscriptionSupport: false,
   },
   {
     id: 'video',
@@ -20,9 +18,7 @@ const tools = [
     tags: ['video'],
     platform: 'web',
     pricingModel: 'paid',
-    executionMode: 'web',
     requiresAuth: true,
-    subscriptionSupport: true,
   },
 ] as never
 
@@ -30,7 +26,6 @@ test('inferUserPreferenceProfile weights helpful recommendation evaluations', ()
   const profile = inferUserPreferenceProfile({
     pocketInventory: [],
     feedback: [],
-    subscriptions: [],
     activityMap: {},
     tools,
     recommendationEvaluations: [
@@ -50,7 +45,6 @@ test('inferUserPreferenceProfile downranks unhelpful recommendation evaluations'
   const profile = inferUserPreferenceProfile({
     pocketInventory: [],
     feedback: [],
-    subscriptions: [],
     activityMap: {},
     tools,
     recommendationEvaluations: [
@@ -68,4 +62,26 @@ test('inferUserPreferenceProfile downranks unhelpful recommendation evaluations'
   })
 
   assert.equal(profile.preferredCategories[0], 'writing')
+})
+
+test('unknown login requirements do not imply a preference for tools without signup', () => {
+  const profile = inferUserPreferenceProfile({
+    pocketInventory: [],
+    feedback: [],
+    activityMap: {},
+    tools: [
+      {
+        id: 'unknown',
+        category: 'other',
+        tags: [],
+        platform: 'unknown',
+        pricingModel: 'unknown',
+        requiresAuth: null,
+      },
+    ] as never,
+    recommendationEvaluations: [{ selectedToolId: 'unknown', helpful: true, rating: 5 }],
+  })
+  assert.equal(profile.avoidAuthWall, false)
+  assert.deepEqual(profile.preferredPlatforms, [])
+  assert.deepEqual(profile.preferredPricing, [])
 })

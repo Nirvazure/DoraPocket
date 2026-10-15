@@ -9,7 +9,7 @@ type ToolArtifactRecord = {
   id: string
   status: string
   url: string | null
-  iconImageUrl: string | null
+  iconUrl: string | null
   embeddedAt: Date | null
 }
 
@@ -17,37 +17,27 @@ type SyncToolArtifactsDeps = {
   findTool: (toolId: string) => Promise<ToolArtifactRecord | null>
   readToolArtifacts: (
     toolId: string,
-  ) => Promise<{ embeddedAt: Date | null; iconImageUrl: string | null } | null>
+  ) => Promise<{ embeddedAt: Date | null; iconUrl: string | null } | null>
   syncEmbedding: (toolId: string) => Promise<void>
   syncFavicon: (toolId: string, siteUrl: string) => Promise<void>
   isSyncedFaviconUrl: (url: string | null | undefined) => boolean
 }
 
-function needsFaviconSync(url: string | null, iconImageUrl: string | null): url is string {
-  return Boolean(url) && !isSupabaseMarketAssetUrl(iconImageUrl)
+function needsFaviconSync(url: string | null, iconUrl: string | null): url is string {
+  return Boolean(url) && !iconUrl?.trim()
 }
 
-const CONTENT_FIELDS = [
-  'name',
-  'description',
-  'category',
-  'tags',
-  'capabilities',
-  'recommendedFor',
-] as const
+const CONTENT_FIELDS = ['name', 'description', 'category', 'tags'] as const
 
 type ToolWebhookRecord = {
   id: string
   status: string
   url: string | null
-  iconImageUrl: string | null
-  embeddedAt: string | null
+  iconUrl: string | null
   name?: string
   description?: string
   category?: string
   tags?: string[]
-  capabilities?: string[]
-  recommendedFor?: string[]
 }
 
 export function toolRecordNeedsArtifactSync(
@@ -56,9 +46,8 @@ export function toolRecordNeedsArtifactSync(
   oldRecord?: ToolWebhookRecord | null,
 ): boolean {
   if (record.status !== 'active') return false
-  if (!record.embeddedAt) return true
-  if (needsFaviconSync(record.url, record.iconImageUrl)) return true
-  if (type === 'INSERT') return true
+  if (type === 'INSERT' || oldRecord?.status !== 'active') return true
+  if (needsFaviconSync(record.url, record.iconUrl) && record.url !== oldRecord?.url) return true
   if (!oldRecord) return false
 
   return CONTENT_FIELDS.some(
@@ -87,31 +76,35 @@ export async function syncToolArtifacts(
   const resolvedDeps: SyncToolArtifactsDeps = {
     findTool:
       deps?.findTool ??
-      ((id) =>
-        prisma.tool.findUnique({
+      (async (id) => {
+        const tool = await prisma.tool.findUnique({
           where: { id },
           select: {
             id: true,
             status: true,
             url: true,
-            iconImageUrl: true,
-            embeddedAt: true,
+            iconUrl: true,
+            index: { select: { embeddedAt: true } },
           },
-        })),
+        })
+        return tool ? { ...tool, embeddedAt: tool.index?.embeddedAt ?? null } : null
+      }),
     readToolArtifacts:
       deps?.readToolArtifacts ??
-      ((id) =>
-        prisma.tool.findUnique({
+      (async (id) => {
+        const tool = await prisma.tool.findUnique({
           where: { id },
-          select: { embeddedAt: true, iconImageUrl: true },
-        })),
+          select: { index: { select: { embeddedAt: true } }, iconUrl: true },
+        })
+        return tool ? { embeddedAt: tool.index?.embeddedAt ?? null, iconUrl: tool.iconUrl } : null
+      }),
     syncEmbedding: deps?.syncEmbedding ?? syncToolEmbedding,
     syncFavicon: deps?.syncFavicon ?? syncToolFavicon,
     isSyncedFaviconUrl: deps?.isSyncedFaviconUrl ?? isSupabaseMarketAssetUrl,
   }
 
-  const needsFavicon = (url: string | null, iconImageUrl: string | null): url is string => {
-    return Boolean(url) && !resolvedDeps.isSyncedFaviconUrl(iconImageUrl)
+  const needsFavicon = (url: string | null, iconUrl: string | null): url is string => {
+    return Boolean(url) && !iconUrl?.trim()
   }
 
   const tool = await resolvedDeps.findTool(toolId)
@@ -128,10 +121,10 @@ export async function syncToolArtifacts(
   )
 
   let faviconSynced = false
-  if (needsFavicon(tool.url, after?.iconImageUrl ?? tool.iconImageUrl)) {
+  if (needsFavicon(tool.url, after?.iconUrl ?? tool.iconUrl)) {
     await resolvedDeps.syncFavicon(tool.id, tool.url)
     const iconAfter = await resolvedDeps.readToolArtifacts(tool.id)
-    faviconSynced = resolvedDeps.isSyncedFaviconUrl(iconAfter?.iconImageUrl)
+    faviconSynced = resolvedDeps.isSyncedFaviconUrl(iconAfter?.iconUrl)
   }
 
   return { embeddingSynced, faviconSynced }

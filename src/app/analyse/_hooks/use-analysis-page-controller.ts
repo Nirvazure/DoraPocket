@@ -129,7 +129,7 @@ export function useAnalysisPageController(options: UseAnalysisPageControllerOpti
   const getTool = useAnalysisToolLookup(agentUiPayload, selectedToolPayload)
 
   const saveToolToPocket = useCallback(
-    (input: { toolId: string; sourceQuestion?: string; presetArgs?: Record<string, unknown> }) => {
+    (input: { toolId: string; sourceQuestion?: string }) => {
       saveToolToPocketMutation.mutate(input, {
         onSuccess: () => {
           setSystemNotice({

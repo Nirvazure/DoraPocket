@@ -19,20 +19,13 @@ function parseToolRecord(record: Record<string, unknown> | null) {
   if (!record || typeof record.id !== 'string') return null
   return {
     id: record.id,
-    status: asString(record.status) ?? 'active',
+    status: asString(record.status) ?? 'inactive',
     url: asString(record.url),
-    iconImageUrl: asString(record.iconImageUrl),
-    embeddedAt: asString(record.embeddedAt),
+    iconUrl: asString(record.iconUrl),
     name: asString(record.name) ?? undefined,
     description: asString(record.description) ?? undefined,
     category: asString(record.category) ?? undefined,
     tags: Array.isArray(record.tags) ? (record.tags as string[]) : undefined,
-    capabilities: Array.isArray(record.capabilities)
-      ? (record.capabilities as string[])
-      : undefined,
-    recommendedFor: Array.isArray(record.recommendedFor)
-      ? (record.recommendedFor as string[])
-      : undefined,
   }
 }
 
@@ -54,7 +47,7 @@ export type DatabaseWebhookResult = {
 export async function handleDatabaseWebhookEvent(
   payload: DatabaseWebhookPayload,
 ): Promise<DatabaseWebhookResult> {
-  if (payload.schema !== 'public') return { handled: false }
+  if (payload.schema !== 'dorapocket') return { handled: false }
 
   if (payload.table === 'Tool' && (payload.type === 'INSERT' || payload.type === 'UPDATE')) {
     const record = parseToolRecord(payload.record)

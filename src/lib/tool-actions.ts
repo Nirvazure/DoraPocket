@@ -1,9 +1,5 @@
 type MarkToolUsed = (input: { toolId: string }) => void
-type SaveToolToPocket = (input: {
-  toolId: string
-  sourceQuestion?: string
-  presetArgs?: Record<string, unknown>
-}) => void
+type SaveToolToPocket = (input: { toolId: string; sourceQuestion?: string }) => void
 
 export function openToolById(
   toolId: string,
@@ -21,13 +17,11 @@ export function saveToolById(
   toolId: string,
   saveToolToPocket: SaveToolToPocket | undefined,
   sourceQuestion?: string,
-  presetArgs?: Record<string, unknown>,
 ): boolean {
   if (!saveToolToPocket) return false
   saveToolToPocket({
     toolId,
     sourceQuestion,
-    presetArgs,
   })
   return true
 }

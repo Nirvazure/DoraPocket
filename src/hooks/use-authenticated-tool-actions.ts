@@ -5,11 +5,7 @@ import { openToolById, saveToolById } from '@/lib/tool-actions'
 import { redirectToLoginUnlessAuthenticated } from '@/lib/query/auth-session'
 import type { ToolLookupFn } from '@/shared/market/tool-lookup'
 
-type SaveToolToPocketFn = (input: {
-  toolId: string
-  sourceQuestion?: string
-  presetArgs?: Record<string, unknown>
-}) => void
+type SaveToolToPocketFn = (input: { toolId: string; sourceQuestion?: string }) => void
 
 export type AuthenticatedToolActionsOptions = {
   authPending: boolean
@@ -35,11 +31,11 @@ export function createSaveToolHandler(
     'authPending' | 'isAuthenticated' | 'saveToolToPocket' | 'getSourceQuestion'
   >,
 ) {
-  return (toolId: string, presetArgs?: Record<string, unknown>) => {
+  return (toolId: string) => {
     if (!redirectToLoginUnlessAuthenticated(options.authPending, options.isAuthenticated)) {
       return false
     }
-    return saveToolById(toolId, options.saveToolToPocket, options.getSourceQuestion?.(), presetArgs)
+    return saveToolById(toolId, options.saveToolToPocket, options.getSourceQuestion?.())
   }
 }
 
@@ -61,13 +57,13 @@ export function useAuthenticatedToolActions(options: AuthenticatedToolActionsOpt
   )
 
   const saveTool = useCallback(
-    (toolId: string, presetArgs?: Record<string, unknown>) => {
+    (toolId: string) => {
       return createSaveToolHandler({
         authPending,
         isAuthenticated,
         saveToolToPocket,
         getSourceQuestion,
-      })(toolId, presetArgs)
+      })(toolId)
     },
     [authPending, getSourceQuestion, isAuthenticated, saveToolToPocket],
   )

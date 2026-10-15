@@ -15,8 +15,8 @@ export function MarketToolIcon({ tool, size = 'md', tone = 'default' }: MarketTo
   const [imageFailed, setImageFailed] = useState(false)
   const imageSrc = useMemo(() => {
     if (imageFailed) return null
-    return tool.iconImageUrl ?? null
-  }, [imageFailed, tool.iconImageUrl])
+    return tool.iconUrl ?? null
+  }, [imageFailed, tool.iconUrl])
 
   const boxClassName =
     size === 'sm'
@@ -59,7 +59,7 @@ export function MarketToolIcon({ tool, size = 'md', tone = 'default' }: MarketTo
         boxClassName,
       )}
     >
-      {tool.iconType === 'favicon' && imageSrc ? (
+      {imageSrc ? (
         <Image
           src={imageSrc}
           alt={`${tool.name} icon`}
@@ -70,7 +70,7 @@ export function MarketToolIcon({ tool, size = 'md', tone = 'default' }: MarketTo
           onError={() => setImageFailed(true)}
         />
       ) : (
-        <span aria-hidden="true">{tool.iconText ?? tool.icon ?? '🌐'}</span>
+        <span aria-hidden="true">🌐</span>
       )}
     </div>
   )

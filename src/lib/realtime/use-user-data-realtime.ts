@@ -43,7 +43,7 @@ export function useUserDataRealtime(userId: string | undefined) {
         'postgres_changes',
         {
           event: '*',
-          schema: 'public',
+          schema: 'dorapocket',
           table,
           filter: `userId=eq.${userId}`,
         },

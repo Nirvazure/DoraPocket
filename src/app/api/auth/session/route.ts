@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { verifySession } from '@/server/auth/dal'
-import { MARKET_OWNER_USER_ID } from '@/shared/market/market-owner'
 
 export async function GET() {
   const session = await verifySession()
@@ -21,7 +20,7 @@ export async function GET() {
       lastSignInAt: session.user.lastSignInAt?.toISOString() ?? null,
       authRole: session.user.authRole,
       authProvider: session.user.authProvider,
-      isMarketOwner: session.user.id === MARKET_OWNER_USER_ID,
+      isMarketOwner: false,
     },
   })
 }

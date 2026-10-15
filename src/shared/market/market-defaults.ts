@@ -6,9 +6,7 @@ export function createEmptyPreferenceProfile(): UserPreferenceProfile {
     preferredTags: [],
     preferredPlatforms: [],
     preferredPricing: [],
-    preferredExecutionModes: [],
     avoidAuthWall: true,
-    prefersSubscriptionTools: false,
     summary: [],
   }
 }
@@ -17,7 +15,6 @@ export function createEmptyMarketContext(): MarketContext {
   return {
     savedItems: [],
     feedback: [],
-    subscriptions: [],
     submissions: [],
     preferenceProfile: createEmptyPreferenceProfile(),
   }

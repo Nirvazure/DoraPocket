@@ -25,14 +25,13 @@ test('an authoritative empty payload cannot restore a stale selected tool', () =
   assert.equal(
     resolveLeadingCandidate({ candidates: [] } as unknown as AgentUiPayload, {
       toolId: 'stale',
-      args: {},
     }),
     null,
   )
 })
 
 test('legacy selected-tool-only payloads remain readable', () => {
-  assert.equal(resolveLeadingCandidate(null, { toolId: 'legacy', args: {} })?.toolId, 'legacy')
+  assert.equal(resolveLeadingCandidate(null, { toolId: 'legacy' })?.toolId, 'legacy')
 })
 
 test('shouldPreserveTurnFlow keeps cover and reveal beats but not working', () => {

@@ -7,7 +7,6 @@ import type { PocketStreamEvent } from '@/server/agent/graph'
 
 const marketContext: MarketContext = {
   savedItems: [],
-  subscriptions: [],
   feedback: [],
   submissions: [],
   preferenceProfile: {
@@ -15,36 +14,24 @@ const marketContext: MarketContext = {
     preferredTags: [],
     preferredPlatforms: [],
     preferredPricing: [],
-    preferredExecutionModes: [],
     avoidAuthWall: false,
-    prefersSubscriptionTools: false,
     summary: [],
   },
 }
 const tool: ToolItem = {
   id: 'fixture',
   name: 'Fixture Tool',
-  icon: 'tool',
-  iconType: 'emoji',
-  iconText: 'T',
-  iconImageUrl: null,
+  iconUrl: null,
   url: 'https://example.com',
   description: 'Test tool',
   category: 'developer',
   tags: [],
-  source: 'market',
   status: 'active',
-  executionMode: 'external_link',
   pricingModel: 'free',
   requiresAuth: false,
   platform: 'web',
-  capabilities: [],
-  recommendedFor: [],
-  trustSignals: { curated: false, official: false, communityVerified: false },
   ratingSummary: { upvotes: 0, downvotes: 0, score: 0 },
-  usageStats: { saves: 0, opens: 0, subscriptions: 0 },
-  subscriptionSupport: false,
-  defaultArgs: { query: 'fixture' },
+  usageStats: { saves: 0, opens: 0 },
 }
 const candidate = {
   toolId: tool.id,
@@ -118,7 +105,7 @@ test('direct recommendation preserves progress, selected tool, chunks, and compl
   assert.ok(done?.type === 'done')
   assert.equal(done.clarificationStatus, 'ready')
   assert.equal(done.ui_payload.confidenceLevel, 'normal')
-  assert.deepEqual(done.selected_tool, { toolId: tool.id, args: tool.defaultArgs })
+  assert.deepEqual(done.selected_tool, { toolId: tool.id })
   assert.deepEqual(invokeModel.mock.calls[0].arguments, [
     [
       '用户问题：压缩 PDF',

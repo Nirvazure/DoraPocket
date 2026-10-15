@@ -12,41 +12,31 @@ function makeTool(overrides: Partial<ToolItem> = {}): ToolItem {
   return {
     id: 'tool-1',
     name: 'Door Tool',
-    icon: 'door',
-    iconType: 'emoji',
-    iconText: 'D',
-    iconImageUrl: null,
+    iconUrl: null,
     url: 'https://example.com',
     description: 'A useful tool',
     category: 'developer',
     tags: ['code', 'ship'],
-    source: 'market',
     status: 'active',
-    executionMode: 'external_link',
     pricingModel: 'freemium',
     requiresAuth: false,
     platform: 'web',
-    capabilities: ['test'],
-    recommendedFor: ['dev'],
-    trustSignals: { curated: true, official: false, communityVerified: false },
     ratingSummary: { upvotes: 1, downvotes: 0, score: 1 },
-    usageStats: { saves: 1, opens: 1, subscriptions: 0 },
-    subscriptionSupport: false,
+    usageStats: { saves: 1, opens: 1 },
     ...overrides,
   }
 }
 
 test('isRandomDoorEligible excludes unusable tools', () => {
   assert.equal(isRandomDoorEligible(makeTool()), true)
-  assert.equal(isRandomDoorEligible(makeTool({ url: null })), false)
-  assert.equal(isRandomDoorEligible(makeTool({ executionMode: 'reference_only' })), false)
-  assert.equal(isRandomDoorEligible(makeTool({ status: 'blocked' })), false)
+  assert.equal(isRandomDoorEligible(makeTool({ url: '' })), false)
+  assert.equal(isRandomDoorEligible(makeTool({ status: 'inactive' })), false)
 })
 
 test('pickRandomDoorRecommendation selects from eligible tools only', () => {
   const tools = [
     makeTool({ id: 'first', name: 'First', tags: ['alpha'] }),
-    makeTool({ id: 'skip-no-url', url: null }),
+    makeTool({ id: 'skip-no-url', url: '' }),
     makeTool({ id: 'second', name: 'Second', category: 'design', tags: [] }),
   ]
 

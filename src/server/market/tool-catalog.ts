@@ -2,94 +2,39 @@ import 'server-only'
 
 import type { ToolModel as DbTool } from '../../generated/prisma/models/Tool'
 import { listActiveTools } from '@/server/repositories/tool-repo'
-import type {
-  ToolItem,
-  ToolRatingSummary,
-  ToolTrustSignals,
-  ToolUsageStats,
-} from '@/shared/market/tool-registry'
+import type { ToolItem } from '@/shared/market/tool-registry'
 import { resolveIsOwnedByViewer } from '@/shared/market/owned-tool-delete'
 
-function defaultRatingSummary(): ToolRatingSummary {
-  return {
-    upvotes: 0,
-    downvotes: 0,
-    score: 0,
-  }
+type CatalogTool = DbTool & {
+  marketFeedback?: { vote: string }[]
+  toolActivities?: { saves: number; opens: number }[]
 }
 
-function defaultUsageStats(): ToolUsageStats {
-  return {
-    saves: 0,
-    opens: 0,
-    subscriptions: 0,
-  }
-}
-
-function toToolTrustSignals(value: unknown): ToolTrustSignals {
-  const raw = value && typeof value === 'object' ? (value as Partial<ToolTrustSignals>) : {}
-  return {
-    curated: raw.curated !== false,
-    official: raw.official === true,
-    communityVerified: raw.communityVerified === true,
-    riskNote: typeof raw.riskNote === 'string' ? raw.riskNote : undefined,
-  }
-}
-
-function readRatingSummary(value: unknown): ToolRatingSummary {
-  const raw = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
-  const summary = raw.ratingSummary
-  if (summary && typeof summary === 'object' && !Array.isArray(summary)) {
-    const parsed = summary as Partial<ToolRatingSummary>
-    return {
-      upvotes: typeof parsed.upvotes === 'number' ? parsed.upvotes : 0,
-      downvotes: typeof parsed.downvotes === 'number' ? parsed.downvotes : 0,
-      score: typeof parsed.score === 'number' ? parsed.score : 0,
-    }
-  }
-  return defaultRatingSummary()
-}
-
-function toDefaultArgs(value: unknown): Record<string, unknown> | undefined {
-  return value && typeof value === 'object' && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : undefined
-}
-
-export function mapDbToolToToolItem(tool: DbTool, viewerUserId?: string | null): ToolItem {
+export function mapDbToolToToolItem(tool: CatalogTool, viewerUserId?: string | null): ToolItem {
+  const upvotes = tool.marketFeedback?.filter((feedback) => feedback.vote === 'up').length ?? 0
+  const downvotes = tool.marketFeedback?.filter((feedback) => feedback.vote === 'down').length ?? 0
   return {
     id: tool.id,
     name: tool.name,
-    icon: tool.icon,
-    iconType: (tool.iconType as ToolItem['iconType']) ?? undefined,
-    iconText: tool.iconText ?? undefined,
-    iconImageUrl: tool.iconImageUrl ?? null,
-    url: tool.url ?? null,
+    url: tool.url,
     description: tool.description,
     category: tool.category as ToolItem['category'],
     tags: tool.tags,
-    source: tool.source as ToolItem['source'],
+    iconUrl: tool.iconUrl,
     status: tool.status as ToolItem['status'],
-    executionMode: tool.executionMode as ToolItem['executionMode'],
     pricingModel: tool.pricingModel as ToolItem['pricingModel'],
     requiresAuth: tool.requiresAuth,
     platform: tool.platform as ToolItem['platform'],
-    capabilities: tool.capabilities,
-    recommendedFor: tool.recommendedFor,
-    sourceNote: tool.sourceNote ?? undefined,
-    trustSignals: toToolTrustSignals(tool.trustSignals),
-    ratingSummary: readRatingSummary(tool.trustSignals),
-    usageStats: defaultUsageStats(),
-    subscriptionSupport: tool.subscriptionSupport,
-    defaultArgs: toDefaultArgs(tool.defaultArgs),
-    siteHostname: tool.siteHostname ?? undefined,
-    marketAssetOrigin: (tool.marketAssetOrigin as ToolItem['marketAssetOrigin']) ?? undefined,
-    createdByUserId: tool.createdByUserId ?? null,
+    createdByUserId: tool.createdByUserId,
     isOwnedByViewer: resolveIsOwnedByViewer(tool.createdByUserId, viewerUserId),
+    ratingSummary: { upvotes, downvotes, score: upvotes - downvotes },
+    usageStats: {
+      saves: tool.toolActivities?.reduce((sum, activity) => sum + activity.saves, 0) ?? 0,
+      opens: tool.toolActivities?.reduce((sum, activity) => sum + activity.opens, 0) ?? 0,
+    },
   }
 }
 
 export async function listActiveToolItems(viewerUserId?: string | null) {
-  const tools = await listActiveTools()
-  return tools.map((tool) => mapDbToolToToolItem(tool, viewerUserId))
+  return (await listActiveTools()).map((tool) => mapDbToolToToolItem(tool, viewerUserId))
 }

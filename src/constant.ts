@@ -1,8 +1,8 @@
 export const QWEN_MODEL = 'qwen-plus'
 export const QWEN_BASE_URL = 'https://dashscope.aliyuncs.com/compatible-mode/v1'
 
-export const SUPABASE_STORAGE_BUCKET_AVATARS = 'avatars'
-export const SUPABASE_STORAGE_BUCKET_MARKET = 'market-assets'
+export const SUPABASE_STORAGE_BUCKET_AVATARS = 'dorapocket-avatars'
+export const SUPABASE_STORAGE_BUCKET_MARKET = 'dorapocket-market-assets'
 
 export const ALIYUN_NLS_STT_WS_URL = 'wss://nls-gateway-cn-shanghai.aliyuncs.com/ws/v1'
 export const ALIYUN_TTS_VOICE = 'zhitian_emo'

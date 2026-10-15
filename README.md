@@ -15,12 +15,12 @@ DoraPocket 解决的不是“有哪些工具”，而是“针对我现在的任
 ## 当前能力
 
 - **任务推荐 `/analyse`**：通过文字或语音描述任务，必要时补充条件，获得首选工具、备选工具和推荐理由。
-- **道具库 `/market`**：浏览、搜索、分类查看工具，提交新工具并查看评价与信任信号。
+- **道具库 `/market`**：浏览、搜索、分类查看工具，提交新工具并查看真实用户评价。
 - **我的口袋**：收藏值得再次使用的工具，记录来源问题和使用情况。
 - **推荐历史**：登录后查看推荐会话、推荐结果和评价记录。
 - **个人设置 `/profile`**：管理个人资料、偏好和语音、解释模式等设置。
 - **语音交互**：支持语音输入和回答播报，需要部署方配置阿里云语音服务。
-- **推荐范围切换**：推荐页可临时选择“仅找库中”或“混合模式”；前者只使用 Tool Hub 和用户提交的库内工具，后者会把库内候选与模型生成的库外候选一起排序。
+- **推荐范围切换**：推荐页可临时选择“仅找库中”或“混合模式”；前者只使用工具目录中的工具，后者会把库内候选与模型生成的库外候选一起排序。
 - **推荐数量与匹配度**：可选择最多 3、5 或 10 个推荐（包含主推荐），最低匹配度分别自动设为 90%、80% 或 70%，默认 5 个、80%。匹配度是模型依据工具资料对任务适配度的独立评估，不是成功概率；核心任务和明确必需条件不满足的工具不会推荐，符合门槛的候选不足时不会补入低分工具，没有合格候选时明确返回空结果。
 - **外部候选建议**：混合模式允许补充模型生成的外部候选，并标识其来源；外部候选的 URL、价格和可用性仍需用户自行核验。
 - **任意门**：从工具库随机打开一个值得探索的推荐。
@@ -79,9 +79,11 @@ public/                        3D 模型、图片、音频和浏览器 worklet
 
 ### 后台维护
 
-工具提交和数据库变化通过 Supabase Database Webhook 触发处理；Vercel Cron 定期作为兜底，负责待处理投稿去重、工具 favicon 与 embedding 同步、评价聚合和过期推荐会话清理。
+工具提交和数据库变化通过 Supabase Database Webhook 触发处理；Vercel Cron 定期作为兜底，负责待处理投稿去重、缺失工具 favicon 与 embedding 同步、过期推荐会话清理。
 
-工具 embedding 使用 PostgreSQL 的 `vector` 扩展，全文搜索使用 `pg_trgm` 等数据库能力。工具图标和用户头像使用 Supabase Storage，默认 bucket 为 `market-assets` 与 `avatars`。
+业务表位于共享 YQYHub 项目的 `dorapocket` schema，账号使用该项目的 Supabase Auth。Tool 只保留 14 个业务字段，工具归属由 `createdByUserId` 表示，状态为 `active` / `inactive`，不再区分平台收录和用户提交。价格、平台允许 `unknown`，是否需要登录允许未知；工具订阅和执行参数功能已移除，外部工具的订阅价格仍可记录。
+
+`ToolIndex` 独立保存规范化检索文本、内容哈希、全文搜索列和 1024 维向量。embedding 默认使用 Qwen `text-embedding-v3`；工具内容变更会原子清空旧向量，后台按内容哈希与模型重新生成，防止旧任务覆盖新内容。评分从 MarketFeedback 计算，不再写回工具 JSON。工具图标和用户头像使用 Supabase Storage，bucket 为 `dorapocket-market-assets` 与 `dorapocket-avatars`。已有第三方或仓库图标保持原地址，只有缺失图标才补 favicon。
 
 ## 本地运行
 
@@ -98,9 +100,38 @@ Windows PowerShell 可执行 `Copy-Item .env.example .env`。最小必需环境�
 
 语音能力还需要 `ALIYUN_AK_ID`、`ALIYUN_AK_SECRET` 和 `ALIYUN_NLS_APPKEY`。GitHub/Google OAuth 在 Supabase Dashboard 中配置，不需要在 Next.js 中单独配置 provider。
 
-空数据库不会自动附带工具目录；完整迁移链需要目标数据库支持并允许创建 `vector` 与 `pg_trgm` 扩展。生产启动使用 `yarn start`，常用检查命令是 `yarn typecheck`、`yarn lint` 和 `yarn build`。
+`DATABASE_URL` 使用专用 `dorapocket_app` 运行角色；DDL 使用独立 `MIGRATION_DATABASE_URL`，URL 的 schema 必须为 `dorapocket`。`yarn prisma:migrate` 执行 `migrate deploy`，只应用 `prisma/migrations-dorapocket` 中的新基线；旧 `prisma/migrations` 保留用于源项目追溯。不要对共享项目运行 `migrate dev`、`db push` 或 reset。空数据库不会自动附带工具目录，基线需要 DDL 账号有权限创建 `vector`、`pg_trgm`、schema 和角色。生产启动使用 `yarn start`，常用检查命令是 `yarn typecheck`、`yarn lint` 和 `yarn build`。
+
+使用 `sslmode=verify-full` 的连接应同时提供 `sslrootcert`。仓库内的 `prisma/supabase-ca.crt` 是 Supabase 的公开 CA 证书，Next.js 会将其纳入服务端部署文件；它不含私钥。迁移工具生成的运行连接使用这一相对路径。
 
 部署 Cron 的入口是 `/api/cron/process-jobs`，Webhook 和 Cron 请求需要共享 `CRON_SECRET`。
+
+## 独立项目迁入 YQYHub
+
+迁移工具固定校验源项目 `eatsznumylwggpvlwkfk`、目标项目 `tfvzcuksahcofooqqezx` 和 `dorapocket` schema。源配置保留在 `.env`；目标配置放入忽略的 `.env.migration.local`，变量见 [环境模板](.env.example)。不要提交连接串、secret key 或快照。
+
+本地 Next.js 可使用 `.env.local` 覆盖为目标运行连接和 Auth/Storage 配置。迁移工具不会读取 `.env.local`，避免本地应用切换后误把目标当成源项目。
+
+工具默认只读，写入步骤必须显式追加 `--apply`。按以下顺序执行，所有本地快照保存在忽略的 `tmp`：
+
+```bash
+yarn migration:dorapocket inspect
+yarn migration:dorapocket schema --apply
+yarn migration:dorapocket provision-runtime --apply
+yarn migration:dorapocket export --apply --artifact tmp/dorapocket-migration.json
+yarn migration:dorapocket copy-assets --apply --artifact tmp/dorapocket-migration.json
+yarn migration:dorapocket import --apply --artifact tmp/dorapocket-migration.json
+yarn migration:dorapocket restore-vectors --apply --artifact tmp/dorapocket-migration.json
+yarn migration:dorapocket verify --artifact tmp/dorapocket-migration.json
+```
+
+只迁移有效 HTTP/HTTPS 工具和它们引用的源 Storage 图片，排除教程、文档和参考资源。源工具全字段和旧向量另存不可覆盖的快照；正文将旧能力、适用说明和风险说明去重合并。目标 GitHub Auth 用户经核验后映射为业务 User，全部迁入工具归其所有。旧用户、头像、收藏、历史、评价、活动和投稿记录不导入；旧浏览器自动导入停用，原导入接口对登录用户返回 410，浏览器本地数据不会被清除。图片通过 Storage API 复制并核对哈希，不修改 Storage 系统表。
+
+`restore-vectors` 直接复制快照中有效的旧向量，不调用 Qwen；它校验原始输入哈希、模型、1024 维数值和对应工具快照，拒绝覆盖不同的目标向量。旧向量仍表达原文本模板，作为本次导入内容的检索基线，不能视为已重新编码精简后的文本；原始输入哈希、生成时间、向量哈希和接受的目标内容哈希保存在旁路 `.vector-reuse.json` 报告中。后续工具内容变更仍会清空旧向量并按新模板生成。如果旧向量缺失或失效，或者确实需要按新模板重新编码，再显式执行 `rebuild-index --apply`；该步骤会调用 Qwen。
+
+正式切换前，先将支持维护开关的版本以 `DORAPOCKET_MAINTENANCE=true` 部署到生产，并暂停旧 Webhook/Cron，确认生产域名请求返回 503、旧请求已结束，再导出最终快照。旧版本若没有维护开关，仅修改环境变量不会阻止写入。完成最终快照导入、向量重建和核验后，使用生成的 `tmp/dorapocket-runtime.env` 中运行连接、目标 Supabase URL/key 配置新部署；生产运行环境不要包含迁移账号、`TARGET_*` 或 `MIGRATION_DATABASE_URL`。GitHub OAuth 要允许本站回调，Database Webhook 指向 `dorapocket.Tool` / `dorapocket.MarketSubmission`。Realtime publication 和客户端订阅均使用 `dorapocket`，无需将该 schema 加入 Data API exposed schemas。维护期间完成数据库和配置检查，再关闭维护进行登录、提交、搜索、收藏、评价、图片和实时通知验收，通过后开启目标后台任务。
+
+开放前可以恢复旧部署、环境和任务；开放并产生新数据后先备份新增数据并向前修复，避免切回旧 Auth 丢失新记录。源项目和快照至少保留 7 天。不要删除旧项目或覆盖其他应用 schema。迁移脚本遇到已有不同工具或图片会停止；重复导入相同内容会跳过。
 
 ## 未来方向
 

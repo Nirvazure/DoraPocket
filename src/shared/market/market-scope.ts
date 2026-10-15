@@ -25,6 +25,7 @@ function createToolGroups() {
     media: [],
     learning: [],
     writing: [],
+    other: [],
   } satisfies Record<ToolCategory, MarketToolCardItem[]>
 }
 
@@ -69,6 +70,7 @@ export function buildMarketNavigation(args: {
     media: grouped.media.length,
     learning: grouped.learning.length,
     writing: grouped.writing.length,
+    other: grouped.other.length,
   } satisfies Record<ToolCategory, number>
 
   const discoverEntries: Array<MarketNavEntry> = TOOL_CATEGORY_ORDER.map(

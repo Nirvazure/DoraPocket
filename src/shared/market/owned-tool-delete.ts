@@ -1,5 +1,3 @@
-import { MARKET_OWNER_USER_ID } from '@/shared/market/market-owner'
-
 export type OwnedToolDeleteFailure = 'NOT_FOUND' | 'FORBIDDEN'
 
 export class OwnedToolDeleteError extends Error {
@@ -12,16 +10,14 @@ export class OwnedToolDeleteError extends Error {
   }
 }
 
-/** Shared delete authz for API + market UI (keeps seed/null ownership aligned for market owner). */
+/** A tool can only be deleted by its recorded creator. */
 export function canDeleteOwnedTool(args: {
   createdByUserId: string | null | undefined
   userId: string | null | undefined
 }): boolean {
   const { createdByUserId, userId } = args
   if (!userId) return false
-  if (createdByUserId === userId) return true
-  if (userId !== MARKET_OWNER_USER_ID) return false
-  return createdByUserId == null || createdByUserId === MARKET_OWNER_USER_ID
+  return createdByUserId === userId
 }
 
 export function assertOwnedToolDeletable(args: {

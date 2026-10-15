@@ -24,7 +24,7 @@ export * as $Enums from './enums'
 export * from "./enums"
 /**
  * ## Prisma Client
- * 
+ *
  * Type-safe database client for TypeScript
  * @example
  * ```
@@ -34,7 +34,7 @@ export * from "./enums"
  * // Fetch zero or more Users
  * const users = await prisma.user.findMany()
  * ```
- * 
+ *
  * Read more in our [docs](https://pris.ly/d/client).
  */
 export const PrismaClient = $Class.getPrismaClientClass()
@@ -43,66 +43,61 @@ export { Prisma }
 
 /**
  * Model User
- * 
+ *
  */
 export type User = Prisma.UserModel
 /**
  * Model UserSettings
- * 
+ *
  */
 export type UserSettings = Prisma.UserSettingsModel
 /**
  * Model Tool
- * 
+ *
  */
 export type Tool = Prisma.ToolModel
 /**
+ * Model ToolIndex
+ *
+ */
+export type ToolIndex = Prisma.ToolIndexModel
+/**
  * Model PocketItem
- * 
+ *
  */
 export type PocketItem = Prisma.PocketItemModel
 /**
  * Model MarketFeedback
- * 
+ *
  */
 export type MarketFeedback = Prisma.MarketFeedbackModel
 /**
- * Model MarketSubscription
- * 
- */
-export type MarketSubscription = Prisma.MarketSubscriptionModel
-/**
  * Model MarketSubmission
- * 
+ *
  */
 export type MarketSubmission = Prisma.MarketSubmissionModel
 /**
  * Model ToolActivity
- * 
+ *
  */
 export type ToolActivity = Prisma.ToolActivityModel
 /**
  * Model ChatHistoryEntry
- * 
+ *
  */
 export type ChatHistoryEntry = Prisma.ChatHistoryEntryModel
 /**
  * Model PreferenceProfileOverride
- * 
+ *
  */
 export type PreferenceProfileOverride = Prisma.PreferenceProfileOverrideModel
 /**
  * Model RecommendationSession
- * 
+ *
  */
 export type RecommendationSession = Prisma.RecommendationSessionModel
 /**
  * Model RecommendationEvaluation
- * 
+ *
  */
 export type RecommendationEvaluation = Prisma.RecommendationEvaluationModel
-/**
- * Model DataMigrationState
- * 
- */
-export type DataMigrationState = Prisma.DataMigrationStateModel

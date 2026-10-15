@@ -10,7 +10,6 @@ export type RandomDoorRecommendation = {
 export type RandomDoorAnalysisPayload = {
   selectedToolPayload: {
     toolId: string
-    args: Record<string, unknown>
   }
   uiPayload: AgentUiPayload
 }
@@ -24,6 +23,7 @@ const CATEGORY_LABELS: Record<ToolCategory, string> = {
   media: '内容',
   learning: '学习',
   writing: '写作',
+  other: '其他',
 }
 
 const REASON_TEMPLATES = [
@@ -35,10 +35,8 @@ const REASON_TEMPLATES = [
       : `它是一个比较稳的 Tool Hub 选择，适合当作今天的起点。`,
 ]
 
-export function isRandomDoorEligible(tool: Pick<ToolItem, 'status' | 'url' | 'executionMode'>) {
-  return (
-    tool.status === 'active' && Boolean(tool.url?.trim()) && tool.executionMode !== 'reference_only'
-  )
+export function isRandomDoorEligible(tool: Pick<ToolItem, 'status' | 'url'>) {
+  return tool.status === 'active' && /^https?:\/\//i.test(tool.url.trim())
 }
 
 export function buildRandomDoorReason(tool: ToolItem): string {
@@ -75,9 +73,6 @@ export function buildRandomDoorAnalysisPayload({
   return {
     selectedToolPayload: {
       toolId: tool.id,
-      args: {
-        source: 'random-door',
-      },
     },
     uiPayload: {
       recommendationMode: 'market',
@@ -96,7 +91,6 @@ export function buildRandomDoorAnalysisPayload({
           title: tool.name,
           url: tool.url,
           candidateType: 'tool',
-          assetOrigin: tool.source === 'official' ? 'bookmark_seed' : 'curated_market',
           score: 1,
           sourceLabel: 'market',
           reason,
@@ -107,7 +101,7 @@ export function buildRandomDoorAnalysisPayload({
       whyThisFirst: [reason, `它来自 ${poolSize} 个当前可打开工具组成的随机池。`],
       whyNotAlternatives: {},
       riskNotes: ['这是随机发现，不代表它一定最适合你当前任务。'],
-      trustEvidence: tool.trustSignals.curated ? ['已进入 DoraPocket 工具库'] : [],
+      trustEvidence: [],
       communityEvidence:
         tool.usageStats.saves > 0 ? [`已有 ${tool.usageStats.saves} 次收藏记录`] : [],
       personalEvidence: [],

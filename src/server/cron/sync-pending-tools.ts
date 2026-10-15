@@ -2,6 +2,11 @@ import 'server-only'
 
 import { syncToolArtifacts } from '@/server/cron/sync-tool-artifacts'
 import { prisma } from '@/server/db/prisma'
+import {
+  buildToolIndex,
+  getEmbeddingConfig,
+  type ToolIndexFields,
+} from '@/shared/market/tool-index-content'
 import { isSupabaseMarketAssetUrl } from '@/shared/market/market-asset-url'
 
 export type SyncPendingToolsResult = {
@@ -11,11 +16,11 @@ export type SyncPendingToolsResult = {
   errors: number
 }
 
-type PendingToolRecord = {
+type PendingToolRecord = ToolIndexFields & {
   id: string
   url: string | null
-  iconImageUrl: string | null
-  embeddedAt: Date | null
+  iconUrl: string | null
+  index: { contentHash: string; embeddingModel: string | null; embeddedAt: Date | null } | null
 }
 
 type SyncPendingToolsDeps = {
@@ -31,27 +36,29 @@ export async function syncPendingTools(
   const resolvedDeps: SyncPendingToolsDeps = {
     findCandidateTools:
       deps?.findCandidateTools ??
-      ((take) =>
+      (() =>
         prisma.tool.findMany({
           where: {
             status: 'active',
-            OR: [{ embeddedAt: null }, { url: { not: null } }],
           },
           select: {
             id: true,
             url: true,
-            iconImageUrl: true,
-            embeddedAt: true,
+            iconUrl: true,
+            name: true,
+            description: true,
+            category: true,
+            tags: true,
+            index: { select: { contentHash: true, embeddingModel: true, embeddedAt: true } },
           },
-          take,
           orderBy: { updatedAt: 'asc' },
         })),
     syncArtifacts: deps?.syncArtifacts ?? syncToolArtifacts,
     isSyncedFaviconUrl: deps?.isSyncedFaviconUrl ?? isSupabaseMarketAssetUrl,
   }
 
-  const needsFavicon = (url: string | null, iconImageUrl: string | null): url is string => {
-    return Boolean(url) && !resolvedDeps.isSyncedFaviconUrl(iconImageUrl)
+  const needsFavicon = (url: string | null, iconUrl: string | null): url is string => {
+    return Boolean(url) && !iconUrl?.trim()
   }
 
   const result: SyncPendingToolsResult = {
@@ -63,9 +70,18 @@ export async function syncPendingTools(
 
   const tools = await resolvedDeps.findCandidateTools(batchSize * 3)
 
-  const pending = tools
-    .filter((tool) => !tool.embeddedAt || needsFavicon(tool.url, tool.iconImageUrl))
-    .slice(0, batchSize)
+  const config = getEmbeddingConfig()
+  const missingIndexes = tools.filter(
+    (tool) =>
+      !tool.index?.embeddedAt ||
+      tool.index.embeddingModel !== config.model ||
+      tool.index.contentHash !== buildToolIndex(tool, config).contentHash,
+  )
+  const missingIndexIds = new Set(missingIndexes.map((tool) => tool.id))
+  const missingIcons = tools.filter(
+    (tool) => !missingIndexIds.has(tool.id) && needsFavicon(tool.url, tool.iconUrl),
+  )
+  const pending = [...missingIndexes, ...missingIcons].slice(0, batchSize)
 
   for (const tool of pending) {
     result.scanned += 1

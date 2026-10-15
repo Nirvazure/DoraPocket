@@ -21,9 +21,6 @@ import type {
 export function marketSignalsFromContext(marketContext: MarketContext) {
   return {
     savedToolIds: marketContext.savedItems.map((item) => item.toolId),
-    subscribedToolIds: marketContext.subscriptions
-      .filter((item) => item.active)
-      .map((item) => item.toolId),
     upvotedToolIds: marketContext.feedback
       .filter((item) => item.vote === 'up')
       .map((item) => item.toolId),
@@ -34,9 +31,7 @@ export function marketSignalsFromContext(marketContext: MarketContext) {
     preferredTags: marketContext.preferenceProfile.preferredTags,
     preferredPlatforms: marketContext.preferenceProfile.preferredPlatforms,
     preferredPricing: marketContext.preferenceProfile.preferredPricing,
-    preferredExecutionModes: marketContext.preferenceProfile.preferredExecutionModes,
     avoidAuthWall: marketContext.preferenceProfile.avoidAuthWall,
-    prefersSubscriptionTools: marketContext.preferenceProfile.prefersSubscriptionTools,
   }
 }
 
@@ -114,7 +109,7 @@ export function buildRecommendedActions(
     return ['打开外部工具', '试用后判断是否有效', '如有效再提交到 Tool Hub']
   }
   if (!topTool) return ['继续澄清目标', '缩小任务范围', '换个说法再搜一轮']
-  const actions = ['打开工具', '收入口袋', '订阅这个工具']
+  const actions = ['打开工具', '收入口袋']
   if (taskFrame.missingInputs.length > 0) {
     actions.unshift(`补充${taskFrame.missingInputs.join('、')}`)
   }
@@ -136,15 +131,10 @@ export function buildSelectionSignals(
   const signals: string[] = []
   if (marketContext.savedItems.some((item) => item.toolId === topTool.id))
     signals.push('你已收藏过它')
-  if (marketContext.subscriptions.some((item) => item.active && item.toolId === topTool.id))
-    signals.push('你已订阅它')
   if (marketContext.feedback.some((item) => item.toolId === topTool.id && item.vote === 'up'))
     signals.push('你给过正反馈')
   if (marketContext.feedback.some((item) => item.toolId === topTool.id && item.vote === 'down'))
     signals.push('你给过负反馈')
-  if (topTool.trustSignals.official) signals.push('官方来源')
-  if (topTool.trustSignals.communityVerified) signals.push('社区验证')
-  if (topTool.sourceNote) signals.push(topTool.sourceNote)
   return signals.slice(0, 5)
 }
 
@@ -163,11 +153,8 @@ export function buildPreferenceSignals(
   if (matchedTags.length > 0) {
     signals.push(`命中你的高频标签：${matchedTags.join(' / ')}`)
   }
-  if (marketContext.preferenceProfile.avoidAuthWall && !topTool.requiresAuth) {
+  if (marketContext.preferenceProfile.avoidAuthWall && topTool.requiresAuth === false) {
     signals.push('符合你偏好低摩擦、免登录工具的习惯')
-  }
-  if (marketContext.preferenceProfile.prefersSubscriptionTools && topTool.subscriptionSupport) {
-    signals.push('符合你把工具沉淀成长线资产的习惯')
   }
   return Array.from(new Set(signals)).slice(0, 5)
 }
@@ -203,6 +190,9 @@ function buildWhyNotAlternatives(candidates: AgentCandidate[]): Record<string, s
 function buildRiskNotes(taskFrame: AgentTaskFrame, topTool: ToolItem | null): string[] {
   if (!topTool) return []
   const notes: string[] = []
+  if (taskFrame.authPreference === 'no_signup' && topTool.requiresAuth === null) {
+    notes.push('登录要求尚未确认，试用前请核对。')
+  }
   if (taskFrame.authPreference === 'no_signup' && topTool.requiresAuth) {
     notes.push('需要注册或登录，可能不符合免注册优先。')
   }
@@ -211,10 +201,18 @@ function buildRiskNotes(taskFrame: AgentTaskFrame, topTool: ToolItem | null): st
     topTool.pricingModel !== 'free' &&
     topTool.pricingModel !== 'freemium'
   ) {
-    notes.push('不是免费优先方案，试用前需要确认价格。')
+    notes.push(
+      topTool.pricingModel === 'unknown'
+        ? '价格尚未确认，试用前请核对费用。'
+        : '不是免费优先方案，试用前需要确认价格。',
+    )
   }
   if (taskFrame.platformPreference === 'api' && topTool.platform !== 'api') {
-    notes.push('当前不是 API 优先方案，集成前需要再确认能力边界。')
+    notes.push(
+      topTool.platform === 'unknown'
+        ? 'API 能力尚未确认，集成前请核对。'
+        : '当前不是 API 优先方案，集成前需要再确认能力边界。',
+    )
   }
   return notes.slice(0, 3)
 }
@@ -238,9 +236,6 @@ function buildPersonalEvidence(topTool: ToolItem | null, marketContext: MarketCo
   const evidence: string[] = []
   if (marketContext.savedItems.some((item) => item.toolId === topTool.id)) {
     evidence.push('你已经收藏过它。')
-  }
-  if (marketContext.subscriptions.some((item) => item.active && item.toolId === topTool.id)) {
-    evidence.push('你已经订阅过它。')
   }
   const review = marketContext.feedback.find((item) => item.toolId === topTool.id)
   if (review) evidence.push(`你曾给过 ${review.starRating} 星反馈。`)
