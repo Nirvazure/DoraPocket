@@ -9,31 +9,18 @@ import {
   type MarketToolCardItem,
 } from '@/shared/market/market-scope'
 
-const baseTool = (
-  id: string,
-  category: MarketToolCardItem['category'],
-  source: MarketToolCardItem['source'] = 'market',
-): MarketToolCardItem => ({
+const baseTool = (id: string, category: MarketToolCardItem['category']): MarketToolCardItem => ({
   id,
   name: id,
-  icon: '🔧',
+  iconUrl: null,
   url: 'https://example.com',
   description: `${id} desc`,
   category,
   tags: [],
-  source,
   status: 'active',
-  executionMode: 'external_link',
   pricingModel: 'free',
   requiresAuth: false,
   platform: 'web',
-  capabilities: [],
-  recommendedFor: [],
-  trustSignals: {
-    curated: false,
-    official: false,
-    communityVerified: false,
-  },
   ratingSummary: {
     upvotes: 0,
     downvotes: 0,
@@ -42,9 +29,7 @@ const baseTool = (
   usageStats: {
     saves: 0,
     opens: 0,
-    subscriptions: 0,
   },
-  subscriptionSupport: false,
   reviewAggregate: null,
 })
 

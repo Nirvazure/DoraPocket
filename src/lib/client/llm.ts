@@ -37,7 +37,6 @@ export type AskQwenOptions = {
 
 export type ChatToolPayload = {
   toolId: string
-  args: Record<string, unknown>
 } | null
 
 export type ChatReply = {

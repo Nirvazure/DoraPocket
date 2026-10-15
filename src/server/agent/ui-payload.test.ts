@@ -24,24 +24,34 @@ const taskFrame: AgentTaskFrame = {
 const tool: ToolItem = {
   id: 'pdf-tool',
   name: 'PDF Tool',
-  icon: 'pdf',
+  iconUrl: null,
   url: 'https://example.com',
   description: 'Compress PDFs online.',
   category: 'productivity',
   tags: ['pdf', 'compress'],
-  source: 'market',
   status: 'active',
-  executionMode: 'external_link',
   pricingModel: 'free',
   requiresAuth: false,
   platform: 'web',
-  capabilities: ['compress_pdf'],
-  recommendedFor: ['office'],
-  trustSignals: { curated: true, official: true, communityVerified: true },
   ratingSummary: { upvotes: 0, downvotes: 0, score: 0 },
-  usageStats: { saves: 0, opens: 0, subscriptions: 0 },
-  subscriptionSupport: false,
+  usageStats: { saves: 0, opens: 0 },
 }
+
+test('unknown price, API availability and login requirements remain unconfirmed', () => {
+  const payload = buildAgentUiPayload(
+    { ...taskFrame, platformPreference: 'api' },
+    { ...tool, pricingModel: 'unknown', platform: 'unknown', requiresAuth: null },
+    [],
+    '请先确认条件',
+    marketContext,
+  )
+  assert.ok(payload.riskNotes?.some((note) => note.includes('价格尚未确认')))
+  assert.ok(payload.riskNotes?.some((note) => note.includes('API 能力尚未确认')))
+  assert.equal(
+    payload.riskNotes?.some((note) => note.includes('不是免费优先方案')),
+    false,
+  )
+})
 
 const candidates: AgentCandidate[] = [
   {
@@ -65,7 +75,6 @@ const candidates: AgentCandidate[] = [
 
 const marketContext: MarketContext = {
   savedItems: [{ toolId: 'pdf-tool' }],
-  subscriptions: [],
   feedback: [
     {
       toolId: 'pdf-tool',
@@ -81,9 +90,7 @@ const marketContext: MarketContext = {
     preferredTags: ['pdf'],
     preferredPlatforms: ['web'],
     preferredPricing: ['free'],
-    preferredExecutionModes: ['external_link'],
     avoidAuthWall: true,
-    prefersSubscriptionTools: false,
     summary: ['你经常保存 PDF 类工具'],
   },
 }
@@ -102,7 +109,8 @@ test('buildAgentUiPayload creates decision evidence for the primary recommendati
   const firstReason = payload.whyThisFirst?.[0]
   assert.equal(firstReason, candidates[0].reason)
   assert.equal(payload.whyNotAlternatives?.['heavy-tool'], '功能更完整，但注册和学习成本更高。')
-  assert.ok(payload.trustEvidence?.includes('官方来源'))
+  assert.equal(payload.trustEvidence?.includes('官方来源'), false)
+  assert.equal(payload.recommendedActions.includes('订阅这个工具'), false)
   assert.ok((payload.communityEvidence?.length ?? 0) > 0)
   assert.ok(payload.communityEvidence?.some((line) => line.includes('5.0')))
   assert.ok((payload.personalEvidence?.length ?? 0) > 0)
@@ -122,4 +130,16 @@ test('buildAgentUiPayload surfaces risk notes for auth and paid tools', () => {
 
   assert.ok(payload.riskNotes?.includes('需要注册或登录，可能不符合免注册优先。'))
   assert.ok(payload.riskNotes?.includes('不是免费优先方案，试用前需要确认价格。'))
+})
+
+test('unknown authentication does not claim a tool is login-free', () => {
+  const payload = buildAgentUiPayload(
+    taskFrame,
+    { ...tool, requiresAuth: null, pricingModel: 'unknown', platform: 'unknown' },
+    candidates,
+    '需要先确认工具信息。',
+    marketContext,
+    candidates[0],
+  )
+  assert.equal(payload.preferenceSignals.includes('符合你偏好低摩擦、免登录工具的习惯'), false)
 })

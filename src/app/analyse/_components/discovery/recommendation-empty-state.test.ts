@@ -26,7 +26,7 @@ const payload: AgentUiPayload = {
 }
 const props = {
   payload,
-  selectedToolPayload: { toolId: 'stale', args: {} },
+  selectedToolPayload: { toolId: 'stale' },
   analysisFlow: { phase: 'revealed', beat: 'working' } as const,
   getTool: () => null,
   onSaveCandidate: () => {},

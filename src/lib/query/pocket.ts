@@ -17,7 +17,6 @@ type PocketMutationContext = {
 type SaveToolToPocketInput = {
   toolId: string
   sourceQuestion?: string
-  presetArgs?: Record<string, unknown>
 }
 
 type TogglePocketFlagInput = {
@@ -37,7 +36,6 @@ function createOptimisticPocketItem(
     purchased: false,
     archived: false,
     sourceQuestion: input.sourceQuestion,
-    presetArgs: input.presetArgs,
   }
 }
 
@@ -57,7 +55,6 @@ function optimisticallySavePocketItem(
           ...item,
           archived: false,
           sourceQuestion: input.sourceQuestion,
-          presetArgs: input.presetArgs,
         }
       : item,
   )
@@ -137,10 +134,10 @@ export function useSaveToolToPocketMutation() {
   const queryClient = useQueryClient()
 
   return useMutation<PocketInventoryItem[], Error, SaveToolToPocketInput, PocketMutationContext>({
-    mutationFn: async ({ toolId, sourceQuestion, presetArgs }) =>
+    mutationFn: async ({ toolId, sourceQuestion }) =>
       apiFetch<PocketInventoryItem[]>('/api/me/pocket', {
         method: 'POST',
-        body: JSON.stringify({ toolId, sourceQuestion, presetArgs }),
+        body: JSON.stringify({ toolId, sourceQuestion }),
       }),
     onMutate: async (variables) => {
       const previousPocketInventory = await preparePocketOptimisticUpdate(queryClient)

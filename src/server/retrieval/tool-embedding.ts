@@ -1,93 +1,103 @@
-import { createHash } from 'node:crypto'
-
 import { QWEN_BASE_URL } from '@/constant'
 import { prisma } from '@/server/db/prisma'
+import { getExtensionSchema } from '@/server/db/extensions'
+import { updateToolIndex } from '@/server/repositories/tool-repo'
+import { getEmbeddingConfig, type EmbeddingConfig } from '@/shared/market/tool-index-content'
 
-const EMBEDDING_MODEL = 'text-embedding-v3'
-const EMBEDDING_DIM = 1024
-
-type ToolEmbedFields = {
-  name: string
-  description: string
-  category: string
-  tags: string[]
-  capabilities: string[]
-  recommendedFor: string[]
+type PreparedIndex = {
+  content: string
+  contentHash: string
+  embeddingModel: string | null
+  embeddedAt: Date | null
+}
+type EmbeddingDeps = {
+  config: EmbeddingConfig
+  prepare: (toolId: string) => Promise<PreparedIndex | null>
+  embed: (text: string, config: EmbeddingConfig) => Promise<number[] | null>
+  write: (toolId: string, hash: string, model: string, embedding: number[]) => Promise<boolean>
 }
 
-function buildEmbeddingText(tool: ToolEmbedFields): string {
-  return [
-    tool.name,
-    tool.description,
-    `分类: ${tool.category}`,
-    `标签: ${tool.tags.join('、')}`,
-    `能力: ${tool.capabilities.join('、')}`,
-    `适用于: ${tool.recommendedFor.join('、')}`,
-  ].join('\n')
+export function validateEmbedding(embedding: number[]): void {
+  if (embedding.length !== 1024 || embedding.some((value) => !Number.isFinite(value)))
+    throw new Error('Embedding must contain 1024 finite numbers')
 }
 
-function contentHash(tool: ToolEmbedFields): string {
-  return createHash('sha256').update(buildEmbeddingText(tool)).digest('hex')
-}
-
-async function embedText(text: string): Promise<number[] | null> {
+async function embedText(text: string, config = getEmbeddingConfig()): Promise<number[] | null> {
   const apiKey = process.env.QWEN_API_KEY?.trim()
   if (!apiKey) return null
-
   const response = await fetch(`${QWEN_BASE_URL}/embeddings`, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
+    signal: AbortSignal.timeout(30_000),
+    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: process.env.QWEN_EMBEDDING_MODEL?.trim() || EMBEDDING_MODEL,
+      model: config.model,
       input: text,
-      dimensions: Number(process.env.QWEN_EMBEDDING_DIMENSIONS ?? EMBEDDING_DIM),
+      dimensions: config.dimensions,
       encoding_format: 'float',
     }),
   })
-
-  if (!response.ok) return null
-
-  const payload = (await response.json()) as { data?: Array<{ embedding: number[] }> }
-  return payload.data?.[0]?.embedding ?? null
+  if (!response.ok) throw new Error(`Embedding provider returned HTTP ${response.status}`)
+  const payload = (await response.json()) as { data?: Array<{ embedding?: number[] }> }
+  const embedding = payload.data?.[0]?.embedding
+  if (!Array.isArray(embedding)) throw new Error('Embedding provider response has no vector')
+  validateEmbedding(embedding)
+  return embedding
 }
 
-export async function syncToolEmbedding(toolId: string): Promise<void> {
-  try {
-    const tool = await prisma.tool.findUnique({ where: { id: toolId } })
-    if (!tool || tool.status !== 'active') return
-
-    const fields: ToolEmbedFields = {
-      name: tool.name,
-      description: tool.description,
-      category: tool.category,
-      tags: tool.tags,
-      capabilities: tool.capabilities,
-      recommendedFor: tool.recommendedFor,
-    }
-    const hash = contentHash(fields)
-    if (tool.embeddingContentHash === hash && tool.embeddedAt) return
-
-    const embedding = await embedText(buildEmbeddingText(fields))
-    if (!embedding) return
-
-    await prisma.$executeRawUnsafe(
-      `UPDATE "Tool"
-       SET "embedding" = $1::vector,
-           "embeddingModel" = $2,
-           "embeddingContentHash" = $3,
-           "embeddedAt" = NOW()
-       WHERE "id" = $4`,
-      `[${embedding.join(',')}]`,
-      process.env.QWEN_EMBEDDING_MODEL?.trim() || EMBEDDING_MODEL,
-      hash,
+async function prepareToolIndex(toolId: string): Promise<PreparedIndex | null> {
+  return prisma.$transaction(async (tx) => {
+    // Serialize index refresh with a concurrent catalog upsert before reading content.
+    await tx.$queryRawUnsafe(
+      'SELECT "id" FROM dorapocket."Tool" WHERE "id" = $1 FOR UPDATE',
       toolId,
     )
-  } catch (error) {
-    console.error('[syncToolEmbedding]', toolId, error)
-  }
+    const tool = await tx.tool.findUnique({ where: { id: toolId } })
+    if (!tool || tool.status !== 'active') return null
+    await updateToolIndex(tx, tool)
+    return tx.toolIndex.findUnique({
+      where: { toolId },
+      select: { content: true, contentHash: true, embeddingModel: true, embeddedAt: true },
+    })
+  })
+}
+
+export async function writeToolEmbedding(
+  toolId: string,
+  hash: string,
+  model: string,
+  embedding: number[],
+): Promise<boolean> {
+  validateEmbedding(embedding)
+  // A deployment may change model while a request is in flight.
+  if (getEmbeddingConfig().model !== model) return false
+  const schema = await getExtensionSchema('vector')
+  return (
+    (await prisma.$executeRawUnsafe(
+      `UPDATE dorapocket."ToolIndex" AS i
+     SET "embedding" = $1::${schema}.vector, "embeddingModel" = $2, "embeddedAt" = NOW()
+     FROM dorapocket."Tool" AS t
+     WHERE i."toolId" = $4 AND t."id" = i."toolId" AND t."status" = 'active'
+       AND i."contentHash" = $3`,
+      `[${embedding.join(',')}]`,
+      model,
+      hash,
+      toolId,
+    )) > 0
+  )
+}
+
+export async function syncToolEmbedding(
+  toolId: string,
+  deps: Partial<EmbeddingDeps> = {},
+): Promise<void> {
+  const config = deps.config ?? getEmbeddingConfig()
+  if (config.dimensions !== 1024) throw new Error('Embedding dimension must be 1024')
+  const index = await (deps.prepare ?? prepareToolIndex)(toolId)
+  if (!index || (index.embeddedAt && index.embeddingModel === config.model)) return
+  const embedding = await (deps.embed ?? embedText)(index.content, config)
+  if (!embedding) return
+  validateEmbedding(embedding)
+  await (deps.write ?? writeToolEmbedding)(toolId, index.contentHash, config.model, embedding)
 }
 
 export async function embedQuery(text: string): Promise<number[] | null> {
@@ -102,17 +112,16 @@ export async function searchToolsByEmbedding(
   queryEmbedding: number[],
   limit: number,
 ): Promise<Map<string, number>> {
-  const vector = `[${queryEmbedding.join(',')}]`
-
+  validateEmbedding(queryEmbedding)
+  const schema = await getExtensionSchema('vector')
   const rows = await prisma.$queryRawUnsafe<Array<{ id: string; similarity: number }>>(
-    `SELECT "id", 1 - ("embedding" <=> $1::vector) AS similarity
-     FROM "Tool"
-     WHERE "status" = 'active' AND "embedding" IS NOT NULL
-     ORDER BY "embedding" <=> $1::vector
-     LIMIT $2`,
-    vector,
+    `SELECT t."id", 1 - (i."embedding" OPERATOR(${schema}.<=>) $1::${schema}.vector) AS similarity
+     FROM dorapocket."Tool" t JOIN dorapocket."ToolIndex" i ON i."toolId" = t."id"
+     WHERE t."status" = 'active' AND i."embedding" IS NOT NULL AND i."embeddingModel" = $3
+     ORDER BY i."embedding" OPERATOR(${schema}.<=>) $1::${schema}.vector LIMIT $2`,
+    `[${queryEmbedding.join(',')}]`,
     limit,
+    getEmbeddingConfig().model,
   )
-
   return new Map(rows.map((row) => [row.id, Number(row.similarity)]))
 }

@@ -15,10 +15,7 @@ export async function getPreferenceProfileOverride(
     preferredPlatforms:
       current.preferredPlatforms as PreferenceProfileOverride['preferredPlatforms'],
     preferredPricing: current.preferredPricing as PreferenceProfileOverride['preferredPricing'],
-    preferredExecutionModes:
-      current.preferredExecutionModes as PreferenceProfileOverride['preferredExecutionModes'],
     avoidAuthWall: current.avoidAuthWall ?? undefined,
-    prefersSubscriptionTools: current.prefersSubscriptionTools ?? undefined,
   }
 }
 
@@ -34,18 +31,14 @@ export async function savePreferenceProfileOverride(
       preferredTags: input.preferredTags ?? [],
       preferredPlatforms: (input.preferredPlatforms as string[]) ?? [],
       preferredPricing: (input.preferredPricing as string[]) ?? [],
-      preferredExecutionModes: (input.preferredExecutionModes as string[]) ?? [],
       avoidAuthWall: input.avoidAuthWall ?? null,
-      prefersSubscriptionTools: input.prefersSubscriptionTools ?? null,
     },
     update: {
       preferredCategories: input.preferredCategories ?? [],
       preferredTags: input.preferredTags ?? [],
       preferredPlatforms: (input.preferredPlatforms as string[]) ?? [],
       preferredPricing: (input.preferredPricing as string[]) ?? [],
-      preferredExecutionModes: (input.preferredExecutionModes as string[]) ?? [],
       avoidAuthWall: input.avoidAuthWall ?? null,
-      prefersSubscriptionTools: input.prefersSubscriptionTools ?? null,
     },
   })
   return getPreferenceProfileOverride(userId)

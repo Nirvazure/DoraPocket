@@ -29,13 +29,11 @@ export type AggregateToolActivity = {
 export type ToolActivityAvgAggregateOutputType = {
   saves: number | null
   opens: number | null
-  subscriptions: number | null
 }
 
 export type ToolActivitySumAggregateOutputType = {
   saves: number | null
   opens: number | null
-  subscriptions: number | null
 }
 
 export type ToolActivityMinAggregateOutputType = {
@@ -44,7 +42,6 @@ export type ToolActivityMinAggregateOutputType = {
   toolId: string | null
   saves: number | null
   opens: number | null
-  subscriptions: number | null
 }
 
 export type ToolActivityMaxAggregateOutputType = {
@@ -53,7 +50,6 @@ export type ToolActivityMaxAggregateOutputType = {
   toolId: string | null
   saves: number | null
   opens: number | null
-  subscriptions: number | null
 }
 
 export type ToolActivityCountAggregateOutputType = {
@@ -62,7 +58,6 @@ export type ToolActivityCountAggregateOutputType = {
   toolId: number
   saves: number
   opens: number
-  subscriptions: number
   _all: number
 }
 
@@ -70,13 +65,11 @@ export type ToolActivityCountAggregateOutputType = {
 export type ToolActivityAvgAggregateInputType = {
   saves?: true
   opens?: true
-  subscriptions?: true
 }
 
 export type ToolActivitySumAggregateInputType = {
   saves?: true
   opens?: true
-  subscriptions?: true
 }
 
 export type ToolActivityMinAggregateInputType = {
@@ -85,7 +78,6 @@ export type ToolActivityMinAggregateInputType = {
   toolId?: true
   saves?: true
   opens?: true
-  subscriptions?: true
 }
 
 export type ToolActivityMaxAggregateInputType = {
@@ -94,7 +86,6 @@ export type ToolActivityMaxAggregateInputType = {
   toolId?: true
   saves?: true
   opens?: true
-  subscriptions?: true
 }
 
 export type ToolActivityCountAggregateInputType = {
@@ -103,7 +94,6 @@ export type ToolActivityCountAggregateInputType = {
   toolId?: true
   saves?: true
   opens?: true
-  subscriptions?: true
   _all?: true
 }
 
@@ -199,7 +189,6 @@ export type ToolActivityGroupByOutputType = {
   toolId: string
   saves: number
   opens: number
-  subscriptions: number
   _count: ToolActivityCountAggregateOutputType | null
   _avg: ToolActivityAvgAggregateOutputType | null
   _sum: ToolActivitySumAggregateOutputType | null
@@ -231,7 +220,6 @@ export type ToolActivityWhereInput = {
   toolId?: Prisma.StringFilter<"ToolActivity"> | string
   saves?: Prisma.IntFilter<"ToolActivity"> | number
   opens?: Prisma.IntFilter<"ToolActivity"> | number
-  subscriptions?: Prisma.IntFilter<"ToolActivity"> | number
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   tool?: Prisma.XOR<Prisma.ToolScalarRelationFilter, Prisma.ToolWhereInput>
 }
@@ -242,7 +230,6 @@ export type ToolActivityOrderByWithRelationInput = {
   toolId?: Prisma.SortOrder
   saves?: Prisma.SortOrder
   opens?: Prisma.SortOrder
-  subscriptions?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   tool?: Prisma.ToolOrderByWithRelationInput
 }
@@ -257,7 +244,6 @@ export type ToolActivityWhereUniqueInput = Prisma.AtLeast<{
   toolId?: Prisma.StringFilter<"ToolActivity"> | string
   saves?: Prisma.IntFilter<"ToolActivity"> | number
   opens?: Prisma.IntFilter<"ToolActivity"> | number
-  subscriptions?: Prisma.IntFilter<"ToolActivity"> | number
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   tool?: Prisma.XOR<Prisma.ToolScalarRelationFilter, Prisma.ToolWhereInput>
 }, "id" | "userId_toolId">
@@ -268,7 +254,6 @@ export type ToolActivityOrderByWithAggregationInput = {
   toolId?: Prisma.SortOrder
   saves?: Prisma.SortOrder
   opens?: Prisma.SortOrder
-  subscriptions?: Prisma.SortOrder
   _count?: Prisma.ToolActivityCountOrderByAggregateInput
   _avg?: Prisma.ToolActivityAvgOrderByAggregateInput
   _max?: Prisma.ToolActivityMaxOrderByAggregateInput
@@ -285,14 +270,12 @@ export type ToolActivityScalarWhereWithAggregatesInput = {
   toolId?: Prisma.StringWithAggregatesFilter<"ToolActivity"> | string
   saves?: Prisma.IntWithAggregatesFilter<"ToolActivity"> | number
   opens?: Prisma.IntWithAggregatesFilter<"ToolActivity"> | number
-  subscriptions?: Prisma.IntWithAggregatesFilter<"ToolActivity"> | number
 }
 
 export type ToolActivityCreateInput = {
   id?: string
   saves?: number
   opens?: number
-  subscriptions?: number
   user: Prisma.UserCreateNestedOneWithoutToolActivitiesInput
   tool: Prisma.ToolCreateNestedOneWithoutToolActivitiesInput
 }
@@ -303,14 +286,12 @@ export type ToolActivityUncheckedCreateInput = {
   toolId: string
   saves?: number
   opens?: number
-  subscriptions?: number
 }
 
 export type ToolActivityUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   saves?: Prisma.IntFieldUpdateOperationsInput | number
   opens?: Prisma.IntFieldUpdateOperationsInput | number
-  subscriptions?: Prisma.IntFieldUpdateOperationsInput | number
   user?: Prisma.UserUpdateOneRequiredWithoutToolActivitiesNestedInput
   tool?: Prisma.ToolUpdateOneRequiredWithoutToolActivitiesNestedInput
 }
@@ -321,7 +302,6 @@ export type ToolActivityUncheckedUpdateInput = {
   toolId?: Prisma.StringFieldUpdateOperationsInput | string
   saves?: Prisma.IntFieldUpdateOperationsInput | number
   opens?: Prisma.IntFieldUpdateOperationsInput | number
-  subscriptions?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type ToolActivityCreateManyInput = {
@@ -330,14 +310,12 @@ export type ToolActivityCreateManyInput = {
   toolId: string
   saves?: number
   opens?: number
-  subscriptions?: number
 }
 
 export type ToolActivityUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   saves?: Prisma.IntFieldUpdateOperationsInput | number
   opens?: Prisma.IntFieldUpdateOperationsInput | number
-  subscriptions?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type ToolActivityUncheckedUpdateManyInput = {
@@ -346,7 +324,6 @@ export type ToolActivityUncheckedUpdateManyInput = {
   toolId?: Prisma.StringFieldUpdateOperationsInput | string
   saves?: Prisma.IntFieldUpdateOperationsInput | number
   opens?: Prisma.IntFieldUpdateOperationsInput | number
-  subscriptions?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type ToolActivityListRelationFilter = {
@@ -370,13 +347,11 @@ export type ToolActivityCountOrderByAggregateInput = {
   toolId?: Prisma.SortOrder
   saves?: Prisma.SortOrder
   opens?: Prisma.SortOrder
-  subscriptions?: Prisma.SortOrder
 }
 
 export type ToolActivityAvgOrderByAggregateInput = {
   saves?: Prisma.SortOrder
   opens?: Prisma.SortOrder
-  subscriptions?: Prisma.SortOrder
 }
 
 export type ToolActivityMaxOrderByAggregateInput = {
@@ -385,7 +360,6 @@ export type ToolActivityMaxOrderByAggregateInput = {
   toolId?: Prisma.SortOrder
   saves?: Prisma.SortOrder
   opens?: Prisma.SortOrder
-  subscriptions?: Prisma.SortOrder
 }
 
 export type ToolActivityMinOrderByAggregateInput = {
@@ -394,13 +368,11 @@ export type ToolActivityMinOrderByAggregateInput = {
   toolId?: Prisma.SortOrder
   saves?: Prisma.SortOrder
   opens?: Prisma.SortOrder
-  subscriptions?: Prisma.SortOrder
 }
 
 export type ToolActivitySumOrderByAggregateInput = {
   saves?: Prisma.SortOrder
   opens?: Prisma.SortOrder
-  subscriptions?: Prisma.SortOrder
 }
 
 export type ToolActivityCreateNestedManyWithoutUserInput = {
@@ -491,7 +463,6 @@ export type ToolActivityCreateWithoutUserInput = {
   id?: string
   saves?: number
   opens?: number
-  subscriptions?: number
   tool: Prisma.ToolCreateNestedOneWithoutToolActivitiesInput
 }
 
@@ -500,7 +471,6 @@ export type ToolActivityUncheckedCreateWithoutUserInput = {
   toolId: string
   saves?: number
   opens?: number
-  subscriptions?: number
 }
 
 export type ToolActivityCreateOrConnectWithoutUserInput = {
@@ -538,14 +508,12 @@ export type ToolActivityScalarWhereInput = {
   toolId?: Prisma.StringFilter<"ToolActivity"> | string
   saves?: Prisma.IntFilter<"ToolActivity"> | number
   opens?: Prisma.IntFilter<"ToolActivity"> | number
-  subscriptions?: Prisma.IntFilter<"ToolActivity"> | number
 }
 
 export type ToolActivityCreateWithoutToolInput = {
   id?: string
   saves?: number
   opens?: number
-  subscriptions?: number
   user: Prisma.UserCreateNestedOneWithoutToolActivitiesInput
 }
 
@@ -554,7 +522,6 @@ export type ToolActivityUncheckedCreateWithoutToolInput = {
   userId: string
   saves?: number
   opens?: number
-  subscriptions?: number
 }
 
 export type ToolActivityCreateOrConnectWithoutToolInput = {
@@ -588,14 +555,12 @@ export type ToolActivityCreateManyUserInput = {
   toolId: string
   saves?: number
   opens?: number
-  subscriptions?: number
 }
 
 export type ToolActivityUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   saves?: Prisma.IntFieldUpdateOperationsInput | number
   opens?: Prisma.IntFieldUpdateOperationsInput | number
-  subscriptions?: Prisma.IntFieldUpdateOperationsInput | number
   tool?: Prisma.ToolUpdateOneRequiredWithoutToolActivitiesNestedInput
 }
 
@@ -604,7 +569,6 @@ export type ToolActivityUncheckedUpdateWithoutUserInput = {
   toolId?: Prisma.StringFieldUpdateOperationsInput | string
   saves?: Prisma.IntFieldUpdateOperationsInput | number
   opens?: Prisma.IntFieldUpdateOperationsInput | number
-  subscriptions?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type ToolActivityUncheckedUpdateManyWithoutUserInput = {
@@ -612,7 +576,6 @@ export type ToolActivityUncheckedUpdateManyWithoutUserInput = {
   toolId?: Prisma.StringFieldUpdateOperationsInput | string
   saves?: Prisma.IntFieldUpdateOperationsInput | number
   opens?: Prisma.IntFieldUpdateOperationsInput | number
-  subscriptions?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type ToolActivityCreateManyToolInput = {
@@ -620,14 +583,12 @@ export type ToolActivityCreateManyToolInput = {
   userId: string
   saves?: number
   opens?: number
-  subscriptions?: number
 }
 
 export type ToolActivityUpdateWithoutToolInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   saves?: Prisma.IntFieldUpdateOperationsInput | number
   opens?: Prisma.IntFieldUpdateOperationsInput | number
-  subscriptions?: Prisma.IntFieldUpdateOperationsInput | number
   user?: Prisma.UserUpdateOneRequiredWithoutToolActivitiesNestedInput
 }
 
@@ -636,7 +597,6 @@ export type ToolActivityUncheckedUpdateWithoutToolInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   saves?: Prisma.IntFieldUpdateOperationsInput | number
   opens?: Prisma.IntFieldUpdateOperationsInput | number
-  subscriptions?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type ToolActivityUncheckedUpdateManyWithoutToolInput = {
@@ -644,7 +604,6 @@ export type ToolActivityUncheckedUpdateManyWithoutToolInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   saves?: Prisma.IntFieldUpdateOperationsInput | number
   opens?: Prisma.IntFieldUpdateOperationsInput | number
-  subscriptions?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 
@@ -655,7 +614,6 @@ export type ToolActivitySelect<ExtArgs extends runtime.Types.Extensions.Internal
   toolId?: boolean
   saves?: boolean
   opens?: boolean
-  subscriptions?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tool?: boolean | Prisma.ToolDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["toolActivity"]>
@@ -666,7 +624,6 @@ export type ToolActivitySelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   toolId?: boolean
   saves?: boolean
   opens?: boolean
-  subscriptions?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tool?: boolean | Prisma.ToolDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["toolActivity"]>
@@ -677,7 +634,6 @@ export type ToolActivitySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   toolId?: boolean
   saves?: boolean
   opens?: boolean
-  subscriptions?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tool?: boolean | Prisma.ToolDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["toolActivity"]>
@@ -688,10 +644,9 @@ export type ToolActivitySelectScalar = {
   toolId?: boolean
   saves?: boolean
   opens?: boolean
-  subscriptions?: boolean
 }
 
-export type ToolActivityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "toolId" | "saves" | "opens" | "subscriptions", ExtArgs["result"]["toolActivity"]>
+export type ToolActivityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "toolId" | "saves" | "opens", ExtArgs["result"]["toolActivity"]>
 export type ToolActivityInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   tool?: boolean | Prisma.ToolDefaultArgs<ExtArgs>
@@ -717,7 +672,6 @@ export type $ToolActivityPayload<ExtArgs extends runtime.Types.Extensions.Intern
     toolId: string
     saves: number
     opens: number
-    subscriptions: number
   }, ExtArgs["result"]["toolActivity"]>
   composites: {}
 }
@@ -1148,7 +1102,6 @@ export interface ToolActivityFieldRefs {
   readonly toolId: Prisma.FieldRef<"ToolActivity", 'String'>
   readonly saves: Prisma.FieldRef<"ToolActivity", 'Int'>
   readonly opens: Prisma.FieldRef<"ToolActivity", 'Int'>
-  readonly subscriptions: Prisma.FieldRef<"ToolActivity", 'Int'>
 }
     
 

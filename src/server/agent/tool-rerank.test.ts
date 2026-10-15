@@ -14,23 +14,17 @@ const { judgeToolRecommendations } = await import('@/server/agent/tool-rerank')
 const tool: ToolItem = {
   id: 'hub-tool',
   name: 'Hub Tool',
-  icon: 'tool',
+  iconUrl: null,
   url: 'https://hub.example.com',
   description: 'A tool in Tool Hub.',
   category: 'productivity',
   tags: ['task'],
-  source: 'market',
   status: 'active',
-  executionMode: 'external_link',
   pricingModel: 'free',
   requiresAuth: false,
   platform: 'web',
-  capabilities: ['task'],
-  recommendedFor: ['task'],
-  trustSignals: { curated: true, official: false, communityVerified: false },
   ratingSummary: { upvotes: 0, downvotes: 0, score: 0 },
-  usageStats: { saves: 0, opens: 0, subscriptions: 0 },
-  subscriptionSupport: false,
+  usageStats: { saves: 0, opens: 0 },
 }
 
 const match: ToolMatch = {

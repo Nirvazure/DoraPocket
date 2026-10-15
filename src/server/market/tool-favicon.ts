@@ -2,7 +2,6 @@ import { prisma } from '@/server/db/prisma'
 import { uploadMarketAsset } from '@/server/storage/market-assets'
 import {
   buildMarketAssetPublicUrl,
-  isSupabaseMarketAssetUrl,
   marketIconKeyForImportedTool,
 } from '@/shared/market/market-asset-url'
 
@@ -80,23 +79,21 @@ export async function fetchSiteFavicon(siteUrl: string): Promise<FaviconPayload 
 export async function syncToolFavicon(toolId: string, siteUrl: string): Promise<void> {
   const tool = await prisma.tool.findUnique({
     where: { id: toolId },
-    select: { iconImageUrl: true },
+    select: { iconUrl: true },
   })
   if (!tool) return
-  if (isSupabaseMarketAssetUrl(tool.iconImageUrl)) return
+  if (tool.iconUrl?.trim()) return
 
   const favicon = await fetchSiteFavicon(siteUrl)
   if (!favicon) return
 
   const objectKey = marketIconKeyForImportedTool(toolId, favicon.ext)
-  const iconImageUrl = await uploadMarketAsset(objectKey, favicon.buffer, favicon.contentType)
+  const iconUrl = await uploadMarketAsset(objectKey, favicon.buffer, favicon.contentType)
 
-  await prisma.tool.update({
-    where: { id: toolId },
+  await prisma.tool.updateMany({
+    where: { id: toolId, iconUrl: null },
     data: {
-      iconType: 'favicon',
-      iconImageUrl,
-      iconImageLocalPath: null,
+      iconUrl,
     },
   })
 }

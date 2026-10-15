@@ -1,14 +1,8 @@
 import 'server-only'
 
-import type * as Prisma from '../../generated/prisma/internal/prismaNamespace'
 import { prisma } from '@/server/db/prisma'
 import type { PocketInventoryItem } from '@/shared/user/pocket-types'
 import { recordToolOpened, recordToolSaved } from '@/server/repositories/tool-activity-repo'
-
-function toJsonValue(value: unknown): Prisma.InputJsonValue | undefined {
-  if (value == null) return undefined
-  return value as Prisma.InputJsonValue
-}
 
 function toPocketInventoryItem(item: {
   toolId: string
@@ -19,7 +13,6 @@ function toPocketInventoryItem(item: {
   purchased: boolean
   archived: boolean
   sourceQuestion: string | null
-  presetArgs: unknown
 }): PocketInventoryItem {
   return {
     toolId: item.toolId,
@@ -30,10 +23,6 @@ function toPocketInventoryItem(item: {
     purchased: item.purchased,
     archived: item.archived,
     sourceQuestion: item.sourceQuestion ?? undefined,
-    presetArgs:
-      item.presetArgs && typeof item.presetArgs === 'object'
-        ? (item.presetArgs as Record<string, unknown>)
-        : undefined,
   }
 }
 
@@ -50,7 +39,6 @@ export async function saveToolToPocket(
   input: {
     toolId: string
     sourceQuestion?: string
-    presetArgs?: Record<string, unknown>
   },
 ) {
   await prisma.pocketItem.upsert({
@@ -59,11 +47,9 @@ export async function saveToolToPocket(
       userId,
       toolId: input.toolId,
       sourceQuestion: input.sourceQuestion,
-      presetArgs: toJsonValue(input.presetArgs),
     },
     update: {
       sourceQuestion: input.sourceQuestion,
-      presetArgs: toJsonValue(input.presetArgs),
     },
   })
   await recordToolSaved(userId, input.toolId)

@@ -10,11 +10,7 @@ type UseDiscoveryWorkspaceActionsOptions = {
   isAuthenticated: boolean
   getTool: ToolLookupFn
   getLatestUserPrompt: () => string
-  saveToolToPocket: (input: {
-    toolId: string
-    sourceQuestion?: string
-    presetArgs?: Record<string, unknown>
-  }) => void
+  saveToolToPocket: (input: { toolId: string; sourceQuestion?: string }) => void
   markToolUsed: (input: { toolId: string }) => void
   setSystemNotice: (notice: {
     level: 'task' | 'ambient' | 'critical' | 'silent'

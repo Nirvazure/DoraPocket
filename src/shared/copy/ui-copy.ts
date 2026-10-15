@@ -272,6 +272,5 @@ export const MARKET_ACTIVITY_COPY = {
     savedTagsSuffix: '相关能力',
     avoidAuthWall: '更偏好免登录、低摩擦工具',
     lowTrialCost: '对低试错成本工具更敏感',
-    prefersSubscriptionTools: '愿意把工具沉淀成长线订阅资产',
   },
 } as const

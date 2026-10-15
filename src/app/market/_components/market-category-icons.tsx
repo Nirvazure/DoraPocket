@@ -27,6 +27,7 @@ const CATEGORY_ICON_MAP: Record<MarketCategoryKey, LucideIcon> = {
   media: ImageIcon,
   learning: GraduationCap,
   writing: PenSquare,
+  other: Briefcase,
 }
 
 type MarketCategoryIconProps = {

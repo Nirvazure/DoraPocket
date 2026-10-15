@@ -5,92 +5,90 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  schemas  = ["dorapocket"]
 }
 
 model User {
-  id                     String                    @id @default(cuid())
-  supabaseUserId         String                    @unique
-  email                  String?
-  nickname               String
-  avatarSrc              String?
-  bio                    String?
-  website                String?
-  company                String?
-  authCreatedAt          DateTime?
-  lastSignInAt           DateTime?
-  authRole               String?
-  authProvider           String?
-  createdAt              DateTime                  @default(now())
-  updatedAt              DateTime                  @updatedAt
-  settings               UserSettings?
-  pocketItems            PocketItem[]
-  marketFeedback         MarketFeedback[]
-  marketSubscriptions    MarketSubscription[]
-  marketSubmissions      MarketSubmission[]
-  toolActivities         ToolActivity[]
-  chatHistory            ChatHistoryEntry[]
-  preferenceOverride     PreferenceProfileOverride?
-  recommendationSessions RecommendationSession[]
+  id                        String                     @id @default(cuid())
+  supabaseUserId            String                     @unique
+  email                     String?
+  nickname                  String
+  avatarSrc                 String?
+  bio                       String?
+  website                   String?
+  company                   String?
+  authCreatedAt             DateTime?
+  lastSignInAt              DateTime?
+  authRole                  String?
+  authProvider              String?
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @updatedAt
+  settings                  UserSettings?
+  pocketItems               PocketItem[]
+  marketFeedback            MarketFeedback[]
+  marketSubmissions         MarketSubmission[]
+  toolActivities            ToolActivity[]
+  chatHistory               ChatHistoryEntry[]
+  preferenceOverride        PreferenceProfileOverride?
+  recommendationSessions    RecommendationSession[]
   recommendationEvaluations RecommendationEvaluation[]
-  migrationState         DataMigrationState?
-  createdTools           Tool[]
+  createdTools              Tool[]
+
+  @@schema("dorapocket")
 }
 
 model UserSettings {
-  id                      String   @id @default(cuid())
-  userId                  String   @unique
-  voicePlaybackEnabled    Boolean  @default(true)
-  voicePlaybackMode       String   @default("key-result")
-  soundEffectsEnabled     Boolean  @default(true)
-  defaultInputMode        String   @default("text")
-  memoryEnabled           Boolean  @default(true)
-  explanationMode         String   @default("standard")
-  fontPreset              String   @default("c")
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
-  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  voicePlaybackEnabled Boolean  @default(true)
+  voicePlaybackMode    String   @default("key-result")
+  soundEffectsEnabled  Boolean  @default(true)
+  defaultInputMode     String   @default("text")
+  memoryEnabled        Boolean  @default(true)
+  explanationMode      String   @default("standard")
+  fontPreset           String   @default("c")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@schema("dorapocket")
 }
 
 model Tool {
-  id                 String               @id
-  name               String
-  icon               String
-  iconType           String?
-  iconText           String?
-  iconImageUrl       String?
-  iconImageLocalPath String?
-  url                String?
-  description        String
-  category           String
-  tags               String[]
-  source             String
-  status             String
-  executionMode      String
-  pricingModel       String
-  requiresAuth       Boolean
-  platform           String
-  capabilities       String[]
-  recommendedFor     String[]
-  sourceNote         String?
-  trustSignals       Json
-  subscriptionSupport Boolean
-  defaultArgs        Json?
-  siteHostname       String?
-  marketAssetOrigin  String?
-  seedSource         String   @default("system_seed")
-  createdByUserId    String?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  embedding              Unsupported("vector(1024)")?
-  embeddingModel         String?
-  embeddingContentHash   String?
-  embeddedAt             DateTime?
-  searchDocument         Unsupported("tsvector")?
-  createdBy          User?    @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
-  pocketItems        PocketItem[]
-  marketFeedback     MarketFeedback[]
-  marketSubscriptions MarketSubscription[]
-  toolActivities     ToolActivity[]
+  id              String           @id
+  name            String
+  url             String
+  description     String
+  category        String
+  tags            String[]
+  iconUrl         String?
+  status          String           @default("active")
+  pricingModel    String           @default("unknown")
+  requiresAuth    Boolean?
+  platform        String           @default("unknown")
+  createdByUserId String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  createdBy       User?            @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
+  index           ToolIndex?
+  pocketItems     PocketItem[]
+  marketFeedback  MarketFeedback[]
+  toolActivities  ToolActivity[]
+
+  @@schema("dorapocket")
+}
+
+model ToolIndex {
+  toolId         String                       @id
+  content        String
+  contentHash    String
+  searchDocument Unsupported("tsvector")?     @default(dbgenerated())
+  embedding      Unsupported("vector(1024)")?
+  embeddingModel String?
+  embeddedAt     DateTime?
+  tool           Tool                         @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@schema("dorapocket")
 }
 
 model PocketItem {
@@ -104,11 +102,11 @@ model PocketItem {
   purchased      Boolean  @default(false)
   archived       Boolean  @default(false)
   sourceQuestion String?
-  presetArgs     Json?
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   tool           Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
 
   @@unique([userId, toolId])
+  @@schema("dorapocket")
 }
 
 model MarketFeedback {
@@ -123,18 +121,7 @@ model MarketFeedback {
   tool         Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
 
   @@unique([userId, toolId])
-}
-
-model MarketSubscription {
-  id           String   @id @default(cuid())
-  userId       String
-  toolId       String
-  active       Boolean  @default(true)
-  subscribedAt DateTime @default(now())
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tool         Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, toolId])
+  @@schema("dorapocket")
 }
 
 model MarketSubmission {
@@ -150,19 +137,21 @@ model MarketSubmission {
   dedupCheckedAt      DateTime?
   duplicateSimilarity Float?
   user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@schema("dorapocket")
 }
 
 model ToolActivity {
-  id            String   @id @default(cuid())
-  userId        String
-  toolId        String
-  saves         Int      @default(0)
-  opens         Int      @default(0)
-  subscriptions Int      @default(0)
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tool          Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  toolId String
+  saves  Int    @default(0)
+  opens  Int    @default(0)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tool   Tool   @relation(fields: [toolId], references: [id], onDelete: Cascade)
 
   @@unique([userId, toolId])
+  @@schema("dorapocket")
 }
 
 model ChatHistoryEntry {
@@ -173,24 +162,26 @@ model ChatHistoryEntry {
   selectedToolId String?
   createdAt      DateTime @default(now())
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@schema("dorapocket")
 }
 
 model PreferenceProfileOverride {
-  id                       String   @id @default(cuid())
-  userId                   String   @unique
-  preferredCategories      String[]
-  preferredTags            String[]
-  preferredPlatforms       String[]
-  preferredPricing         String[]
-  preferredExecutionModes  String[]
-  avoidAuthWall            Boolean?
-  prefersSubscriptionTools Boolean?
-  updatedAt                DateTime @updatedAt
-  user                     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  preferredCategories String[]
+  preferredTags       String[]
+  preferredPlatforms  String[]
+  preferredPricing    String[]
+  avoidAuthWall       Boolean?
+  updatedAt           DateTime @updatedAt
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@schema("dorapocket")
 }
 
 model RecommendationSession {
-  id                String   @id @default(cuid())
+  id                String                     @id @default(cuid())
   userId            String
   userText          String
   taskFrame         Json
@@ -201,40 +192,36 @@ model RecommendationSession {
   preferenceSignals String[]
   finalText         String
   starterPath       String?
-  clarifyTurnCount  Int      @default(0)
+  clarifyTurnCount  Int                        @default(0)
   confidenceLevel   String?
   openedToolId      String?
   savedToolId       String?
   evaluatedAt       DateTime?
-  createdAt         DateTime @default(now())
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime                   @default(now())
+  user              User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
   evaluations       RecommendationEvaluation[]
+
+  @@schema("dorapocket")
 }
 
 model RecommendationEvaluation {
-  id                      String   @id @default(cuid())
+  id                      String                @id @default(cuid())
   userId                  String
   recommendationSessionId String
   selectedToolId          String?
-  opened                  Boolean  @default(false)
-  saved                   Boolean  @default(false)
-  tried                   Boolean  @default(false)
+  opened                  Boolean               @default(false)
+  saved                   Boolean               @default(false)
+  tried                   Boolean               @default(false)
   helpful                 Boolean?
   outcome                 String?
   rating                  Int?
   tags                    String[]
   comment                 String?
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
-  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt               DateTime              @default(now())
+  updatedAt               DateTime              @updatedAt
+  user                    User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   recommendationSession   RecommendationSession @relation(fields: [recommendationSessionId], references: [id], onDelete: Cascade)
 
   @@unique([userId, recommendationSessionId])
-}
-
-model DataMigrationState {
-  id                  String    @id @default(cuid())
-  userId              String    @unique
-  localDataImportedAt DateTime?
-  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@schema("dorapocket")
 }

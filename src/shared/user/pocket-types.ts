@@ -7,5 +7,4 @@ export type PocketInventoryItem = {
   purchased: boolean
   archived: boolean
   sourceQuestion?: string
-  presetArgs?: Record<string, unknown>
 }

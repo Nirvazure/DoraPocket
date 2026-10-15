@@ -1,9 +1,56 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { syncToolArtifacts } from '@/server/cron/sync-tool-artifacts'
+import { syncToolArtifacts, toolRecordNeedsArtifactSync } from '@/server/cron/sync-tool-artifacts'
 
 const syncedIconUrl = 'https://assets.example.com/storage/tool.png'
+
+test('retains existing external and repository icons during artifact synchronization', async () => {
+  for (const iconUrl of ['https://cdn.example.com/logo.svg', '/images/tool.png']) {
+    let fetched = false
+    await syncToolArtifacts('tool-a', {
+      findTool: async () => ({
+        id: 'tool-a',
+        status: 'active',
+        url: 'https://example.com',
+        iconUrl,
+        embeddedAt: null,
+      }),
+      readToolArtifacts: async () => ({ embeddedAt: null, iconUrl }),
+      syncEmbedding: async () => undefined,
+      syncFavicon: async () => {
+        fetched = true
+      },
+    })
+    assert.equal(fetched, false)
+  }
+})
+
+test('favicon completion and unrelated metadata updates do not trigger webhook loops', () => {
+  const before = {
+    id: 'tool-a',
+    status: 'active',
+    url: 'https://example.com',
+    iconUrl: null,
+    name: 'Demo',
+    description: 'Tools',
+    category: 'search',
+    tags: ['AI'],
+  }
+  assert.equal(
+    toolRecordNeedsArtifactSync('UPDATE', { ...before, iconUrl: syncedIconUrl }, before),
+    false,
+  )
+  assert.equal(toolRecordNeedsArtifactSync('UPDATE', { ...before, name: 'Changed' }, before), true)
+  assert.equal(
+    toolRecordNeedsArtifactSync('UPDATE', { ...before, status: 'inactive' }, before),
+    false,
+  )
+  assert.equal(
+    toolRecordNeedsArtifactSync('UPDATE', before, { ...before, status: 'inactive' }),
+    true,
+  )
+})
 
 test('syncToolArtifacts reports embedding sync when embeddedAt changes', async () => {
   const beforeEmbeddedAt = new Date('2026-01-01T00:00:00.000Z')
@@ -15,12 +62,12 @@ test('syncToolArtifacts reports embedding sync when embeddedAt changes', async (
       id: 'tool-a',
       status: 'active',
       url: null,
-      iconImageUrl: null,
+      iconUrl: null,
       embeddedAt: beforeEmbeddedAt,
     }),
     readToolArtifacts: async () => {
       readCount += 1
-      return { embeddedAt: afterEmbeddedAt, iconImageUrl: null }
+      return { embeddedAt: afterEmbeddedAt, iconUrl: null }
     },
     syncEmbedding: async () => undefined,
     syncFavicon: async () => undefined,
@@ -34,8 +81,8 @@ test('syncToolArtifacts reports embedding sync when embeddedAt changes', async (
 
 test('syncToolArtifacts reports favicon sync when icon becomes synced asset url', async () => {
   const reads = [
-    { embeddedAt: new Date('2026-01-01T00:00:00.000Z'), iconImageUrl: null },
-    { embeddedAt: new Date('2026-01-01T00:00:00.000Z'), iconImageUrl: syncedIconUrl },
+    { embeddedAt: new Date('2026-01-01T00:00:00.000Z'), iconUrl: null },
+    { embeddedAt: new Date('2026-01-01T00:00:00.000Z'), iconUrl: syncedIconUrl },
   ]
   const faviconCalls: Array<{ toolId: string; siteUrl: string }> = []
 
@@ -44,7 +91,7 @@ test('syncToolArtifacts reports favicon sync when icon becomes synced asset url'
       id: 'tool-a',
       status: 'active',
       url: 'https://example.com',
-      iconImageUrl: null,
+      iconUrl: null,
       embeddedAt: new Date('2026-01-01T00:00:00.000Z'),
     }),
     readToolArtifacts: async () => reads.shift() ?? reads[reads.length - 1] ?? null,

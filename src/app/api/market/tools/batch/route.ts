@@ -27,6 +27,10 @@ export async function GET(request: Request) {
 
     const tools = await prisma.tool.findMany({
       where: { id: { in: ids }, status: 'active' },
+      include: {
+        marketFeedback: { select: { vote: true } },
+        toolActivities: { select: { saves: true, opens: true } },
+      },
     })
 
     const byId = new Map(tools.map((tool) => [tool.id, mapDbToolToToolItem(tool, viewerUserId)]))

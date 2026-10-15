@@ -21,7 +21,6 @@ function item(overrides: Partial<PocketInventoryItem> & { toolId: string }): Poc
     purchased: overrides.purchased ?? false,
     archived: overrides.archived ?? false,
     sourceQuestion: overrides.sourceQuestion,
-    presetArgs: overrides.presetArgs,
   }
 }
 
@@ -31,7 +30,6 @@ test('createOptimisticPocketItem creates active pocket item from save input', ()
       {
         toolId: 'tool-a',
         sourceQuestion: 'from market',
-        presetArgs: { mode: 'fast' },
       },
       100,
     ),
@@ -44,7 +42,6 @@ test('createOptimisticPocketItem creates active pocket item from save input', ()
       purchased: false,
       archived: false,
       sourceQuestion: 'from market',
-      presetArgs: { mode: 'fast' },
     },
   )
 })
@@ -75,7 +72,6 @@ test('optimisticallySavePocketItem restores archived item without resetting usag
       purchased: true,
       archived: true,
       sourceQuestion: 'old',
-      presetArgs: { old: true },
     }),
   ]
 
@@ -84,7 +80,6 @@ test('optimisticallySavePocketItem restores archived item without resetting usag
     {
       toolId: 'tool-a',
       sourceQuestion: 'new',
-      presetArgs: { new: true },
     },
     100,
   )
@@ -99,7 +94,6 @@ test('optimisticallySavePocketItem restores archived item without resetting usag
       purchased: true,
       archived: false,
       sourceQuestion: 'new',
-      presetArgs: { new: true },
     },
   ])
 })

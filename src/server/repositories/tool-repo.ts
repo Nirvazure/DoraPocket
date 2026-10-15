@@ -2,13 +2,9 @@ import 'server-only'
 
 import { createHash } from 'node:crypto'
 import { prisma } from '@/server/db/prisma'
-import { isSupabaseMarketAssetUrl } from '@/shared/market/market-asset-url'
-import {
-  type ToolCategory,
-  type ToolExecutionMode,
-  type ToolPlatform,
-  type ToolPricingModel,
-} from '@/shared/market/tool-registry'
+import type { Prisma } from '@/generated/prisma/client'
+import { buildToolIndex, type ToolIndexFields } from '@/shared/market/tool-index-content'
+import type { ToolCategory, ToolPlatform, ToolPricingModel } from '@/shared/market/tool-registry'
 import { assertOwnedToolDeletable } from '@/shared/market/owned-tool-delete'
 
 export type ImportedToolInput = {
@@ -17,23 +13,11 @@ export type ImportedToolInput = {
   description: string
   category: ToolCategory
   tags: string[]
-  executionMode?: ToolExecutionMode
+  iconUrl?: string | null
   pricingModel?: ToolPricingModel
-  requiresAuth?: boolean
+  requiresAuth?: boolean | null
   platform?: ToolPlatform
-  capabilities?: string[]
-  recommendedFor?: string[]
-  sourceNote?: string
-  siteHostname?: string
   createdByUserId?: string | null
-}
-
-function normalizeHostname(url: string): string | null {
-  try {
-    return new URL(url).hostname.replace(/^www\./, '')
-  } catch {
-    return null
-  }
 }
 
 export function createImportedToolId(url: string): string {
@@ -41,84 +25,65 @@ export function createImportedToolId(url: string): string {
   return `tool_${hash}`
 }
 
+// Called inside the same transaction as catalog writes. An unchanged hash preserves vectors.
+export async function updateToolIndex(
+  tx: Prisma.TransactionClient,
+  tool: ToolIndexFields & { id: string },
+) {
+  const index = buildToolIndex(tool)
+  await tx.$executeRawUnsafe(
+    `INSERT INTO dorapocket."ToolIndex" ("toolId", "content", "contentHash") VALUES ($1, $2, $3)
+     ON CONFLICT ("toolId") DO UPDATE SET "content" = EXCLUDED."content", "contentHash" = EXCLUDED."contentHash",
+       "embedding" = NULL, "embeddingModel" = NULL, "embeddedAt" = NULL
+     WHERE dorapocket."ToolIndex"."contentHash" IS DISTINCT FROM EXCLUDED."contentHash"`,
+    tool.id,
+    index.content,
+    index.contentHash,
+  )
+  return index
+}
+
 export async function upsertImportedTool(input: ImportedToolInput) {
   const url = input.url.trim()
-  const hostname = input.siteHostname ?? normalizeHostname(url)
+  const parsedUrl = new URL(url)
+  if (!['http:', 'https:'].includes(parsedUrl.protocol) || !parsedUrl.hostname)
+    throw new Error('Tool URL must use http or https')
   const id = createImportedToolId(url)
   const data = {
-    id,
     name: input.name.trim(),
-    icon: '🌐',
-    iconType: 'emoji',
-    iconText: '🌐',
-    iconImageUrl: null as string | null,
-    iconImageLocalPath: null,
     url,
     description: input.description.trim(),
     category: input.category,
-    tags: input.tags
-      .map((tag) => tag.trim())
-      .filter(Boolean)
-      .slice(0, 8),
-    source: 'submitted',
+    tags: [...new Set(input.tags.map((tag) => tag.trim()).filter(Boolean))].slice(0, 8),
     status: 'active',
-    executionMode: input.executionMode ?? 'external_link',
-    pricingModel: input.pricingModel ?? 'freemium',
-    requiresAuth: input.requiresAuth ?? false,
-    platform: input.platform ?? 'web',
-    capabilities:
-      input.capabilities
-        ?.map((item) => item.trim())
-        .filter(Boolean)
-        .slice(0, 8) ??
-      input.tags
-        .map((tag) => tag.trim())
-        .filter(Boolean)
-        .slice(0, 5),
-    recommendedFor: input.recommendedFor
-      ?.map((item) => item.trim())
-      .filter(Boolean)
-      .slice(0, 5) ?? [`需要 ${input.name.trim()} 相关能力`],
-    sourceNote: input.sourceNote ?? '用户提交',
-    trustSignals: {
-      curated: false,
-      official: false,
-      communityVerified: false,
-    },
-    subscriptionSupport: false,
-    defaultArgs: undefined,
-    siteHostname: hostname,
-    marketAssetOrigin: 'community',
-    seedSource: 'community_submission',
-    createdByUserId: input.createdByUserId ?? null,
+    pricingModel: input.pricingModel ?? 'unknown',
+    requiresAuth: input.requiresAuth ?? null,
+    platform: input.platform ?? 'unknown',
   }
-
-  const existing = await prisma.tool.findUnique({
-    where: { id },
-    select: { iconImageUrl: true, iconType: true, iconText: true, icon: true },
+  return prisma.$transaction(async (tx) => {
+    const tool = await tx.tool.upsert({
+      where: { id },
+      create: {
+        id,
+        ...data,
+        iconUrl: input.iconUrl ?? null,
+        createdByUserId: input.createdByUserId ?? null,
+      },
+      update: { ...data, ...(input.iconUrl !== undefined ? { iconUrl: input.iconUrl } : {}) },
+    })
+    await updateToolIndex(tx, tool)
+    return tool
   })
-
-  const updateData = { ...data }
-  if (existing && isSupabaseMarketAssetUrl(existing.iconImageUrl)) {
-    updateData.icon = existing.icon ?? updateData.icon
-    updateData.iconType = existing.iconType ?? updateData.iconType
-    updateData.iconText = existing.iconText ?? updateData.iconText
-    updateData.iconImageUrl = existing.iconImageUrl
-    updateData.iconImageLocalPath = null
-  }
-
-  const tool = await prisma.tool.upsert({
-    where: { id },
-    create: data,
-    update: updateData,
-  })
-  return tool
 }
 
 export async function listActiveTools() {
   return prisma.tool.findMany({
     where: { status: 'active' },
     orderBy: { createdAt: 'asc' },
+    include: {
+      marketFeedback: { select: { vote: true } },
+      toolActivities: { select: { saves: true, opens: true } },
+    },
   })
 }
 

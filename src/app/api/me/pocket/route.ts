@@ -14,7 +14,6 @@ export async function POST(request: NextRequest) {
   const body = (await request.json()) as {
     toolId: string
     sourceQuestion?: string
-    presetArgs?: Record<string, unknown>
   }
   return NextResponse.json(await saveToolToPocket(session.user.id, body))
 }

@@ -1,14 +1,8 @@
-import type {
-  ToolCategory,
-  ToolExecutionMode,
-  ToolPlatform,
-  ToolPricingModel,
-} from '@/shared/market/tool-registry'
+import type { ToolCategory, ToolPlatform, ToolPricingModel } from '@/shared/market/tool-registry'
 import type { RecommendationMode } from '@/shared/discovery/recommendation-mode'
 
 export type PocketSavedItem = {
   toolId: string
-  presetArgs?: Record<string, unknown>
   sourceQuestion?: string
 }
 
@@ -59,20 +53,12 @@ export type MarketSubmission = {
   duplicateSimilarity?: number | null
 }
 
-export type MarketSubscriptionRecord = {
-  toolId: string
-  subscribedAt: number
-  active: boolean
-}
-
 export type UserPreferenceProfile = {
   preferredCategories: ToolCategory[]
   preferredTags: string[]
   preferredPlatforms: ToolPlatform[]
   preferredPricing: ToolPricingModel[]
-  preferredExecutionModes: ToolExecutionMode[]
   avoidAuthWall: boolean
-  prefersSubscriptionTools: boolean
   summary: string[]
 }
 
@@ -81,14 +67,11 @@ export type PreferenceProfileOverride = {
   preferredTags?: string[]
   preferredPlatforms?: ToolPlatform[]
   preferredPricing?: ToolPricingModel[]
-  preferredExecutionModes?: ToolExecutionMode[]
   avoidAuthWall?: boolean
-  prefersSubscriptionTools?: boolean
 }
 
 export type MarketContext = {
   savedItems: PocketSavedItem[]
-  subscriptions: MarketSubscriptionRecord[]
   feedback: MarketFeedbackRecord[]
   submissions: MarketSubmission[]
   preferenceProfile: UserPreferenceProfile
@@ -122,7 +105,6 @@ export type AgentCandidate = {
   title: string
   url?: string | null
   candidateType: 'tool' | 'submission' | 'external_suggestion'
-  assetOrigin?: 'curated_market' | 'bookmark_seed'
   score: number
   sourceLabel: 'pocket' | 'market' | 'external'
   reason: string

@@ -387,16 +387,15 @@ export const ModelName = {
   User: 'User',
   UserSettings: 'UserSettings',
   Tool: 'Tool',
+  ToolIndex: 'ToolIndex',
   PocketItem: 'PocketItem',
   MarketFeedback: 'MarketFeedback',
-  MarketSubscription: 'MarketSubscription',
   MarketSubmission: 'MarketSubmission',
   ToolActivity: 'ToolActivity',
   ChatHistoryEntry: 'ChatHistoryEntry',
   PreferenceProfileOverride: 'PreferenceProfileOverride',
   RecommendationSession: 'RecommendationSession',
-  RecommendationEvaluation: 'RecommendationEvaluation',
-  DataMigrationState: 'DataMigrationState'
+  RecommendationEvaluation: 'RecommendationEvaluation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -412,7 +411,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "userSettings" | "tool" | "pocketItem" | "marketFeedback" | "marketSubscription" | "marketSubmission" | "toolActivity" | "chatHistoryEntry" | "preferenceProfileOverride" | "recommendationSession" | "recommendationEvaluation" | "dataMigrationState"
+    modelProps: "user" | "userSettings" | "tool" | "toolIndex" | "pocketItem" | "marketFeedback" | "marketSubmission" | "toolActivity" | "chatHistoryEntry" | "preferenceProfileOverride" | "recommendationSession" | "recommendationEvaluation"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -638,6 +637,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ToolIndex: {
+      payload: Prisma.$ToolIndexPayload<ExtArgs>
+      fields: Prisma.ToolIndexFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ToolIndexFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolIndexPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ToolIndexFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolIndexPayload>
+        }
+        findFirst: {
+          args: Prisma.ToolIndexFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolIndexPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ToolIndexFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolIndexPayload>
+        }
+        findMany: {
+          args: Prisma.ToolIndexFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolIndexPayload>[]
+        }
+        create: {
+          args: Prisma.ToolIndexCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolIndexPayload>
+        }
+        createMany: {
+          args: Prisma.ToolIndexCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ToolIndexCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolIndexPayload>[]
+        }
+        delete: {
+          args: Prisma.ToolIndexDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolIndexPayload>
+        }
+        update: {
+          args: Prisma.ToolIndexUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolIndexPayload>
+        }
+        deleteMany: {
+          args: Prisma.ToolIndexDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ToolIndexUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ToolIndexUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolIndexPayload>[]
+        }
+        upsert: {
+          args: Prisma.ToolIndexUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolIndexPayload>
+        }
+        aggregate: {
+          args: Prisma.ToolIndexAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateToolIndex>
+        }
+        groupBy: {
+          args: Prisma.ToolIndexGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ToolIndexGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ToolIndexCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ToolIndexCountAggregateOutputType> | number
+        }
+      }
+    }
     PocketItem: {
       payload: Prisma.$PocketItemPayload<ExtArgs>
       fields: Prisma.PocketItemFieldRefs
@@ -783,80 +856,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.MarketFeedbackCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.MarketFeedbackCountAggregateOutputType> | number
-        }
-      }
-    }
-    MarketSubscription: {
-      payload: Prisma.$MarketSubscriptionPayload<ExtArgs>
-      fields: Prisma.MarketSubscriptionFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.MarketSubscriptionFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketSubscriptionPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.MarketSubscriptionFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketSubscriptionPayload>
-        }
-        findFirst: {
-          args: Prisma.MarketSubscriptionFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketSubscriptionPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.MarketSubscriptionFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketSubscriptionPayload>
-        }
-        findMany: {
-          args: Prisma.MarketSubscriptionFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketSubscriptionPayload>[]
-        }
-        create: {
-          args: Prisma.MarketSubscriptionCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketSubscriptionPayload>
-        }
-        createMany: {
-          args: Prisma.MarketSubscriptionCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.MarketSubscriptionCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketSubscriptionPayload>[]
-        }
-        delete: {
-          args: Prisma.MarketSubscriptionDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketSubscriptionPayload>
-        }
-        update: {
-          args: Prisma.MarketSubscriptionUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketSubscriptionPayload>
-        }
-        deleteMany: {
-          args: Prisma.MarketSubscriptionDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.MarketSubscriptionUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.MarketSubscriptionUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketSubscriptionPayload>[]
-        }
-        upsert: {
-          args: Prisma.MarketSubscriptionUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketSubscriptionPayload>
-        }
-        aggregate: {
-          args: Prisma.MarketSubscriptionAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateMarketSubscription>
-        }
-        groupBy: {
-          args: Prisma.MarketSubscriptionGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.MarketSubscriptionGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.MarketSubscriptionCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.MarketSubscriptionCountAggregateOutputType> | number
         }
       }
     }
@@ -1304,80 +1303,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    DataMigrationState: {
-      payload: Prisma.$DataMigrationStatePayload<ExtArgs>
-      fields: Prisma.DataMigrationStateFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.DataMigrationStateFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataMigrationStatePayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.DataMigrationStateFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataMigrationStatePayload>
-        }
-        findFirst: {
-          args: Prisma.DataMigrationStateFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataMigrationStatePayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.DataMigrationStateFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataMigrationStatePayload>
-        }
-        findMany: {
-          args: Prisma.DataMigrationStateFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataMigrationStatePayload>[]
-        }
-        create: {
-          args: Prisma.DataMigrationStateCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataMigrationStatePayload>
-        }
-        createMany: {
-          args: Prisma.DataMigrationStateCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.DataMigrationStateCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataMigrationStatePayload>[]
-        }
-        delete: {
-          args: Prisma.DataMigrationStateDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataMigrationStatePayload>
-        }
-        update: {
-          args: Prisma.DataMigrationStateUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataMigrationStatePayload>
-        }
-        deleteMany: {
-          args: Prisma.DataMigrationStateDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.DataMigrationStateUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.DataMigrationStateUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataMigrationStatePayload>[]
-        }
-        upsert: {
-          args: Prisma.DataMigrationStateUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DataMigrationStatePayload>
-        }
-        aggregate: {
-          args: Prisma.DataMigrationStateAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateDataMigrationState>
-        }
-        groupBy: {
-          args: Prisma.DataMigrationStateGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.DataMigrationStateGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.DataMigrationStateCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.DataMigrationStateCountAggregateOutputType> | number
-        }
-      }
-    }
   }
 } & {
   other: {
@@ -1457,39 +1382,32 @@ export type UserSettingsScalarFieldEnum = (typeof UserSettingsScalarFieldEnum)[k
 export const ToolScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  icon: 'icon',
-  iconType: 'iconType',
-  iconText: 'iconText',
-  iconImageUrl: 'iconImageUrl',
-  iconImageLocalPath: 'iconImageLocalPath',
   url: 'url',
   description: 'description',
   category: 'category',
   tags: 'tags',
-  source: 'source',
+  iconUrl: 'iconUrl',
   status: 'status',
-  executionMode: 'executionMode',
   pricingModel: 'pricingModel',
   requiresAuth: 'requiresAuth',
   platform: 'platform',
-  capabilities: 'capabilities',
-  recommendedFor: 'recommendedFor',
-  sourceNote: 'sourceNote',
-  trustSignals: 'trustSignals',
-  subscriptionSupport: 'subscriptionSupport',
-  defaultArgs: 'defaultArgs',
-  siteHostname: 'siteHostname',
-  marketAssetOrigin: 'marketAssetOrigin',
-  seedSource: 'seedSource',
   createdByUserId: 'createdByUserId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  embeddingModel: 'embeddingModel',
-  embeddingContentHash: 'embeddingContentHash',
-  embeddedAt: 'embeddedAt'
+  updatedAt: 'updatedAt'
 } as const
 
 export type ToolScalarFieldEnum = (typeof ToolScalarFieldEnum)[keyof typeof ToolScalarFieldEnum]
+
+
+export const ToolIndexScalarFieldEnum = {
+  toolId: 'toolId',
+  content: 'content',
+  contentHash: 'contentHash',
+  embeddingModel: 'embeddingModel',
+  embeddedAt: 'embeddedAt'
+} as const
+
+export type ToolIndexScalarFieldEnum = (typeof ToolIndexScalarFieldEnum)[keyof typeof ToolIndexScalarFieldEnum]
 
 
 export const PocketItemScalarFieldEnum = {
@@ -1502,8 +1420,7 @@ export const PocketItemScalarFieldEnum = {
   pinned: 'pinned',
   purchased: 'purchased',
   archived: 'archived',
-  sourceQuestion: 'sourceQuestion',
-  presetArgs: 'presetArgs'
+  sourceQuestion: 'sourceQuestion'
 } as const
 
 export type PocketItemScalarFieldEnum = (typeof PocketItemScalarFieldEnum)[keyof typeof PocketItemScalarFieldEnum]
@@ -1520,17 +1437,6 @@ export const MarketFeedbackScalarFieldEnum = {
 } as const
 
 export type MarketFeedbackScalarFieldEnum = (typeof MarketFeedbackScalarFieldEnum)[keyof typeof MarketFeedbackScalarFieldEnum]
-
-
-export const MarketSubscriptionScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  toolId: 'toolId',
-  active: 'active',
-  subscribedAt: 'subscribedAt'
-} as const
-
-export type MarketSubscriptionScalarFieldEnum = (typeof MarketSubscriptionScalarFieldEnum)[keyof typeof MarketSubscriptionScalarFieldEnum]
 
 
 export const MarketSubmissionScalarFieldEnum = {
@@ -1555,8 +1461,7 @@ export const ToolActivityScalarFieldEnum = {
   userId: 'userId',
   toolId: 'toolId',
   saves: 'saves',
-  opens: 'opens',
-  subscriptions: 'subscriptions'
+  opens: 'opens'
 } as const
 
 export type ToolActivityScalarFieldEnum = (typeof ToolActivityScalarFieldEnum)[keyof typeof ToolActivityScalarFieldEnum]
@@ -1581,9 +1486,7 @@ export const PreferenceProfileOverrideScalarFieldEnum = {
   preferredTags: 'preferredTags',
   preferredPlatforms: 'preferredPlatforms',
   preferredPricing: 'preferredPricing',
-  preferredExecutionModes: 'preferredExecutionModes',
   avoidAuthWall: 'avoidAuthWall',
-  prefersSubscriptionTools: 'prefersSubscriptionTools',
   updatedAt: 'updatedAt'
 } as const
 
@@ -1633,15 +1536,6 @@ export const RecommendationEvaluationScalarFieldEnum = {
 export type RecommendationEvaluationScalarFieldEnum = (typeof RecommendationEvaluationScalarFieldEnum)[keyof typeof RecommendationEvaluationScalarFieldEnum]
 
 
-export const DataMigrationStateScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  localDataImportedAt: 'localDataImportedAt'
-} as const
-
-export type DataMigrationStateScalarFieldEnum = (typeof DataMigrationStateScalarFieldEnum)[keyof typeof DataMigrationStateScalarFieldEnum]
-
-
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1655,14 +1549,6 @@ export const JsonNullValueInput = {
 } as const
 
 export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
-
-
-export const NullableJsonNullValueInput = {
-  DbNull: DbNull,
-  JsonNull: JsonNull
-} as const
-
-export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {
@@ -1732,20 +1618,6 @@ export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
- * Reference to a field of type 'Json'
- */
-export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-/**
- * Reference to a field of type 'QueryMode'
- */
-export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-    
-
-
-/**
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -1770,6 +1642,20 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'Float[]'
  */
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 /**
@@ -1885,16 +1771,15 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   userSettings?: Prisma.UserSettingsOmit
   tool?: Prisma.ToolOmit
+  toolIndex?: Prisma.ToolIndexOmit
   pocketItem?: Prisma.PocketItemOmit
   marketFeedback?: Prisma.MarketFeedbackOmit
-  marketSubscription?: Prisma.MarketSubscriptionOmit
   marketSubmission?: Prisma.MarketSubmissionOmit
   toolActivity?: Prisma.ToolActivityOmit
   chatHistoryEntry?: Prisma.ChatHistoryEntryOmit
   preferenceProfileOverride?: Prisma.PreferenceProfileOverrideOmit
   recommendationSession?: Prisma.RecommendationSessionOmit
   recommendationEvaluation?: Prisma.RecommendationEvaluationOmit
-  dataMigrationState?: Prisma.DataMigrationStateOmit
 }
 
 /* Types for Logging */

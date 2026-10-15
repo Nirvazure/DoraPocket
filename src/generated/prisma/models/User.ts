@@ -257,14 +257,12 @@ export type UserWhereInput = {
   settings?: Prisma.XOR<Prisma.UserSettingsNullableScalarRelationFilter, Prisma.UserSettingsWhereInput> | null
   pocketItems?: Prisma.PocketItemListRelationFilter
   marketFeedback?: Prisma.MarketFeedbackListRelationFilter
-  marketSubscriptions?: Prisma.MarketSubscriptionListRelationFilter
   marketSubmissions?: Prisma.MarketSubmissionListRelationFilter
   toolActivities?: Prisma.ToolActivityListRelationFilter
   chatHistory?: Prisma.ChatHistoryEntryListRelationFilter
   preferenceOverride?: Prisma.XOR<Prisma.PreferenceProfileOverrideNullableScalarRelationFilter, Prisma.PreferenceProfileOverrideWhereInput> | null
   recommendationSessions?: Prisma.RecommendationSessionListRelationFilter
   recommendationEvaluations?: Prisma.RecommendationEvaluationListRelationFilter
-  migrationState?: Prisma.XOR<Prisma.DataMigrationStateNullableScalarRelationFilter, Prisma.DataMigrationStateWhereInput> | null
   createdTools?: Prisma.ToolListRelationFilter
 }
 
@@ -286,14 +284,12 @@ export type UserOrderByWithRelationInput = {
   settings?: Prisma.UserSettingsOrderByWithRelationInput
   pocketItems?: Prisma.PocketItemOrderByRelationAggregateInput
   marketFeedback?: Prisma.MarketFeedbackOrderByRelationAggregateInput
-  marketSubscriptions?: Prisma.MarketSubscriptionOrderByRelationAggregateInput
   marketSubmissions?: Prisma.MarketSubmissionOrderByRelationAggregateInput
   toolActivities?: Prisma.ToolActivityOrderByRelationAggregateInput
   chatHistory?: Prisma.ChatHistoryEntryOrderByRelationAggregateInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideOrderByWithRelationInput
   recommendationSessions?: Prisma.RecommendationSessionOrderByRelationAggregateInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationOrderByRelationAggregateInput
-  migrationState?: Prisma.DataMigrationStateOrderByWithRelationInput
   createdTools?: Prisma.ToolOrderByRelationAggregateInput
 }
 
@@ -318,14 +314,12 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   settings?: Prisma.XOR<Prisma.UserSettingsNullableScalarRelationFilter, Prisma.UserSettingsWhereInput> | null
   pocketItems?: Prisma.PocketItemListRelationFilter
   marketFeedback?: Prisma.MarketFeedbackListRelationFilter
-  marketSubscriptions?: Prisma.MarketSubscriptionListRelationFilter
   marketSubmissions?: Prisma.MarketSubmissionListRelationFilter
   toolActivities?: Prisma.ToolActivityListRelationFilter
   chatHistory?: Prisma.ChatHistoryEntryListRelationFilter
   preferenceOverride?: Prisma.XOR<Prisma.PreferenceProfileOverrideNullableScalarRelationFilter, Prisma.PreferenceProfileOverrideWhereInput> | null
   recommendationSessions?: Prisma.RecommendationSessionListRelationFilter
   recommendationEvaluations?: Prisma.RecommendationEvaluationListRelationFilter
-  migrationState?: Prisma.XOR<Prisma.DataMigrationStateNullableScalarRelationFilter, Prisma.DataMigrationStateWhereInput> | null
   createdTools?: Prisma.ToolListRelationFilter
 }, "id" | "supabaseUserId">
 
@@ -387,14 +381,12 @@ export type UserCreateInput = {
   settings?: Prisma.UserSettingsCreateNestedOneWithoutUserInput
   pocketItems?: Prisma.PocketItemCreateNestedManyWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
 
@@ -416,14 +408,12 @@ export type UserUncheckedCreateInput = {
   settings?: Prisma.UserSettingsUncheckedCreateNestedOneWithoutUserInput
   pocketItems?: Prisma.PocketItemUncheckedCreateNestedManyWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
@@ -445,14 +435,12 @@ export type UserUpdateInput = {
   settings?: Prisma.UserSettingsUpdateOneWithoutUserNestedInput
   pocketItems?: Prisma.PocketItemUpdateManyWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -474,14 +462,12 @@ export type UserUncheckedUpdateInput = {
   settings?: Prisma.UserSettingsUncheckedUpdateOneWithoutUserNestedInput
   pocketItems?: Prisma.PocketItemUncheckedUpdateManyWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -671,20 +657,6 @@ export type UserUpdateOneRequiredWithoutMarketFeedbackNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMarketFeedbackInput, Prisma.UserUpdateWithoutMarketFeedbackInput>, Prisma.UserUncheckedUpdateWithoutMarketFeedbackInput>
 }
 
-export type UserCreateNestedOneWithoutMarketSubscriptionsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutMarketSubscriptionsInput, Prisma.UserUncheckedCreateWithoutMarketSubscriptionsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMarketSubscriptionsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutMarketSubscriptionsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutMarketSubscriptionsInput, Prisma.UserUncheckedCreateWithoutMarketSubscriptionsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMarketSubscriptionsInput
-  upsert?: Prisma.UserUpsertWithoutMarketSubscriptionsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMarketSubscriptionsInput, Prisma.UserUpdateWithoutMarketSubscriptionsInput>, Prisma.UserUncheckedUpdateWithoutMarketSubscriptionsInput>
-}
-
 export type UserCreateNestedOneWithoutMarketSubmissionsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutMarketSubmissionsInput, Prisma.UserUncheckedCreateWithoutMarketSubmissionsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutMarketSubmissionsInput
@@ -769,20 +741,6 @@ export type UserUpdateOneRequiredWithoutRecommendationEvaluationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRecommendationEvaluationsInput, Prisma.UserUpdateWithoutRecommendationEvaluationsInput>, Prisma.UserUncheckedUpdateWithoutRecommendationEvaluationsInput>
 }
 
-export type UserCreateNestedOneWithoutMigrationStateInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutMigrationStateInput, Prisma.UserUncheckedCreateWithoutMigrationStateInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMigrationStateInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutMigrationStateNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutMigrationStateInput, Prisma.UserUncheckedCreateWithoutMigrationStateInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMigrationStateInput
-  upsert?: Prisma.UserUpsertWithoutMigrationStateInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMigrationStateInput, Prisma.UserUpdateWithoutMigrationStateInput>, Prisma.UserUncheckedUpdateWithoutMigrationStateInput>
-}
-
 export type UserCreateWithoutSettingsInput = {
   id?: string
   supabaseUserId: string
@@ -800,14 +758,12 @@ export type UserCreateWithoutSettingsInput = {
   updatedAt?: Date | string
   pocketItems?: Prisma.PocketItemCreateNestedManyWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
 
@@ -828,14 +784,12 @@ export type UserUncheckedCreateWithoutSettingsInput = {
   updatedAt?: Date | string
   pocketItems?: Prisma.PocketItemUncheckedCreateNestedManyWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
@@ -872,14 +826,12 @@ export type UserUpdateWithoutSettingsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pocketItems?: Prisma.PocketItemUpdateManyWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -900,14 +852,12 @@ export type UserUncheckedUpdateWithoutSettingsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pocketItems?: Prisma.PocketItemUncheckedUpdateManyWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -929,14 +879,12 @@ export type UserCreateWithoutCreatedToolsInput = {
   settings?: Prisma.UserSettingsCreateNestedOneWithoutUserInput
   pocketItems?: Prisma.PocketItemCreateNestedManyWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCreatedToolsInput = {
@@ -957,14 +905,12 @@ export type UserUncheckedCreateWithoutCreatedToolsInput = {
   settings?: Prisma.UserSettingsUncheckedCreateNestedOneWithoutUserInput
   pocketItems?: Prisma.PocketItemUncheckedCreateNestedManyWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCreatedToolsInput = {
@@ -1001,14 +947,12 @@ export type UserUpdateWithoutCreatedToolsInput = {
   settings?: Prisma.UserSettingsUpdateOneWithoutUserNestedInput
   pocketItems?: Prisma.PocketItemUpdateManyWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedToolsInput = {
@@ -1029,14 +973,12 @@ export type UserUncheckedUpdateWithoutCreatedToolsInput = {
   settings?: Prisma.UserSettingsUncheckedUpdateOneWithoutUserNestedInput
   pocketItems?: Prisma.PocketItemUncheckedUpdateManyWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPocketItemsInput = {
@@ -1056,14 +998,12 @@ export type UserCreateWithoutPocketItemsInput = {
   updatedAt?: Date | string
   settings?: Prisma.UserSettingsCreateNestedOneWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
 
@@ -1084,14 +1024,12 @@ export type UserUncheckedCreateWithoutPocketItemsInput = {
   updatedAt?: Date | string
   settings?: Prisma.UserSettingsUncheckedCreateNestedOneWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
@@ -1128,14 +1066,12 @@ export type UserUpdateWithoutPocketItemsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settings?: Prisma.UserSettingsUpdateOneWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -1156,14 +1092,12 @@ export type UserUncheckedUpdateWithoutPocketItemsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settings?: Prisma.UserSettingsUncheckedUpdateOneWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -1184,14 +1118,12 @@ export type UserCreateWithoutMarketFeedbackInput = {
   updatedAt?: Date | string
   settings?: Prisma.UserSettingsCreateNestedOneWithoutUserInput
   pocketItems?: Prisma.PocketItemCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
 
@@ -1212,14 +1144,12 @@ export type UserUncheckedCreateWithoutMarketFeedbackInput = {
   updatedAt?: Date | string
   settings?: Prisma.UserSettingsUncheckedCreateNestedOneWithoutUserInput
   pocketItems?: Prisma.PocketItemUncheckedCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
@@ -1256,14 +1186,12 @@ export type UserUpdateWithoutMarketFeedbackInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settings?: Prisma.UserSettingsUpdateOneWithoutUserNestedInput
   pocketItems?: Prisma.PocketItemUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -1284,142 +1212,12 @@ export type UserUncheckedUpdateWithoutMarketFeedbackInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settings?: Prisma.UserSettingsUncheckedUpdateOneWithoutUserNestedInput
   pocketItems?: Prisma.PocketItemUncheckedUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
-  createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
-}
-
-export type UserCreateWithoutMarketSubscriptionsInput = {
-  id?: string
-  supabaseUserId: string
-  email?: string | null
-  nickname: string
-  avatarSrc?: string | null
-  bio?: string | null
-  website?: string | null
-  company?: string | null
-  authCreatedAt?: Date | string | null
-  lastSignInAt?: Date | string | null
-  authRole?: string | null
-  authProvider?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  settings?: Prisma.UserSettingsCreateNestedOneWithoutUserInput
-  pocketItems?: Prisma.PocketItemCreateNestedManyWithoutUserInput
-  marketFeedback?: Prisma.MarketFeedbackCreateNestedManyWithoutUserInput
-  marketSubmissions?: Prisma.MarketSubmissionCreateNestedManyWithoutUserInput
-  toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutUserInput
-  chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
-  preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
-  recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
-  recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
-  createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
-}
-
-export type UserUncheckedCreateWithoutMarketSubscriptionsInput = {
-  id?: string
-  supabaseUserId: string
-  email?: string | null
-  nickname: string
-  avatarSrc?: string | null
-  bio?: string | null
-  website?: string | null
-  company?: string | null
-  authCreatedAt?: Date | string | null
-  lastSignInAt?: Date | string | null
-  authRole?: string | null
-  authProvider?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  settings?: Prisma.UserSettingsUncheckedCreateNestedOneWithoutUserInput
-  pocketItems?: Prisma.PocketItemUncheckedCreateNestedManyWithoutUserInput
-  marketFeedback?: Prisma.MarketFeedbackUncheckedCreateNestedManyWithoutUserInput
-  marketSubmissions?: Prisma.MarketSubmissionUncheckedCreateNestedManyWithoutUserInput
-  toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutUserInput
-  chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
-  preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
-  recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
-  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
-  createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
-}
-
-export type UserCreateOrConnectWithoutMarketSubscriptionsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutMarketSubscriptionsInput, Prisma.UserUncheckedCreateWithoutMarketSubscriptionsInput>
-}
-
-export type UserUpsertWithoutMarketSubscriptionsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutMarketSubscriptionsInput, Prisma.UserUncheckedUpdateWithoutMarketSubscriptionsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutMarketSubscriptionsInput, Prisma.UserUncheckedCreateWithoutMarketSubscriptionsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutMarketSubscriptionsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutMarketSubscriptionsInput, Prisma.UserUncheckedUpdateWithoutMarketSubscriptionsInput>
-}
-
-export type UserUpdateWithoutMarketSubscriptionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  supabaseUserId?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nickname?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarSrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  company?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  authCreatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  lastSignInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  authRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  authProvider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  settings?: Prisma.UserSettingsUpdateOneWithoutUserNestedInput
-  pocketItems?: Prisma.PocketItemUpdateManyWithoutUserNestedInput
-  marketFeedback?: Prisma.MarketFeedbackUpdateManyWithoutUserNestedInput
-  marketSubmissions?: Prisma.MarketSubmissionUpdateManyWithoutUserNestedInput
-  toolActivities?: Prisma.ToolActivityUpdateManyWithoutUserNestedInput
-  chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
-  preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
-  recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
-  recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
-  createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
-}
-
-export type UserUncheckedUpdateWithoutMarketSubscriptionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  supabaseUserId?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nickname?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarSrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  company?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  authCreatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  lastSignInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  authRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  authProvider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  settings?: Prisma.UserSettingsUncheckedUpdateOneWithoutUserNestedInput
-  pocketItems?: Prisma.PocketItemUncheckedUpdateManyWithoutUserNestedInput
-  marketFeedback?: Prisma.MarketFeedbackUncheckedUpdateManyWithoutUserNestedInput
-  marketSubmissions?: Prisma.MarketSubmissionUncheckedUpdateManyWithoutUserNestedInput
-  toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutUserNestedInput
-  chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
-  preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
-  recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
-  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -1441,13 +1239,11 @@ export type UserCreateWithoutMarketSubmissionsInput = {
   settings?: Prisma.UserSettingsCreateNestedOneWithoutUserInput
   pocketItems?: Prisma.PocketItemCreateNestedManyWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
 
@@ -1469,13 +1265,11 @@ export type UserUncheckedCreateWithoutMarketSubmissionsInput = {
   settings?: Prisma.UserSettingsUncheckedCreateNestedOneWithoutUserInput
   pocketItems?: Prisma.PocketItemUncheckedCreateNestedManyWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
@@ -1513,13 +1307,11 @@ export type UserUpdateWithoutMarketSubmissionsInput = {
   settings?: Prisma.UserSettingsUpdateOneWithoutUserNestedInput
   pocketItems?: Prisma.PocketItemUpdateManyWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -1541,13 +1333,11 @@ export type UserUncheckedUpdateWithoutMarketSubmissionsInput = {
   settings?: Prisma.UserSettingsUncheckedUpdateOneWithoutUserNestedInput
   pocketItems?: Prisma.PocketItemUncheckedUpdateManyWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -1569,13 +1359,11 @@ export type UserCreateWithoutToolActivitiesInput = {
   settings?: Prisma.UserSettingsCreateNestedOneWithoutUserInput
   pocketItems?: Prisma.PocketItemCreateNestedManyWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
 
@@ -1597,13 +1385,11 @@ export type UserUncheckedCreateWithoutToolActivitiesInput = {
   settings?: Prisma.UserSettingsUncheckedCreateNestedOneWithoutUserInput
   pocketItems?: Prisma.PocketItemUncheckedCreateNestedManyWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
@@ -1641,13 +1427,11 @@ export type UserUpdateWithoutToolActivitiesInput = {
   settings?: Prisma.UserSettingsUpdateOneWithoutUserNestedInput
   pocketItems?: Prisma.PocketItemUpdateManyWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -1669,13 +1453,11 @@ export type UserUncheckedUpdateWithoutToolActivitiesInput = {
   settings?: Prisma.UserSettingsUncheckedUpdateOneWithoutUserNestedInput
   pocketItems?: Prisma.PocketItemUncheckedUpdateManyWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -1697,13 +1479,11 @@ export type UserCreateWithoutChatHistoryInput = {
   settings?: Prisma.UserSettingsCreateNestedOneWithoutUserInput
   pocketItems?: Prisma.PocketItemCreateNestedManyWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
 
@@ -1725,13 +1505,11 @@ export type UserUncheckedCreateWithoutChatHistoryInput = {
   settings?: Prisma.UserSettingsUncheckedCreateNestedOneWithoutUserInput
   pocketItems?: Prisma.PocketItemUncheckedCreateNestedManyWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
@@ -1769,13 +1547,11 @@ export type UserUpdateWithoutChatHistoryInput = {
   settings?: Prisma.UserSettingsUpdateOneWithoutUserNestedInput
   pocketItems?: Prisma.PocketItemUpdateManyWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -1797,13 +1573,11 @@ export type UserUncheckedUpdateWithoutChatHistoryInput = {
   settings?: Prisma.UserSettingsUncheckedUpdateOneWithoutUserNestedInput
   pocketItems?: Prisma.PocketItemUncheckedUpdateManyWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -1825,13 +1599,11 @@ export type UserCreateWithoutPreferenceOverrideInput = {
   settings?: Prisma.UserSettingsCreateNestedOneWithoutUserInput
   pocketItems?: Prisma.PocketItemCreateNestedManyWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
 
@@ -1853,13 +1625,11 @@ export type UserUncheckedCreateWithoutPreferenceOverrideInput = {
   settings?: Prisma.UserSettingsUncheckedCreateNestedOneWithoutUserInput
   pocketItems?: Prisma.PocketItemUncheckedCreateNestedManyWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
@@ -1897,13 +1667,11 @@ export type UserUpdateWithoutPreferenceOverrideInput = {
   settings?: Prisma.UserSettingsUpdateOneWithoutUserNestedInput
   pocketItems?: Prisma.PocketItemUpdateManyWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -1925,13 +1693,11 @@ export type UserUncheckedUpdateWithoutPreferenceOverrideInput = {
   settings?: Prisma.UserSettingsUncheckedUpdateOneWithoutUserNestedInput
   pocketItems?: Prisma.PocketItemUncheckedUpdateManyWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -1953,13 +1719,11 @@ export type UserCreateWithoutRecommendationSessionsInput = {
   settings?: Prisma.UserSettingsCreateNestedOneWithoutUserInput
   pocketItems?: Prisma.PocketItemCreateNestedManyWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
 
@@ -1981,13 +1745,11 @@ export type UserUncheckedCreateWithoutRecommendationSessionsInput = {
   settings?: Prisma.UserSettingsUncheckedCreateNestedOneWithoutUserInput
   pocketItems?: Prisma.PocketItemUncheckedCreateNestedManyWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
@@ -2025,13 +1787,11 @@ export type UserUpdateWithoutRecommendationSessionsInput = {
   settings?: Prisma.UserSettingsUpdateOneWithoutUserNestedInput
   pocketItems?: Prisma.PocketItemUpdateManyWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -2053,13 +1813,11 @@ export type UserUncheckedUpdateWithoutRecommendationSessionsInput = {
   settings?: Prisma.UserSettingsUncheckedUpdateOneWithoutUserNestedInput
   pocketItems?: Prisma.PocketItemUncheckedUpdateManyWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -2081,13 +1839,11 @@ export type UserCreateWithoutRecommendationEvaluationsInput = {
   settings?: Prisma.UserSettingsCreateNestedOneWithoutUserInput
   pocketItems?: Prisma.PocketItemCreateNestedManyWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
 }
 
@@ -2109,13 +1865,11 @@ export type UserUncheckedCreateWithoutRecommendationEvaluationsInput = {
   settings?: Prisma.UserSettingsUncheckedCreateNestedOneWithoutUserInput
   pocketItems?: Prisma.PocketItemUncheckedCreateNestedManyWithoutUserInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedCreateNestedManyWithoutUserInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedCreateNestedManyWithoutUserInput
   toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutUserInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
-  migrationState?: Prisma.DataMigrationStateUncheckedCreateNestedOneWithoutUserInput
   createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
@@ -2153,13 +1907,11 @@ export type UserUpdateWithoutRecommendationEvaluationsInput = {
   settings?: Prisma.UserSettingsUpdateOneWithoutUserNestedInput
   pocketItems?: Prisma.PocketItemUpdateManyWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUpdateOneWithoutUserNestedInput
   createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -2181,141 +1933,11 @@ export type UserUncheckedUpdateWithoutRecommendationEvaluationsInput = {
   settings?: Prisma.UserSettingsUncheckedUpdateOneWithoutUserNestedInput
   pocketItems?: Prisma.PocketItemUncheckedUpdateManyWithoutUserNestedInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   marketSubmissions?: Prisma.MarketSubmissionUncheckedUpdateManyWithoutUserNestedInput
   toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutUserNestedInput
   chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
   preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
   recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
-  migrationState?: Prisma.DataMigrationStateUncheckedUpdateOneWithoutUserNestedInput
-  createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
-}
-
-export type UserCreateWithoutMigrationStateInput = {
-  id?: string
-  supabaseUserId: string
-  email?: string | null
-  nickname: string
-  avatarSrc?: string | null
-  bio?: string | null
-  website?: string | null
-  company?: string | null
-  authCreatedAt?: Date | string | null
-  lastSignInAt?: Date | string | null
-  authRole?: string | null
-  authProvider?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  settings?: Prisma.UserSettingsCreateNestedOneWithoutUserInput
-  pocketItems?: Prisma.PocketItemCreateNestedManyWithoutUserInput
-  marketFeedback?: Prisma.MarketFeedbackCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionCreateNestedManyWithoutUserInput
-  marketSubmissions?: Prisma.MarketSubmissionCreateNestedManyWithoutUserInput
-  toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutUserInput
-  chatHistory?: Prisma.ChatHistoryEntryCreateNestedManyWithoutUserInput
-  preferenceOverride?: Prisma.PreferenceProfileOverrideCreateNestedOneWithoutUserInput
-  recommendationSessions?: Prisma.RecommendationSessionCreateNestedManyWithoutUserInput
-  recommendationEvaluations?: Prisma.RecommendationEvaluationCreateNestedManyWithoutUserInput
-  createdTools?: Prisma.ToolCreateNestedManyWithoutCreatedByInput
-}
-
-export type UserUncheckedCreateWithoutMigrationStateInput = {
-  id?: string
-  supabaseUserId: string
-  email?: string | null
-  nickname: string
-  avatarSrc?: string | null
-  bio?: string | null
-  website?: string | null
-  company?: string | null
-  authCreatedAt?: Date | string | null
-  lastSignInAt?: Date | string | null
-  authRole?: string | null
-  authProvider?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  settings?: Prisma.UserSettingsUncheckedCreateNestedOneWithoutUserInput
-  pocketItems?: Prisma.PocketItemUncheckedCreateNestedManyWithoutUserInput
-  marketFeedback?: Prisma.MarketFeedbackUncheckedCreateNestedManyWithoutUserInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedCreateNestedManyWithoutUserInput
-  marketSubmissions?: Prisma.MarketSubmissionUncheckedCreateNestedManyWithoutUserInput
-  toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutUserInput
-  chatHistory?: Prisma.ChatHistoryEntryUncheckedCreateNestedManyWithoutUserInput
-  preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedCreateNestedOneWithoutUserInput
-  recommendationSessions?: Prisma.RecommendationSessionUncheckedCreateNestedManyWithoutUserInput
-  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedCreateNestedManyWithoutUserInput
-  createdTools?: Prisma.ToolUncheckedCreateNestedManyWithoutCreatedByInput
-}
-
-export type UserCreateOrConnectWithoutMigrationStateInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutMigrationStateInput, Prisma.UserUncheckedCreateWithoutMigrationStateInput>
-}
-
-export type UserUpsertWithoutMigrationStateInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutMigrationStateInput, Prisma.UserUncheckedUpdateWithoutMigrationStateInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutMigrationStateInput, Prisma.UserUncheckedCreateWithoutMigrationStateInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutMigrationStateInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutMigrationStateInput, Prisma.UserUncheckedUpdateWithoutMigrationStateInput>
-}
-
-export type UserUpdateWithoutMigrationStateInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  supabaseUserId?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nickname?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarSrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  company?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  authCreatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  lastSignInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  authRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  authProvider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  settings?: Prisma.UserSettingsUpdateOneWithoutUserNestedInput
-  pocketItems?: Prisma.PocketItemUpdateManyWithoutUserNestedInput
-  marketFeedback?: Prisma.MarketFeedbackUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUpdateManyWithoutUserNestedInput
-  marketSubmissions?: Prisma.MarketSubmissionUpdateManyWithoutUserNestedInput
-  toolActivities?: Prisma.ToolActivityUpdateManyWithoutUserNestedInput
-  chatHistory?: Prisma.ChatHistoryEntryUpdateManyWithoutUserNestedInput
-  preferenceOverride?: Prisma.PreferenceProfileOverrideUpdateOneWithoutUserNestedInput
-  recommendationSessions?: Prisma.RecommendationSessionUpdateManyWithoutUserNestedInput
-  recommendationEvaluations?: Prisma.RecommendationEvaluationUpdateManyWithoutUserNestedInput
-  createdTools?: Prisma.ToolUpdateManyWithoutCreatedByNestedInput
-}
-
-export type UserUncheckedUpdateWithoutMigrationStateInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  supabaseUserId?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  nickname?: Prisma.StringFieldUpdateOperationsInput | string
-  avatarSrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  company?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  authCreatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  lastSignInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  authRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  authProvider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  settings?: Prisma.UserSettingsUncheckedUpdateOneWithoutUserNestedInput
-  pocketItems?: Prisma.PocketItemUncheckedUpdateManyWithoutUserNestedInput
-  marketFeedback?: Prisma.MarketFeedbackUncheckedUpdateManyWithoutUserNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedUpdateManyWithoutUserNestedInput
-  marketSubmissions?: Prisma.MarketSubmissionUncheckedUpdateManyWithoutUserNestedInput
-  toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutUserNestedInput
-  chatHistory?: Prisma.ChatHistoryEntryUncheckedUpdateManyWithoutUserNestedInput
-  preferenceOverride?: Prisma.PreferenceProfileOverrideUncheckedUpdateOneWithoutUserNestedInput
-  recommendationSessions?: Prisma.RecommendationSessionUncheckedUpdateManyWithoutUserNestedInput
-  recommendationEvaluations?: Prisma.RecommendationEvaluationUncheckedUpdateManyWithoutUserNestedInput
   createdTools?: Prisma.ToolUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -2327,7 +1949,6 @@ export type UserUncheckedUpdateWithoutMigrationStateInput = {
 export type UserCountOutputType = {
   pocketItems: number
   marketFeedback: number
-  marketSubscriptions: number
   marketSubmissions: number
   toolActivities: number
   chatHistory: number
@@ -2339,7 +1960,6 @@ export type UserCountOutputType = {
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   pocketItems?: boolean | UserCountOutputTypeCountPocketItemsArgs
   marketFeedback?: boolean | UserCountOutputTypeCountMarketFeedbackArgs
-  marketSubscriptions?: boolean | UserCountOutputTypeCountMarketSubscriptionsArgs
   marketSubmissions?: boolean | UserCountOutputTypeCountMarketSubmissionsArgs
   toolActivities?: boolean | UserCountOutputTypeCountToolActivitiesArgs
   chatHistory?: boolean | UserCountOutputTypeCountChatHistoryArgs
@@ -2370,13 +1990,6 @@ export type UserCountOutputTypeCountPocketItemsArgs<ExtArgs extends runtime.Type
  */
 export type UserCountOutputTypeCountMarketFeedbackArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.MarketFeedbackWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountMarketSubscriptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.MarketSubscriptionWhereInput
 }
 
 /**
@@ -2440,14 +2053,12 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   settings?: boolean | Prisma.User$settingsArgs<ExtArgs>
   pocketItems?: boolean | Prisma.User$pocketItemsArgs<ExtArgs>
   marketFeedback?: boolean | Prisma.User$marketFeedbackArgs<ExtArgs>
-  marketSubscriptions?: boolean | Prisma.User$marketSubscriptionsArgs<ExtArgs>
   marketSubmissions?: boolean | Prisma.User$marketSubmissionsArgs<ExtArgs>
   toolActivities?: boolean | Prisma.User$toolActivitiesArgs<ExtArgs>
   chatHistory?: boolean | Prisma.User$chatHistoryArgs<ExtArgs>
   preferenceOverride?: boolean | Prisma.User$preferenceOverrideArgs<ExtArgs>
   recommendationSessions?: boolean | Prisma.User$recommendationSessionsArgs<ExtArgs>
   recommendationEvaluations?: boolean | Prisma.User$recommendationEvaluationsArgs<ExtArgs>
-  migrationState?: boolean | Prisma.User$migrationStateArgs<ExtArgs>
   createdTools?: boolean | Prisma.User$createdToolsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -2508,14 +2119,12 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   settings?: boolean | Prisma.User$settingsArgs<ExtArgs>
   pocketItems?: boolean | Prisma.User$pocketItemsArgs<ExtArgs>
   marketFeedback?: boolean | Prisma.User$marketFeedbackArgs<ExtArgs>
-  marketSubscriptions?: boolean | Prisma.User$marketSubscriptionsArgs<ExtArgs>
   marketSubmissions?: boolean | Prisma.User$marketSubmissionsArgs<ExtArgs>
   toolActivities?: boolean | Prisma.User$toolActivitiesArgs<ExtArgs>
   chatHistory?: boolean | Prisma.User$chatHistoryArgs<ExtArgs>
   preferenceOverride?: boolean | Prisma.User$preferenceOverrideArgs<ExtArgs>
   recommendationSessions?: boolean | Prisma.User$recommendationSessionsArgs<ExtArgs>
   recommendationEvaluations?: boolean | Prisma.User$recommendationEvaluationsArgs<ExtArgs>
-  migrationState?: boolean | Prisma.User$migrationStateArgs<ExtArgs>
   createdTools?: boolean | Prisma.User$createdToolsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -2528,14 +2137,12 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     settings: Prisma.$UserSettingsPayload<ExtArgs> | null
     pocketItems: Prisma.$PocketItemPayload<ExtArgs>[]
     marketFeedback: Prisma.$MarketFeedbackPayload<ExtArgs>[]
-    marketSubscriptions: Prisma.$MarketSubscriptionPayload<ExtArgs>[]
     marketSubmissions: Prisma.$MarketSubmissionPayload<ExtArgs>[]
     toolActivities: Prisma.$ToolActivityPayload<ExtArgs>[]
     chatHistory: Prisma.$ChatHistoryEntryPayload<ExtArgs>[]
     preferenceOverride: Prisma.$PreferenceProfileOverridePayload<ExtArgs> | null
     recommendationSessions: Prisma.$RecommendationSessionPayload<ExtArgs>[]
     recommendationEvaluations: Prisma.$RecommendationEvaluationPayload<ExtArgs>[]
-    migrationState: Prisma.$DataMigrationStatePayload<ExtArgs> | null
     createdTools: Prisma.$ToolPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -2950,14 +2557,12 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   settings<T extends Prisma.User$settingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$settingsArgs<ExtArgs>>): Prisma.Prisma__UserSettingsClient<runtime.Types.Result.GetResult<Prisma.$UserSettingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   pocketItems<T extends Prisma.User$pocketItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pocketItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PocketItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   marketFeedback<T extends Prisma.User$marketFeedbackArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$marketFeedbackArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarketFeedbackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  marketSubscriptions<T extends Prisma.User$marketSubscriptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$marketSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarketSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   marketSubmissions<T extends Prisma.User$marketSubmissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$marketSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarketSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   toolActivities<T extends Prisma.User$toolActivitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$toolActivitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ToolActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   chatHistory<T extends Prisma.User$chatHistoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$chatHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatHistoryEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   preferenceOverride<T extends Prisma.User$preferenceOverrideArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$preferenceOverrideArgs<ExtArgs>>): Prisma.Prisma__PreferenceProfileOverrideClient<runtime.Types.Result.GetResult<Prisma.$PreferenceProfileOverridePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   recommendationSessions<T extends Prisma.User$recommendationSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recommendationSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecommendationSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   recommendationEvaluations<T extends Prisma.User$recommendationEvaluationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recommendationEvaluationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecommendationEvaluationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  migrationState<T extends Prisma.User$migrationStateArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$migrationStateArgs<ExtArgs>>): Prisma.Prisma__DataMigrationStateClient<runtime.Types.Result.GetResult<Prisma.$DataMigrationStatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   createdTools<T extends Prisma.User$createdToolsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdToolsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ToolPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3462,30 +3067,6 @@ export type User$marketFeedbackArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
- * User.marketSubscriptions
- */
-export type User$marketSubscriptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the MarketSubscription
-   */
-  select?: Prisma.MarketSubscriptionSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the MarketSubscription
-   */
-  omit?: Prisma.MarketSubscriptionOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.MarketSubscriptionInclude<ExtArgs> | null
-  where?: Prisma.MarketSubscriptionWhereInput
-  orderBy?: Prisma.MarketSubscriptionOrderByWithRelationInput | Prisma.MarketSubscriptionOrderByWithRelationInput[]
-  cursor?: Prisma.MarketSubscriptionWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.MarketSubscriptionScalarFieldEnum | Prisma.MarketSubscriptionScalarFieldEnum[]
-}
-
-/**
  * User.marketSubmissions
  */
 export type User$marketSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3622,25 +3203,6 @@ export type User$recommendationEvaluationsArgs<ExtArgs extends runtime.Types.Ext
   take?: number
   skip?: number
   distinct?: Prisma.RecommendationEvaluationScalarFieldEnum | Prisma.RecommendationEvaluationScalarFieldEnum[]
-}
-
-/**
- * User.migrationState
- */
-export type User$migrationStateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the DataMigrationState
-   */
-  select?: Prisma.DataMigrationStateSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the DataMigrationState
-   */
-  omit?: Prisma.DataMigrationStateOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.DataMigrationStateInclude<ExtArgs> | null
-  where?: Prisma.DataMigrationStateWhereInput
 }
 
 /**

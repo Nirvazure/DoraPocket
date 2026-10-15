@@ -2,20 +2,14 @@ import type { ToolModel as Tool } from '../../generated/prisma/models/Tool'
 import type { PocketInventoryItem } from '@/shared/user/pocket-types'
 import type {
   MarketFeedbackRecord,
-  MarketSubscriptionRecord,
   PreferenceProfileOverride,
   UserPreferenceProfile,
 } from '@/shared/market/market-types'
-import type {
-  ToolCategory,
-  ToolExecutionMode,
-  ToolPlatform,
-  ToolPricingModel,
-} from '@/shared/market/tool-registry'
+import type { ToolCategory, ToolPlatform, ToolPricingModel } from '@/shared/market/tool-registry'
 import { MARKET_ACTIVITY_COPY } from '@/shared/copy/ui-copy'
 
 type ToolLookup = Map<string, Tool>
-type ToolUsageStatsMap = Record<string, { saves: number; opens: number; subscriptions: number }>
+type ToolUsageStatsMap = Record<string, { saves: number; opens: number }>
 type RecommendationEvaluationSignal = {
   selectedToolId?: string | null
   helpful?: boolean | null
@@ -53,16 +47,12 @@ export function summarizePreferenceProfile(
   if (profile.preferredPricing.includes('free') || profile.preferredPricing.includes('freemium')) {
     summary.push(MARKET_ACTIVITY_COPY.summaries.lowTrialCost)
   }
-  if (profile.prefersSubscriptionTools) {
-    summary.push(MARKET_ACTIVITY_COPY.summaries.prefersSubscriptionTools)
-  }
   return summary.slice(0, 4)
 }
 
 export function inferUserPreferenceProfile(args: {
   pocketInventory: PocketInventoryItem[]
   feedback: MarketFeedbackRecord[]
-  subscriptions: MarketSubscriptionRecord[]
   activityMap: ToolUsageStatsMap
   tools: Tool[]
   recommendationEvaluations?: RecommendationEvaluationSignal[]
@@ -72,39 +62,29 @@ export function inferUserPreferenceProfile(args: {
   const tagScores = new Map<string, number>()
   const platformScores = new Map<ToolPlatform, number>()
   const pricingScores = new Map<ToolPricingModel, number>()
-  const executionScores = new Map<ToolExecutionMode, number>()
   let loginFreeScore = 0
   let authRequiredScore = 0
-  let subscriptionToolScore = 0
-  let nonSubscriptionToolScore = 0
 
   const collect = (tool: Tool | undefined, weight: number) => {
     if (!tool || weight === 0) return
     bumpCounter(categoryScores, tool.category as ToolCategory, weight)
     for (const tag of tool.tags.slice(0, 6)) bumpCounter(tagScores, tag, weight)
-    bumpCounter(platformScores, tool.platform as ToolPlatform, weight)
-    bumpCounter(pricingScores, tool.pricingModel as ToolPricingModel, weight)
-    bumpCounter(executionScores, tool.executionMode as ToolExecutionMode, weight)
-    if (tool.requiresAuth) authRequiredScore += weight
-    else loginFreeScore += weight
-    if (tool.subscriptionSupport) subscriptionToolScore += weight
-    else nonSubscriptionToolScore += weight
+    if (tool.platform !== 'unknown')
+      bumpCounter(platformScores, tool.platform as ToolPlatform, weight)
+    if (tool.pricingModel !== 'unknown')
+      bumpCounter(pricingScores, tool.pricingModel as ToolPricingModel, weight)
+    if (tool.requiresAuth === true) authRequiredScore += weight
+    else if (tool.requiresAuth === false) loginFreeScore += weight
   }
 
   for (const entry of args.pocketInventory) {
     collect(toolLookup.get(entry.toolId), 3 + Math.min(entry.useCount, 4))
   }
-  for (const entry of args.subscriptions.filter((item) => item.active)) {
-    collect(toolLookup.get(entry.toolId), 4)
-  }
   for (const entry of args.feedback) {
     collect(toolLookup.get(entry.toolId), entry.vote === 'up' ? 2 : -3)
   }
   for (const [toolId, stats] of Object.entries(args.activityMap)) {
-    collect(
-      toolLookup.get(toolId),
-      Math.min(4, stats.opens) + Math.min(3, stats.saves) + Math.min(2, stats.subscriptions),
-    )
+    collect(toolLookup.get(toolId), Math.min(4, stats.opens) + Math.min(3, stats.saves))
   }
   for (const entry of args.recommendationEvaluations ?? []) {
     if (!entry.selectedToolId) continue
@@ -118,9 +98,7 @@ export function inferUserPreferenceProfile(args: {
     preferredTags: topKeys(tagScores, 5),
     preferredPlatforms: topKeys(platformScores, 2),
     preferredPricing: topKeys(pricingScores, 2),
-    preferredExecutionModes: topKeys(executionScores, 2),
-    avoidAuthWall: loginFreeScore >= authRequiredScore,
-    prefersSubscriptionTools: subscriptionToolScore > nonSubscriptionToolScore,
+    avoidAuthWall: loginFreeScore > 0 && loginFreeScore >= authRequiredScore,
   }
 
   return {
@@ -138,9 +116,7 @@ export function applyPreferenceOverride(
     preferredTags: override.preferredTags ?? profile.preferredTags,
     preferredPlatforms: override.preferredPlatforms ?? profile.preferredPlatforms,
     preferredPricing: override.preferredPricing ?? profile.preferredPricing,
-    preferredExecutionModes: override.preferredExecutionModes ?? profile.preferredExecutionModes,
     avoidAuthWall: override.avoidAuthWall ?? profile.avoidAuthWall,
-    prefersSubscriptionTools: override.prefersSubscriptionTools ?? profile.prefersSubscriptionTools,
   }
 
   return {

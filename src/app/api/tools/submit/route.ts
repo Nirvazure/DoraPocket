@@ -39,11 +39,8 @@ export async function POST(request: Request) {
     name,
     url,
     description,
-    category: 'productivity',
-    tags: tags.length > 0 ? tags : ['用户提交'],
-    capabilities: tags.length > 0 ? tags : ['工具推荐'],
-    recommendedFor: [`需要${name}相关能力`],
-    sourceNote: '用户提交到 Tool Hub',
+    category: 'other',
+    tags,
     createdByUserId: session.user.id,
   })
 

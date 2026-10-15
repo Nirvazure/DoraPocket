@@ -6,7 +6,7 @@
 /*
  * This file should be your main import to use Prisma-related types and utilities in a browser. 
  * Use it to get access to models, enums, and input types.
- * 
+ *
  * This file does not contain a `PrismaClient` class, nor several other helpers that are intended as server-side only.
  * See `client.ts` for the standard, server-side entry point.
  *
@@ -19,66 +19,61 @@ export * as $Enums from './enums'
 export * from './enums';
 /**
  * Model User
- * 
+ *
  */
 export type User = Prisma.UserModel
 /**
  * Model UserSettings
- * 
+ *
  */
 export type UserSettings = Prisma.UserSettingsModel
 /**
  * Model Tool
- * 
+ *
  */
 export type Tool = Prisma.ToolModel
 /**
+ * Model ToolIndex
+ *
+ */
+export type ToolIndex = Prisma.ToolIndexModel
+/**
  * Model PocketItem
- * 
+ *
  */
 export type PocketItem = Prisma.PocketItemModel
 /**
  * Model MarketFeedback
- * 
+ *
  */
 export type MarketFeedback = Prisma.MarketFeedbackModel
 /**
- * Model MarketSubscription
- * 
- */
-export type MarketSubscription = Prisma.MarketSubscriptionModel
-/**
  * Model MarketSubmission
- * 
+ *
  */
 export type MarketSubmission = Prisma.MarketSubmissionModel
 /**
  * Model ToolActivity
- * 
+ *
  */
 export type ToolActivity = Prisma.ToolActivityModel
 /**
  * Model ChatHistoryEntry
- * 
+ *
  */
 export type ChatHistoryEntry = Prisma.ChatHistoryEntryModel
 /**
  * Model PreferenceProfileOverride
- * 
+ *
  */
 export type PreferenceProfileOverride = Prisma.PreferenceProfileOverrideModel
 /**
  * Model RecommendationSession
- * 
+ *
  */
 export type RecommendationSession = Prisma.RecommendationSessionModel
 /**
  * Model RecommendationEvaluation
- * 
+ *
  */
 export type RecommendationEvaluation = Prisma.RecommendationEvaluationModel
-/**
- * Model DataMigrationState
- * 
- */
-export type DataMigrationState = Prisma.DataMigrationStateModel

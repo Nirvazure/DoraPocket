@@ -27,96 +27,50 @@ export type AggregateTool = {
 export type ToolMinAggregateOutputType = {
   id: string | null
   name: string | null
-  icon: string | null
-  iconType: string | null
-  iconText: string | null
-  iconImageUrl: string | null
-  iconImageLocalPath: string | null
   url: string | null
   description: string | null
   category: string | null
-  source: string | null
+  iconUrl: string | null
   status: string | null
-  executionMode: string | null
   pricingModel: string | null
   requiresAuth: boolean | null
   platform: string | null
-  sourceNote: string | null
-  subscriptionSupport: boolean | null
-  siteHostname: string | null
-  marketAssetOrigin: string | null
-  seedSource: string | null
   createdByUserId: string | null
   createdAt: Date | null
   updatedAt: Date | null
-  embeddingModel: string | null
-  embeddingContentHash: string | null
-  embeddedAt: Date | null
 }
 
 export type ToolMaxAggregateOutputType = {
   id: string | null
   name: string | null
-  icon: string | null
-  iconType: string | null
-  iconText: string | null
-  iconImageUrl: string | null
-  iconImageLocalPath: string | null
   url: string | null
   description: string | null
   category: string | null
-  source: string | null
+  iconUrl: string | null
   status: string | null
-  executionMode: string | null
   pricingModel: string | null
   requiresAuth: boolean | null
   platform: string | null
-  sourceNote: string | null
-  subscriptionSupport: boolean | null
-  siteHostname: string | null
-  marketAssetOrigin: string | null
-  seedSource: string | null
   createdByUserId: string | null
   createdAt: Date | null
   updatedAt: Date | null
-  embeddingModel: string | null
-  embeddingContentHash: string | null
-  embeddedAt: Date | null
 }
 
 export type ToolCountAggregateOutputType = {
   id: number
   name: number
-  icon: number
-  iconType: number
-  iconText: number
-  iconImageUrl: number
-  iconImageLocalPath: number
   url: number
   description: number
   category: number
   tags: number
-  source: number
+  iconUrl: number
   status: number
-  executionMode: number
   pricingModel: number
   requiresAuth: number
   platform: number
-  capabilities: number
-  recommendedFor: number
-  sourceNote: number
-  trustSignals: number
-  subscriptionSupport: number
-  defaultArgs: number
-  siteHostname: number
-  marketAssetOrigin: number
-  seedSource: number
   createdByUserId: number
   createdAt: number
   updatedAt: number
-  embeddingModel: number
-  embeddingContentHash: number
-  embeddedAt: number
   _all: number
 }
 
@@ -124,96 +78,50 @@ export type ToolCountAggregateOutputType = {
 export type ToolMinAggregateInputType = {
   id?: true
   name?: true
-  icon?: true
-  iconType?: true
-  iconText?: true
-  iconImageUrl?: true
-  iconImageLocalPath?: true
   url?: true
   description?: true
   category?: true
-  source?: true
+  iconUrl?: true
   status?: true
-  executionMode?: true
   pricingModel?: true
   requiresAuth?: true
   platform?: true
-  sourceNote?: true
-  subscriptionSupport?: true
-  siteHostname?: true
-  marketAssetOrigin?: true
-  seedSource?: true
   createdByUserId?: true
   createdAt?: true
   updatedAt?: true
-  embeddingModel?: true
-  embeddingContentHash?: true
-  embeddedAt?: true
 }
 
 export type ToolMaxAggregateInputType = {
   id?: true
   name?: true
-  icon?: true
-  iconType?: true
-  iconText?: true
-  iconImageUrl?: true
-  iconImageLocalPath?: true
   url?: true
   description?: true
   category?: true
-  source?: true
+  iconUrl?: true
   status?: true
-  executionMode?: true
   pricingModel?: true
   requiresAuth?: true
   platform?: true
-  sourceNote?: true
-  subscriptionSupport?: true
-  siteHostname?: true
-  marketAssetOrigin?: true
-  seedSource?: true
   createdByUserId?: true
   createdAt?: true
   updatedAt?: true
-  embeddingModel?: true
-  embeddingContentHash?: true
-  embeddedAt?: true
 }
 
 export type ToolCountAggregateInputType = {
   id?: true
   name?: true
-  icon?: true
-  iconType?: true
-  iconText?: true
-  iconImageUrl?: true
-  iconImageLocalPath?: true
   url?: true
   description?: true
   category?: true
   tags?: true
-  source?: true
+  iconUrl?: true
   status?: true
-  executionMode?: true
   pricingModel?: true
   requiresAuth?: true
   platform?: true
-  capabilities?: true
-  recommendedFor?: true
-  sourceNote?: true
-  trustSignals?: true
-  subscriptionSupport?: true
-  defaultArgs?: true
-  siteHostname?: true
-  marketAssetOrigin?: true
-  seedSource?: true
   createdByUserId?: true
   createdAt?: true
   updatedAt?: true
-  embeddingModel?: true
-  embeddingContentHash?: true
-  embeddedAt?: true
   _all?: true
 }
 
@@ -292,36 +200,18 @@ export type ToolGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 export type ToolGroupByOutputType = {
   id: string
   name: string
-  icon: string
-  iconType: string | null
-  iconText: string | null
-  iconImageUrl: string | null
-  iconImageLocalPath: string | null
-  url: string | null
+  url: string
   description: string
   category: string
   tags: string[]
-  source: string
+  iconUrl: string | null
   status: string
-  executionMode: string
   pricingModel: string
-  requiresAuth: boolean
+  requiresAuth: boolean | null
   platform: string
-  capabilities: string[]
-  recommendedFor: string[]
-  sourceNote: string | null
-  trustSignals: runtime.JsonValue
-  subscriptionSupport: boolean
-  defaultArgs: runtime.JsonValue | null
-  siteHostname: string | null
-  marketAssetOrigin: string | null
-  seedSource: string
   createdByUserId: string | null
   createdAt: Date
   updatedAt: Date
-  embeddingModel: string | null
-  embeddingContentHash: string | null
-  embeddedAt: Date | null
   _count: ToolCountAggregateOutputType | null
   _min: ToolMinAggregateOutputType | null
   _max: ToolMaxAggregateOutputType | null
@@ -348,80 +238,44 @@ export type ToolWhereInput = {
   NOT?: Prisma.ToolWhereInput | Prisma.ToolWhereInput[]
   id?: Prisma.StringFilter<"Tool"> | string
   name?: Prisma.StringFilter<"Tool"> | string
-  icon?: Prisma.StringFilter<"Tool"> | string
-  iconType?: Prisma.StringNullableFilter<"Tool"> | string | null
-  iconText?: Prisma.StringNullableFilter<"Tool"> | string | null
-  iconImageUrl?: Prisma.StringNullableFilter<"Tool"> | string | null
-  iconImageLocalPath?: Prisma.StringNullableFilter<"Tool"> | string | null
-  url?: Prisma.StringNullableFilter<"Tool"> | string | null
+  url?: Prisma.StringFilter<"Tool"> | string
   description?: Prisma.StringFilter<"Tool"> | string
   category?: Prisma.StringFilter<"Tool"> | string
   tags?: Prisma.StringNullableListFilter<"Tool">
-  source?: Prisma.StringFilter<"Tool"> | string
+  iconUrl?: Prisma.StringNullableFilter<"Tool"> | string | null
   status?: Prisma.StringFilter<"Tool"> | string
-  executionMode?: Prisma.StringFilter<"Tool"> | string
   pricingModel?: Prisma.StringFilter<"Tool"> | string
-  requiresAuth?: Prisma.BoolFilter<"Tool"> | boolean
+  requiresAuth?: Prisma.BoolNullableFilter<"Tool"> | boolean | null
   platform?: Prisma.StringFilter<"Tool"> | string
-  capabilities?: Prisma.StringNullableListFilter<"Tool">
-  recommendedFor?: Prisma.StringNullableListFilter<"Tool">
-  sourceNote?: Prisma.StringNullableFilter<"Tool"> | string | null
-  trustSignals?: Prisma.JsonFilter<"Tool">
-  subscriptionSupport?: Prisma.BoolFilter<"Tool"> | boolean
-  defaultArgs?: Prisma.JsonNullableFilter<"Tool">
-  siteHostname?: Prisma.StringNullableFilter<"Tool"> | string | null
-  marketAssetOrigin?: Prisma.StringNullableFilter<"Tool"> | string | null
-  seedSource?: Prisma.StringFilter<"Tool"> | string
   createdByUserId?: Prisma.StringNullableFilter<"Tool"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Tool"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Tool"> | Date | string
-  embeddingModel?: Prisma.StringNullableFilter<"Tool"> | string | null
-  embeddingContentHash?: Prisma.StringNullableFilter<"Tool"> | string | null
-  embeddedAt?: Prisma.DateTimeNullableFilter<"Tool"> | Date | string | null
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  index?: Prisma.XOR<Prisma.ToolIndexNullableScalarRelationFilter, Prisma.ToolIndexWhereInput> | null
   pocketItems?: Prisma.PocketItemListRelationFilter
   marketFeedback?: Prisma.MarketFeedbackListRelationFilter
-  marketSubscriptions?: Prisma.MarketSubscriptionListRelationFilter
   toolActivities?: Prisma.ToolActivityListRelationFilter
 }
 
 export type ToolOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  icon?: Prisma.SortOrder
-  iconType?: Prisma.SortOrderInput | Prisma.SortOrder
-  iconText?: Prisma.SortOrderInput | Prisma.SortOrder
-  iconImageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  iconImageLocalPath?: Prisma.SortOrderInput | Prisma.SortOrder
-  url?: Prisma.SortOrderInput | Prisma.SortOrder
+  url?: Prisma.SortOrder
   description?: Prisma.SortOrder
   category?: Prisma.SortOrder
   tags?: Prisma.SortOrder
-  source?: Prisma.SortOrder
+  iconUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
-  executionMode?: Prisma.SortOrder
   pricingModel?: Prisma.SortOrder
-  requiresAuth?: Prisma.SortOrder
+  requiresAuth?: Prisma.SortOrderInput | Prisma.SortOrder
   platform?: Prisma.SortOrder
-  capabilities?: Prisma.SortOrder
-  recommendedFor?: Prisma.SortOrder
-  sourceNote?: Prisma.SortOrderInput | Prisma.SortOrder
-  trustSignals?: Prisma.SortOrder
-  subscriptionSupport?: Prisma.SortOrder
-  defaultArgs?: Prisma.SortOrderInput | Prisma.SortOrder
-  siteHostname?: Prisma.SortOrderInput | Prisma.SortOrder
-  marketAssetOrigin?: Prisma.SortOrderInput | Prisma.SortOrder
-  seedSource?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  embeddingModel?: Prisma.SortOrderInput | Prisma.SortOrder
-  embeddingContentHash?: Prisma.SortOrderInput | Prisma.SortOrder
-  embeddedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdBy?: Prisma.UserOrderByWithRelationInput
+  index?: Prisma.ToolIndexOrderByWithRelationInput
   pocketItems?: Prisma.PocketItemOrderByRelationAggregateInput
   marketFeedback?: Prisma.MarketFeedbackOrderByRelationAggregateInput
-  marketSubscriptions?: Prisma.MarketSubscriptionOrderByRelationAggregateInput
   toolActivities?: Prisma.ToolActivityOrderByRelationAggregateInput
 }
 
@@ -431,76 +285,40 @@ export type ToolWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ToolWhereInput[]
   NOT?: Prisma.ToolWhereInput | Prisma.ToolWhereInput[]
   name?: Prisma.StringFilter<"Tool"> | string
-  icon?: Prisma.StringFilter<"Tool"> | string
-  iconType?: Prisma.StringNullableFilter<"Tool"> | string | null
-  iconText?: Prisma.StringNullableFilter<"Tool"> | string | null
-  iconImageUrl?: Prisma.StringNullableFilter<"Tool"> | string | null
-  iconImageLocalPath?: Prisma.StringNullableFilter<"Tool"> | string | null
-  url?: Prisma.StringNullableFilter<"Tool"> | string | null
+  url?: Prisma.StringFilter<"Tool"> | string
   description?: Prisma.StringFilter<"Tool"> | string
   category?: Prisma.StringFilter<"Tool"> | string
   tags?: Prisma.StringNullableListFilter<"Tool">
-  source?: Prisma.StringFilter<"Tool"> | string
+  iconUrl?: Prisma.StringNullableFilter<"Tool"> | string | null
   status?: Prisma.StringFilter<"Tool"> | string
-  executionMode?: Prisma.StringFilter<"Tool"> | string
   pricingModel?: Prisma.StringFilter<"Tool"> | string
-  requiresAuth?: Prisma.BoolFilter<"Tool"> | boolean
+  requiresAuth?: Prisma.BoolNullableFilter<"Tool"> | boolean | null
   platform?: Prisma.StringFilter<"Tool"> | string
-  capabilities?: Prisma.StringNullableListFilter<"Tool">
-  recommendedFor?: Prisma.StringNullableListFilter<"Tool">
-  sourceNote?: Prisma.StringNullableFilter<"Tool"> | string | null
-  trustSignals?: Prisma.JsonFilter<"Tool">
-  subscriptionSupport?: Prisma.BoolFilter<"Tool"> | boolean
-  defaultArgs?: Prisma.JsonNullableFilter<"Tool">
-  siteHostname?: Prisma.StringNullableFilter<"Tool"> | string | null
-  marketAssetOrigin?: Prisma.StringNullableFilter<"Tool"> | string | null
-  seedSource?: Prisma.StringFilter<"Tool"> | string
   createdByUserId?: Prisma.StringNullableFilter<"Tool"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Tool"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Tool"> | Date | string
-  embeddingModel?: Prisma.StringNullableFilter<"Tool"> | string | null
-  embeddingContentHash?: Prisma.StringNullableFilter<"Tool"> | string | null
-  embeddedAt?: Prisma.DateTimeNullableFilter<"Tool"> | Date | string | null
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  index?: Prisma.XOR<Prisma.ToolIndexNullableScalarRelationFilter, Prisma.ToolIndexWhereInput> | null
   pocketItems?: Prisma.PocketItemListRelationFilter
   marketFeedback?: Prisma.MarketFeedbackListRelationFilter
-  marketSubscriptions?: Prisma.MarketSubscriptionListRelationFilter
   toolActivities?: Prisma.ToolActivityListRelationFilter
 }, "id">
 
 export type ToolOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  icon?: Prisma.SortOrder
-  iconType?: Prisma.SortOrderInput | Prisma.SortOrder
-  iconText?: Prisma.SortOrderInput | Prisma.SortOrder
-  iconImageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  iconImageLocalPath?: Prisma.SortOrderInput | Prisma.SortOrder
-  url?: Prisma.SortOrderInput | Prisma.SortOrder
+  url?: Prisma.SortOrder
   description?: Prisma.SortOrder
   category?: Prisma.SortOrder
   tags?: Prisma.SortOrder
-  source?: Prisma.SortOrder
+  iconUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
-  executionMode?: Prisma.SortOrder
   pricingModel?: Prisma.SortOrder
-  requiresAuth?: Prisma.SortOrder
+  requiresAuth?: Prisma.SortOrderInput | Prisma.SortOrder
   platform?: Prisma.SortOrder
-  capabilities?: Prisma.SortOrder
-  recommendedFor?: Prisma.SortOrder
-  sourceNote?: Prisma.SortOrderInput | Prisma.SortOrder
-  trustSignals?: Prisma.SortOrder
-  subscriptionSupport?: Prisma.SortOrder
-  defaultArgs?: Prisma.SortOrderInput | Prisma.SortOrder
-  siteHostname?: Prisma.SortOrderInput | Prisma.SortOrder
-  marketAssetOrigin?: Prisma.SortOrderInput | Prisma.SortOrder
-  seedSource?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  embeddingModel?: Prisma.SortOrderInput | Prisma.SortOrder
-  embeddingContentHash?: Prisma.SortOrderInput | Prisma.SortOrder
-  embeddedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ToolCountOrderByAggregateInput
   _max?: Prisma.ToolMaxOrderByAggregateInput
   _min?: Prisma.ToolMinOrderByAggregateInput
@@ -512,296 +330,152 @@ export type ToolScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ToolScalarWhereWithAggregatesInput | Prisma.ToolScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Tool"> | string
   name?: Prisma.StringWithAggregatesFilter<"Tool"> | string
-  icon?: Prisma.StringWithAggregatesFilter<"Tool"> | string
-  iconType?: Prisma.StringNullableWithAggregatesFilter<"Tool"> | string | null
-  iconText?: Prisma.StringNullableWithAggregatesFilter<"Tool"> | string | null
-  iconImageUrl?: Prisma.StringNullableWithAggregatesFilter<"Tool"> | string | null
-  iconImageLocalPath?: Prisma.StringNullableWithAggregatesFilter<"Tool"> | string | null
-  url?: Prisma.StringNullableWithAggregatesFilter<"Tool"> | string | null
+  url?: Prisma.StringWithAggregatesFilter<"Tool"> | string
   description?: Prisma.StringWithAggregatesFilter<"Tool"> | string
   category?: Prisma.StringWithAggregatesFilter<"Tool"> | string
   tags?: Prisma.StringNullableListFilter<"Tool">
-  source?: Prisma.StringWithAggregatesFilter<"Tool"> | string
+  iconUrl?: Prisma.StringNullableWithAggregatesFilter<"Tool"> | string | null
   status?: Prisma.StringWithAggregatesFilter<"Tool"> | string
-  executionMode?: Prisma.StringWithAggregatesFilter<"Tool"> | string
   pricingModel?: Prisma.StringWithAggregatesFilter<"Tool"> | string
-  requiresAuth?: Prisma.BoolWithAggregatesFilter<"Tool"> | boolean
+  requiresAuth?: Prisma.BoolNullableWithAggregatesFilter<"Tool"> | boolean | null
   platform?: Prisma.StringWithAggregatesFilter<"Tool"> | string
-  capabilities?: Prisma.StringNullableListFilter<"Tool">
-  recommendedFor?: Prisma.StringNullableListFilter<"Tool">
-  sourceNote?: Prisma.StringNullableWithAggregatesFilter<"Tool"> | string | null
-  trustSignals?: Prisma.JsonWithAggregatesFilter<"Tool">
-  subscriptionSupport?: Prisma.BoolWithAggregatesFilter<"Tool"> | boolean
-  defaultArgs?: Prisma.JsonNullableWithAggregatesFilter<"Tool">
-  siteHostname?: Prisma.StringNullableWithAggregatesFilter<"Tool"> | string | null
-  marketAssetOrigin?: Prisma.StringNullableWithAggregatesFilter<"Tool"> | string | null
-  seedSource?: Prisma.StringWithAggregatesFilter<"Tool"> | string
   createdByUserId?: Prisma.StringNullableWithAggregatesFilter<"Tool"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Tool"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Tool"> | Date | string
-  embeddingModel?: Prisma.StringNullableWithAggregatesFilter<"Tool"> | string | null
-  embeddingContentHash?: Prisma.StringNullableWithAggregatesFilter<"Tool"> | string | null
-  embeddedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Tool"> | Date | string | null
 }
 
 export type ToolCreateInput = {
   id: string
   name: string
-  icon: string
-  iconType?: string | null
-  iconText?: string | null
-  iconImageUrl?: string | null
-  iconImageLocalPath?: string | null
-  url?: string | null
+  url: string
   description: string
   category: string
   tags?: Prisma.ToolCreatetagsInput | string[]
-  source: string
-  status: string
-  executionMode: string
-  pricingModel: string
-  requiresAuth: boolean
-  platform: string
-  capabilities?: Prisma.ToolCreatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolCreaterecommendedForInput | string[]
-  sourceNote?: string | null
-  trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport: boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: string | null
-  marketAssetOrigin?: string | null
-  seedSource?: string
+  iconUrl?: string | null
+  status?: string
+  pricingModel?: string
+  requiresAuth?: boolean | null
+  platform?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  embeddingModel?: string | null
-  embeddingContentHash?: string | null
-  embeddedAt?: Date | string | null
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedToolsInput
+  index?: Prisma.ToolIndexCreateNestedOneWithoutToolInput
   pocketItems?: Prisma.PocketItemCreateNestedManyWithoutToolInput
   marketFeedback?: Prisma.MarketFeedbackCreateNestedManyWithoutToolInput
-  marketSubscriptions?: Prisma.MarketSubscriptionCreateNestedManyWithoutToolInput
   toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutToolInput
 }
 
 export type ToolUncheckedCreateInput = {
   id: string
   name: string
-  icon: string
-  iconType?: string | null
-  iconText?: string | null
-  iconImageUrl?: string | null
-  iconImageLocalPath?: string | null
-  url?: string | null
+  url: string
   description: string
   category: string
   tags?: Prisma.ToolCreatetagsInput | string[]
-  source: string
-  status: string
-  executionMode: string
-  pricingModel: string
-  requiresAuth: boolean
-  platform: string
-  capabilities?: Prisma.ToolCreatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolCreaterecommendedForInput | string[]
-  sourceNote?: string | null
-  trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport: boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: string | null
-  marketAssetOrigin?: string | null
-  seedSource?: string
+  iconUrl?: string | null
+  status?: string
+  pricingModel?: string
+  requiresAuth?: boolean | null
+  platform?: string
   createdByUserId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  embeddingModel?: string | null
-  embeddingContentHash?: string | null
-  embeddedAt?: Date | string | null
+  index?: Prisma.ToolIndexUncheckedCreateNestedOneWithoutToolInput
   pocketItems?: Prisma.PocketItemUncheckedCreateNestedManyWithoutToolInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedCreateNestedManyWithoutToolInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedCreateNestedManyWithoutToolInput
   toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutToolInput
 }
 
 export type ToolUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  icon?: Prisma.StringFieldUpdateOperationsInput | string
-  iconType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageLocalPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  url?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   tags?: Prisma.ToolUpdatetagsInput | string[]
-  source?: Prisma.StringFieldUpdateOperationsInput | string
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  executionMode?: Prisma.StringFieldUpdateOperationsInput | string
   pricingModel?: Prisma.StringFieldUpdateOperationsInput | string
-  requiresAuth?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuth?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   platform?: Prisma.StringFieldUpdateOperationsInput | string
-  capabilities?: Prisma.ToolUpdatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolUpdaterecommendedForInput | string[]
-  sourceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seedSource?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddingContentHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.UserUpdateOneWithoutCreatedToolsNestedInput
+  index?: Prisma.ToolIndexUpdateOneWithoutToolNestedInput
   pocketItems?: Prisma.PocketItemUpdateManyWithoutToolNestedInput
   marketFeedback?: Prisma.MarketFeedbackUpdateManyWithoutToolNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUpdateManyWithoutToolNestedInput
   toolActivities?: Prisma.ToolActivityUpdateManyWithoutToolNestedInput
 }
 
 export type ToolUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  icon?: Prisma.StringFieldUpdateOperationsInput | string
-  iconType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageLocalPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  url?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   tags?: Prisma.ToolUpdatetagsInput | string[]
-  source?: Prisma.StringFieldUpdateOperationsInput | string
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  executionMode?: Prisma.StringFieldUpdateOperationsInput | string
   pricingModel?: Prisma.StringFieldUpdateOperationsInput | string
-  requiresAuth?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuth?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   platform?: Prisma.StringFieldUpdateOperationsInput | string
-  capabilities?: Prisma.ToolUpdatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolUpdaterecommendedForInput | string[]
-  sourceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seedSource?: Prisma.StringFieldUpdateOperationsInput | string
   createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddingContentHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  index?: Prisma.ToolIndexUncheckedUpdateOneWithoutToolNestedInput
   pocketItems?: Prisma.PocketItemUncheckedUpdateManyWithoutToolNestedInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedUpdateManyWithoutToolNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedUpdateManyWithoutToolNestedInput
   toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutToolNestedInput
 }
 
 export type ToolCreateManyInput = {
   id: string
   name: string
-  icon: string
-  iconType?: string | null
-  iconText?: string | null
-  iconImageUrl?: string | null
-  iconImageLocalPath?: string | null
-  url?: string | null
+  url: string
   description: string
   category: string
   tags?: Prisma.ToolCreatetagsInput | string[]
-  source: string
-  status: string
-  executionMode: string
-  pricingModel: string
-  requiresAuth: boolean
-  platform: string
-  capabilities?: Prisma.ToolCreatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolCreaterecommendedForInput | string[]
-  sourceNote?: string | null
-  trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport: boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: string | null
-  marketAssetOrigin?: string | null
-  seedSource?: string
+  iconUrl?: string | null
+  status?: string
+  pricingModel?: string
+  requiresAuth?: boolean | null
+  platform?: string
   createdByUserId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  embeddingModel?: string | null
-  embeddingContentHash?: string | null
-  embeddedAt?: Date | string | null
 }
 
 export type ToolUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  icon?: Prisma.StringFieldUpdateOperationsInput | string
-  iconType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageLocalPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  url?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   tags?: Prisma.ToolUpdatetagsInput | string[]
-  source?: Prisma.StringFieldUpdateOperationsInput | string
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  executionMode?: Prisma.StringFieldUpdateOperationsInput | string
   pricingModel?: Prisma.StringFieldUpdateOperationsInput | string
-  requiresAuth?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuth?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   platform?: Prisma.StringFieldUpdateOperationsInput | string
-  capabilities?: Prisma.ToolUpdatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolUpdaterecommendedForInput | string[]
-  sourceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seedSource?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddingContentHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ToolUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  icon?: Prisma.StringFieldUpdateOperationsInput | string
-  iconType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageLocalPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  url?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   tags?: Prisma.ToolUpdatetagsInput | string[]
-  source?: Prisma.StringFieldUpdateOperationsInput | string
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  executionMode?: Prisma.StringFieldUpdateOperationsInput | string
   pricingModel?: Prisma.StringFieldUpdateOperationsInput | string
-  requiresAuth?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuth?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   platform?: Prisma.StringFieldUpdateOperationsInput | string
-  capabilities?: Prisma.ToolUpdatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolUpdaterecommendedForInput | string[]
-  sourceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seedSource?: Prisma.StringFieldUpdateOperationsInput | string
   createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddingContentHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ToolListRelationFilter = {
@@ -825,96 +499,50 @@ export type StringNullableListFilter<$PrismaModel = never> = {
 export type ToolCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  icon?: Prisma.SortOrder
-  iconType?: Prisma.SortOrder
-  iconText?: Prisma.SortOrder
-  iconImageUrl?: Prisma.SortOrder
-  iconImageLocalPath?: Prisma.SortOrder
   url?: Prisma.SortOrder
   description?: Prisma.SortOrder
   category?: Prisma.SortOrder
   tags?: Prisma.SortOrder
-  source?: Prisma.SortOrder
+  iconUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  executionMode?: Prisma.SortOrder
   pricingModel?: Prisma.SortOrder
   requiresAuth?: Prisma.SortOrder
   platform?: Prisma.SortOrder
-  capabilities?: Prisma.SortOrder
-  recommendedFor?: Prisma.SortOrder
-  sourceNote?: Prisma.SortOrder
-  trustSignals?: Prisma.SortOrder
-  subscriptionSupport?: Prisma.SortOrder
-  defaultArgs?: Prisma.SortOrder
-  siteHostname?: Prisma.SortOrder
-  marketAssetOrigin?: Prisma.SortOrder
-  seedSource?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  embeddingModel?: Prisma.SortOrder
-  embeddingContentHash?: Prisma.SortOrder
-  embeddedAt?: Prisma.SortOrder
 }
 
 export type ToolMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  icon?: Prisma.SortOrder
-  iconType?: Prisma.SortOrder
-  iconText?: Prisma.SortOrder
-  iconImageUrl?: Prisma.SortOrder
-  iconImageLocalPath?: Prisma.SortOrder
   url?: Prisma.SortOrder
   description?: Prisma.SortOrder
   category?: Prisma.SortOrder
-  source?: Prisma.SortOrder
+  iconUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  executionMode?: Prisma.SortOrder
   pricingModel?: Prisma.SortOrder
   requiresAuth?: Prisma.SortOrder
   platform?: Prisma.SortOrder
-  sourceNote?: Prisma.SortOrder
-  subscriptionSupport?: Prisma.SortOrder
-  siteHostname?: Prisma.SortOrder
-  marketAssetOrigin?: Prisma.SortOrder
-  seedSource?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  embeddingModel?: Prisma.SortOrder
-  embeddingContentHash?: Prisma.SortOrder
-  embeddedAt?: Prisma.SortOrder
 }
 
 export type ToolMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  icon?: Prisma.SortOrder
-  iconType?: Prisma.SortOrder
-  iconText?: Prisma.SortOrder
-  iconImageUrl?: Prisma.SortOrder
-  iconImageLocalPath?: Prisma.SortOrder
   url?: Prisma.SortOrder
   description?: Prisma.SortOrder
   category?: Prisma.SortOrder
-  source?: Prisma.SortOrder
+  iconUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  executionMode?: Prisma.SortOrder
   pricingModel?: Prisma.SortOrder
   requiresAuth?: Prisma.SortOrder
   platform?: Prisma.SortOrder
-  sourceNote?: Prisma.SortOrder
-  subscriptionSupport?: Prisma.SortOrder
-  siteHostname?: Prisma.SortOrder
-  marketAssetOrigin?: Prisma.SortOrder
-  seedSource?: Prisma.SortOrder
   createdByUserId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  embeddingModel?: Prisma.SortOrder
-  embeddingContentHash?: Prisma.SortOrder
-  embeddedAt?: Prisma.SortOrder
 }
 
 export type ToolScalarRelationFilter = {
@@ -968,27 +596,27 @@ export type ToolCreatetagsInput = {
   set: string[]
 }
 
-export type ToolCreatecapabilitiesInput = {
-  set: string[]
-}
-
-export type ToolCreaterecommendedForInput = {
-  set: string[]
-}
-
 export type ToolUpdatetagsInput = {
   set?: string[]
   push?: string | string[]
 }
 
-export type ToolUpdatecapabilitiesInput = {
-  set?: string[]
-  push?: string | string[]
+export type NullableBoolFieldUpdateOperationsInput = {
+  set?: boolean | null
 }
 
-export type ToolUpdaterecommendedForInput = {
-  set?: string[]
-  push?: string | string[]
+export type ToolCreateNestedOneWithoutIndexInput = {
+  create?: Prisma.XOR<Prisma.ToolCreateWithoutIndexInput, Prisma.ToolUncheckedCreateWithoutIndexInput>
+  connectOrCreate?: Prisma.ToolCreateOrConnectWithoutIndexInput
+  connect?: Prisma.ToolWhereUniqueInput
+}
+
+export type ToolUpdateOneRequiredWithoutIndexNestedInput = {
+  create?: Prisma.XOR<Prisma.ToolCreateWithoutIndexInput, Prisma.ToolUncheckedCreateWithoutIndexInput>
+  connectOrCreate?: Prisma.ToolCreateOrConnectWithoutIndexInput
+  upsert?: Prisma.ToolUpsertWithoutIndexInput
+  connect?: Prisma.ToolWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ToolUpdateToOneWithWhereWithoutIndexInput, Prisma.ToolUpdateWithoutIndexInput>, Prisma.ToolUncheckedUpdateWithoutIndexInput>
 }
 
 export type ToolCreateNestedOneWithoutPocketItemsInput = {
@@ -1019,20 +647,6 @@ export type ToolUpdateOneRequiredWithoutMarketFeedbackNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ToolUpdateToOneWithWhereWithoutMarketFeedbackInput, Prisma.ToolUpdateWithoutMarketFeedbackInput>, Prisma.ToolUncheckedUpdateWithoutMarketFeedbackInput>
 }
 
-export type ToolCreateNestedOneWithoutMarketSubscriptionsInput = {
-  create?: Prisma.XOR<Prisma.ToolCreateWithoutMarketSubscriptionsInput, Prisma.ToolUncheckedCreateWithoutMarketSubscriptionsInput>
-  connectOrCreate?: Prisma.ToolCreateOrConnectWithoutMarketSubscriptionsInput
-  connect?: Prisma.ToolWhereUniqueInput
-}
-
-export type ToolUpdateOneRequiredWithoutMarketSubscriptionsNestedInput = {
-  create?: Prisma.XOR<Prisma.ToolCreateWithoutMarketSubscriptionsInput, Prisma.ToolUncheckedCreateWithoutMarketSubscriptionsInput>
-  connectOrCreate?: Prisma.ToolCreateOrConnectWithoutMarketSubscriptionsInput
-  upsert?: Prisma.ToolUpsertWithoutMarketSubscriptionsInput
-  connect?: Prisma.ToolWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ToolUpdateToOneWithWhereWithoutMarketSubscriptionsInput, Prisma.ToolUpdateWithoutMarketSubscriptionsInput>, Prisma.ToolUncheckedUpdateWithoutMarketSubscriptionsInput>
-}
-
 export type ToolCreateNestedOneWithoutToolActivitiesInput = {
   create?: Prisma.XOR<Prisma.ToolCreateWithoutToolActivitiesInput, Prisma.ToolUncheckedCreateWithoutToolActivitiesInput>
   connectOrCreate?: Prisma.ToolCreateOrConnectWithoutToolActivitiesInput
@@ -1050,76 +664,40 @@ export type ToolUpdateOneRequiredWithoutToolActivitiesNestedInput = {
 export type ToolCreateWithoutCreatedByInput = {
   id: string
   name: string
-  icon: string
-  iconType?: string | null
-  iconText?: string | null
-  iconImageUrl?: string | null
-  iconImageLocalPath?: string | null
-  url?: string | null
+  url: string
   description: string
   category: string
   tags?: Prisma.ToolCreatetagsInput | string[]
-  source: string
-  status: string
-  executionMode: string
-  pricingModel: string
-  requiresAuth: boolean
-  platform: string
-  capabilities?: Prisma.ToolCreatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolCreaterecommendedForInput | string[]
-  sourceNote?: string | null
-  trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport: boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: string | null
-  marketAssetOrigin?: string | null
-  seedSource?: string
+  iconUrl?: string | null
+  status?: string
+  pricingModel?: string
+  requiresAuth?: boolean | null
+  platform?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  embeddingModel?: string | null
-  embeddingContentHash?: string | null
-  embeddedAt?: Date | string | null
+  index?: Prisma.ToolIndexCreateNestedOneWithoutToolInput
   pocketItems?: Prisma.PocketItemCreateNestedManyWithoutToolInput
   marketFeedback?: Prisma.MarketFeedbackCreateNestedManyWithoutToolInput
-  marketSubscriptions?: Prisma.MarketSubscriptionCreateNestedManyWithoutToolInput
   toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutToolInput
 }
 
 export type ToolUncheckedCreateWithoutCreatedByInput = {
   id: string
   name: string
-  icon: string
-  iconType?: string | null
-  iconText?: string | null
-  iconImageUrl?: string | null
-  iconImageLocalPath?: string | null
-  url?: string | null
+  url: string
   description: string
   category: string
   tags?: Prisma.ToolCreatetagsInput | string[]
-  source: string
-  status: string
-  executionMode: string
-  pricingModel: string
-  requiresAuth: boolean
-  platform: string
-  capabilities?: Prisma.ToolCreatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolCreaterecommendedForInput | string[]
-  sourceNote?: string | null
-  trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport: boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: string | null
-  marketAssetOrigin?: string | null
-  seedSource?: string
+  iconUrl?: string | null
+  status?: string
+  pricingModel?: string
+  requiresAuth?: boolean | null
+  platform?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  embeddingModel?: string | null
-  embeddingContentHash?: string | null
-  embeddedAt?: Date | string | null
+  index?: Prisma.ToolIndexUncheckedCreateNestedOneWithoutToolInput
   pocketItems?: Prisma.PocketItemUncheckedCreateNestedManyWithoutToolInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedCreateNestedManyWithoutToolInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedCreateNestedManyWithoutToolInput
   toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutToolInput
 }
 
@@ -1155,111 +733,153 @@ export type ToolScalarWhereInput = {
   NOT?: Prisma.ToolScalarWhereInput | Prisma.ToolScalarWhereInput[]
   id?: Prisma.StringFilter<"Tool"> | string
   name?: Prisma.StringFilter<"Tool"> | string
-  icon?: Prisma.StringFilter<"Tool"> | string
-  iconType?: Prisma.StringNullableFilter<"Tool"> | string | null
-  iconText?: Prisma.StringNullableFilter<"Tool"> | string | null
-  iconImageUrl?: Prisma.StringNullableFilter<"Tool"> | string | null
-  iconImageLocalPath?: Prisma.StringNullableFilter<"Tool"> | string | null
-  url?: Prisma.StringNullableFilter<"Tool"> | string | null
+  url?: Prisma.StringFilter<"Tool"> | string
   description?: Prisma.StringFilter<"Tool"> | string
   category?: Prisma.StringFilter<"Tool"> | string
   tags?: Prisma.StringNullableListFilter<"Tool">
-  source?: Prisma.StringFilter<"Tool"> | string
+  iconUrl?: Prisma.StringNullableFilter<"Tool"> | string | null
   status?: Prisma.StringFilter<"Tool"> | string
-  executionMode?: Prisma.StringFilter<"Tool"> | string
   pricingModel?: Prisma.StringFilter<"Tool"> | string
-  requiresAuth?: Prisma.BoolFilter<"Tool"> | boolean
+  requiresAuth?: Prisma.BoolNullableFilter<"Tool"> | boolean | null
   platform?: Prisma.StringFilter<"Tool"> | string
-  capabilities?: Prisma.StringNullableListFilter<"Tool">
-  recommendedFor?: Prisma.StringNullableListFilter<"Tool">
-  sourceNote?: Prisma.StringNullableFilter<"Tool"> | string | null
-  trustSignals?: Prisma.JsonFilter<"Tool">
-  subscriptionSupport?: Prisma.BoolFilter<"Tool"> | boolean
-  defaultArgs?: Prisma.JsonNullableFilter<"Tool">
-  siteHostname?: Prisma.StringNullableFilter<"Tool"> | string | null
-  marketAssetOrigin?: Prisma.StringNullableFilter<"Tool"> | string | null
-  seedSource?: Prisma.StringFilter<"Tool"> | string
   createdByUserId?: Prisma.StringNullableFilter<"Tool"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Tool"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Tool"> | Date | string
-  embeddingModel?: Prisma.StringNullableFilter<"Tool"> | string | null
-  embeddingContentHash?: Prisma.StringNullableFilter<"Tool"> | string | null
-  embeddedAt?: Prisma.DateTimeNullableFilter<"Tool"> | Date | string | null
+}
+
+export type ToolCreateWithoutIndexInput = {
+  id: string
+  name: string
+  url: string
+  description: string
+  category: string
+  tags?: Prisma.ToolCreatetagsInput | string[]
+  iconUrl?: string | null
+  status?: string
+  pricingModel?: string
+  requiresAuth?: boolean | null
+  platform?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedToolsInput
+  pocketItems?: Prisma.PocketItemCreateNestedManyWithoutToolInput
+  marketFeedback?: Prisma.MarketFeedbackCreateNestedManyWithoutToolInput
+  toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutToolInput
+}
+
+export type ToolUncheckedCreateWithoutIndexInput = {
+  id: string
+  name: string
+  url: string
+  description: string
+  category: string
+  tags?: Prisma.ToolCreatetagsInput | string[]
+  iconUrl?: string | null
+  status?: string
+  pricingModel?: string
+  requiresAuth?: boolean | null
+  platform?: string
+  createdByUserId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  pocketItems?: Prisma.PocketItemUncheckedCreateNestedManyWithoutToolInput
+  marketFeedback?: Prisma.MarketFeedbackUncheckedCreateNestedManyWithoutToolInput
+  toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutToolInput
+}
+
+export type ToolCreateOrConnectWithoutIndexInput = {
+  where: Prisma.ToolWhereUniqueInput
+  create: Prisma.XOR<Prisma.ToolCreateWithoutIndexInput, Prisma.ToolUncheckedCreateWithoutIndexInput>
+}
+
+export type ToolUpsertWithoutIndexInput = {
+  update: Prisma.XOR<Prisma.ToolUpdateWithoutIndexInput, Prisma.ToolUncheckedUpdateWithoutIndexInput>
+  create: Prisma.XOR<Prisma.ToolCreateWithoutIndexInput, Prisma.ToolUncheckedCreateWithoutIndexInput>
+  where?: Prisma.ToolWhereInput
+}
+
+export type ToolUpdateToOneWithWhereWithoutIndexInput = {
+  where?: Prisma.ToolWhereInput
+  data: Prisma.XOR<Prisma.ToolUpdateWithoutIndexInput, Prisma.ToolUncheckedUpdateWithoutIndexInput>
+}
+
+export type ToolUpdateWithoutIndexInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  tags?: Prisma.ToolUpdatetagsInput | string[]
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  pricingModel?: Prisma.StringFieldUpdateOperationsInput | string
+  requiresAuth?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  platform?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedToolsNestedInput
+  pocketItems?: Prisma.PocketItemUpdateManyWithoutToolNestedInput
+  marketFeedback?: Prisma.MarketFeedbackUpdateManyWithoutToolNestedInput
+  toolActivities?: Prisma.ToolActivityUpdateManyWithoutToolNestedInput
+}
+
+export type ToolUncheckedUpdateWithoutIndexInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  tags?: Prisma.ToolUpdatetagsInput | string[]
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  pricingModel?: Prisma.StringFieldUpdateOperationsInput | string
+  requiresAuth?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  platform?: Prisma.StringFieldUpdateOperationsInput | string
+  createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pocketItems?: Prisma.PocketItemUncheckedUpdateManyWithoutToolNestedInput
+  marketFeedback?: Prisma.MarketFeedbackUncheckedUpdateManyWithoutToolNestedInput
+  toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutToolNestedInput
 }
 
 export type ToolCreateWithoutPocketItemsInput = {
   id: string
   name: string
-  icon: string
-  iconType?: string | null
-  iconText?: string | null
-  iconImageUrl?: string | null
-  iconImageLocalPath?: string | null
-  url?: string | null
+  url: string
   description: string
   category: string
   tags?: Prisma.ToolCreatetagsInput | string[]
-  source: string
-  status: string
-  executionMode: string
-  pricingModel: string
-  requiresAuth: boolean
-  platform: string
-  capabilities?: Prisma.ToolCreatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolCreaterecommendedForInput | string[]
-  sourceNote?: string | null
-  trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport: boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: string | null
-  marketAssetOrigin?: string | null
-  seedSource?: string
+  iconUrl?: string | null
+  status?: string
+  pricingModel?: string
+  requiresAuth?: boolean | null
+  platform?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  embeddingModel?: string | null
-  embeddingContentHash?: string | null
-  embeddedAt?: Date | string | null
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedToolsInput
+  index?: Prisma.ToolIndexCreateNestedOneWithoutToolInput
   marketFeedback?: Prisma.MarketFeedbackCreateNestedManyWithoutToolInput
-  marketSubscriptions?: Prisma.MarketSubscriptionCreateNestedManyWithoutToolInput
   toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutToolInput
 }
 
 export type ToolUncheckedCreateWithoutPocketItemsInput = {
   id: string
   name: string
-  icon: string
-  iconType?: string | null
-  iconText?: string | null
-  iconImageUrl?: string | null
-  iconImageLocalPath?: string | null
-  url?: string | null
+  url: string
   description: string
   category: string
   tags?: Prisma.ToolCreatetagsInput | string[]
-  source: string
-  status: string
-  executionMode: string
-  pricingModel: string
-  requiresAuth: boolean
-  platform: string
-  capabilities?: Prisma.ToolCreatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolCreaterecommendedForInput | string[]
-  sourceNote?: string | null
-  trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport: boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: string | null
-  marketAssetOrigin?: string | null
-  seedSource?: string
+  iconUrl?: string | null
+  status?: string
+  pricingModel?: string
+  requiresAuth?: boolean | null
+  platform?: string
   createdByUserId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  embeddingModel?: string | null
-  embeddingContentHash?: string | null
-  embeddedAt?: Date | string | null
+  index?: Prisma.ToolIndexUncheckedCreateNestedOneWithoutToolInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedCreateNestedManyWithoutToolInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedCreateNestedManyWithoutToolInput
   toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutToolInput
 }
 
@@ -1282,152 +902,80 @@ export type ToolUpdateToOneWithWhereWithoutPocketItemsInput = {
 export type ToolUpdateWithoutPocketItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  icon?: Prisma.StringFieldUpdateOperationsInput | string
-  iconType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageLocalPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  url?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   tags?: Prisma.ToolUpdatetagsInput | string[]
-  source?: Prisma.StringFieldUpdateOperationsInput | string
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  executionMode?: Prisma.StringFieldUpdateOperationsInput | string
   pricingModel?: Prisma.StringFieldUpdateOperationsInput | string
-  requiresAuth?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuth?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   platform?: Prisma.StringFieldUpdateOperationsInput | string
-  capabilities?: Prisma.ToolUpdatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolUpdaterecommendedForInput | string[]
-  sourceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seedSource?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddingContentHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.UserUpdateOneWithoutCreatedToolsNestedInput
+  index?: Prisma.ToolIndexUpdateOneWithoutToolNestedInput
   marketFeedback?: Prisma.MarketFeedbackUpdateManyWithoutToolNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUpdateManyWithoutToolNestedInput
   toolActivities?: Prisma.ToolActivityUpdateManyWithoutToolNestedInput
 }
 
 export type ToolUncheckedUpdateWithoutPocketItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  icon?: Prisma.StringFieldUpdateOperationsInput | string
-  iconType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageLocalPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  url?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   tags?: Prisma.ToolUpdatetagsInput | string[]
-  source?: Prisma.StringFieldUpdateOperationsInput | string
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  executionMode?: Prisma.StringFieldUpdateOperationsInput | string
   pricingModel?: Prisma.StringFieldUpdateOperationsInput | string
-  requiresAuth?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuth?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   platform?: Prisma.StringFieldUpdateOperationsInput | string
-  capabilities?: Prisma.ToolUpdatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolUpdaterecommendedForInput | string[]
-  sourceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seedSource?: Prisma.StringFieldUpdateOperationsInput | string
   createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddingContentHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  index?: Prisma.ToolIndexUncheckedUpdateOneWithoutToolNestedInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedUpdateManyWithoutToolNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedUpdateManyWithoutToolNestedInput
   toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutToolNestedInput
 }
 
 export type ToolCreateWithoutMarketFeedbackInput = {
   id: string
   name: string
-  icon: string
-  iconType?: string | null
-  iconText?: string | null
-  iconImageUrl?: string | null
-  iconImageLocalPath?: string | null
-  url?: string | null
+  url: string
   description: string
   category: string
   tags?: Prisma.ToolCreatetagsInput | string[]
-  source: string
-  status: string
-  executionMode: string
-  pricingModel: string
-  requiresAuth: boolean
-  platform: string
-  capabilities?: Prisma.ToolCreatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolCreaterecommendedForInput | string[]
-  sourceNote?: string | null
-  trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport: boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: string | null
-  marketAssetOrigin?: string | null
-  seedSource?: string
+  iconUrl?: string | null
+  status?: string
+  pricingModel?: string
+  requiresAuth?: boolean | null
+  platform?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  embeddingModel?: string | null
-  embeddingContentHash?: string | null
-  embeddedAt?: Date | string | null
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedToolsInput
+  index?: Prisma.ToolIndexCreateNestedOneWithoutToolInput
   pocketItems?: Prisma.PocketItemCreateNestedManyWithoutToolInput
-  marketSubscriptions?: Prisma.MarketSubscriptionCreateNestedManyWithoutToolInput
   toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutToolInput
 }
 
 export type ToolUncheckedCreateWithoutMarketFeedbackInput = {
   id: string
   name: string
-  icon: string
-  iconType?: string | null
-  iconText?: string | null
-  iconImageUrl?: string | null
-  iconImageLocalPath?: string | null
-  url?: string | null
+  url: string
   description: string
   category: string
   tags?: Prisma.ToolCreatetagsInput | string[]
-  source: string
-  status: string
-  executionMode: string
-  pricingModel: string
-  requiresAuth: boolean
-  platform: string
-  capabilities?: Prisma.ToolCreatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolCreaterecommendedForInput | string[]
-  sourceNote?: string | null
-  trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport: boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: string | null
-  marketAssetOrigin?: string | null
-  seedSource?: string
+  iconUrl?: string | null
+  status?: string
+  pricingModel?: string
+  requiresAuth?: boolean | null
+  platform?: string
   createdByUserId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  embeddingModel?: string | null
-  embeddingContentHash?: string | null
-  embeddedAt?: Date | string | null
+  index?: Prisma.ToolIndexUncheckedCreateNestedOneWithoutToolInput
   pocketItems?: Prisma.PocketItemUncheckedCreateNestedManyWithoutToolInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedCreateNestedManyWithoutToolInput
   toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutToolInput
 }
 
@@ -1450,321 +998,81 @@ export type ToolUpdateToOneWithWhereWithoutMarketFeedbackInput = {
 export type ToolUpdateWithoutMarketFeedbackInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  icon?: Prisma.StringFieldUpdateOperationsInput | string
-  iconType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageLocalPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  url?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   tags?: Prisma.ToolUpdatetagsInput | string[]
-  source?: Prisma.StringFieldUpdateOperationsInput | string
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  executionMode?: Prisma.StringFieldUpdateOperationsInput | string
   pricingModel?: Prisma.StringFieldUpdateOperationsInput | string
-  requiresAuth?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuth?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   platform?: Prisma.StringFieldUpdateOperationsInput | string
-  capabilities?: Prisma.ToolUpdatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolUpdaterecommendedForInput | string[]
-  sourceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seedSource?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddingContentHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.UserUpdateOneWithoutCreatedToolsNestedInput
+  index?: Prisma.ToolIndexUpdateOneWithoutToolNestedInput
   pocketItems?: Prisma.PocketItemUpdateManyWithoutToolNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUpdateManyWithoutToolNestedInput
   toolActivities?: Prisma.ToolActivityUpdateManyWithoutToolNestedInput
 }
 
 export type ToolUncheckedUpdateWithoutMarketFeedbackInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  icon?: Prisma.StringFieldUpdateOperationsInput | string
-  iconType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageLocalPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  url?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   tags?: Prisma.ToolUpdatetagsInput | string[]
-  source?: Prisma.StringFieldUpdateOperationsInput | string
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  executionMode?: Prisma.StringFieldUpdateOperationsInput | string
   pricingModel?: Prisma.StringFieldUpdateOperationsInput | string
-  requiresAuth?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuth?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   platform?: Prisma.StringFieldUpdateOperationsInput | string
-  capabilities?: Prisma.ToolUpdatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolUpdaterecommendedForInput | string[]
-  sourceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seedSource?: Prisma.StringFieldUpdateOperationsInput | string
   createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddingContentHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  index?: Prisma.ToolIndexUncheckedUpdateOneWithoutToolNestedInput
   pocketItems?: Prisma.PocketItemUncheckedUpdateManyWithoutToolNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedUpdateManyWithoutToolNestedInput
-  toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutToolNestedInput
-}
-
-export type ToolCreateWithoutMarketSubscriptionsInput = {
-  id: string
-  name: string
-  icon: string
-  iconType?: string | null
-  iconText?: string | null
-  iconImageUrl?: string | null
-  iconImageLocalPath?: string | null
-  url?: string | null
-  description: string
-  category: string
-  tags?: Prisma.ToolCreatetagsInput | string[]
-  source: string
-  status: string
-  executionMode: string
-  pricingModel: string
-  requiresAuth: boolean
-  platform: string
-  capabilities?: Prisma.ToolCreatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolCreaterecommendedForInput | string[]
-  sourceNote?: string | null
-  trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport: boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: string | null
-  marketAssetOrigin?: string | null
-  seedSource?: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  embeddingModel?: string | null
-  embeddingContentHash?: string | null
-  embeddedAt?: Date | string | null
-  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedToolsInput
-  pocketItems?: Prisma.PocketItemCreateNestedManyWithoutToolInput
-  marketFeedback?: Prisma.MarketFeedbackCreateNestedManyWithoutToolInput
-  toolActivities?: Prisma.ToolActivityCreateNestedManyWithoutToolInput
-}
-
-export type ToolUncheckedCreateWithoutMarketSubscriptionsInput = {
-  id: string
-  name: string
-  icon: string
-  iconType?: string | null
-  iconText?: string | null
-  iconImageUrl?: string | null
-  iconImageLocalPath?: string | null
-  url?: string | null
-  description: string
-  category: string
-  tags?: Prisma.ToolCreatetagsInput | string[]
-  source: string
-  status: string
-  executionMode: string
-  pricingModel: string
-  requiresAuth: boolean
-  platform: string
-  capabilities?: Prisma.ToolCreatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolCreaterecommendedForInput | string[]
-  sourceNote?: string | null
-  trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport: boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: string | null
-  marketAssetOrigin?: string | null
-  seedSource?: string
-  createdByUserId?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  embeddingModel?: string | null
-  embeddingContentHash?: string | null
-  embeddedAt?: Date | string | null
-  pocketItems?: Prisma.PocketItemUncheckedCreateNestedManyWithoutToolInput
-  marketFeedback?: Prisma.MarketFeedbackUncheckedCreateNestedManyWithoutToolInput
-  toolActivities?: Prisma.ToolActivityUncheckedCreateNestedManyWithoutToolInput
-}
-
-export type ToolCreateOrConnectWithoutMarketSubscriptionsInput = {
-  where: Prisma.ToolWhereUniqueInput
-  create: Prisma.XOR<Prisma.ToolCreateWithoutMarketSubscriptionsInput, Prisma.ToolUncheckedCreateWithoutMarketSubscriptionsInput>
-}
-
-export type ToolUpsertWithoutMarketSubscriptionsInput = {
-  update: Prisma.XOR<Prisma.ToolUpdateWithoutMarketSubscriptionsInput, Prisma.ToolUncheckedUpdateWithoutMarketSubscriptionsInput>
-  create: Prisma.XOR<Prisma.ToolCreateWithoutMarketSubscriptionsInput, Prisma.ToolUncheckedCreateWithoutMarketSubscriptionsInput>
-  where?: Prisma.ToolWhereInput
-}
-
-export type ToolUpdateToOneWithWhereWithoutMarketSubscriptionsInput = {
-  where?: Prisma.ToolWhereInput
-  data: Prisma.XOR<Prisma.ToolUpdateWithoutMarketSubscriptionsInput, Prisma.ToolUncheckedUpdateWithoutMarketSubscriptionsInput>
-}
-
-export type ToolUpdateWithoutMarketSubscriptionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  icon?: Prisma.StringFieldUpdateOperationsInput | string
-  iconType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageLocalPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
-  tags?: Prisma.ToolUpdatetagsInput | string[]
-  source?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  executionMode?: Prisma.StringFieldUpdateOperationsInput | string
-  pricingModel?: Prisma.StringFieldUpdateOperationsInput | string
-  requiresAuth?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  platform?: Prisma.StringFieldUpdateOperationsInput | string
-  capabilities?: Prisma.ToolUpdatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolUpdaterecommendedForInput | string[]
-  sourceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seedSource?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddingContentHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdBy?: Prisma.UserUpdateOneWithoutCreatedToolsNestedInput
-  pocketItems?: Prisma.PocketItemUpdateManyWithoutToolNestedInput
-  marketFeedback?: Prisma.MarketFeedbackUpdateManyWithoutToolNestedInput
-  toolActivities?: Prisma.ToolActivityUpdateManyWithoutToolNestedInput
-}
-
-export type ToolUncheckedUpdateWithoutMarketSubscriptionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  icon?: Prisma.StringFieldUpdateOperationsInput | string
-  iconType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageLocalPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
-  tags?: Prisma.ToolUpdatetagsInput | string[]
-  source?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  executionMode?: Prisma.StringFieldUpdateOperationsInput | string
-  pricingModel?: Prisma.StringFieldUpdateOperationsInput | string
-  requiresAuth?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  platform?: Prisma.StringFieldUpdateOperationsInput | string
-  capabilities?: Prisma.ToolUpdatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolUpdaterecommendedForInput | string[]
-  sourceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seedSource?: Prisma.StringFieldUpdateOperationsInput | string
-  createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddingContentHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  pocketItems?: Prisma.PocketItemUncheckedUpdateManyWithoutToolNestedInput
-  marketFeedback?: Prisma.MarketFeedbackUncheckedUpdateManyWithoutToolNestedInput
   toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutToolNestedInput
 }
 
 export type ToolCreateWithoutToolActivitiesInput = {
   id: string
   name: string
-  icon: string
-  iconType?: string | null
-  iconText?: string | null
-  iconImageUrl?: string | null
-  iconImageLocalPath?: string | null
-  url?: string | null
+  url: string
   description: string
   category: string
   tags?: Prisma.ToolCreatetagsInput | string[]
-  source: string
-  status: string
-  executionMode: string
-  pricingModel: string
-  requiresAuth: boolean
-  platform: string
-  capabilities?: Prisma.ToolCreatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolCreaterecommendedForInput | string[]
-  sourceNote?: string | null
-  trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport: boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: string | null
-  marketAssetOrigin?: string | null
-  seedSource?: string
+  iconUrl?: string | null
+  status?: string
+  pricingModel?: string
+  requiresAuth?: boolean | null
+  platform?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  embeddingModel?: string | null
-  embeddingContentHash?: string | null
-  embeddedAt?: Date | string | null
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedToolsInput
+  index?: Prisma.ToolIndexCreateNestedOneWithoutToolInput
   pocketItems?: Prisma.PocketItemCreateNestedManyWithoutToolInput
   marketFeedback?: Prisma.MarketFeedbackCreateNestedManyWithoutToolInput
-  marketSubscriptions?: Prisma.MarketSubscriptionCreateNestedManyWithoutToolInput
 }
 
 export type ToolUncheckedCreateWithoutToolActivitiesInput = {
   id: string
   name: string
-  icon: string
-  iconType?: string | null
-  iconText?: string | null
-  iconImageUrl?: string | null
-  iconImageLocalPath?: string | null
-  url?: string | null
+  url: string
   description: string
   category: string
   tags?: Prisma.ToolCreatetagsInput | string[]
-  source: string
-  status: string
-  executionMode: string
-  pricingModel: string
-  requiresAuth: boolean
-  platform: string
-  capabilities?: Prisma.ToolCreatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolCreaterecommendedForInput | string[]
-  sourceNote?: string | null
-  trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport: boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: string | null
-  marketAssetOrigin?: string | null
-  seedSource?: string
+  iconUrl?: string | null
+  status?: string
+  pricingModel?: string
+  requiresAuth?: boolean | null
+  platform?: string
   createdByUserId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  embeddingModel?: string | null
-  embeddingContentHash?: string | null
-  embeddedAt?: Date | string | null
+  index?: Prisma.ToolIndexUncheckedCreateNestedOneWithoutToolInput
   pocketItems?: Prisma.PocketItemUncheckedCreateNestedManyWithoutToolInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedCreateNestedManyWithoutToolInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedCreateNestedManyWithoutToolInput
 }
 
 export type ToolCreateOrConnectWithoutToolActivitiesInput = {
@@ -1786,221 +1094,113 @@ export type ToolUpdateToOneWithWhereWithoutToolActivitiesInput = {
 export type ToolUpdateWithoutToolActivitiesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  icon?: Prisma.StringFieldUpdateOperationsInput | string
-  iconType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageLocalPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  url?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   tags?: Prisma.ToolUpdatetagsInput | string[]
-  source?: Prisma.StringFieldUpdateOperationsInput | string
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  executionMode?: Prisma.StringFieldUpdateOperationsInput | string
   pricingModel?: Prisma.StringFieldUpdateOperationsInput | string
-  requiresAuth?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuth?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   platform?: Prisma.StringFieldUpdateOperationsInput | string
-  capabilities?: Prisma.ToolUpdatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolUpdaterecommendedForInput | string[]
-  sourceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seedSource?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddingContentHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdBy?: Prisma.UserUpdateOneWithoutCreatedToolsNestedInput
+  index?: Prisma.ToolIndexUpdateOneWithoutToolNestedInput
   pocketItems?: Prisma.PocketItemUpdateManyWithoutToolNestedInput
   marketFeedback?: Prisma.MarketFeedbackUpdateManyWithoutToolNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUpdateManyWithoutToolNestedInput
 }
 
 export type ToolUncheckedUpdateWithoutToolActivitiesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  icon?: Prisma.StringFieldUpdateOperationsInput | string
-  iconType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageLocalPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  url?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   tags?: Prisma.ToolUpdatetagsInput | string[]
-  source?: Prisma.StringFieldUpdateOperationsInput | string
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  executionMode?: Prisma.StringFieldUpdateOperationsInput | string
   pricingModel?: Prisma.StringFieldUpdateOperationsInput | string
-  requiresAuth?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuth?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   platform?: Prisma.StringFieldUpdateOperationsInput | string
-  capabilities?: Prisma.ToolUpdatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolUpdaterecommendedForInput | string[]
-  sourceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seedSource?: Prisma.StringFieldUpdateOperationsInput | string
   createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddingContentHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  index?: Prisma.ToolIndexUncheckedUpdateOneWithoutToolNestedInput
   pocketItems?: Prisma.PocketItemUncheckedUpdateManyWithoutToolNestedInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedUpdateManyWithoutToolNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedUpdateManyWithoutToolNestedInput
 }
 
 export type ToolCreateManyCreatedByInput = {
   id: string
   name: string
-  icon: string
-  iconType?: string | null
-  iconText?: string | null
-  iconImageUrl?: string | null
-  iconImageLocalPath?: string | null
-  url?: string | null
+  url: string
   description: string
   category: string
   tags?: Prisma.ToolCreatetagsInput | string[]
-  source: string
-  status: string
-  executionMode: string
-  pricingModel: string
-  requiresAuth: boolean
-  platform: string
-  capabilities?: Prisma.ToolCreatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolCreaterecommendedForInput | string[]
-  sourceNote?: string | null
-  trustSignals: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport: boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: string | null
-  marketAssetOrigin?: string | null
-  seedSource?: string
+  iconUrl?: string | null
+  status?: string
+  pricingModel?: string
+  requiresAuth?: boolean | null
+  platform?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  embeddingModel?: string | null
-  embeddingContentHash?: string | null
-  embeddedAt?: Date | string | null
 }
 
 export type ToolUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  icon?: Prisma.StringFieldUpdateOperationsInput | string
-  iconType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageLocalPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  url?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   tags?: Prisma.ToolUpdatetagsInput | string[]
-  source?: Prisma.StringFieldUpdateOperationsInput | string
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  executionMode?: Prisma.StringFieldUpdateOperationsInput | string
   pricingModel?: Prisma.StringFieldUpdateOperationsInput | string
-  requiresAuth?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuth?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   platform?: Prisma.StringFieldUpdateOperationsInput | string
-  capabilities?: Prisma.ToolUpdatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolUpdaterecommendedForInput | string[]
-  sourceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seedSource?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddingContentHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  index?: Prisma.ToolIndexUpdateOneWithoutToolNestedInput
   pocketItems?: Prisma.PocketItemUpdateManyWithoutToolNestedInput
   marketFeedback?: Prisma.MarketFeedbackUpdateManyWithoutToolNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUpdateManyWithoutToolNestedInput
   toolActivities?: Prisma.ToolActivityUpdateManyWithoutToolNestedInput
 }
 
 export type ToolUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  icon?: Prisma.StringFieldUpdateOperationsInput | string
-  iconType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageLocalPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  url?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   tags?: Prisma.ToolUpdatetagsInput | string[]
-  source?: Prisma.StringFieldUpdateOperationsInput | string
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  executionMode?: Prisma.StringFieldUpdateOperationsInput | string
   pricingModel?: Prisma.StringFieldUpdateOperationsInput | string
-  requiresAuth?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuth?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   platform?: Prisma.StringFieldUpdateOperationsInput | string
-  capabilities?: Prisma.ToolUpdatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolUpdaterecommendedForInput | string[]
-  sourceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seedSource?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddingContentHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  index?: Prisma.ToolIndexUncheckedUpdateOneWithoutToolNestedInput
   pocketItems?: Prisma.PocketItemUncheckedUpdateManyWithoutToolNestedInput
   marketFeedback?: Prisma.MarketFeedbackUncheckedUpdateManyWithoutToolNestedInput
-  marketSubscriptions?: Prisma.MarketSubscriptionUncheckedUpdateManyWithoutToolNestedInput
   toolActivities?: Prisma.ToolActivityUncheckedUpdateManyWithoutToolNestedInput
 }
 
 export type ToolUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  icon?: Prisma.StringFieldUpdateOperationsInput | string
-  iconType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  iconImageLocalPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  url?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   tags?: Prisma.ToolUpdatetagsInput | string[]
-  source?: Prisma.StringFieldUpdateOperationsInput | string
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  executionMode?: Prisma.StringFieldUpdateOperationsInput | string
   pricingModel?: Prisma.StringFieldUpdateOperationsInput | string
-  requiresAuth?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  requiresAuth?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   platform?: Prisma.StringFieldUpdateOperationsInput | string
-  capabilities?: Prisma.ToolUpdatecapabilitiesInput | string[]
-  recommendedFor?: Prisma.ToolUpdaterecommendedForInput | string[]
-  sourceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  trustSignals?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  subscriptionSupport?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  defaultArgs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  siteHostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  marketAssetOrigin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seedSource?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddingContentHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  embeddedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -2011,14 +1211,12 @@ export type ToolUncheckedUpdateManyWithoutCreatedByInput = {
 export type ToolCountOutputType = {
   pocketItems: number
   marketFeedback: number
-  marketSubscriptions: number
   toolActivities: number
 }
 
 export type ToolCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   pocketItems?: boolean | ToolCountOutputTypeCountPocketItemsArgs
   marketFeedback?: boolean | ToolCountOutputTypeCountMarketFeedbackArgs
-  marketSubscriptions?: boolean | ToolCountOutputTypeCountMarketSubscriptionsArgs
   toolActivities?: boolean | ToolCountOutputTypeCountToolActivitiesArgs
 }
 
@@ -2049,13 +1247,6 @@ export type ToolCountOutputTypeCountMarketFeedbackArgs<ExtArgs extends runtime.T
 /**
  * ToolCountOutputType without action
  */
-export type ToolCountOutputTypeCountMarketSubscriptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.MarketSubscriptionWhereInput
-}
-
-/**
- * ToolCountOutputType without action
- */
 export type ToolCountOutputTypeCountToolActivitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ToolActivityWhereInput
 }
@@ -2064,40 +1255,22 @@ export type ToolCountOutputTypeCountToolActivitiesArgs<ExtArgs extends runtime.T
 export type ToolSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  icon?: boolean
-  iconType?: boolean
-  iconText?: boolean
-  iconImageUrl?: boolean
-  iconImageLocalPath?: boolean
   url?: boolean
   description?: boolean
   category?: boolean
   tags?: boolean
-  source?: boolean
+  iconUrl?: boolean
   status?: boolean
-  executionMode?: boolean
   pricingModel?: boolean
   requiresAuth?: boolean
   platform?: boolean
-  capabilities?: boolean
-  recommendedFor?: boolean
-  sourceNote?: boolean
-  trustSignals?: boolean
-  subscriptionSupport?: boolean
-  defaultArgs?: boolean
-  siteHostname?: boolean
-  marketAssetOrigin?: boolean
-  seedSource?: boolean
   createdByUserId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  embeddingModel?: boolean
-  embeddingContentHash?: boolean
-  embeddedAt?: boolean
   createdBy?: boolean | Prisma.Tool$createdByArgs<ExtArgs>
+  index?: boolean | Prisma.Tool$indexArgs<ExtArgs>
   pocketItems?: boolean | Prisma.Tool$pocketItemsArgs<ExtArgs>
   marketFeedback?: boolean | Prisma.Tool$marketFeedbackArgs<ExtArgs>
-  marketSubscriptions?: boolean | Prisma.Tool$marketSubscriptionsArgs<ExtArgs>
   toolActivities?: boolean | Prisma.Tool$toolActivitiesArgs<ExtArgs>
   _count?: boolean | Prisma.ToolCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tool"]>
@@ -2105,116 +1278,62 @@ export type ToolSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 export type ToolSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  icon?: boolean
-  iconType?: boolean
-  iconText?: boolean
-  iconImageUrl?: boolean
-  iconImageLocalPath?: boolean
   url?: boolean
   description?: boolean
   category?: boolean
   tags?: boolean
-  source?: boolean
+  iconUrl?: boolean
   status?: boolean
-  executionMode?: boolean
   pricingModel?: boolean
   requiresAuth?: boolean
   platform?: boolean
-  capabilities?: boolean
-  recommendedFor?: boolean
-  sourceNote?: boolean
-  trustSignals?: boolean
-  subscriptionSupport?: boolean
-  defaultArgs?: boolean
-  siteHostname?: boolean
-  marketAssetOrigin?: boolean
-  seedSource?: boolean
   createdByUserId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  embeddingModel?: boolean
-  embeddingContentHash?: boolean
-  embeddedAt?: boolean
   createdBy?: boolean | Prisma.Tool$createdByArgs<ExtArgs>
 }, ExtArgs["result"]["tool"]>
 
 export type ToolSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  icon?: boolean
-  iconType?: boolean
-  iconText?: boolean
-  iconImageUrl?: boolean
-  iconImageLocalPath?: boolean
   url?: boolean
   description?: boolean
   category?: boolean
   tags?: boolean
-  source?: boolean
+  iconUrl?: boolean
   status?: boolean
-  executionMode?: boolean
   pricingModel?: boolean
   requiresAuth?: boolean
   platform?: boolean
-  capabilities?: boolean
-  recommendedFor?: boolean
-  sourceNote?: boolean
-  trustSignals?: boolean
-  subscriptionSupport?: boolean
-  defaultArgs?: boolean
-  siteHostname?: boolean
-  marketAssetOrigin?: boolean
-  seedSource?: boolean
   createdByUserId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  embeddingModel?: boolean
-  embeddingContentHash?: boolean
-  embeddedAt?: boolean
   createdBy?: boolean | Prisma.Tool$createdByArgs<ExtArgs>
 }, ExtArgs["result"]["tool"]>
 
 export type ToolSelectScalar = {
   id?: boolean
   name?: boolean
-  icon?: boolean
-  iconType?: boolean
-  iconText?: boolean
-  iconImageUrl?: boolean
-  iconImageLocalPath?: boolean
   url?: boolean
   description?: boolean
   category?: boolean
   tags?: boolean
-  source?: boolean
+  iconUrl?: boolean
   status?: boolean
-  executionMode?: boolean
   pricingModel?: boolean
   requiresAuth?: boolean
   platform?: boolean
-  capabilities?: boolean
-  recommendedFor?: boolean
-  sourceNote?: boolean
-  trustSignals?: boolean
-  subscriptionSupport?: boolean
-  defaultArgs?: boolean
-  siteHostname?: boolean
-  marketAssetOrigin?: boolean
-  seedSource?: boolean
   createdByUserId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  embeddingModel?: boolean
-  embeddingContentHash?: boolean
-  embeddedAt?: boolean
 }
 
-export type ToolOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "icon" | "iconType" | "iconText" | "iconImageUrl" | "iconImageLocalPath" | "url" | "description" | "category" | "tags" | "source" | "status" | "executionMode" | "pricingModel" | "requiresAuth" | "platform" | "capabilities" | "recommendedFor" | "sourceNote" | "trustSignals" | "subscriptionSupport" | "defaultArgs" | "siteHostname" | "marketAssetOrigin" | "seedSource" | "createdByUserId" | "createdAt" | "updatedAt" | "embeddingModel" | "embeddingContentHash" | "embeddedAt", ExtArgs["result"]["tool"]>
+export type ToolOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "url" | "description" | "category" | "tags" | "iconUrl" | "status" | "pricingModel" | "requiresAuth" | "platform" | "createdByUserId" | "createdAt" | "updatedAt", ExtArgs["result"]["tool"]>
 export type ToolInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.Tool$createdByArgs<ExtArgs>
+  index?: boolean | Prisma.Tool$indexArgs<ExtArgs>
   pocketItems?: boolean | Prisma.Tool$pocketItemsArgs<ExtArgs>
   marketFeedback?: boolean | Prisma.Tool$marketFeedbackArgs<ExtArgs>
-  marketSubscriptions?: boolean | Prisma.Tool$marketSubscriptionsArgs<ExtArgs>
   toolActivities?: boolean | Prisma.Tool$toolActivitiesArgs<ExtArgs>
   _count?: boolean | Prisma.ToolCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -2229,44 +1348,26 @@ export type $ToolPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name: "Tool"
   objects: {
     createdBy: Prisma.$UserPayload<ExtArgs> | null
+    index: Prisma.$ToolIndexPayload<ExtArgs> | null
     pocketItems: Prisma.$PocketItemPayload<ExtArgs>[]
     marketFeedback: Prisma.$MarketFeedbackPayload<ExtArgs>[]
-    marketSubscriptions: Prisma.$MarketSubscriptionPayload<ExtArgs>[]
     toolActivities: Prisma.$ToolActivityPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
-    icon: string
-    iconType: string | null
-    iconText: string | null
-    iconImageUrl: string | null
-    iconImageLocalPath: string | null
-    url: string | null
+    url: string
     description: string
     category: string
     tags: string[]
-    source: string
+    iconUrl: string | null
     status: string
-    executionMode: string
     pricingModel: string
-    requiresAuth: boolean
+    requiresAuth: boolean | null
     platform: string
-    capabilities: string[]
-    recommendedFor: string[]
-    sourceNote: string | null
-    trustSignals: runtime.JsonValue
-    subscriptionSupport: boolean
-    defaultArgs: runtime.JsonValue | null
-    siteHostname: string | null
-    marketAssetOrigin: string | null
-    seedSource: string
     createdByUserId: string | null
     createdAt: Date
     updatedAt: Date
-    embeddingModel: string | null
-    embeddingContentHash: string | null
-    embeddedAt: Date | null
   }, ExtArgs["result"]["tool"]>
   composites: {}
 }
@@ -2662,9 +1763,9 @@ readonly fields: ToolFieldRefs;
 export interface Prisma__ToolClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   createdBy<T extends Prisma.Tool$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tool$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  index<T extends Prisma.Tool$indexArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tool$indexArgs<ExtArgs>>): Prisma.Prisma__ToolIndexClient<runtime.Types.Result.GetResult<Prisma.$ToolIndexPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   pocketItems<T extends Prisma.Tool$pocketItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tool$pocketItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PocketItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   marketFeedback<T extends Prisma.Tool$marketFeedbackArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tool$marketFeedbackArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarketFeedbackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  marketSubscriptions<T extends Prisma.Tool$marketSubscriptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tool$marketSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarketSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   toolActivities<T extends Prisma.Tool$toolActivitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tool$toolActivitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ToolActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2697,36 +1798,18 @@ export interface Prisma__ToolClient<T, Null = never, ExtArgs extends runtime.Typ
 export interface ToolFieldRefs {
   readonly id: Prisma.FieldRef<"Tool", 'String'>
   readonly name: Prisma.FieldRef<"Tool", 'String'>
-  readonly icon: Prisma.FieldRef<"Tool", 'String'>
-  readonly iconType: Prisma.FieldRef<"Tool", 'String'>
-  readonly iconText: Prisma.FieldRef<"Tool", 'String'>
-  readonly iconImageUrl: Prisma.FieldRef<"Tool", 'String'>
-  readonly iconImageLocalPath: Prisma.FieldRef<"Tool", 'String'>
   readonly url: Prisma.FieldRef<"Tool", 'String'>
   readonly description: Prisma.FieldRef<"Tool", 'String'>
   readonly category: Prisma.FieldRef<"Tool", 'String'>
   readonly tags: Prisma.FieldRef<"Tool", 'String[]'>
-  readonly source: Prisma.FieldRef<"Tool", 'String'>
+  readonly iconUrl: Prisma.FieldRef<"Tool", 'String'>
   readonly status: Prisma.FieldRef<"Tool", 'String'>
-  readonly executionMode: Prisma.FieldRef<"Tool", 'String'>
   readonly pricingModel: Prisma.FieldRef<"Tool", 'String'>
   readonly requiresAuth: Prisma.FieldRef<"Tool", 'Boolean'>
   readonly platform: Prisma.FieldRef<"Tool", 'String'>
-  readonly capabilities: Prisma.FieldRef<"Tool", 'String[]'>
-  readonly recommendedFor: Prisma.FieldRef<"Tool", 'String[]'>
-  readonly sourceNote: Prisma.FieldRef<"Tool", 'String'>
-  readonly trustSignals: Prisma.FieldRef<"Tool", 'Json'>
-  readonly subscriptionSupport: Prisma.FieldRef<"Tool", 'Boolean'>
-  readonly defaultArgs: Prisma.FieldRef<"Tool", 'Json'>
-  readonly siteHostname: Prisma.FieldRef<"Tool", 'String'>
-  readonly marketAssetOrigin: Prisma.FieldRef<"Tool", 'String'>
-  readonly seedSource: Prisma.FieldRef<"Tool", 'String'>
   readonly createdByUserId: Prisma.FieldRef<"Tool", 'String'>
   readonly createdAt: Prisma.FieldRef<"Tool", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Tool", 'DateTime'>
-  readonly embeddingModel: Prisma.FieldRef<"Tool", 'String'>
-  readonly embeddingContentHash: Prisma.FieldRef<"Tool", 'String'>
-  readonly embeddedAt: Prisma.FieldRef<"Tool", 'DateTime'>
 }
     
 
@@ -3147,6 +2230,25 @@ export type Tool$createdByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
+ * Tool.index
+ */
+export type Tool$indexArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ToolIndex
+   */
+  select?: Prisma.ToolIndexSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ToolIndex
+   */
+  omit?: Prisma.ToolIndexOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ToolIndexInclude<ExtArgs> | null
+  where?: Prisma.ToolIndexWhereInput
+}
+
+/**
  * Tool.pocketItems
  */
 export type Tool$pocketItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3192,30 +2294,6 @@ export type Tool$marketFeedbackArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.MarketFeedbackScalarFieldEnum | Prisma.MarketFeedbackScalarFieldEnum[]
-}
-
-/**
- * Tool.marketSubscriptions
- */
-export type Tool$marketSubscriptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the MarketSubscription
-   */
-  select?: Prisma.MarketSubscriptionSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the MarketSubscription
-   */
-  omit?: Prisma.MarketSubscriptionOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.MarketSubscriptionInclude<ExtArgs> | null
-  where?: Prisma.MarketSubscriptionWhereInput
-  orderBy?: Prisma.MarketSubscriptionOrderByWithRelationInput | Prisma.MarketSubscriptionOrderByWithRelationInput[]
-  cursor?: Prisma.MarketSubscriptionWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.MarketSubscriptionScalarFieldEnum | Prisma.MarketSubscriptionScalarFieldEnum[]
 }
 
 /**

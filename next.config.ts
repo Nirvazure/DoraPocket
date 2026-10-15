@@ -13,6 +13,9 @@ function resolveSupabaseHostname(): string | null {
 const supabaseHostname = resolveSupabaseHostname()
 
 const nextConfig: NextConfig = {
+  outputFileTracingIncludes: {
+    '/*': ['./prisma/supabase-ca.crt'],
+  },
   images: {
     remotePatterns: supabaseHostname
       ? [

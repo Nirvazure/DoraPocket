@@ -28,7 +28,6 @@ export type PreferenceProfileOverrideMinAggregateOutputType = {
   id: string | null
   userId: string | null
   avoidAuthWall: boolean | null
-  prefersSubscriptionTools: boolean | null
   updatedAt: Date | null
 }
 
@@ -36,7 +35,6 @@ export type PreferenceProfileOverrideMaxAggregateOutputType = {
   id: string | null
   userId: string | null
   avoidAuthWall: boolean | null
-  prefersSubscriptionTools: boolean | null
   updatedAt: Date | null
 }
 
@@ -47,9 +45,7 @@ export type PreferenceProfileOverrideCountAggregateOutputType = {
   preferredTags: number
   preferredPlatforms: number
   preferredPricing: number
-  preferredExecutionModes: number
   avoidAuthWall: number
-  prefersSubscriptionTools: number
   updatedAt: number
   _all: number
 }
@@ -59,7 +55,6 @@ export type PreferenceProfileOverrideMinAggregateInputType = {
   id?: true
   userId?: true
   avoidAuthWall?: true
-  prefersSubscriptionTools?: true
   updatedAt?: true
 }
 
@@ -67,7 +62,6 @@ export type PreferenceProfileOverrideMaxAggregateInputType = {
   id?: true
   userId?: true
   avoidAuthWall?: true
-  prefersSubscriptionTools?: true
   updatedAt?: true
 }
 
@@ -78,9 +72,7 @@ export type PreferenceProfileOverrideCountAggregateInputType = {
   preferredTags?: true
   preferredPlatforms?: true
   preferredPricing?: true
-  preferredExecutionModes?: true
   avoidAuthWall?: true
-  prefersSubscriptionTools?: true
   updatedAt?: true
   _all?: true
 }
@@ -164,9 +156,7 @@ export type PreferenceProfileOverrideGroupByOutputType = {
   preferredTags: string[]
   preferredPlatforms: string[]
   preferredPricing: string[]
-  preferredExecutionModes: string[]
   avoidAuthWall: boolean | null
-  prefersSubscriptionTools: boolean | null
   updatedAt: Date
   _count: PreferenceProfileOverrideCountAggregateOutputType | null
   _min: PreferenceProfileOverrideMinAggregateOutputType | null
@@ -198,9 +188,7 @@ export type PreferenceProfileOverrideWhereInput = {
   preferredTags?: Prisma.StringNullableListFilter<"PreferenceProfileOverride">
   preferredPlatforms?: Prisma.StringNullableListFilter<"PreferenceProfileOverride">
   preferredPricing?: Prisma.StringNullableListFilter<"PreferenceProfileOverride">
-  preferredExecutionModes?: Prisma.StringNullableListFilter<"PreferenceProfileOverride">
   avoidAuthWall?: Prisma.BoolNullableFilter<"PreferenceProfileOverride"> | boolean | null
-  prefersSubscriptionTools?: Prisma.BoolNullableFilter<"PreferenceProfileOverride"> | boolean | null
   updatedAt?: Prisma.DateTimeFilter<"PreferenceProfileOverride"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
@@ -212,9 +200,7 @@ export type PreferenceProfileOverrideOrderByWithRelationInput = {
   preferredTags?: Prisma.SortOrder
   preferredPlatforms?: Prisma.SortOrder
   preferredPricing?: Prisma.SortOrder
-  preferredExecutionModes?: Prisma.SortOrder
   avoidAuthWall?: Prisma.SortOrderInput | Prisma.SortOrder
-  prefersSubscriptionTools?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
 }
@@ -229,9 +215,7 @@ export type PreferenceProfileOverrideWhereUniqueInput = Prisma.AtLeast<{
   preferredTags?: Prisma.StringNullableListFilter<"PreferenceProfileOverride">
   preferredPlatforms?: Prisma.StringNullableListFilter<"PreferenceProfileOverride">
   preferredPricing?: Prisma.StringNullableListFilter<"PreferenceProfileOverride">
-  preferredExecutionModes?: Prisma.StringNullableListFilter<"PreferenceProfileOverride">
   avoidAuthWall?: Prisma.BoolNullableFilter<"PreferenceProfileOverride"> | boolean | null
-  prefersSubscriptionTools?: Prisma.BoolNullableFilter<"PreferenceProfileOverride"> | boolean | null
   updatedAt?: Prisma.DateTimeFilter<"PreferenceProfileOverride"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id" | "userId">
@@ -243,9 +227,7 @@ export type PreferenceProfileOverrideOrderByWithAggregationInput = {
   preferredTags?: Prisma.SortOrder
   preferredPlatforms?: Prisma.SortOrder
   preferredPricing?: Prisma.SortOrder
-  preferredExecutionModes?: Prisma.SortOrder
   avoidAuthWall?: Prisma.SortOrderInput | Prisma.SortOrder
-  prefersSubscriptionTools?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.PreferenceProfileOverrideCountOrderByAggregateInput
   _max?: Prisma.PreferenceProfileOverrideMaxOrderByAggregateInput
@@ -262,9 +244,7 @@ export type PreferenceProfileOverrideScalarWhereWithAggregatesInput = {
   preferredTags?: Prisma.StringNullableListFilter<"PreferenceProfileOverride">
   preferredPlatforms?: Prisma.StringNullableListFilter<"PreferenceProfileOverride">
   preferredPricing?: Prisma.StringNullableListFilter<"PreferenceProfileOverride">
-  preferredExecutionModes?: Prisma.StringNullableListFilter<"PreferenceProfileOverride">
   avoidAuthWall?: Prisma.BoolNullableWithAggregatesFilter<"PreferenceProfileOverride"> | boolean | null
-  prefersSubscriptionTools?: Prisma.BoolNullableWithAggregatesFilter<"PreferenceProfileOverride"> | boolean | null
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"PreferenceProfileOverride"> | Date | string
 }
 
@@ -274,9 +254,7 @@ export type PreferenceProfileOverrideCreateInput = {
   preferredTags?: Prisma.PreferenceProfileOverrideCreatepreferredTagsInput | string[]
   preferredPlatforms?: Prisma.PreferenceProfileOverrideCreatepreferredPlatformsInput | string[]
   preferredPricing?: Prisma.PreferenceProfileOverrideCreatepreferredPricingInput | string[]
-  preferredExecutionModes?: Prisma.PreferenceProfileOverrideCreatepreferredExecutionModesInput | string[]
   avoidAuthWall?: boolean | null
-  prefersSubscriptionTools?: boolean | null
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPreferenceOverrideInput
 }
@@ -288,9 +266,7 @@ export type PreferenceProfileOverrideUncheckedCreateInput = {
   preferredTags?: Prisma.PreferenceProfileOverrideCreatepreferredTagsInput | string[]
   preferredPlatforms?: Prisma.PreferenceProfileOverrideCreatepreferredPlatformsInput | string[]
   preferredPricing?: Prisma.PreferenceProfileOverrideCreatepreferredPricingInput | string[]
-  preferredExecutionModes?: Prisma.PreferenceProfileOverrideCreatepreferredExecutionModesInput | string[]
   avoidAuthWall?: boolean | null
-  prefersSubscriptionTools?: boolean | null
   updatedAt?: Date | string
 }
 
@@ -300,9 +276,7 @@ export type PreferenceProfileOverrideUpdateInput = {
   preferredTags?: Prisma.PreferenceProfileOverrideUpdatepreferredTagsInput | string[]
   preferredPlatforms?: Prisma.PreferenceProfileOverrideUpdatepreferredPlatformsInput | string[]
   preferredPricing?: Prisma.PreferenceProfileOverrideUpdatepreferredPricingInput | string[]
-  preferredExecutionModes?: Prisma.PreferenceProfileOverrideUpdatepreferredExecutionModesInput | string[]
   avoidAuthWall?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  prefersSubscriptionTools?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPreferenceOverrideNestedInput
 }
@@ -314,9 +288,7 @@ export type PreferenceProfileOverrideUncheckedUpdateInput = {
   preferredTags?: Prisma.PreferenceProfileOverrideUpdatepreferredTagsInput | string[]
   preferredPlatforms?: Prisma.PreferenceProfileOverrideUpdatepreferredPlatformsInput | string[]
   preferredPricing?: Prisma.PreferenceProfileOverrideUpdatepreferredPricingInput | string[]
-  preferredExecutionModes?: Prisma.PreferenceProfileOverrideUpdatepreferredExecutionModesInput | string[]
   avoidAuthWall?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  prefersSubscriptionTools?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -327,9 +299,7 @@ export type PreferenceProfileOverrideCreateManyInput = {
   preferredTags?: Prisma.PreferenceProfileOverrideCreatepreferredTagsInput | string[]
   preferredPlatforms?: Prisma.PreferenceProfileOverrideCreatepreferredPlatformsInput | string[]
   preferredPricing?: Prisma.PreferenceProfileOverrideCreatepreferredPricingInput | string[]
-  preferredExecutionModes?: Prisma.PreferenceProfileOverrideCreatepreferredExecutionModesInput | string[]
   avoidAuthWall?: boolean | null
-  prefersSubscriptionTools?: boolean | null
   updatedAt?: Date | string
 }
 
@@ -339,9 +309,7 @@ export type PreferenceProfileOverrideUpdateManyMutationInput = {
   preferredTags?: Prisma.PreferenceProfileOverrideUpdatepreferredTagsInput | string[]
   preferredPlatforms?: Prisma.PreferenceProfileOverrideUpdatepreferredPlatformsInput | string[]
   preferredPricing?: Prisma.PreferenceProfileOverrideUpdatepreferredPricingInput | string[]
-  preferredExecutionModes?: Prisma.PreferenceProfileOverrideUpdatepreferredExecutionModesInput | string[]
   avoidAuthWall?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  prefersSubscriptionTools?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -352,9 +320,7 @@ export type PreferenceProfileOverrideUncheckedUpdateManyInput = {
   preferredTags?: Prisma.PreferenceProfileOverrideUpdatepreferredTagsInput | string[]
   preferredPlatforms?: Prisma.PreferenceProfileOverrideUpdatepreferredPlatformsInput | string[]
   preferredPricing?: Prisma.PreferenceProfileOverrideUpdatepreferredPricingInput | string[]
-  preferredExecutionModes?: Prisma.PreferenceProfileOverrideUpdatepreferredExecutionModesInput | string[]
   avoidAuthWall?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  prefersSubscriptionTools?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -370,9 +336,7 @@ export type PreferenceProfileOverrideCountOrderByAggregateInput = {
   preferredTags?: Prisma.SortOrder
   preferredPlatforms?: Prisma.SortOrder
   preferredPricing?: Prisma.SortOrder
-  preferredExecutionModes?: Prisma.SortOrder
   avoidAuthWall?: Prisma.SortOrder
-  prefersSubscriptionTools?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -380,7 +344,6 @@ export type PreferenceProfileOverrideMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   avoidAuthWall?: Prisma.SortOrder
-  prefersSubscriptionTools?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -388,7 +351,6 @@ export type PreferenceProfileOverrideMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   avoidAuthWall?: Prisma.SortOrder
-  prefersSubscriptionTools?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -440,10 +402,6 @@ export type PreferenceProfileOverrideCreatepreferredPricingInput = {
   set: string[]
 }
 
-export type PreferenceProfileOverrideCreatepreferredExecutionModesInput = {
-  set: string[]
-}
-
 export type PreferenceProfileOverrideUpdatepreferredCategoriesInput = {
   set?: string[]
   push?: string | string[]
@@ -464,24 +422,13 @@ export type PreferenceProfileOverrideUpdatepreferredPricingInput = {
   push?: string | string[]
 }
 
-export type PreferenceProfileOverrideUpdatepreferredExecutionModesInput = {
-  set?: string[]
-  push?: string | string[]
-}
-
-export type NullableBoolFieldUpdateOperationsInput = {
-  set?: boolean | null
-}
-
 export type PreferenceProfileOverrideCreateWithoutUserInput = {
   id?: string
   preferredCategories?: Prisma.PreferenceProfileOverrideCreatepreferredCategoriesInput | string[]
   preferredTags?: Prisma.PreferenceProfileOverrideCreatepreferredTagsInput | string[]
   preferredPlatforms?: Prisma.PreferenceProfileOverrideCreatepreferredPlatformsInput | string[]
   preferredPricing?: Prisma.PreferenceProfileOverrideCreatepreferredPricingInput | string[]
-  preferredExecutionModes?: Prisma.PreferenceProfileOverrideCreatepreferredExecutionModesInput | string[]
   avoidAuthWall?: boolean | null
-  prefersSubscriptionTools?: boolean | null
   updatedAt?: Date | string
 }
 
@@ -491,9 +438,7 @@ export type PreferenceProfileOverrideUncheckedCreateWithoutUserInput = {
   preferredTags?: Prisma.PreferenceProfileOverrideCreatepreferredTagsInput | string[]
   preferredPlatforms?: Prisma.PreferenceProfileOverrideCreatepreferredPlatformsInput | string[]
   preferredPricing?: Prisma.PreferenceProfileOverrideCreatepreferredPricingInput | string[]
-  preferredExecutionModes?: Prisma.PreferenceProfileOverrideCreatepreferredExecutionModesInput | string[]
   avoidAuthWall?: boolean | null
-  prefersSubscriptionTools?: boolean | null
   updatedAt?: Date | string
 }
 
@@ -519,9 +464,7 @@ export type PreferenceProfileOverrideUpdateWithoutUserInput = {
   preferredTags?: Prisma.PreferenceProfileOverrideUpdatepreferredTagsInput | string[]
   preferredPlatforms?: Prisma.PreferenceProfileOverrideUpdatepreferredPlatformsInput | string[]
   preferredPricing?: Prisma.PreferenceProfileOverrideUpdatepreferredPricingInput | string[]
-  preferredExecutionModes?: Prisma.PreferenceProfileOverrideUpdatepreferredExecutionModesInput | string[]
   avoidAuthWall?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  prefersSubscriptionTools?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -531,9 +474,7 @@ export type PreferenceProfileOverrideUncheckedUpdateWithoutUserInput = {
   preferredTags?: Prisma.PreferenceProfileOverrideUpdatepreferredTagsInput | string[]
   preferredPlatforms?: Prisma.PreferenceProfileOverrideUpdatepreferredPlatformsInput | string[]
   preferredPricing?: Prisma.PreferenceProfileOverrideUpdatepreferredPricingInput | string[]
-  preferredExecutionModes?: Prisma.PreferenceProfileOverrideUpdatepreferredExecutionModesInput | string[]
   avoidAuthWall?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  prefersSubscriptionTools?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -546,9 +487,7 @@ export type PreferenceProfileOverrideSelect<ExtArgs extends runtime.Types.Extens
   preferredTags?: boolean
   preferredPlatforms?: boolean
   preferredPricing?: boolean
-  preferredExecutionModes?: boolean
   avoidAuthWall?: boolean
-  prefersSubscriptionTools?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["preferenceProfileOverride"]>
@@ -560,9 +499,7 @@ export type PreferenceProfileOverrideSelectCreateManyAndReturn<ExtArgs extends r
   preferredTags?: boolean
   preferredPlatforms?: boolean
   preferredPricing?: boolean
-  preferredExecutionModes?: boolean
   avoidAuthWall?: boolean
-  prefersSubscriptionTools?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["preferenceProfileOverride"]>
@@ -574,9 +511,7 @@ export type PreferenceProfileOverrideSelectUpdateManyAndReturn<ExtArgs extends r
   preferredTags?: boolean
   preferredPlatforms?: boolean
   preferredPricing?: boolean
-  preferredExecutionModes?: boolean
   avoidAuthWall?: boolean
-  prefersSubscriptionTools?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["preferenceProfileOverride"]>
@@ -588,13 +523,11 @@ export type PreferenceProfileOverrideSelectScalar = {
   preferredTags?: boolean
   preferredPlatforms?: boolean
   preferredPricing?: boolean
-  preferredExecutionModes?: boolean
   avoidAuthWall?: boolean
-  prefersSubscriptionTools?: boolean
   updatedAt?: boolean
 }
 
-export type PreferenceProfileOverrideOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "preferredCategories" | "preferredTags" | "preferredPlatforms" | "preferredPricing" | "preferredExecutionModes" | "avoidAuthWall" | "prefersSubscriptionTools" | "updatedAt", ExtArgs["result"]["preferenceProfileOverride"]>
+export type PreferenceProfileOverrideOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "preferredCategories" | "preferredTags" | "preferredPlatforms" | "preferredPricing" | "avoidAuthWall" | "updatedAt", ExtArgs["result"]["preferenceProfileOverride"]>
 export type PreferenceProfileOverrideInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -617,9 +550,7 @@ export type $PreferenceProfileOverridePayload<ExtArgs extends runtime.Types.Exte
     preferredTags: string[]
     preferredPlatforms: string[]
     preferredPricing: string[]
-    preferredExecutionModes: string[]
     avoidAuthWall: boolean | null
-    prefersSubscriptionTools: boolean | null
     updatedAt: Date
   }, ExtArgs["result"]["preferenceProfileOverride"]>
   composites: {}
@@ -1051,9 +982,7 @@ export interface PreferenceProfileOverrideFieldRefs {
   readonly preferredTags: Prisma.FieldRef<"PreferenceProfileOverride", 'String[]'>
   readonly preferredPlatforms: Prisma.FieldRef<"PreferenceProfileOverride", 'String[]'>
   readonly preferredPricing: Prisma.FieldRef<"PreferenceProfileOverride", 'String[]'>
-  readonly preferredExecutionModes: Prisma.FieldRef<"PreferenceProfileOverride", 'String[]'>
   readonly avoidAuthWall: Prisma.FieldRef<"PreferenceProfileOverride", 'Boolean'>
-  readonly prefersSubscriptionTools: Prisma.FieldRef<"PreferenceProfileOverride", 'Boolean'>
   readonly updatedAt: Prisma.FieldRef<"PreferenceProfileOverride", 'DateTime'>
 }
     

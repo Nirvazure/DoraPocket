@@ -17,15 +17,15 @@ test('createSaveToolHandler returns early when not authenticated', () => {
 })
 
 test('createSaveToolHandler calls saveToolById when authenticated', () => {
-  const saved: string[] = []
+  const saved: unknown[] = []
   const save = createSaveToolHandler({
     authPending: false,
     isAuthenticated: true,
     saveToolToPocket: (input) => {
-      saved.push(input.toolId)
+      saved.push(input)
     },
     getSourceQuestion: () => 'test question',
   })
   save('tool-1')
-  assert.deepEqual(saved, ['tool-1'])
+  assert.deepEqual(saved, [{ toolId: 'tool-1', sourceQuestion: 'test question' }])
 })

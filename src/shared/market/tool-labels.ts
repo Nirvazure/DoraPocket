@@ -1,9 +1,4 @@
-import type {
-  ToolCategory,
-  ToolExecutionMode,
-  ToolPricingModel,
-  ToolSource,
-} from '@/shared/market/tool-registry'
+import type { ToolCategory, ToolPricingModel } from '@/shared/market/tool-registry'
 
 export const TOOL_CATEGORY_LABELS: Record<ToolCategory, string> = {
   ai_assistant: 'AI 助手',
@@ -14,6 +9,7 @@ export const TOOL_CATEGORY_LABELS: Record<ToolCategory, string> = {
   media: '媒体处理',
   learning: '学习研究',
   writing: '写作翻译',
+  other: '其他工具',
 }
 
 export const TOOL_CATEGORY_ORDER: ToolCategory[] = [
@@ -25,26 +21,14 @@ export const TOOL_CATEGORY_ORDER: ToolCategory[] = [
   'media',
   'learning',
   'writing',
+  'other',
 ]
 
-export const TOOL_SOURCE_LABELS: Record<ToolSource, string> = {
-  market: '市场精选',
-  submitted: '用户提交',
-  external_resource: '参考资源',
-  official: '官方资源',
-}
-
-export const TOOL_PREFERENCE_LABELS: Record<
-  ToolCategory | ToolPricingModel | ToolExecutionMode,
-  string
-> = {
+export const TOOL_PREFERENCE_LABELS: Record<ToolCategory | ToolPricingModel, string> = {
   ...TOOL_CATEGORY_LABELS,
   free: '免费优先',
   freemium: '可先试用',
   paid: '接受付费',
   subscription: '长期订阅',
-  native_card: '站内卡片',
-  external_link: '外部工具',
-  workflow: '流程方案',
-  reference_only: '仅供参考',
+  unknown: '价格待确认',
 }
