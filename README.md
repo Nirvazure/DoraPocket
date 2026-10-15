@@ -108,6 +108,8 @@ Windows PowerShell 可执行 `Copy-Item .env.example .env`。最小必需环境�
 
 ## 独立项目迁入 YQYHub
 
+迁移已完成，旧 DoraPocket Supabase 项目已删除。以下脚本和流程保留用于追溯，不再作为当前部署步骤；依赖旧项目的检查和导出命令已无法运行。应用现已移除迁移期间的维护拦截逻辑。
+
 迁移工具固定校验源项目 `eatsznumylwggpvlwkfk`、目标项目 `tfvzcuksahcofooqqezx` 和 `dorapocket` schema。源配置保留在 `.env`；目标配置放入忽略的 `.env.migration.local`，变量见 [环境模板](.env.example)。不要提交连接串、secret key 或快照。
 
 本地 Next.js 可使用 `.env.local` 覆盖为目标运行连接和 Auth/Storage 配置。迁移工具不会读取 `.env.local`，避免本地应用切换后误把目标当成源项目。
@@ -129,9 +131,9 @@ yarn migration:dorapocket verify --artifact tmp/dorapocket-migration.json
 
 `restore-vectors` 直接复制快照中有效的旧向量，不调用 Qwen；它校验原始输入哈希、模型、1024 维数值和对应工具快照，拒绝覆盖不同的目标向量。旧向量仍表达原文本模板，作为本次导入内容的检索基线，不能视为已重新编码精简后的文本；原始输入哈希、生成时间、向量哈希和接受的目标内容哈希保存在旁路 `.vector-reuse.json` 报告中。后续工具内容变更仍会清空旧向量并按新模板生成。如果旧向量缺失或失效，或者确实需要按新模板重新编码，再显式执行 `rebuild-index --apply`；该步骤会调用 Qwen。
 
-正式切换前，先将支持维护开关的版本以 `DORAPOCKET_MAINTENANCE=true` 部署到生产，并暂停旧 Webhook/Cron，确认生产域名请求返回 503、旧请求已结束，再导出最终快照。旧版本若没有维护开关，仅修改环境变量不会阻止写入。完成最终快照导入、向量重建和核验后，使用生成的 `tmp/dorapocket-runtime.env` 中运行连接、目标 Supabase URL/key 配置新部署；生产运行环境不要包含迁移账号、`TARGET_*` 或 `MIGRATION_DATABASE_URL`。GitHub OAuth 要允许本站回调，Database Webhook 指向 `dorapocket.Tool` / `dorapocket.MarketSubmission`。Realtime publication 和客户端订阅均使用 `dorapocket`，无需将该 schema 加入 Data API exposed schemas。维护期间完成数据库和配置检查，再关闭维护进行登录、提交、搜索、收藏、评价、图片和实时通知验收，通过后开启目标后台任务。
+当前部署使用 `dorapocket_app` 运行连接和 YQYHub 的 Supabase URL/key；生产运行环境不要包含迁移账号、`TARGET_*` 或 `MIGRATION_DATABASE_URL`。GitHub OAuth 要允许本站回调，Database Webhook 指向 `dorapocket.Tool` / `dorapocket.MarketSubmission`。Realtime publication 和客户端订阅均使用 `dorapocket`，无需将该 schema 加入 Data API exposed schemas。部署后核验登录、提交、搜索、收藏、评价、图片、实时通知和后台任务。
 
-开放前可以恢复旧部署、环境和任务；开放并产生新数据后先备份新增数据并向前修复，避免切回旧 Auth 丢失新记录。源项目和快照至少保留 7 天。不要删除旧项目或覆盖其他应用 schema。迁移脚本遇到已有不同工具或图片会停止；重复导入相同内容会跳过。
+旧项目已不可用于回退。后续故障应先备份 YQYHub 中的新数据，再向前修复；保留本地迁移快照和向量来源报告，不要覆盖其他应用 schema。迁移脚本遇到已有不同工具或图片会停止；重复导入相同内容会跳过。
 
 ## 未来方向
 
