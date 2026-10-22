@@ -3,6 +3,18 @@ import test from 'node:test'
 import { main, request, toolMatches, embeddingFenceTimestamp } from './migrate-dorapocket'
 import { convertTool } from './migration-model'
 
+test('historical migration requires explicit source credentials instead of reading runtime .env', async (t) => {
+  const original = process.env
+  process.env = { ...original }
+  for (const name of Object.keys(process.env)) {
+    if (/^(SOURCE_|TARGET_)/.test(name)) delete process.env[name]
+  }
+  t.after(() => {
+    process.env = original
+  })
+  await assert.rejects(main(['inspect']), /Missing migration setting: SOURCE_SUPABASE_URL/)
+})
+
 test('the CLI rejects unknown flags and unsafe artifact destinations before reading credentials', async () => {
   await assert.rejects(main(['import', '--overwrite']), /Unknown or incomplete/)
   await assert.rejects(main(['export', '--apply', '--artifact', '.env']), /ignored tmp/)

@@ -87,7 +87,7 @@ public/                        3D 模型、图片、音频和浏览器 worklet
 
 ## 本地运行
 
-环境要求：Node.js、Yarn 1.22.22、PostgreSQL/Supabase，以及 Qwen API。复制 `.env.example` 为 `.env` 并填写本地配置。
+环境要求：Node.js、Yarn 1.22.22、PostgreSQL/Supabase，以及 Qwen API。复制 `.env.example` 为 `.env` 并填写本地配置。本地仅保留 `.env`（真实配置，不提交）和 `.env.example`（无密钥模板）；开发和生产构建均读取 `.env`。
 
 ```bash
 yarn install
@@ -98,9 +98,11 @@ yarn dev
 
 Windows PowerShell 可执行 `Copy-Item .env.example .env`。最小必需环境变量包括 `DATABASE_URL`、`SUPABASE_URL`、`SUPABASE_PUBLISHABLE_KEY`、`SUPABASE_SECRET_KEY`、`QWEN_API_KEY` 和 `CRON_SECRET`。
 
+数据库连接池上限固定为 5；向量模型固定为 `text-embedding-v3`，维度为 1024，向量召回始终启用，服务不可用时降级为关键词检索。这些行为无需环境变量配置。
+
 语音能力还需要 `ALIYUN_AK_ID`、`ALIYUN_AK_SECRET` 和 `ALIYUN_NLS_APPKEY`。GitHub/Google OAuth 在 Supabase Dashboard 中配置，不需要在 Next.js 中单独配置 provider。
 
-`DATABASE_URL` 使用专用 `dorapocket_app` 运行角色；DDL 使用独立 `MIGRATION_DATABASE_URL`，URL 的 schema 必须为 `dorapocket`。`yarn prisma:migrate` 执行 `migrate deploy`，只应用 `prisma/migrations-dorapocket` 中的新基线；旧 `prisma/migrations` 保留用于源项目追溯。不要对共享项目运行 `migrate dev`、`db push` 或 reset。空数据库不会自动附带工具目录，基线需要 DDL 账号有权限创建 `vector`、`pg_trgm`、schema 和角色。生产启动使用 `yarn start`，常用检查命令是 `yarn typecheck`、`yarn lint` 和 `yarn build`。
+`DATABASE_URL` 使用专用 `dorapocket_app` 运行角色；执行数据库迁移时，通过进程环境变量单独传入 DDL 连接 `MIGRATION_DATABASE_URL`（日常构建和 `.env` 模板不需要），URL 的 schema 必须为 `dorapocket`。`yarn prisma:migrate` 执行 `migrate deploy`，只应用 `prisma/migrations-dorapocket` 中的新基线；旧 `prisma/migrations` 保留用于源项目追溯。不要对共享项目运行 `migrate dev`、`db push` 或 reset。空数据库不会自动附带工具目录，基线需要 DDL 账号有权限创建 `vector`、`pg_trgm`、schema 和角色。生产启动使用 `yarn start`，常用检查命令是 `yarn typecheck`、`yarn lint` 和 `yarn build`。
 
 使用 `sslmode=verify-full` 的连接应同时提供 `sslrootcert`。仓库内的 `prisma/supabase-ca.crt` 是 Supabase 的公开 CA 证书，Next.js 会将其纳入服务端部署文件；它不含私钥。迁移工具生成的运行连接使用这一相对路径。
 
@@ -110,9 +112,7 @@ Windows PowerShell 可执行 `Copy-Item .env.example .env`。最小必需环境�
 
 迁移已完成，旧 DoraPocket Supabase 项目已删除。以下脚本和流程保留用于追溯，不再作为当前部署步骤；依赖旧项目的检查和导出命令已无法运行。应用现已移除迁移期间的维护拦截逻辑。
 
-迁移工具固定校验源项目 `eatsznumylwggpvlwkfk`、目标项目 `tfvzcuksahcofooqqezx` 和 `dorapocket` schema。源配置保留在 `.env`；目标配置放入忽略的 `.env.migration.local`，变量见 [环境模板](.env.example)。不要提交连接串、secret key 或快照。
-
-本地 Next.js 可使用 `.env.local` 覆盖为目标运行连接和 Auth/Storage 配置。迁移工具不会读取 `.env.local`，避免本地应用切换后误把目标当成源项目。
+迁移工具固定校验源项目 `eatsznumylwggpvlwkfk`、目标项目 `tfvzcuksahcofooqqezx` 和 `dorapocket` schema。历史工具不读取任何环境文件；若确需使用，必须通过进程环境变量显式提供 `SOURCE_SUPABASE_URL`、`SOURCE_DATABASE_URL`、`SOURCE_SUPABASE_SECRET_KEY` 及对应的 `TARGET_*` 配置。当前 `.env` 只保存 YQYHub 的运行配置。不要提交连接串、secret key 或快照。
 
 工具默认只读，写入步骤必须显式追加 `--apply`。按以下顺序执行，所有本地快照保存在忽略的 `tmp`：
 

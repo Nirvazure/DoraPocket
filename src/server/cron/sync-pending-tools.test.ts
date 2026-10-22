@@ -2,12 +2,12 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 
 import { syncPendingTools } from '@/server/cron/sync-pending-tools'
-import { buildToolIndex, getEmbeddingConfig } from '@/shared/market/tool-index-content'
+import { buildToolIndex, EMBEDDING_CONFIG } from '@/shared/market/tool-index-content'
 
 const fields = { name: 'Demo', description: 'Tools', category: 'search', tags: ['AI'] }
 const currentIndex = {
   ...buildToolIndex(fields),
-  embeddingModel: getEmbeddingConfig().model,
+  embeddingModel: EMBEDDING_CONFIG.model,
   embeddedAt: new Date('2026-01-01'),
 }
 

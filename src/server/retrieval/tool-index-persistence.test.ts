@@ -23,7 +23,7 @@ test('SQL embedding write is qualified and fenced by hash, active status and con
     false,
   )
   assert.equal(statements.length, before)
-  const currentModel = process.env.QWEN_EMBEDDING_MODEL?.trim() || 'text-embedding-v3'
+  const currentModel = 'text-embedding-v3'
   assert.equal(
     await writeToolEmbedding('demo', 'expected-hash', currentModel, Array(1024).fill(0.1)),
     false,

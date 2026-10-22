@@ -9,16 +9,9 @@ export type ToolIndexFields = {
   tags: string[]
 }
 
-export function getEmbeddingConfig(
-  env: Record<string, string | undefined> = process.env,
-): EmbeddingConfig {
-  const dimensions = Number(env.QWEN_EMBEDDING_DIMENSIONS ?? 1024)
-  if (dimensions !== 1024)
-    throw new Error('QWEN_EMBEDDING_DIMENSIONS must be 1024 for ToolIndex storage')
-  return { model: env.QWEN_EMBEDDING_MODEL?.trim() || 'text-embedding-v3', dimensions }
-}
+export const EMBEDDING_CONFIG = Object.freeze({ model: 'text-embedding-v3', dimensions: 1024 })
 
-export function buildToolIndex(tool: ToolIndexFields, config = getEmbeddingConfig()) {
+export function buildToolIndex(tool: ToolIndexFields, config: EmbeddingConfig = EMBEDDING_CONFIG) {
   const content = [
     `Name: ${tool.name.trim()}`,
     `Description: ${tool.description.trim()}`,

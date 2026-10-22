@@ -2,9 +2,8 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { spawn } from 'node:child_process'
 import { resolve, dirname, sep } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { parse } from 'dotenv'
 import pg from 'pg'
-import { buildToolIndex } from '../src/shared/market/tool-index-content'
+import { buildToolIndex, EMBEDDING_CONFIG } from '../src/shared/market/tool-index-content'
 import {
   SOURCE_REF,
   TARGET_REF,
@@ -79,50 +78,25 @@ const TOOL_COLUMNS = [
   'updatedAt',
 ] as const
 
-async function optionalEnv(path: string): Promise<Record<string, string>> {
-  try {
-    return parse(await readFile(path))
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return {}
-    throw new Error('Could not read migration environment file')
-  }
-}
 async function config(stage: Stage): Promise<Config> {
-  const sourceEnv = await optionalEnv('.env')
-  const targetEnv = await optionalEnv('.env.migration.local')
-  const env = {
-    ...sourceEnv,
-    ...targetEnv,
-    ...process.env,
-  }
-  const required = (name: string, fallback?: string): string => {
-    const value = env[name]?.trim() || (fallback ? env[fallback]?.trim() : '')
-    if (!value) throw new Error(`Missing migration setting: ${name}`)
-    return value
-  }
-  const requiredSource = (name: string, fallback: string): string => {
-    // A supplied target file may still contain unprefixed target credentials.
-    // Only explicit SOURCE_* values can override the source-project settings.
-    const value =
-      process.env[name]?.trim() ||
-      targetEnv[name]?.trim() ||
-      sourceEnv[name]?.trim() ||
-      process.env[fallback]?.trim() ||
-      sourceEnv[fallback]?.trim()
+  // Historical migration credentials must be supplied explicitly, never read from runtime .env.
+  const env = process.env
+  const required = (name: string): string => {
+    const value = env[name]?.trim()
     if (!value) throw new Error(`Missing migration setting: ${name}`)
     return value
   }
   const ddlOnly = stage === 'schema' || stage === 'provision-runtime'
   const result: Config = {
-    sourceUrl: ddlOnly ? '' : requiredSource('SOURCE_SUPABASE_URL', 'SUPABASE_URL'),
-    sourceDb: ddlOnly ? '' : requiredSource('SOURCE_DATABASE_URL', 'DATABASE_URL'),
-    sourceKey: ddlOnly ? '' : requiredSource('SOURCE_SUPABASE_SECRET_KEY', 'SUPABASE_SECRET_KEY'),
+    sourceUrl: ddlOnly ? '' : required('SOURCE_SUPABASE_URL'),
+    sourceDb: ddlOnly ? '' : required('SOURCE_DATABASE_URL'),
+    sourceKey: ddlOnly ? '' : required('SOURCE_SUPABASE_SECRET_KEY'),
     targetUrl: required('TARGET_SUPABASE_URL'),
     targetDb: required('TARGET_DATABASE_URL'),
     targetKey: ddlOnly ? '' : required('TARGET_SUPABASE_SECRET_KEY'),
     authUserId: ddlOnly ? '' : required('TARGET_AUTH_USER_ID'),
-    model: env.QWEN_EMBEDDING_MODEL?.trim() || 'text-embedding-v3',
-    dimensions: Number(env.QWEN_EMBEDDING_DIMENSIONS || '1024'),
+    model: EMBEDDING_CONFIG.model,
+    dimensions: EMBEDDING_CONFIG.dimensions,
     embeddingKey: env.DASHSCOPE_API_KEY?.trim() || env.QWEN_API_KEY?.trim() || '',
     runtimePassword: env.TARGET_RUNTIME_DATABASE_PASSWORD || '',
   }
@@ -130,8 +104,6 @@ async function config(stage: Stage): Promise<Config> {
   validateProjectConnection('target', result.targetUrl, result.targetDb)
   if (!ddlOnly && !/^[\da-f]{8}-(?:[\da-f]{4}-){3}[\da-f]{12}$/iu.test(result.authUserId))
     throw new Error('TARGET_AUTH_USER_ID must be a Supabase Auth UUID')
-  if (result.dimensions !== 1024)
-    throw new Error('Only 1024-dimensional embeddings fit the migrated ToolIndex')
   return result
 }
 
