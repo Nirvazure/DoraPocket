@@ -4,7 +4,7 @@ import { syncToolArtifacts } from '@/server/cron/sync-tool-artifacts'
 import { prisma } from '@/server/db/prisma'
 import {
   buildToolIndex,
-  getEmbeddingConfig,
+  EMBEDDING_CONFIG,
   type ToolIndexFields,
 } from '@/shared/market/tool-index-content'
 import { isSupabaseMarketAssetUrl } from '@/shared/market/market-asset-url'
@@ -70,7 +70,7 @@ export async function syncPendingTools(
 
   const tools = await resolvedDeps.findCandidateTools(batchSize * 3)
 
-  const config = getEmbeddingConfig()
+  const config = EMBEDDING_CONFIG
   const missingIndexes = tools.filter(
     (tool) =>
       !tool.index?.embeddedAt ||

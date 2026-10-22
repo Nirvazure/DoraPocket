@@ -5,13 +5,6 @@ const globalForPrisma = globalThis as typeof globalThis & {
   __prisma?: PrismaClient
 }
 
-const DEFAULT_DATABASE_POOL_MAX = 5
-
-export function getDatabasePoolMax(value = process.env.DATABASE_POOL_MAX): number {
-  const parsed = Number(value)
-  return Number.isInteger(parsed) && parsed > 0 ? parsed : DEFAULT_DATABASE_POOL_MAX
-}
-
 function createPrismaClient(): PrismaClient {
   const connectionString = process.env.DATABASE_URL?.trim()
   if (!connectionString) {
@@ -21,7 +14,7 @@ function createPrismaClient(): PrismaClient {
   const adapter = new PrismaPg(
     {
       connectionString,
-      max: getDatabasePoolMax(),
+      max: 5,
     },
     { schema: 'dorapocket' },
   )

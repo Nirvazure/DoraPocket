@@ -22,7 +22,7 @@ export async function uploadMarketAsset(
 
   const publicUrl = buildMarketAssetPublicUrl(normalizedKey)
   if (!publicUrl) {
-    throw new Error('NEXT_PUBLIC_SUPABASE_URL is required to build market asset URL')
+    throw new Error('SUPABASE_URL is required to build market asset URL')
   }
   return publicUrl
 }

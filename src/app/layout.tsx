@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { QueryProvider } from '@/components/providers/query-provider'
-import { RealtimeSyncProvider } from '@/components/providers/realtime-sync'
+import { UserSettingsProvider } from '@/components/providers/user-settings'
 import './globals.css'
 import { cn } from '@/lib/utils'
 
@@ -27,7 +27,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <QueryProvider>
-          <RealtimeSyncProvider />
+          <UserSettingsProvider />
           {children}
         </QueryProvider>
       </body>

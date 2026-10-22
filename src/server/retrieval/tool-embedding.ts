@@ -2,7 +2,7 @@ import { QWEN_BASE_URL } from '@/constant'
 import { prisma } from '@/server/db/prisma'
 import { getExtensionSchema } from '@/server/db/extensions'
 import { updateToolIndex } from '@/server/repositories/tool-repo'
-import { getEmbeddingConfig, type EmbeddingConfig } from '@/shared/market/tool-index-content'
+import { EMBEDDING_CONFIG, type EmbeddingConfig } from '@/shared/market/tool-index-content'
 
 type PreparedIndex = {
   content: string
@@ -22,7 +22,10 @@ export function validateEmbedding(embedding: number[]): void {
     throw new Error('Embedding must contain 1024 finite numbers')
 }
 
-async function embedText(text: string, config = getEmbeddingConfig()): Promise<number[] | null> {
+async function embedText(
+  text: string,
+  config: EmbeddingConfig = EMBEDDING_CONFIG,
+): Promise<number[] | null> {
   const apiKey = process.env.QWEN_API_KEY?.trim()
   if (!apiKey) return null
   const response = await fetch(`${QWEN_BASE_URL}/embeddings`, {
@@ -69,7 +72,7 @@ export async function writeToolEmbedding(
 ): Promise<boolean> {
   validateEmbedding(embedding)
   // A deployment may change model while a request is in flight.
-  if (getEmbeddingConfig().model !== model) return false
+  if (EMBEDDING_CONFIG.model !== model) return false
   const schema = await getExtensionSchema('vector')
   return (
     (await prisma.$executeRawUnsafe(
@@ -90,7 +93,7 @@ export async function syncToolEmbedding(
   toolId: string,
   deps: Partial<EmbeddingDeps> = {},
 ): Promise<void> {
-  const config = deps.config ?? getEmbeddingConfig()
+  const config = deps.config ?? EMBEDDING_CONFIG
   if (config.dimensions !== 1024) throw new Error('Embedding dimension must be 1024')
   const index = await (deps.prepare ?? prepareToolIndex)(toolId)
   if (!index || (index.embeddedAt && index.embeddingModel === config.model)) return
@@ -121,7 +124,7 @@ export async function searchToolsByEmbedding(
      ORDER BY i."embedding" OPERATOR(${schema}.<=>) $1::${schema}.vector LIMIT $2`,
     `[${queryEmbedding.join(',')}]`,
     limit,
-    getEmbeddingConfig().model,
+    EMBEDDING_CONFIG.model,
   )
   return new Map(rows.map((row) => [row.id, Number(row.similarity)]))
 }

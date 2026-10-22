@@ -8,6 +8,7 @@ function makeQueryClient() {
         gcTime: 5 * 60_000,
         retry: 1,
         refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
       },
       mutations: {
         retry: 0,

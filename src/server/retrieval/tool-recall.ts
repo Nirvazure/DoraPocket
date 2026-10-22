@@ -36,10 +36,6 @@ export async function recallToolMatches(
 ): Promise<ToolRecallResult> {
   const keywordMatches = rankToolItems(tools, userText, rankOpts).slice(0, KEYWORD_LIMIT)
 
-  if (process.env.TOOL_VECTOR_RECALL_ENABLED === 'false') {
-    return { matches: keywordMatches, recallSummary: null }
-  }
-
   let vectorSimilarity = new Map<string, number>()
   const queryEmbedding = await embedQuery(userText)
   if (queryEmbedding) {

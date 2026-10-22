@@ -1,3 +1,5 @@
+import 'server-only'
+
 import { SUPABASE_STORAGE_BUCKET_MARKET } from '@/constant'
 
 export function getMarketAssetsBucketName(): string {
@@ -5,7 +7,7 @@ export function getMarketAssetsBucketName(): string {
 }
 
 export function getSupabaseProjectUrl(): string | null {
-  const value = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()
+  const value = process.env.SUPABASE_URL?.trim()
   return value || null
 }
 

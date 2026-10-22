@@ -5,10 +5,10 @@ import { queryKeys } from '@/lib/query/query-keys'
 import type { RecommendationHistoryItem } from '@/shared/user/profile-memory'
 
 export function useRecommendationHistoryQuery() {
-  const { enabled } = useAuthenticatedQueryEnabled()
+  const { enabled, userId } = useAuthenticatedQueryEnabled()
 
   return useQuery({
-    queryKey: queryKeys.recommendationHistory.list(),
+    queryKey: queryKeys.recommendationHistory.list(userId),
     enabled,
     queryFn: async () =>
       apiFetch<{ items: RecommendationHistoryItem[] }>('/api/me/recommendations/history'),

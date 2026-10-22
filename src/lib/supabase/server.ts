@@ -4,6 +4,7 @@ import { cookies } from 'next/headers'
 import type { CookieMethodsServer } from '@supabase/ssr'
 import { createServerClient } from '@supabase/ssr'
 import { getSupabasePublishableKey, getSupabaseUrl } from '@/lib/supabase/config'
+import { authCookieOptions } from '@/lib/supabase/cookie-options'
 
 export { createSupabaseAdminClient } from '@/lib/supabase/admin-client'
 
@@ -25,6 +26,7 @@ export async function createSupabaseServerClient() {
   }
 
   return createServerClient(getSupabaseUrl(), getSupabasePublishableKey(), {
+    cookieOptions: authCookieOptions,
     cookies: cookieMethods,
   })
 }

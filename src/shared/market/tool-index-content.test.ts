@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { buildToolIndex, getEmbeddingConfig } from './tool-index-content'
+import { buildToolIndex, EMBEDDING_CONFIG } from './tool-index-content'
 
 const tool = {
   name: 'Demo',
@@ -30,7 +30,6 @@ test('index content has fixed canonical lines and model-dependent hashes', () =>
   )
 })
 
-test('embedding configuration fixes storage dimension and defaults model', () => {
-  assert.deepEqual(getEmbeddingConfig({}), { model: 'text-embedding-v3', dimensions: 1024 })
-  assert.throws(() => getEmbeddingConfig({ QWEN_EMBEDDING_DIMENSIONS: '768' }), /1024/)
+test('embedding configuration fixes model and storage dimension', () => {
+  assert.deepEqual(EMBEDDING_CONFIG, { model: 'text-embedding-v3', dimensions: 1024 })
 })
