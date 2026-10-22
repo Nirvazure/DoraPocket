@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next'
 
 function resolveSupabaseHostname(): string | null {
-  const raw = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()
+  const raw = process.env.SUPABASE_URL?.trim()
   if (!raw) return null
   try {
     return new URL(raw).hostname

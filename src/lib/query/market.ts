@@ -1,4 +1,4 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiFetch } from '@/lib/query/api-client'
 import { useAuthenticatedQueryEnabled } from '@/lib/query/auth-session'
 import { queryKeys } from '@/lib/query/query-keys'
@@ -31,11 +31,19 @@ type SubmitMarketToolInput = {
   tags: string[]
 }
 
-export function getMarketToolsQueryOptions(searchQuery = '') {
+export function keepMarketDataForViewer(
+  previous: ToolItem[] | undefined,
+  previousQuery: { queryKey: readonly unknown[] } | undefined,
+  userId?: string,
+) {
+  return previousQuery?.queryKey.at(-1) === (userId ?? null) ? previous : undefined
+}
+
+export function getMarketToolsQueryOptions(searchQuery = '', userId?: string) {
   const normalizedQuery = normalizeMarketSearchQuery(searchQuery) ?? ''
 
   return {
-    queryKey: queryKeys.marketTools.search(normalizedQuery),
+    queryKey: queryKeys.marketTools.search(normalizedQuery, userId),
     queryFn: async () => {
       const url =
         normalizedQuery.length > 0
@@ -47,17 +55,19 @@ export function getMarketToolsQueryOptions(searchQuery = '') {
 }
 
 export function useMarketToolsQuery(searchQuery = '') {
+  const { userId } = useAuthenticatedQueryEnabled()
   return useQuery({
-    ...getMarketToolsQueryOptions(searchQuery),
-    placeholderData: keepPreviousData,
+    ...getMarketToolsQueryOptions(searchQuery, userId),
+    placeholderData: (previous, previousQuery) =>
+      keepMarketDataForViewer(previous, previousQuery, userId),
   })
 }
 
-export function getMarketToolsByIdsQueryOptions(ids: string[]) {
+export function getMarketToolsByIdsQueryOptions(ids: string[], userId?: string) {
   const uniqueIds = [...new Set(ids.filter(Boolean))].sort()
 
   return {
-    queryKey: queryKeys.marketTools.byIds(uniqueIds),
+    queryKey: queryKeys.marketTools.byIds(uniqueIds, userId),
     queryFn: async () => {
       if (uniqueIds.length === 0) return [] as ToolItem[]
       return apiFetch<ToolItem[]>(
@@ -70,14 +80,15 @@ export function getMarketToolsByIdsQueryOptions(ids: string[]) {
 }
 
 export function useMarketToolsByIdsQuery(ids: string[]) {
-  return useQuery(getMarketToolsByIdsQueryOptions(ids))
+  const { userId } = useAuthenticatedQueryEnabled()
+  return useQuery(getMarketToolsByIdsQueryOptions(ids, userId))
 }
 
 export function useMarketReviewAggregatesQuery() {
-  const { enabled } = useAuthenticatedQueryEnabled()
+  const { enabled, userId } = useAuthenticatedQueryEnabled()
 
   const query = useQuery<Record<string, MarketReviewAggregate>>({
-    queryKey: queryKeys.marketReviewAggregates.list(),
+    queryKey: queryKeys.marketReviewAggregates.list(userId),
     enabled,
     queryFn: async () =>
       (
@@ -89,11 +100,12 @@ export function useMarketReviewAggregatesQuery() {
 
   return {
     ...query,
-    data: query.data ?? {},
+    data: (enabled ? query.data : undefined) ?? {},
   }
 }
 
 export function useSaveMarketFeedbackMutation() {
+  const { userId } = useAuthenticatedQueryEnabled()
   const queryClient = useQueryClient()
 
   return useMutation<SaveFeedbackResponse, Error, SaveFeedbackInput>({
@@ -107,7 +119,7 @@ export function useSaveMarketFeedbackMutation() {
         }),
       }),
     onSuccess: ({ aggregates }) => {
-      queryClient.setQueryData(queryKeys.marketReviewAggregates.list(), aggregates)
+      queryClient.setQueryData(queryKeys.marketReviewAggregates.list(userId), aggregates)
     },
   })
 }

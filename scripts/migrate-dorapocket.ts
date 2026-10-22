@@ -114,7 +114,7 @@ async function config(stage: Stage): Promise<Config> {
   }
   const ddlOnly = stage === 'schema' || stage === 'provision-runtime'
   const result: Config = {
-    sourceUrl: ddlOnly ? '' : requiredSource('SOURCE_SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_URL'),
+    sourceUrl: ddlOnly ? '' : requiredSource('SOURCE_SUPABASE_URL', 'SUPABASE_URL'),
     sourceDb: ddlOnly ? '' : requiredSource('SOURCE_DATABASE_URL', 'DATABASE_URL'),
     sourceKey: ddlOnly ? '' : requiredSource('SOURCE_SUPABASE_SECRET_KEY', 'SUPABASE_SECRET_KEY'),
     targetUrl: required('TARGET_SUPABASE_URL'),

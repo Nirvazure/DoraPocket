@@ -41,7 +41,7 @@ DoraPocket 解决的不是“有哪些工具”，而是“针对我现在的任
 - **3D 与语音**：React Three Fiber、Three.js、阿里云语音识别与语音合成
 - **Agent**：LangChain、LangGraph、Qwen
 - **数据**：Prisma 7、PostgreSQL、pgvector、全文搜索
-- **平台服务**：Supabase Auth、Storage、Realtime；Vercel Cron
+- **平台服务**：Supabase Auth、Storage；Vercel Cron
 - **客户端状态**：Zustand、TanStack Query
 - **工程工具**：Yarn 1.22.22、ESLint、Prettier、TypeScript、tsx
 
@@ -55,7 +55,7 @@ src/
 │  ├─ profile/                  个人资料与设置
 │  └─ api/                      认证、推荐、市场、用户和后台接口
 ├─ components/                 跨页面组件、Provider 和 UI 原语
-├─ lib/                        客户端查询、Supabase、音频、语音、实时同步
+├─ lib/                        客户端 API 查询、服务端 Supabase、音频、语音
 ├─ server/                     Agent、认证、仓储、检索、存储、Webhook、Cron
 ├─ shared/                     跨端类型、领域规则、市场和发现逻辑
 └─ store/                      客户端应用状态
@@ -96,7 +96,7 @@ yarn prisma:migrate
 yarn dev
 ```
 
-Windows PowerShell 可执行 `Copy-Item .env.example .env`。最小必需环境变量包括 `DATABASE_URL`、`NEXT_PUBLIC_SUPABASE_URL`、`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`、`SUPABASE_SECRET_KEY`、`QWEN_API_KEY` 和 `CRON_SECRET`。
+Windows PowerShell 可执行 `Copy-Item .env.example .env`。最小必需环境变量包括 `DATABASE_URL`、`SUPABASE_URL`、`SUPABASE_PUBLISHABLE_KEY`、`SUPABASE_SECRET_KEY`、`QWEN_API_KEY` 和 `CRON_SECRET`。
 
 语音能力还需要 `ALIYUN_AK_ID`、`ALIYUN_AK_SECRET` 和 `ALIYUN_NLS_APPKEY`。GitHub/Google OAuth 在 Supabase Dashboard 中配置，不需要在 Next.js 中单独配置 provider。
 
@@ -131,7 +131,7 @@ yarn migration:dorapocket verify --artifact tmp/dorapocket-migration.json
 
 `restore-vectors` 直接复制快照中有效的旧向量，不调用 Qwen；它校验原始输入哈希、模型、1024 维数值和对应工具快照，拒绝覆盖不同的目标向量。旧向量仍表达原文本模板，作为本次导入内容的检索基线，不能视为已重新编码精简后的文本；原始输入哈希、生成时间、向量哈希和接受的目标内容哈希保存在旁路 `.vector-reuse.json` 报告中。后续工具内容变更仍会清空旧向量并按新模板生成。如果旧向量缺失或失效，或者确实需要按新模板重新编码，再显式执行 `rebuild-index --apply`；该步骤会调用 Qwen。
 
-当前部署使用 `dorapocket_app` 运行连接和 YQYHub 的 Supabase URL/key；生产运行环境不要包含迁移账号、`TARGET_*` 或 `MIGRATION_DATABASE_URL`。GitHub OAuth 要允许本站回调，Database Webhook 指向 `dorapocket.Tool` / `dorapocket.MarketSubmission`。Realtime publication 和客户端订阅均使用 `dorapocket`，无需将该 schema 加入 Data API exposed schemas。部署后核验登录、提交、搜索、收藏、评价、图片、实时通知和后台任务。
+当前部署使用 `dorapocket_app` 运行连接和 YQYHub 的 Supabase URL/key；生产运行环境不要包含迁移账号、`TARGET_*` 或 `MIGRATION_DATABASE_URL`。`SUPABASE_URL`、`SUPABASE_PUBLISHABLE_KEY` 可关联 Vercel Shared 变量，由服务端直接读取，无需浏览器映射。GitHub 登录由 `/api/auth/github` 发起，OAuth 要允许本站 `/api/auth/callback` 回调；会话 Cookie 使用 HttpOnly，由服务端刷新。Database Webhook 指向 `dorapocket.Tool` / `dorapocket.MarketSubmission`。浏览器通过本站 API 获取数据，不创建 Supabase Client，也不订阅 Realtime。数据在页面正常加载时获取，本页操作后更新；不轮询，也不在恢复焦点或网络时自动刷新，不提供跨标签页、跨设备自动同步。查询缓存按用户隔离。无需将该 schema 加入 Data API exposed schemas。部署后核验登录、提交、搜索、收藏、评价、图片和后台任务。
 
 旧项目已不可用于回退。后续故障应先备份 YQYHub 中的新数据，再向前修复；保留本地迁移快照和向量来源报告，不要覆盖其他应用 schema。迁移脚本遇到已有不同工具或图片会停止；重复导入相同内容会跳过。
 

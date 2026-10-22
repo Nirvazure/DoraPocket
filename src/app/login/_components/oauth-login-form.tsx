@@ -3,7 +3,6 @@
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 
 function GitHubIcon() {
   return (
@@ -16,39 +15,13 @@ function GitHubIcon() {
 export function OAuthLoginForm() {
   const searchParams = useSearchParams()
   const [pending, setPending] = useState(false)
-  const [localError, setLocalError] = useState<string | null>(null)
   const errorFromQuery = searchParams.get('error')
-  const nextPath = searchParams.get('next')?.trim() || '/analyse'
-  const safeNext = nextPath.startsWith('/') ? nextPath : '/analyse'
-
-  const handleGitHubSignIn = async () => {
+  const nextPath = searchParams.get('next') || '/analyse'
+  const handleGitHubSignIn = () => {
     setPending(true)
-    setLocalError(null)
-
-    const redirectTo = new URL('/api/auth/callback', window.location.origin)
-    redirectTo.searchParams.set('next', safeNext)
-
-    const supabase = createSupabaseBrowserClient()
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'github',
-      options: { redirectTo: redirectTo.toString() },
-    })
-
-    if (error) {
-      setPending(false)
-      setLocalError(error.message)
-      return
-    }
-
-    if (data.url) {
-      window.location.href = data.url
-    } else {
-      setPending(false)
-      setLocalError('无法启动 OAuth 登录，请稍后再试。')
-    }
+    window.location.assign('/api/auth/github?next=' + encodeURIComponent(nextPath))
   }
-
-  const displayError = localError ?? errorFromQuery
+  const displayError = errorFromQuery ? '登录未完成，请重新尝试 GitHub 登录。' : null
 
   return (
     <div className="mx-auto flex w-full max-w-sm flex-col items-center gap-3">

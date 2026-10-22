@@ -19,10 +19,11 @@ export type AuthSessionUser = {
 export function useAuthSessionQuery() {
   return useQuery({
     queryKey: ['authSession'],
-    queryFn: async () =>
-      apiFetch<{ authenticated: boolean; user?: AuthSessionUser }>('/api/auth/session').catch(
-        () => ({ authenticated: false }),
-      ),
+    queryFn: ({ signal }) =>
+      apiFetch<{ authenticated: boolean; user?: AuthSessionUser }>('/api/auth/session', {
+        signal,
+        cache: 'no-store',
+      }),
     staleTime: 30_000,
   })
 }
@@ -31,6 +32,7 @@ export function useAuthenticatedQueryEnabled() {
   const { data: authSession, isPending: authPending } = useAuthSessionQuery()
   return {
     authPending,
+    userId: authSession?.authenticated ? authSession.user?.id : undefined,
     authenticated: authSession?.authenticated === true,
     enabled: !authPending && authSession?.authenticated === true,
   }
