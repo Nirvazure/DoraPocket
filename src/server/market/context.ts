@@ -3,7 +3,6 @@ import 'server-only'
 import type { MarketContext } from '@/shared/market/market-types'
 import { createEmptyMarketContext } from '@/shared/market/market-defaults'
 import { listMarketFeedback } from '@/server/repositories/market-feedback-repo'
-import { listMarketSubmissions } from '@/server/repositories/market-submission-repo'
 import { listPocketItems } from '@/server/repositories/pocket-repo'
 import { getPreferenceProfileOverride } from '@/server/repositories/preference-repo'
 import { getToolActivityMap } from '@/server/repositories/tool-activity-repo'
@@ -18,23 +17,15 @@ export async function buildMarketContextForUser(
   userId: string,
   mode: 'applied' | 'inferred' = 'applied',
 ): Promise<MarketContext> {
-  const [
-    pocketInventory,
-    feedback,
-    submissions,
-    activityMap,
-    override,
-    tools,
-    recommendationEvaluations,
-  ] = await Promise.all([
-    listPocketItems(userId),
-    listMarketFeedback(userId),
-    listMarketSubmissions(userId),
-    getToolActivityMap(userId),
-    getPreferenceProfileOverride(userId),
-    listActiveTools(),
-    listRecommendationEvaluations(userId),
-  ])
+  const [pocketInventory, feedback, activityMap, override, tools, recommendationEvaluations] =
+    await Promise.all([
+      listPocketItems(userId),
+      listMarketFeedback(userId),
+      getToolActivityMap(userId),
+      getPreferenceProfileOverride(userId),
+      listActiveTools(),
+      listRecommendationEvaluations(userId),
+    ])
 
   const inferred = inferUserPreferenceProfile({
     pocketInventory,
@@ -50,7 +41,6 @@ export async function buildMarketContextForUser(
       sourceQuestion: item.sourceQuestion,
     })),
     feedback,
-    submissions,
     preferenceProfile: mode === 'applied' ? applyPreferenceOverride(inferred, override) : inferred,
   }
 }

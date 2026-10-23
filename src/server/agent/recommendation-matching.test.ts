@@ -193,19 +193,7 @@ test('an empty library returns no candidates without requiring the model', async
   assert.equal(invokeModel.mock.callCount(), 0)
 })
 
-test('user submissions are assessed from their actual description in the same model call', async () => {
-  const context = createEmptyMarketContext()
-  context.submissions = [
-    {
-      id: 'drive',
-      name: 'Drive',
-      url: 'https://drive.example.com',
-      description: 'Cloud file storage with a free plan',
-      tags: ['cloud'],
-      submittedAt: 0,
-      status: 'review',
-    },
-  ]
+test('model ranking cannot introduce a submission outside the catalog', async () => {
   invokeModel.mock.mockImplementation(async () =>
     JSON.stringify({
       ranking: [
@@ -217,16 +205,16 @@ test('user submissions are assessed from their actual description in the same mo
   )
   const result = await buildRankedCandidates(
     'cloud storage, free first',
-    context,
+    createEmptyMarketContext(),
     undefined,
     'market',
     preferences,
   )
   assert.deepEqual(
     result.candidates.map((item) => [item.candidateType, item.score]),
-    [['submission', 92]],
+    [],
   )
-  assert.match(invokeModel.mock.calls[0].arguments[0], /Cloud file storage with a free plan/)
+  assert.doesNotMatch(invokeModel.mock.calls[0].arguments[0], /用户投稿工具/)
   assert.equal(invokeModel.mock.callCount(), 1)
 })
 

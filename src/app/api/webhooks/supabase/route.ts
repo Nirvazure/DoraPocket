@@ -21,9 +21,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: 'Invalid payload' }, { status: 400 })
   }
 
-  const result = await handleDatabaseWebhookEvent(
-    payload as Parameters<typeof handleDatabaseWebhookEvent>[0],
-  )
-
-  return NextResponse.json({ ok: true, ...result })
+  try {
+    const result = await handleDatabaseWebhookEvent(
+      payload as Parameters<typeof handleDatabaseWebhookEvent>[0],
+    )
+    return NextResponse.json({ ok: true, ...result })
+  } catch (error) {
+    const event = payload as { schema?: unknown; table?: unknown; type?: unknown; record?: unknown }
+    const record = event.record as { id?: unknown } | null
+    console.error(
+      '[Supabase webhook] Tool sync failed',
+      {
+        schema: event.schema,
+        table: event.table,
+        type: event.type,
+        toolId: record && typeof record.id === 'string' ? record.id : null,
+      },
+      error,
+    )
+    return NextResponse.json({ ok: false, message: 'Tool sync failed' }, { status: 500 })
+  }
 }

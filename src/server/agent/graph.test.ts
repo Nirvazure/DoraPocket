@@ -8,7 +8,6 @@ import type { PocketStreamEvent } from '@/server/agent/graph'
 const marketContext: MarketContext = {
   savedItems: [],
   feedback: [],
-  submissions: [],
   preferenceProfile: {
     preferredCategories: [],
     preferredTags: [],

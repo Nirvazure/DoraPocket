@@ -11,7 +11,7 @@ export async function GET() {
 export async function PATCH(request: NextRequest) {
   const session = await verifySession()
   if (!session?.user) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
-  const body = (await request.json()) as { nickname: string; avatarSrc?: string }
-  await updateUserProfile(session.user.id, body)
+  const body = (await request.json()) as { nickname: string }
+  await updateUserProfile(session.user.id, { nickname: body.nickname })
   return NextResponse.json(await getUserProfile(session.user.id))
 }

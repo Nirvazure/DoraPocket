@@ -49,36 +49,6 @@ export function applyRecommendationPreferences(
     .slice(0, normalized.recommendationLimit)
 }
 
-export function rankSubmissionCandidates(
-  userText: string,
-  marketContext: MarketContext,
-): AgentCandidate[] {
-  const lower = userText.trim().toLowerCase()
-  if (!lower) return []
-  return marketContext.submissions
-    .filter((item) => item.status !== 'duplicate')
-    .map((item) => {
-      const haystack = `${item.name} ${item.description} ${item.tags.join(' ')}`.toLowerCase()
-      let score = 0
-      if (haystack.includes(lower)) score += 55
-      for (const tag of item.tags) {
-        if (lower.includes(tag.toLowerCase()) || tag.toLowerCase().includes(lower)) score += 20
-      }
-      return {
-        toolId: item.id,
-        title: item.name,
-        url: item.url,
-        candidateType: 'submission' as const,
-        score,
-        sourceLabel: 'market' as const,
-        reason: '这是你提交到市场的工具，与当前任务语义存在匹配。',
-      }
-    })
-    .filter((item) => item.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 3)
-}
-
 export function defaultSelectionReason(
   taskFrame: AgentTaskFrame,
   topTool: ToolItem | null,
@@ -270,19 +240,6 @@ export function stageTrailFor(
   return trail
 }
 
-export function matchingSubmissionLines(userText: string, marketContext: MarketContext): string {
-  const lower = userText.trim().toLowerCase()
-  if (!lower) return '无'
-  const matches = marketContext.submissions
-    .filter((item) => {
-      const haystack = `${item.name} ${item.description} ${item.tags.join(' ')}`.toLowerCase()
-      return haystack.includes(lower) || item.tags.some((tag) => lower.includes(tag.toLowerCase()))
-    })
-    .slice(0, 3)
-  if (matches.length === 0) return '无'
-  return matches.map((item) => `${item.name}：${item.description}`).join('\n')
-}
-
 export function formatCandidateLines(candidates: AgentCandidate[]): string {
   if (candidates.length === 0) return '无候选工具。'
   return candidates
@@ -309,15 +266,8 @@ export async function buildRankedCandidates(
   }).catch((error: unknown) => {
     throw new Error('本次无法读取工具库，请稍后重试。', { cause: error })
   })
-  const submissionCandidates = rankSubmissionCandidates(userText, marketContext)
-  const submissionIds = new Set(submissionCandidates.map((candidate) => candidate.toolId))
   const { judgeToolRecommendations } = await import('@/server/agent/tool-rerank')
-  const judgement = await judgeToolRecommendations(
-    userText,
-    initialMatches,
-    recommendationMode,
-    marketContext.submissions.filter((submission) => submissionIds.has(submission.id)),
-  )
+  const judgement = await judgeToolRecommendations(userText, initialMatches, recommendationMode)
   const externalCandidates = judgement.externalSuggestions ?? []
   const candidates = mergeCandidatePool(judgement.candidates, [], externalCandidates, {
     mode: recommendationMode,

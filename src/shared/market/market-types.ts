@@ -73,7 +73,6 @@ export type PreferenceProfileOverride = {
 export type MarketContext = {
   savedItems: PocketSavedItem[]
   feedback: MarketFeedbackRecord[]
-  submissions: MarketSubmission[]
   preferenceProfile: UserPreferenceProfile
 }
 
@@ -104,7 +103,7 @@ export type AgentCandidate = {
   toolId?: string
   title: string
   url?: string | null
-  candidateType: 'tool' | 'submission' | 'external_suggestion'
+  candidateType: 'tool' | 'external_suggestion'
   score: number
   sourceLabel: 'pocket' | 'market' | 'external'
   reason: string

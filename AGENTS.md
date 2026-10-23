@@ -11,7 +11,7 @@
 
 DoraPocket is a task-driven AI tool recommendation assistant. It helps a user narrow a concrete task to a tool worth trying first, then supports opening, saving, and evaluating that recommendation. It does not complete the task inside external tools.
 
-The current stack is Next.js 16 App Router, React 19, TypeScript, Tailwind CSS, shadcn/ui, React Three Fiber, Three.js, Zustand, TanStack Query, LangChain, Qwen, Prisma 7, PostgreSQL, server-only Supabase Auth/Storage clients, optional Aliyun speech services, and Vercel Cron.
+The current stack is Next.js 16 App Router, React 19, TypeScript, Tailwind CSS, shadcn/ui, React Three Fiber, Three.js, Zustand, TanStack Query, LangChain, Qwen, Prisma 7, PostgreSQL, server-only Supabase Auth/Storage clients, optional Aliyun speech services, and Supabase Tool Database Webhooks.
 
 Use the current code layout as the authority:
 
@@ -20,7 +20,7 @@ Use the current code layout as the authority:
 - `src/app/market`: tool market, search, submission, review, and pocket views.
 - `src/app/profile`: user profile and settings.
 - `src/components`: shared UI, providers, and cross-route components.
-- `src/server`: server-only authentication, Agent logic, market services, repositories, retrieval, storage, webhooks, and cron jobs.
+- `src/server`: server-only authentication, Agent logic, market services, repositories, retrieval, storage, and webhooks.
 - `src/shared`: cross-layer types, domain rules, market/discovery logic, and user models.
 - `src/lib`: client API queries with updates after local actions, server-only Supabase clients, audio, speech, storage, and utilities.
 - `src/store`: client application state.
