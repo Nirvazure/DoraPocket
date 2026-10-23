@@ -1,5 +1,5 @@
 import { useLayoutEffect } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useAuthenticatedQueryEnabled } from '@/lib/query/auth-session'
 import { apiFetch } from '@/lib/query/api-client'
 import { queryKeys } from '@/lib/query/query-keys'
@@ -29,20 +29,4 @@ export function useUserSettingsQuery() {
     ...query,
     data,
   }
-}
-
-export function useSaveUserSettingsMutation() {
-  const queryClient = useQueryClient()
-  const { userId } = useAuthenticatedQueryEnabled()
-
-  return useMutation<UserSettings, Error, UserSettings>({
-    mutationFn: async (input) =>
-      apiFetch<UserSettings>('/api/me/settings', {
-        method: 'PATCH',
-        body: JSON.stringify(input),
-      }),
-    onSuccess: (next) => {
-      queryClient.setQueryData(queryKeys.userSettings.current(userId), next)
-    },
-  })
 }

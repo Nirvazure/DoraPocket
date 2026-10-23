@@ -20,8 +20,4 @@ export const queryKeys = {
   recommendationEvaluations: {
     all: ['recommendationEvaluations'] as const,
   },
-  recommendationHistory: {
-    all: ['recommendationHistory'] as const,
-    list: (userId?: string) => ['recommendationHistory', 'list', userId ?? null] as const,
-  },
 } as const

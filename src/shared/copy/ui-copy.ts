@@ -101,28 +101,9 @@ export const PAGE_COPY = {
       externalLink: '外部打开',
     },
   },
-  profile: {
-    title: '我的 Dora',
-    subtitle: '判断记录与偏好设置。',
-    historyTitle: '判断记录',
-    historyDescription: '回看你让 Dora 判断过什么，以及当时给出的结论。',
-    historyEmptyTitle: '还没有判断记录',
-    historyEmptyDescription: '去让 Dora 分析一次任务，这里会出现第一条记录。',
-    historyError: '判断记录暂时加载失败，请稍后再试。',
-    accountTitle: '账号',
-    loginHint: '登录后才能同步任务记忆、设置和判断记录。',
-    settingsTitle: '设置',
-    settingsDescription: '控制 Dora 如何记住历史、解释结果和使用声音。',
-    filters: {
-      all: '全部',
-      saved: '已收藏',
-      evaluated: '已评价',
-      lowConfidence: '低置信度',
-    },
-  },
   pocket: {
     title: '我的口袋',
-    subtitle: '把账号信息、设置和我的工具都放回一个真正能用的“我的”页面。',
+    subtitle: '收好值得以后再用的工具。',
     searchPlaceholder: '搜索我的工具…',
     emptyTitle: '口袋里还没有工具',
     emptyDescription: '先去道具库看看，把你以后还想再打开的工具收进来。',
@@ -142,76 +123,6 @@ export const PAGE_COPY = {
     collectionSection: '我的工具',
     archivedSection: '归档',
     noSearchResult: '没有找到符合当前搜索条件的工具。',
-  },
-} as const
-
-export const SETTINGS_COPY = {
-  title: '设置',
-  subtitle: '决定 DoraPocket 怎么陪你、怎么说、什么时候替你记住。',
-  heading: '设置',
-  description: '这些设置会同时影响 DoraPocket 怎么出手、怎么解释，以及哪些道具会进入系统决策。',
-  sections: {
-    companion: {
-      title: '陪伴方式',
-      description: '让 DoraPocket 更安静，或者更主动一点。',
-    },
-    memory: {
-      title: '记住什么',
-      description: '决定系统是否记录你的历史信号，帮助下一次判断更省事。',
-    },
-    presentation: {
-      title: '怎么呈现',
-      description: '决定它回答得更直接，还是保留更多为什么。',
-    },
-    reset: {
-      title: '重置与清理',
-      description: '当你想重新开始时，控制权仍然在你手里。',
-    },
-  },
-  items: {
-    voicePlayback: {
-      title: '语音播报',
-      description: '结果出来后，要不要让 DoraPocket 用声音补一句。',
-    },
-    voicePlaybackMode: {
-      title: '播报时机',
-      description: '只播关键结论，还是播完整回答。',
-      options: [
-        { value: 'off', label: '保持安静' },
-        { value: 'key-result', label: '只播结论' },
-        { value: 'full', label: '完整播报' },
-      ],
-    },
-    memory: {
-      title: '记录历史帮助推荐',
-      description: '允许系统记住你怎么选，减少下一次重复判断。',
-    },
-    explanationMode: {
-      title: '解释详细度',
-      description: '更快给结论，或者保留更多理由。',
-      options: [
-        { value: 'brief', label: '更直接' },
-        { value: 'standard', label: '保留理由' },
-      ],
-    },
-    fontPreset: {
-      title: '阅读字体风格',
-      description: '调整整体阅读气质，让信息更贴近你的浏览习惯。',
-      options: [
-        { value: 'a', label: '稳重' },
-        { value: 'b', label: '利落' },
-        { value: 'c', label: '轻快' },
-        { value: 'd', label: '圆润' },
-      ],
-    },
-  },
-  actions: {
-    resetPreferenceTitle: '重置推荐偏好',
-    resetPreferenceDescription: '清空显式标准，让系统重新理解你的使用习惯。',
-    resetPreferenceAction: '重置偏好',
-    clearHistoryTitle: '清空对话历史',
-    clearHistoryDescription: '删除已经保存的对话记录，但不会影响我的工具。',
-    clearHistoryAction: '清空历史',
   },
 } as const
 

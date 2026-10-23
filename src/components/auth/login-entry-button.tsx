@@ -66,7 +66,6 @@ export function LoginEntryButton({
       <Link
         href="/login"
         aria-label="我的"
-        aria-current={active ? 'page' : undefined}
         className={cn('dp-top-profile-pill', active && 'dp-top-profile-pill-active', className)}
       >
         <ProfileAvatar src="/images/assistant-avatar.svg" active={active} />
