@@ -5,10 +5,3 @@ export type UserProfile = {
   nickname: string
   avatarSrc?: string
 }
-
-export function getDefaultUserProfile(): UserProfile {
-  return {
-    nickname: DEFAULT_USER_NICKNAME,
-    avatarSrc: DEFAULT_USER_AVATAR_SRC,
-  }
-}

@@ -1,6 +1,5 @@
 import 'server-only'
 
-import { SUPABASE_STORAGE_BUCKET_AVATARS } from '@/constant'
 import { getMarketAssetsBucketName } from '@/shared/market/market-asset-url'
 
 export function getSupabaseUrl() {
@@ -29,10 +28,6 @@ export function getSupabaseSecretKey() {
     throw new Error('SUPABASE_SECRET_KEY is required')
   }
   return value
-}
-
-export function getAvatarBucket() {
-  return SUPABASE_STORAGE_BUCKET_AVATARS
 }
 
 export function getMarketAssetsBucket() {

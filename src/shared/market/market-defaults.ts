@@ -15,7 +15,6 @@ export function createEmptyMarketContext(): MarketContext {
   return {
     savedItems: [],
     feedback: [],
-    submissions: [],
     preferenceProfile: createEmptyPreferenceProfile(),
   }
 }

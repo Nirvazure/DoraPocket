@@ -54,6 +54,7 @@ export async function createMarketSubmission(
       url,
       description: input.description.trim(),
       tags: input.tags.map((tag) => tag.trim()).filter(Boolean),
+      status: 'listed',
     },
   })
   return listMarketSubmissions(userId)

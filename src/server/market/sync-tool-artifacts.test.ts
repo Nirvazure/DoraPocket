@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { syncToolArtifacts, toolRecordNeedsArtifactSync } from '@/server/cron/sync-tool-artifacts'
+import { syncToolArtifacts, toolRecordNeedsArtifactSync } from '@/server/market/sync-tool-artifacts'
 
 const syncedIconUrl = 'https://assets.example.com/storage/tool.png'
 

@@ -455,39 +455,25 @@ async function readManifest(path: string): Promise<Manifest> {
   return manifest
 }
 async function ensureBuckets(cfg: Config, apply: boolean, requireExisting = false): Promise<void> {
-  for (const bucket of [TARGET_BUCKET, 'dorapocket-avatars']) {
-    const response = await request(
-      `${cfg.targetUrl}/storage/v1/bucket/${bucket}`,
-      { headers: headers(cfg.targetKey) },
-      true,
-    )
-    if (response.status === 404) {
-      if (requireExisting) throw new Error('Target storage buckets have not been created')
-      if (apply)
-        await request(`${cfg.targetUrl}/storage/v1/bucket`, {
-          method: 'POST',
-          headers: { ...headers(cfg.targetKey), 'content-type': 'application/json' },
-          body: JSON.stringify({ id: bucket, name: bucket, public: true }),
-        })
-    } else {
-      const body = (await response.json()) as { public?: boolean }
-      if (!body.public)
-        throw new Error(
-          'Existing target asset bucket is private; resolve the bucket configuration before copying',
-        )
-    }
-    if (bucket === 'dorapocket-avatars' && (response.status !== 404 || apply)) {
-      const listing = await request(`${cfg.targetUrl}/storage/v1/object/list/${bucket}`, {
+  const response = await request(
+    `${cfg.targetUrl}/storage/v1/bucket/${TARGET_BUCKET}`,
+    { headers: headers(cfg.targetKey) },
+    true,
+  )
+  if (response.status === 404) {
+    if (requireExisting) throw new Error('Target storage bucket has not been created')
+    if (apply)
+      await request(`${cfg.targetUrl}/storage/v1/bucket`, {
         method: 'POST',
         headers: { ...headers(cfg.targetKey), 'content-type': 'application/json' },
-        body: JSON.stringify({ prefix: '', limit: 1, offset: 0 }),
+        body: JSON.stringify({ id: TARGET_BUCKET, name: TARGET_BUCKET, public: true }),
       })
-      const objects = (await listing.json()) as unknown[]
-      if (!Array.isArray(objects) || objects.length)
-        throw new Error(
-          'Target avatar bucket is not empty; resolve the migration destination before cutover',
-        )
-    }
+  } else {
+    const body = (await response.json()) as { public?: boolean }
+    if (!body.public)
+      throw new Error(
+        'Existing target asset bucket is private; resolve the bucket configuration before copying',
+      )
   }
 }
 async function copyAssets(cfg: Config, manifest: Manifest, apply: boolean): Promise<void> {

@@ -61,7 +61,7 @@ test('stale async result cannot overwrite changed content, inactive tools, or an
   }
 })
 
-test('embedding service failure propagates for cron retry and invalid vectors never write', async () => {
+test('embedding service failure propagates for manual retry and invalid vectors never write', async () => {
   await assert.rejects(
     syncToolEmbedding(tool.id, {
       config,
@@ -84,4 +84,21 @@ test('embedding service failure propagates for cron retry and invalid vectors ne
     }),
     /1024/,
   )
+})
+
+test('missing embedding configuration fails tool synchronization', async () => {
+  const previous = process.env.QWEN_API_KEY
+  delete process.env.QWEN_API_KEY
+  try {
+    await assert.rejects(
+      syncToolEmbedding(tool.id, {
+        config,
+        prepare: async () => ({ ...index, embeddedAt: null }),
+      }),
+      /QWEN_API_KEY is required/,
+    )
+  } finally {
+    if (previous === undefined) delete process.env.QWEN_API_KEY
+    else process.env.QWEN_API_KEY = previous
+  }
 })

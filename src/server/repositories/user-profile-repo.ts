@@ -18,12 +18,11 @@ export async function getUserProfile(userId: string): Promise<UserProfile> {
   }
 }
 
-export async function updateUserProfile(userId: string, input: UserProfile) {
+export async function updateUserProfile(userId: string, input: Pick<UserProfile, 'nickname'>) {
   return prisma.user.update({
     where: { id: userId },
     data: {
       nickname: input.nickname?.trim() || DEFAULT_USER_NICKNAME,
-      avatarSrc: input.avatarSrc?.trim() || DEFAULT_USER_AVATAR_SRC,
     },
   })
 }

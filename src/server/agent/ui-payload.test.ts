@@ -84,7 +84,6 @@ const marketContext: MarketContext = {
       updatedAt: Date.now(),
     },
   ],
-  submissions: [],
   preferenceProfile: {
     preferredCategories: ['productivity'],
     preferredTags: ['pdf'],

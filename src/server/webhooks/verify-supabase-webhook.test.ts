@@ -10,19 +10,22 @@ function requestWithAuthorization(value?: string): Request {
 }
 
 test('verifySupabaseWebhookRequest rejects missing Authorization', () => {
-  process.env.CRON_SECRET = 'secret'
+  process.env.SUPABASE_WEBHOOK_SECRET = 'secret'
+  delete process.env.CRON_SECRET
 
   assert.equal(verifySupabaseWebhookRequest(requestWithAuthorization()), false)
 })
 
 test('verifySupabaseWebhookRequest rejects wrong bearer token', () => {
-  process.env.CRON_SECRET = 'secret'
+  process.env.SUPABASE_WEBHOOK_SECRET = 'secret'
+  delete process.env.CRON_SECRET
 
   assert.equal(verifySupabaseWebhookRequest(requestWithAuthorization('Bearer wrong')), false)
 })
 
 test('verifySupabaseWebhookRequest accepts correct bearer token', () => {
-  process.env.CRON_SECRET = 'secret'
+  process.env.SUPABASE_WEBHOOK_SECRET = 'secret'
+  delete process.env.CRON_SECRET
 
   assert.equal(verifySupabaseWebhookRequest(requestWithAuthorization('Bearer secret')), true)
 })

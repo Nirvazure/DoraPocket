@@ -27,7 +27,7 @@ async function embedText(
   config: EmbeddingConfig = EMBEDDING_CONFIG,
 ): Promise<number[] | null> {
   const apiKey = process.env.QWEN_API_KEY?.trim()
-  if (!apiKey) return null
+  if (!apiKey) throw new Error('QWEN_API_KEY is required')
   const response = await fetch(`${QWEN_BASE_URL}/embeddings`, {
     method: 'POST',
     signal: AbortSignal.timeout(30_000),

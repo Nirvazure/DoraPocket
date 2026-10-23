@@ -1,7 +1,6 @@
 import 'server-only'
 
-import { syncToolArtifacts, toolRecordNeedsArtifactSync } from '@/server/cron/sync-tool-artifacts'
-import { dedupMarketSubmission } from '@/server/market/submission-dedup'
+import { syncToolArtifacts, toolRecordNeedsArtifactSync } from '@/server/market/sync-tool-artifacts'
 
 type DatabaseWebhookPayload = {
   type: 'INSERT' | 'UPDATE' | 'DELETE'
@@ -29,23 +28,15 @@ function parseToolRecord(record: Record<string, unknown> | null) {
   }
 }
 
-function parseSubmissionRecord(record: Record<string, unknown> | null) {
-  if (!record || typeof record.id !== 'string') return null
-  return {
-    id: record.id,
-    status: asString(record.status) ?? 'review',
-  }
-}
-
 export type DatabaseWebhookResult = {
   handled: boolean
   action?: string
   outcome?: string
-  error?: string
 }
 
 export async function handleDatabaseWebhookEvent(
   payload: DatabaseWebhookPayload,
+  deps: { syncArtifacts: typeof syncToolArtifacts } = { syncArtifacts: syncToolArtifacts },
 ): Promise<DatabaseWebhookResult> {
   if (payload.schema !== 'dorapocket') return { handled: false }
 
@@ -57,37 +48,11 @@ export async function handleDatabaseWebhookEvent(
       return { handled: true, action: 'tool-sync', outcome: 'skipped' }
     }
 
-    try {
-      const result = await syncToolArtifacts(record.id)
-      return {
-        handled: true,
-        action: 'tool-sync',
-        outcome: result.embeddingSynced || result.faviconSynced ? 'synced' : 'noop',
-      }
-    } catch (error) {
-      return {
-        handled: true,
-        action: 'tool-sync',
-        error: error instanceof Error ? error.message : 'tool sync failed',
-      }
-    }
-  }
-
-  if (payload.table === 'MarketSubmission' && payload.type === 'INSERT') {
-    const record = parseSubmissionRecord(payload.record)
-    if (!record || record.status !== 'review') {
-      return { handled: true, action: 'submission-dedup', outcome: 'skipped' }
-    }
-
-    try {
-      const outcome = await dedupMarketSubmission(record.id)
-      return { handled: true, action: 'submission-dedup', outcome }
-    } catch (error) {
-      return {
-        handled: true,
-        action: 'submission-dedup',
-        error: error instanceof Error ? error.message : 'dedup failed',
-      }
+    const result = await deps.syncArtifacts(record.id)
+    return {
+      handled: true,
+      action: 'tool-sync',
+      outcome: result.embeddingSynced || result.faviconSynced ? 'synced' : 'noop',
     }
   }
 

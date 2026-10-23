@@ -1,5 +1,5 @@
 export function verifyBearerSecret(request: Request): boolean {
-  const secret = process.env.CRON_SECRET?.trim()
+  const secret = process.env.SUPABASE_WEBHOOK_SECRET?.trim()
   if (!secret) return false
 
   const authorization = request.headers.get('authorization')?.trim()
